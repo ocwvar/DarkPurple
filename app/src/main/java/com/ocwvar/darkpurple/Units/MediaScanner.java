@@ -1,0 +1,686 @@
+package com.ocwvar.darkpurple.Units;
+
+import android.content.ContentUris;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.graphics.Palette;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.ocwvar.darkpurple.AppConfigs;
+import com.ocwvar.darkpurple.Bean.SongItem;
+import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
+import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+
+/**
+ * Created by 区成伟
+ * Package: com.ocwvar.darkpurple.Units.ImageLoader
+ * Data: 2016/7/9 10:48
+ * Project: DarkPurple
+ * 音频文件扫描器
+ */
+public class MediaScanner {
+
+    private static MediaScanner mediaScanner;
+
+    //用于执行线程的线程池
+    private OCThreadExecutor threadExecutor;
+    //扫描器的回调接口
+    private MediaScannerCallback callback;
+    //用于临时存放扫描结果的数据列表
+    private ArrayList<SongItem> cachedList;
+    //用于处理UI界面的数据
+    private Handler handler;
+    //数据是否更新标识
+    private boolean isUpdated = false;
+    //扫描类型 , 默认按名字排序
+    private SortType sortType = SortType.ByName;
+
+    public MediaScanner() {
+        threadExecutor = new OCThreadExecutor(1,"Scanner");
+        handler = new Handler(Looper.getMainLooper());
+        cachedList = new ArrayList<>();
+    }
+
+    public static synchronized MediaScanner getInstance() {
+        if (mediaScanner == null){
+            mediaScanner = new MediaScanner();
+        }
+        return mediaScanner;
+    }
+
+    /**
+     * UI 线程
+     * @param runnable 在UI线程运行的任务
+     */
+    private void runOnUIThread(Runnable runnable){
+        boolean done = handler.post(runnable);
+        while (!done){
+            handler = new Handler(Looper.getMainLooper());
+            runOnUIThread(runnable);
+        }
+    }
+
+    /**
+     * 设置扫描器回调接口
+     * @param callback  回调接口
+     */
+    public void setCallback(@Nullable MediaScannerCallback callback) {
+        this.callback = callback;
+    }
+
+    /**
+     * 缓存数据结果
+     * @param datas 要缓存的数据
+     */
+    private void cacheDatas(ArrayList<SongItem> datas){
+        isUpdated = true;
+        cachedList.clear();
+        if (datas != null){
+            cachedList.addAll(datas);
+        } //如果就算没扫描到结果 , 也当作是扫描结果
+    }
+
+    /**
+     * 得到缓存之后的数据
+     * @return  缓存数据
+     */
+    public ArrayList<SongItem> getCachedDatas(){
+        isUpdated = false;
+        return cachedList;
+    }
+
+    /**
+     * 设置列表排序类型
+     */
+    public void setSortType(@NonNull SortType sortType){
+        this.sortType = sortType;
+    }
+    public enum SortType{       ByDate , ByName     }
+
+    /**
+     * 数据是否有更新
+     */
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    /**
+     * 开始扫描 , 如果有已缓存的数据 则直接返回数据
+     */
+    public void start(){
+        if (isUpdated && callback != null){
+            callback.onScanCompleted(cachedList);
+        }else {
+            if (AppConfigs.MusicFolders == null){
+                //如果没有设置音乐文件夹 , 则从媒体数据库中获取
+                threadExecutor.submit(new FutureTask<>( new ScanByMediaStore() ) , ScanByMediaStore.TAG);
+            }else {
+                //如果有设置音乐文件夹 , 则扫描每个目录
+                threadExecutor.submit(new FutureTask<>( new ScanByFolder(AppConfigs.MusicFolders) ) , ScanByFolder.TAG);
+            }
+        }
+    }
+
+    /**
+     * 扫描器 (扫描本地媒体数据库)
+     */
+    final class ScanByMediaStore implements Callable<String>{
+
+        final public static String TAG = "ScanByMediaStore";
+        final private Context context = AppConfigs.ApplicationContext;
+
+        @Override
+        public String call() throws Exception {
+
+            if (callback == null){
+                //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
+                try {
+                    cacheDatas(core());
+                } catch (Exception e) {
+                    cacheDatas(null);
+                }
+            }else {
+                try {
+                    onCompleted(core());
+                } catch (Exception e) {
+                    onCompleted(null);
+                }
+            }
+
+            threadExecutor.removeTag(TAG);
+            return null;
+        }
+
+        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList){
+            runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onScanCompleted(arrayList);
+                }
+            });
+        }
+
+        /**
+         * 扫描媒体库
+         * @return  扫描结果,如果没有数据或失败则返回Null
+         * @throws Exception    执行过程中产生的异常
+         */
+        private @Nullable ArrayList<SongItem> core() throws Exception{
+            //从系统媒体数据库扫描
+            final Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+
+            if (cursor != null && cursor.getCount() > 0){
+                ArrayList<SongItem> songList = new ArrayList<>();
+
+                while (cursor.moveToNext()){
+                    SongItem songItem = new SongItem();
+
+                    //歌曲长度
+                    final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                    if (length < AppConfigs.LengthLimited) continue;
+                    else {
+                        songItem.setLengthSet(getTimes(length));
+                    }
+
+                    //标题
+                    songItem.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                    //专辑名
+                    songItem.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                    //作者
+                    songItem.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                    //文件尺寸
+                    songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
+                    //文件名
+                    songItem.setFileName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
+                    //文件路径
+                    songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+
+                    //专辑ID  主要用于读取封面图像
+                    final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                    if (albumID > 0){
+                        songItem.setAlbumID(albumID);
+                        songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),albumID));
+                    }
+
+                    Logger.normal("媒体库扫描器",songItem.getTitle());
+                    cacheAlbumCover(songItem);
+
+                    songList.add(songItem);
+                }
+
+                cursor.close();
+
+                //进行歌曲文件的排序
+                switch (sortType){
+                    case ByDate:
+                        Collections.sort(songList,new ComparatorByData());
+                        break;
+                    case ByName:
+                        Collections.sort(songList,new ComparatorByName());
+                        break;
+                }
+
+                return songList;
+
+            }
+
+            return null;
+
+        }
+
+        /**
+         * 毫秒转 小时,分钟,秒数
+         * @param length    毫秒长度
+         * @return  数据数组 [0]小时  [1]分钟  [2]秒数
+         */
+        private int[] getTimes(long length){
+            if (length < 1000){
+                Log.e(TAG, " 歌曲长度小于1秒");
+
+                return null;
+            }
+
+            //用于存放数据的数组
+            int[] time = new int[3];
+            //总毫秒转秒数
+            length = length/1000;
+
+            if ( (length/60) > 60){
+                // 有小时数
+                int hours = (int)(length/60/60);
+                time[0] = hours;
+                //求减去已统计的小时数的毫秒数
+                length -= hours*60*60;
+            }else {
+                //如果没有则设为 0
+                time[0] = 0;
+            }
+
+            if ( (length/60) > 0){
+                //有分钟数
+                int mins = (int)(length/60);
+                time[1] = mins;
+                //求减去已统计的小时数的毫秒数
+                length -= mins*60;
+            }else {
+                time[1] = 0;
+            }
+
+            time[2] = (int)(length);
+
+            return time;
+        }
+
+        /**
+         * 预先缓存专辑图像
+         * @param songItem  要处理的歌曲信息
+         */
+        private void cacheAlbumCover(SongItem songItem){
+            Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
+            if (coverImage == null){
+                try {
+                    coverImage = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(),songItem.getAlbumCoverUri());
+                    OCImageLoader.loader().cacheImage(songItem.getPath(),coverImage);
+                } catch (Exception e) {
+                    Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
+                    return;
+                }
+                songItem.setHaveCover(true);
+                songItem.setPaletteColor(getAlbumCoverColor(coverImage));
+            }else {
+                songItem.setHaveCover(true);
+                songItem.setPaletteColor(getAlbumCoverColor(coverImage));
+            }
+        }
+
+        /**
+         * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+         * @param coverImage    封面图像
+         * @return  混合颜色
+         */
+        private int getAlbumCoverColor(Bitmap coverImage){
+            Palette palette = null;
+
+            try {
+                palette = new Palette.Builder(coverImage).generate();
+            } catch (Exception e) {
+                //如果图像解析失败 或 图像为Null 则使用默认颜色
+                return AppConfigs.DefaultPaletteColor;
+            }
+
+            int color = AppConfigs.DefaultPaletteColor , item = 0;
+            //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+            while (color == AppConfigs.DefaultPaletteColor && item < 7){
+                switch (item){
+                    case 0:
+                        color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 1:
+                        color = palette.getDarkVibrantColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 3:
+                        color = palette.getMutedColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 4:
+                        color = palette.getLightMutedColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 5:
+                        color = palette.getLightVibrantColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    default:
+                        color = AppConfigs.DefaultPaletteColor;
+                        break;
+                }
+                item += 1;
+            }
+            return color;
+        }
+
+    }
+
+    /**
+     * 文件夹音频扫描器
+     */
+    final class ScanByFolder implements Callable<String>{
+        final public static String TAG = "ScanByFolder";
+
+        //文件夹路径集合
+        private String[] paths;
+        private final FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return isMusicFile(file);
+            }
+        };
+
+        public ScanByFolder(String[] paths) {
+            this.paths = paths;
+        }
+
+        @Override
+        public String call() throws Exception {
+
+            if (chackFolders(paths)){
+                //如果设置的目录都合法的话才进行扫描
+
+                if (callback == null){
+                    //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
+
+                    try {
+                        cacheDatas(core());
+                    } catch (Exception e) {
+                        cacheDatas(null);
+                    }
+                }else {
+                    try {
+                        onCompleted(core());
+                    } catch (Exception e) {
+                        onCompleted(null);
+                    }
+                }
+            }
+
+            threadExecutor.removeTag(TAG);
+            return null;
+        }
+
+        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList){
+            runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onScanCompleted(arrayList);
+                }
+            });
+        }
+
+        /**
+         * 检查目录是否有效
+         * @param paths  目录地址
+         * @return  目录的有效性
+         */
+        private boolean chackFolders(String[] paths){
+            if (paths == null || paths.length <= 0){
+                return false;
+            }else {
+                for (String path: paths) {
+                    if (!TextUtils.isEmpty(path)){
+                        File folder = new File(path);
+                        if (!folder.isDirectory() || !folder.canWrite()) {
+                            folder = null;
+                            return false;
+                        }
+                        folder = null;
+                    }else {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        /**
+         * 判断文件是否为音乐文件
+         * @param file  要检查的文件
+         * @return  有效性
+         */
+        private boolean isMusicFile(File file){
+            if (file.length() <= 0){
+                //如果文件大小为 0 则肯定不合法
+                return false;
+            }else {
+                String[] temp;
+                try {
+                    temp = file.getName().split("\\.");
+                } catch (Exception e) {
+                    //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
+                    return false;
+                }
+                if (temp.length >= 1){
+                    //开始从后缀名判断是否为音频文件
+                    switch (temp[temp.length-1]){
+                        case "mp3":
+                        case "wav":
+                            return true;
+                        default:
+                            return false;
+                    }
+                }else {
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * 毫秒转 小时,分钟,秒数
+         * @param length    毫秒长度
+         * @return  数据数组 [0]小时  [1]分钟  [2]秒数
+         */
+        private int[] getTimes(long length){
+            if (length < 1000){
+                return null;
+            }
+
+            //用于存放数据的数组
+            int[] time = new int[3];
+            //总毫秒转秒数
+            length = length/1000;
+
+            if ( (length/60) > 60){
+                // 有小时数
+                int hours = (int)(length/60/60);
+                time[0] = hours;
+                //求减去已统计的小时数的毫秒数
+                length -= hours*60*60;
+            }else {
+                //如果没有则设为 0
+                time[0] = 0;
+            }
+
+            if ( (length/60) > 0){
+                //有分钟数
+                int mins = (int)(length/60);
+                time[1] = mins;
+                //求减去已统计的小时数的毫秒数
+                length -= mins*60;
+            }else {
+                time[1] = 0;
+            }
+
+            time[2] = (int)(length);
+
+            return time;
+        }
+
+        /**
+         * 扫描获取设置的目录下的音频文件
+         * @return  音频文件列表
+         * @throws Exception
+         */
+        private @Nullable ArrayList<SongItem> core() throws Exception{
+
+            ArrayList<SongItem> songList = new ArrayList<>();
+
+            //循环遍历每一个音频文件夹
+            for (String path : paths) {
+                File[] files = new File(path).listFiles(filter);
+                if (files.length <= 0) {
+                    //如果当前文件夹下没有任何合法的音频文件 , 则跳到下一个文件夹路径
+                    continue;
+                }
+
+                //循环遍历每一个音频文件
+                for (File musicFile : files) {
+                    long musicLength;
+
+                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(musicFile.getPath());
+
+                    try {
+                        musicLength = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                        if (musicLength < AppConfigs.LengthLimited){
+                            //如果歌曲长度小于限制 , 则不继续解析这个文件
+                            continue;
+                        }
+                    } catch (NumberFormatException e) {
+                        //如果无法获取到歌曲长度 , 则不解析这个文件
+                        continue;
+                    }
+
+                    SongItem songItem = new SongItem();
+
+
+                    songItem.setTitle(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+                    songItem.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+                    songItem.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                    songItem.setLength(musicLength);
+                    songItem.setLengthSet(getTimes(musicLength));
+                    songItem.setFileName(musicFile.getName());
+                    songItem.setPath(musicFile.getPath());
+                    songItem.setFileSize(Long.toString(musicFile.length()));
+
+                    cacheAlbumCover(retriever,songItem);
+
+                    songList.add(songItem);
+                    Logger.normal("歌曲文件扫描器",songItem.getTitle());
+                }
+
+            }
+
+            if (songList.size() == 0 ){
+                songList = null;
+                return null;
+            }else {
+                //进行歌曲文件的排序
+                switch (sortType){
+                    case ByDate:
+                        Collections.sort(songList,new ComparatorByData());
+                        break;
+                    case ByName:
+                        Collections.sort(songList,new ComparatorByName());
+                        break;
+                }
+                return songList;
+            }
+
+        }
+
+        /**
+         * 缓存歌曲封面图像
+         * @param retriever  MediaMetadataRetriever
+         * @param songItem  操作的歌曲数据
+         */
+        private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem){
+            Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
+            if (retriever != null && coverImage == null){
+                //如果没有缓存过图像 , 则获取图像资源并进行缓存和提取图像颜色资源
+                byte[] bytes = retriever.getEmbeddedPicture();
+                coverImage = BitmapFactory.decodeByteArray(bytes , 0 , bytes.length);
+                bytes = null;
+                if (coverImage != null){
+                    OCImageLoader.loader().cacheImage(songItem.getPath(),coverImage);
+                    songItem.setPaletteColor(getAlbumCoverColor(coverImage));
+                    songItem.setHaveCover(true);
+                }else {
+                    Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
+                }
+            }else {
+                songItem.setPaletteColor(getAlbumCoverColor(coverImage));
+                songItem.setHaveCover(true);
+            }
+        }
+
+        /**
+         * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+         * @param coverImage    封面图像
+         * @return  混合颜色
+         */
+        private int getAlbumCoverColor(Bitmap coverImage){
+            Palette palette = null;
+
+            try {
+                palette = new Palette.Builder(coverImage).generate();
+            } catch (Exception e) {
+                //如果图像解析失败 或 图像为Null 则使用默认颜色
+                return AppConfigs.DefaultPaletteColor;
+            }
+
+            int color = AppConfigs.DefaultPaletteColor , item = 0;
+            //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+            while (color == AppConfigs.DefaultPaletteColor && item < 7){
+                switch (item){
+                    case 0:
+                        color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 1:
+                        color = palette.getDarkVibrantColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 3:
+                        color = palette.getMutedColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 4:
+                        color = palette.getLightMutedColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    case 5:
+                        color = palette.getLightVibrantColor(AppConfigs.DefaultPaletteColor);
+                        break;
+                    default:
+                        color = AppConfigs.DefaultPaletteColor;
+                        break;
+                }
+                item += 1;
+            }
+            return color;
+        }
+
+    }
+
+    /**
+     * 按文件创建日期排序器
+     */
+    final class ComparatorByData implements Comparator<SongItem>{
+
+        @Override
+        public int compare(SongItem songItem, SongItem t1) {
+            File file1 = new File(songItem.getPath());
+            File file2 = new File(t1.getPath());
+            final long file1Time = file1.lastModified();
+            final long file2Time = file2.lastModified();
+            file1 = null;
+            file2 = null;
+            return (int) (file1Time - file2Time);
+        }
+
+    }
+
+    /**
+     * 按名字排序器
+     */
+    final class ComparatorByName implements Comparator<SongItem>{
+
+        @Override
+        public int compare(SongItem songItem, SongItem t1) {
+            return songItem.getTitle().compareTo(t1.getTitle());
+        }
+
+    }
+
+}

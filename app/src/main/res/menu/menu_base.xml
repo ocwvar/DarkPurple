@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item
+        android:id="@+id/menu_base_setting"
+        android:title="@string/setting_base_setting"
+        android:icon="@drawable/ic_action_setting"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/menu_base_playing"
+        android:title="@string/setting_base_playing"
+        android:icon="@drawable/ic_action_playing"
+        app:showAsAction="always"
+        />
+
+</menu>

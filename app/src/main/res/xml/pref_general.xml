@@ -1,0 +1,22 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/setting_defaultValue_lengthLimit"
+        android:inputType="number"
+        android:key="length_limit"
+        android:maxLines="1"
+        android:maxLength="2"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/setting_title_lengthLimit" />
+
+    <ListPreference
+        android:key="scanner_sort_type"
+        android:title="@string/title_sorttype"
+        android:entries="@array/sort_types_name"
+        android:entryValues="@array/sort_types_value"
+        android:defaultValue="0"
+        />
+
+</PreferenceScreen>

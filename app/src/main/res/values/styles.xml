@@ -1,0 +1,57 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/backgroundColor_Dark</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.PlayingActivity">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Setting_AlertTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:textColor">#fff</item>
+        <item name="colorAccent">#fff</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColorSecondary">#fff</item>
+    </style>
+
+    <style name="SettingsTheme" parent="AppTheme">
+        <item name="android:textColorPrimary">#fff</item>
+        <item name="android:textColorSecondary">@color/colorPrimary</item>
+        <item name="android:alertDialogTheme">@style/Setting_AlertTheme</item>
+        <item name="android:dialogTheme">@style/Setting_AlertTheme</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.NoActionBar" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Playing" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:shadowColor">#000</item>
+        <item name="android:shadowRadius">15</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+        <item name="buttonTint">#fff</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

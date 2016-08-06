@@ -1,0 +1,9 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="com.ocwvar.darkpurple.Activities.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/setting_header_general" />
+
+</preference-headers>

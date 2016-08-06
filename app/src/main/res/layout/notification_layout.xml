@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/backgroundColor_Dark">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimary" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundColor_Dark">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:id="@+id/notification_cover"
+            android:src="@drawable/ic_cd"
+            android:padding="5dp"
+            android:scaleType="fitXY"
+            android:background="@drawable/ic_cd" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:background="#1e252e">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_title"
+                android:id="@+id/textView2"
+                android:textSize="11sp"
+                android:textColor="#a9a9a9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/notification_title"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                android:singleLine="true"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_artist"
+                android:id="@+id/textView4"
+                android:textSize="11sp"
+                android:textColor="#a9a9a9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/notification_artist"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                android:singleLine="true"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_album"
+                android:id="@+id/textView3"
+                android:textSize="11sp"
+                android:textColor="#a9a9a9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/notification_album"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                android:layout_gravity="center_horizontal"
+                android:singleLine="true"
+                android:paddingTop="2dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:background="#1e252e">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/notification_back"
+            android:background="#00000000"
+            android:src="@drawable/ic_action_back" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/notification_mainButton"
+            android:background="#00000000"
+            android:src="@drawable/ic_action_play" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/notification_next"
+            android:background="#00000000"
+            android:src="@drawable/ic_action_next" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,79 @@
+<resources>
+    <!--App 名字-->
+    <string name="app_name">DarkPurple</string>
+
+    <!--基本菜单名称-->
+    <string name="setting_base_setting">设置</string>
+    <string name="setting_base_playing">当前播放</string>
+
+    <!--文字信息-->
+    <string name="service_error">服务创建失败 , 将无法使用音频功能</string>
+    <string name="service_ok">服务连接成功</string>
+
+    <!--ViewPager滚动标签栏-->
+    <string name="ViewPage_Tab_Playing">正在播放</string>
+    <string name="ViewPage_Tab_AllMusic">我的音乐</string>
+    <string name="ViewPage_Tab_RecentAdded">最近添加</string>
+    <string name="ViewPage_Tab_RecentPlayed">最近播放</string>
+
+    <!--扫描目录版面信息-->
+    <string name="musicFolder_name">设置扫描目录</string>
+    <string name="info_musicFloder">按右上角按钮进行添加目录 , 长按已添加的条目进行删除. 目录内的子目录并不会被扫描.</string>
+
+    <!--All Music 版面信息-->
+    <string name="textview_loading">扫描中 , 请稍候…</string>
+    <string name="textview_option">点此设置设置歌曲文件夹\n长按设置歌曲排序</string>
+    <string name="noMusic">无歌曲扫描结果</string>
+    <string name="gotMusicDone">扫描结束</string>
+    <string name="music_failed">歌曲不存在或已损坏</string>
+    <string name="title_sorttype">设置歌曲排序类型</string>
+
+    <!--添加歌曲文件夹 版面信息-->
+    <string name="title_addDialog">请在此输入歌曲文件夹路径</string>
+    <string name="info_wrongPath">请输入正确的文件夹路径</string>
+    <string name="info_existPath">请勿重复添加相同的路径</string>
+    <string name="info_addedPath">路径添加成功</string>
+    <string name="info_removedPath">路径移除成功</string>
+
+    <!--菜单各类选项-->
+    <string name="menu_allmusic_refresh">刷新歌曲</string>
+    <string name="menu_add_folder">添加目录</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="title_menu_sort_date">按照歌曲添加日期</string>
+    <string name="title_menu_sort_name">按照歌曲标题名字</string>
+
+    <string-array name="sort_types_name">
+        <item>@string/title_menu_sort_name</item>
+        <item>@string/title_menu_sort_date</item>
+    </string-array>
+
+    <string-array name="sort_types_value">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <!-- 设置版面数据 -->
+    <string name="setting_header_general">基本设置</string>
+
+    <string name="setting_title_scanAll">扫描所有音频</string>
+    <string name="setting_about_scanAll">开启后,将会从系统数据库中扫描所有音频,而不是仅仅扫描设定的目录.</string>
+
+    <string name="setting_title_musicFolder">设置歌曲扫描目录</string>
+    <string name="setting_summary_musicFolder">不设置扫描目录将会默认扫描所有歌曲 , 否则仅仅扫描目录内的曲目. (不扫描子目录)</string>
+    <string name="setting_defaultValue_musicFolder"> </string>
+
+    <string name="setting_title_lengthLimit">最短歌曲长度(单位:秒)</string>
+    <string name="setting_defaultValue_lengthLimit">20</string>
+
+    <!--播放界面文字-->
+    <string name="main_default_title">当前没有播放数据</string>
+    <string name="main_default_text">--</string>
+
+    <!--Notification相关-->
+    <string name="notification_ticker">DarkPurple后台运行中</string>
+    <string name="notification_title">歌曲名</string>
+    <string name="notification_artist">作者名</string>
+    <string name="notification_album">专辑名</string>
+    <string name="notification_string_empty">无歌曲数据</string>
+
+</resources>
