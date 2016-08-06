@@ -40,8 +40,10 @@ public class AudioService extends Service {
     private NotificationManager nm;
     //播放的状态提示
     private Notification notification;
-    //Notification  布局
+    //Notification  拓展布局
     private RemoteViews remoteView;
+    //Notification  普通布局
+    private RemoteViews smallRemoteView;
 
     //参数变量
     private final int notificationID = 888;
@@ -199,13 +201,15 @@ public class AudioService extends Service {
      */
     private void updateNotification(){
         SongItem songItem = core.getPlayingSong();
-        if (remoteView != null && songItem != null){
+        if (smallRemoteView != null && remoteView != null && songItem != null){
             Logger.warnning(TAG,"已更新状态栏布局. 歌曲:"+songItem.getTitle());
             //如果有歌曲信息
             //更新标题
             remoteView.setTextViewText(R.id.notification_title,songItem.getTitle());
+            smallRemoteView.setTextViewText(R.id.notification_title,songItem.getTitle());
             //更新作者
             remoteView.setTextViewText(R.id.notification_artist,songItem.getArtist());
+            smallRemoteView.setTextViewText(R.id.notification_artist,songItem.getArtist());
             //更新专辑
             remoteView.setTextViewText(R.id.notification_album,songItem.getAlbum());
             //更新封面
@@ -228,19 +232,23 @@ public class AudioService extends Service {
             switch (getAudioStatus()){
                 case Playing:
                     remoteView.setImageViewResource(R.id.notification_mainButton,R.drawable.ic_action_pause);
+                    smallRemoteView.setImageViewResource(R.id.notification_mainButton,R.drawable.ic_action_pause);
                     break;
                 case Stopped:
                 case Paused:
                     remoteView.setImageViewResource(R.id.notification_mainButton,R.drawable.ic_action_play);
+                    smallRemoteView.setImageViewResource(R.id.notification_mainButton,R.drawable.ic_action_play);
                     break;
 
             }
-        }else if (remoteView != null){
+        }else if (smallRemoteView != null && remoteView != null){
             Logger.warnning(TAG,"更新状态栏失败 , 使用默认文字资源. 原因:当前没有歌曲加载");
             //更新标题
             remoteView.setTextViewText(R.id.notification_title,getResources().getText(R.string.notification_string_empty));
+            smallRemoteView.setTextViewText(R.id.notification_title,getResources().getText(R.string.notification_string_empty));
             //更新作者
             remoteView.setTextViewText(R.id.notification_artist,getResources().getText(R.string.notification_string_empty));
+            smallRemoteView.setTextViewText(R.id.notification_artist,getResources().getText(R.string.notification_string_empty));
             //更新专辑
             remoteView.setTextViewText(R.id.notification_album,getResources().getText(R.string.notification_string_empty));
             //更新封面
@@ -270,19 +278,21 @@ public class AudioService extends Service {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //创建远程View
         remoteView = new RemoteViews(getPackageName(),R.layout.notification_layout);
+        smallRemoteView = new RemoteViews(getPackageName(),R.layout.notification_small_layout);
         //创建打开主界面的Intent , 使得点击提示空白部分能直接返回app主界面
         Intent intent = new Intent(AudioService.this, SelectMusicActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
-        if (initNotificationClickCallback(remoteView,pendingIntent)){
+        if (initNotificationClickCallback( remoteView , smallRemoteView , pendingIntent)){
             //如果创建回调成功 , 则开始创建Notification对象
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder.setTicker(getResources().getText(R.string.notification_ticker));
             builder.setSmallIcon(R.drawable.ic_action_small_icon);
             builder.setOngoing(true);
             builder.setCustomBigContentView(remoteView);
+            builder.setCustomContentView(smallRemoteView);
             builder.setContentIntent(pendingIntent);
             notification = builder.build();
             notification.flags = Notification.FLAG_FOREGROUND_SERVICE;
@@ -304,15 +314,23 @@ public class AudioService extends Service {
 
     /**
      * 创建   Notification    的按钮回调
-     * @param remoteView    远程View对象
+     * @param remoteView    拓展的远程View对象
+     * @param smallRemoteView    普通的远程View对象
      * @param pendingIntent    用于调回主界面的PendingIntent
      * @return 执行结果
      */
-    private boolean initNotificationClickCallback(RemoteViews remoteView , PendingIntent pendingIntent){
+    private boolean initNotificationClickCallback(RemoteViews remoteView , RemoteViews smallRemoteView , PendingIntent pendingIntent){
         if (remoteView != null){
+            //主按钮的点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_mainButton,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_MAIN),0));
+            smallRemoteView.setOnClickPendingIntent(R.id.notification_mainButton,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_MAIN),0));
+            //下一首按钮的点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_next,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_NEXT),0));
+            smallRemoteView.setOnClickPendingIntent(R.id.notification_next,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_NEXT),0));
+            //上一首按钮的点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_back,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_BACK),0));
+            smallRemoteView.setOnClickPendingIntent(R.id.notification_back,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_BACK),0));
+            //封面点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_cover,pendingIntent);
             //注册监听的广播接收器
             control.registed = true;
