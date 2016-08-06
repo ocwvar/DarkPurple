@@ -163,8 +163,12 @@ public class AudioCore {
                     this.songList = songList;
                 }
                 return true;
+            }else if (this.songList != null && this.songList.size() > 1){
+                //如果读取不成功 , 同时列表还有下一个音频 , 则播放下一个
+                this.playingIndex = playIndex;
+                playNext();
             }else {
-                //如果读取不成功 ,则放弃使用这个列表 , 并清空数据
+                // 如果列表只有这一个损坏的音频 , 则返回失败 , 同时放弃这个列表
                 this.playingIndex = -1;
                 this.songList = null;
             }

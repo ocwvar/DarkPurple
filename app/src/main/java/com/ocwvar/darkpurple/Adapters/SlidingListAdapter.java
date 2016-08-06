@@ -45,7 +45,11 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return songItems.size();
+        if (songItems != null){
+            return songItems.size();
+        }else {
+            return 0;
+        }
     }
 
     class SlideMusicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
