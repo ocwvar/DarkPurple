@@ -430,6 +430,8 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
                             mainButton.setImageResource(R.drawable.ic_action_pause);
                             break;
                     }
+                    //更新播放按钮状态
+                    sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 }
                 break;
         }

@@ -21,18 +21,13 @@
         android:scaleType="fitXY"
         android:layout_gravity="center"/>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/item_message_panel"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
         android:layout_gravity="bottom">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/item_panel_message"
-            android:background="#80306b"
-            android:alpha="0.5" />
 
         <TextView
             android:id="@+id/item_artist"
@@ -40,9 +35,7 @@
             android:layout_height="wrap_content"
             android:textColor="#fff"
             android:textSize="16sp"
-            android:maxLines="1"
-            android:layout_gravity="start|bottom"
-            android:layout_margin="10dp" />
+            android:maxLines="1" />
 
         <TextView
             android:id="@+id/item_title"
@@ -52,9 +45,8 @@
             android:maxLines="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
-            android:layout_margin="10dp" />
+            android:layout_margin="3dp" />
 
-    </FrameLayout>
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

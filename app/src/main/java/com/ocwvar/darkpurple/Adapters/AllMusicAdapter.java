@@ -1,6 +1,7 @@
 package com.ocwvar.darkpurple.Adapters;
 
 import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -82,7 +83,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         MusicItemViewHolder viewHolder = (MusicItemViewHolder) holder;
         viewHolder.title.setText(songItem.getTitle());
         viewHolder.artist.setText(songItem.getArtist());
-        viewHolder.panel.setBackgroundColor(songItem.getPaletteColor());
+        viewHolder.panel.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getPaletteColor(),200));
         if (songItem.isHaveCover()){
             OCImageLoader.loader().loadImage(songItem.getPath(),viewHolder.cover);
         }else {
@@ -105,14 +106,14 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         ImageView cover;
         TextView title;
         TextView artist;
-        ImageView panel;
+        View panel;
 
         public MusicItemViewHolder(View itemView) {
             super(itemView);
             cover = (ImageView)itemView.findViewById(R.id.item_cover);
             title = (TextView)itemView.findViewById(R.id.item_title);
             artist = (TextView)itemView.findViewById(R.id.item_artist);
-            panel = (ImageView) itemView.findViewById(R.id.item_panel_message);
+            panel = itemView.findViewById(R.id.item_message_panel);
 
             itemView.setOnClickListener(this);
         }

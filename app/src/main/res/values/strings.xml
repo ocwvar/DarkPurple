@@ -23,7 +23,7 @@
 
     <!--All Music 版面信息-->
     <string name="textview_loading">扫描中 , 请稍候…</string>
-    <string name="textview_option">点此设置设置歌曲文件夹\n长按设置歌曲排序</string>
+    <string name="textview_option">点此设置设置歌曲文件夹</string>
     <string name="noMusic">无歌曲扫描结果</string>
     <string name="gotMusicDone">扫描结束</string>
     <string name="music_failed">歌曲不存在或已损坏</string>
