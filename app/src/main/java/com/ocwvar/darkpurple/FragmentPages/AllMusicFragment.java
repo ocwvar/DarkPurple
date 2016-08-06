@@ -1,8 +1,12 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.R;
@@ -42,6 +47,15 @@ public class AllMusicFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.menu_allmusic_refresh:
                 if (workFragment != null){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+                        if (getView() == null){
+                            Toast.makeText(getContext(), R.string.musicFolder_noPermission, Toast.LENGTH_SHORT).show();
+                        }else {
+                            Snackbar.make(getView(),R.string.musicFolder_noPermission,Snackbar.LENGTH_SHORT).show();
+                        }
+                        break;
+                    }
                     workFragment.refreshData();
                 }
                 break;

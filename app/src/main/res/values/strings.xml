@@ -18,6 +18,7 @@
 
     <!--扫描目录版面信息-->
     <string name="musicFolder_name">设置扫描目录</string>
+    <string name="musicFolder_noPermission">应用无权限进行扫描 , 请先授权</string>
     <string name="info_musicFloder">按右上角按钮进行添加目录 , 长按已添加的条目进行删除. 目录内的子目录并不会被扫描.</string>
 
     <!--All Music 版面信息-->

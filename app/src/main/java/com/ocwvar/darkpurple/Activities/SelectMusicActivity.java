@@ -1,8 +1,10 @@
 package com.ocwvar.darkpurple.Activities;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -88,6 +90,13 @@ public class SelectMusicActivity extends AppCompatActivity{
             startService(intent);
             bindService(intent , serviceConnection,BIND_AUTO_CREATE);
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                //如果当前系统版本大于 23 则先检测是否有文件读写权限
+                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+                    Snackbar.make(findViewById(android.R.id.content),R.string.musicFolder_noPermission,Snackbar.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
