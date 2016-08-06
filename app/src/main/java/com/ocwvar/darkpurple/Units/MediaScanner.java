@@ -5,13 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
@@ -51,8 +49,6 @@ public class MediaScanner {
     private Handler handler;
     //数据是否更新标识
     private boolean isUpdated = false;
-    //扫描类型 , 默认按名字排序
-    private SortType sortType = SortType.ByName;
 
     public MediaScanner() {
         threadExecutor = new OCThreadExecutor(1,"Scanner");
@@ -109,11 +105,8 @@ public class MediaScanner {
     }
 
     /**
-     * 设置列表排序类型
+     * 列表排序类型枚举
      */
-    public void setSortType(@NonNull SortType sortType){
-        this.sortType = sortType;
-    }
     public enum SortType{       ByDate , ByName     }
 
     /**
@@ -230,7 +223,7 @@ public class MediaScanner {
                 cursor.close();
 
                 //进行歌曲文件的排序
-                switch (sortType){
+                switch (AppConfigs.SortType){
                     case ByDate:
                         Collections.sort(songList,new ComparatorByData());
                         break;
@@ -318,7 +311,7 @@ public class MediaScanner {
          * @return  混合颜色
          */
         private int getAlbumCoverColor(Bitmap coverImage){
-            Palette palette = null;
+            Palette palette;
 
             try {
                 palette = new Palette.Builder(coverImage).generate();
@@ -570,7 +563,7 @@ public class MediaScanner {
                 return null;
             }else {
                 //进行歌曲文件的排序
-                switch (sortType){
+                switch (AppConfigs.SortType){
                     case ByDate:
                         Collections.sort(songList,new ComparatorByData());
                         break;
@@ -614,7 +607,7 @@ public class MediaScanner {
          * @return  混合颜色
          */
         private int getAlbumCoverColor(Bitmap coverImage){
-            Palette palette = null;
+            Palette palette;
 
             try {
                 palette = new Palette.Builder(coverImage).generate();
@@ -658,6 +651,10 @@ public class MediaScanner {
      */
     final class ComparatorByData implements Comparator<SongItem>{
 
+        public ComparatorByData() {
+            Logger.warnning("ComparatorByData","正在按照日期排序");
+        }
+
         @Override
         public int compare(SongItem songItem, SongItem t1) {
             File file1 = new File(songItem.getPath());
@@ -666,7 +663,7 @@ public class MediaScanner {
             final long file2Time = file2.lastModified();
             file1 = null;
             file2 = null;
-            return (int) (file1Time - file2Time);
+            return (int) (file2Time - file1Time);
         }
 
     }
@@ -675,6 +672,10 @@ public class MediaScanner {
      * 按名字排序器
      */
     final class ComparatorByName implements Comparator<SongItem>{
+
+        public ComparatorByName() {
+            Logger.warnning("ComparatorByName","正在按照名称排序");
+        }
 
         @Override
         public int compare(SongItem songItem, SongItem t1) {
