@@ -15,8 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
@@ -37,7 +35,6 @@ public class SelectMusicActivity extends AppCompatActivity{
 
         setContentView(R.layout.activity_main);
 
-        AppConfigs.initDefaultValue(getApplicationContext());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("");

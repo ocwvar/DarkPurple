@@ -1,27 +1,23 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionMenu;
 import com.ocwvar.darkpurple.Activities.FolderSelectorActivity;
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.Adapters.AllMusicAdapter;
-import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
 import com.ocwvar.darkpurple.R;
@@ -40,7 +36,7 @@ import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
  * Project: DarkPurple
  * 所有歌曲后台Fragment
  */
-public class AllMusicBackGround extends Fragment implements MediaScannerCallback, AllMusicAdapter.OnClick{
+public class AllMusicBackGround extends Fragment implements MediaScannerCallback, AllMusicAdapter.OnClick, View.OnTouchListener {
     public static final String TAG = "AllMusicBackGround";
 
     View loadingPanel;
@@ -48,6 +44,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     RecyclerView recyclerView;
     AllMusicAdapter allMusicAdapter;
     AlphaInAnimationAdapter animationAdapter;
+    FloatingActionMenu floatingActionMenu;
 
     public AllMusicBackGround() {
         setRetainInstance(true);
@@ -113,11 +110,13 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
         if (fragmentView != null) {
             loadingPanel = fragmentView.findViewById(R.id.loadingPanel);
+            floatingActionMenu = (FloatingActionMenu) fragmentView.findViewById(R.id.FloatingActionMenu);
             recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recycleView);
 
             recyclerView.setAdapter(animationAdapter);
             recyclerView.setLayoutManager(new GridLayoutManager(fragmentView.getContext(), 2, GridLayoutManager.VERTICAL, false));
             recyclerView.setHasFixedSize(true);
+            recyclerView.setOnTouchListener(this);
 
             if (MediaScanner.getInstance().isUpdated()) {
                 allMusicAdapter.setDatas(MediaScanner.getInstance().getCachedDatas());
@@ -137,10 +136,12 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         if (recyclerView != null) {
             recyclerView.setAdapter(null);
             recyclerView.setLayoutManager(null);
+            recyclerView.setOnTouchListener(null);
             allMusicAdapter.setOnClick(null);
             recyclerView = null;
             loadingPanel = null;
             fragmentView = null;
+            floatingActionMenu = null;
             MediaScanner.getInstance().setCallback(null);
         }
 
@@ -168,6 +169,25 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     @Override
     public void onOptionClick() {
         startActivity(new Intent(getActivity() , FolderSelectorActivity.class));
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (floatingActionMenu != null){
+            switch (motionEvent.getAction()){
+                case MotionEvent.ACTION_MOVE:
+                    if (!floatingActionMenu.isMenuButtonHidden()){
+                        floatingActionMenu.hideMenuButton(true);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (floatingActionMenu.isMenuButtonHidden()){
+                        floatingActionMenu.showMenuButton(true);
+                    }
+                    break;
+            }
+        }
+        return false;
     }
 
 }

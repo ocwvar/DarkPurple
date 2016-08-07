@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="RtlSymmetry"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="3dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true"
-    app:cardElevation="3dp"
-    app:cardMaxElevation="5dp"
-    app:cardBackgroundColor="@color/card_backgroundColor_Dark"
+    android:layout_margin="3dp"
     >
 
-    <ImageView
+    <com.ocwvar.darkpurple.Units.SquareImageView
         android:id="@+id/item_cover"
         android:src="@drawable/ic_cd"
         android:layout_width="match_parent"
@@ -22,31 +19,29 @@
         android:layout_gravity="center"/>
 
     <LinearLayout
-        android:id="@+id/item_message_panel"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp"
         android:layout_gravity="bottom">
-
-        <TextView
-            android:id="@+id/item_artist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:maxLines="1" />
 
         <TextView
             android:id="@+id/item_title"
             android:textColor="#fff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:maxLines="1"
+            android:textSize="14sp"
+            android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp" />
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/item_artist"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1" />
 
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+</FrameLayout>

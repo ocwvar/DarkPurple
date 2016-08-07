@@ -141,9 +141,11 @@ public class AppConfigs {
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ApplicationContext).edit();
             switch (dataType){
                 case StatusBarHeight:
+                    StatusBarHeight = data;
                     editor.putInt("StatusBarHeight",data);
                     break;
                 case NevBarHeight:
+                    NevBarHeight = data;
                     editor.putInt("NevBarHeight",data);
                     break;
             }

@@ -28,6 +28,7 @@
     <string name="gotMusicDone">扫描结束</string>
     <string name="music_failed">歌曲不存在或已损坏</string>
     <string name="title_sorttype">设置歌曲排序类型</string>
+    <string name="title_addFav">创建播放列表</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_addDialog">请在此输入歌曲文件夹路径</string>

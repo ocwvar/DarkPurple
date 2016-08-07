@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Adapters;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.CardView;
@@ -8,12 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
+import com.ocwvar.darkpurple.Units.SquareImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,9 +84,13 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         SongItem songItem = arrayList.get(position - 1);
         MusicItemViewHolder viewHolder = (MusicItemViewHolder) holder;
+
         viewHolder.title.setText(songItem.getTitle());
         viewHolder.artist.setText(songItem.getArtist());
-        viewHolder.panel.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getPaletteColor(),200));
+
+        viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
+        viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
+
         if (songItem.isHaveCover()){
             OCImageLoader.loader().loadImage(songItem.getPath(),viewHolder.cover);
         }else {
@@ -103,17 +110,15 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        ImageView cover;
+        SquareImageView cover;
         TextView title;
         TextView artist;
-        View panel;
 
         public MusicItemViewHolder(View itemView) {
             super(itemView);
-            cover = (ImageView)itemView.findViewById(R.id.item_cover);
+            cover = (SquareImageView)itemView.findViewById(R.id.item_cover);
             title = (TextView)itemView.findViewById(R.id.item_title);
             artist = (TextView)itemView.findViewById(R.id.item_artist);
-            panel = itemView.findViewById(R.id.item_message_panel);
 
             itemView.setOnClickListener(this);
         }

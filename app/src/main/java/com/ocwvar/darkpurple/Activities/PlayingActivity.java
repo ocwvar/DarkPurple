@@ -188,56 +188,22 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
 
         }
 
-        //如果有物理键的返回和菜单键 , 则代表没有虚拟导航栏
-        boolean hasMenuKey = ViewConfiguration.get(getApplicationContext()).hasPermanentMenuKey();
-        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-
-        if (AppConfigs.NevBarHeight  > 0){
-            //直接使用之前保存好的界面数据
-            System.out.println("导航栏  使用保存的数据");
+        if (AppConfigs.NevBarHeight  > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            //设置底部间距高度
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_NEV);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, AppConfigs.NevBarHeight);
             View emptyView = new View(PlayingActivity.this);
             emptyView.setLayoutParams(layoutParams);
             linearLayout.addView(emptyView);
-        }else if (AppConfigs.NevBarHeight  == -1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !hasBackKey && !hasMenuKey) {
-            //数据未初始化 同时设备是 Android 4.4+ 的设备 , 同时拥有不拥有实体按键的设备 , 则设置导航栏间隔高度
-            int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-            int height = getResources().getDimensionPixelSize(resourceId);
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_NEV);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, height);
-            View emptyView = new View(PlayingActivity.this);
-            emptyView.setLayoutParams(layoutParams);
-            linearLayout.addView(emptyView);
-
-            //更新保存数据
-            AppConfigs.updateLayoutData(AppConfigs.LayoutDataType.NevBarHeight , height);
-
         }
 
-        if (AppConfigs.StatusBarHeight > 0){
-            //直接使用之前保存好的界面数据
-            System.out.println("状态栏  使用保存的数据");
+        if (AppConfigs.StatusBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            //设置顶部间距高度
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_STATUSBAR);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, AppConfigs.StatusBarHeight);
             View emptyView = new View(PlayingActivity.this);
             emptyView.setLayoutParams(layoutParams);
             linearLayout.addView(emptyView);
-        }else if (AppConfigs.StatusBarHeight == -1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            //数据未初始化 同时设备是 Android 4.4+ 的设备 , 则设置状态栏间隔高度
-            int height = 0;
-            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                height = getResources().getDimensionPixelSize(resourceId);
-            }
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_STATUSBAR);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, height);
-            View emptyView = new View(PlayingActivity.this);
-            emptyView.setLayoutParams(layoutParams);
-            linearLayout.addView(emptyView);
-
-            //更新保存数据
-            AppConfigs.updateLayoutData(AppConfigs.LayoutDataType.StatusBarHeight , height);
         }
 
     }
