@@ -27,6 +27,17 @@
         <item name="android:textColorSecondary">#fff</item>
     </style>
 
+    <style name="FullScreen.TransparentBG" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="colorPrimary">#fff</item>
+        <item name="colorPrimaryDark">#fff</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="SettingsTheme" parent="AppTheme">
         <item name="android:textColorPrimary">#fff</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
@@ -50,6 +61,13 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
         <item name="buttonTint">#fff</item>
+    </style>
+
+    <style name="AlertDialog.AppCompat.ProgressDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:background">@color/backgroundColor_Dark</item>
+        <item name="android:windowBackground">@color/backgroundColor_Dark</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

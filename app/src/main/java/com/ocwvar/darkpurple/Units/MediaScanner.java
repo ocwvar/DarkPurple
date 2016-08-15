@@ -13,15 +13,15 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
-import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -144,19 +144,18 @@ public class MediaScanner {
         @Override
         public String call() throws Exception {
 
+            ArrayList<SongItem> arrayList = null;
+
+            try {
+                arrayList  = core();
+            } catch (Exception ignored) {
+            }
+
             if (callback == null){
                 //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
-                try {
-                    cacheDatas(core());
-                } catch (Exception e) {
-                    cacheDatas(null);
-                }
+                cacheDatas(arrayList);
             }else {
-                try {
-                    onCompleted(core());
-                } catch (Exception e) {
-                    onCompleted(null);
-                }
+                onCompleted(arrayList);
             }
 
             threadExecutor.removeTag(TAG);
@@ -191,7 +190,7 @@ public class MediaScanner {
                     final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                     if (length < AppConfigs.LengthLimited) continue;
                     else {
-                        songItem.setLengthSet(getTimes(length));
+                        songItem.setLength(length);
                     }
 
                     //标题
@@ -241,58 +240,19 @@ public class MediaScanner {
         }
 
         /**
-         * 毫秒转 小时,分钟,秒数
-         * @param length    毫秒长度
-         * @return  数据数组 [0]小时  [1]分钟  [2]秒数
-         */
-        private int[] getTimes(long length){
-            if (length < 1000){
-                Log.e(TAG, " 歌曲长度小于1秒");
-
-                return null;
-            }
-
-            //用于存放数据的数组
-            int[] time = new int[3];
-            //总毫秒转秒数
-            length = length/1000;
-
-            if ( (length/60) > 60){
-                // 有小时数
-                int hours = (int)(length/60/60);
-                time[0] = hours;
-                //求减去已统计的小时数的毫秒数
-                length -= hours*60*60;
-            }else {
-                //如果没有则设为 0
-                time[0] = 0;
-            }
-
-            if ( (length/60) > 0){
-                //有分钟数
-                int mins = (int)(length/60);
-                time[1] = mins;
-                //求减去已统计的小时数的毫秒数
-                length -= mins*60;
-            }else {
-                time[1] = 0;
-            }
-
-            time[2] = (int)(length);
-
-            return time;
-        }
-
-        /**
          * 预先缓存专辑图像
          * @param songItem  要处理的歌曲信息
          */
         private void cacheAlbumCover(SongItem songItem){
-            Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
+            Bitmap coverImage = null;
+            try {
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+            } catch (IOException ignored) {}
+
             if (coverImage == null){
                 try {
                     coverImage = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(),songItem.getAlbumCoverUri());
-                    OCImageLoader.loader().cacheImage(songItem.getPath(),coverImage);
+                    CoverImage2File.getInstance().makeImage2File(coverImage,songItem.getPath());
                 } catch (Exception e) {
                     Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
                     return;
@@ -375,20 +335,18 @@ public class MediaScanner {
             if (chackFolders(paths)){
                 //如果设置的目录都合法的话才进行扫描
 
+                ArrayList<SongItem> arrayList = null;
+
+                try {
+                    arrayList  = core();
+                } catch (Exception ignored) {
+                }
+
                 if (callback == null){
                     //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
-
-                    try {
-                        cacheDatas(core());
-                    } catch (Exception e) {
-                        cacheDatas(null);
-                    }
+                    cacheDatas(arrayList);
                 }else {
-                    try {
-                        onCompleted(core());
-                    } catch (Exception e) {
-                        onCompleted(null);
-                    }
+                    onCompleted(arrayList);
                 }
             }
 
@@ -463,47 +421,6 @@ public class MediaScanner {
         }
 
         /**
-         * 毫秒转 小时,分钟,秒数
-         * @param length    毫秒长度
-         * @return  数据数组 [0]小时  [1]分钟  [2]秒数
-         */
-        private int[] getTimes(long length){
-            if (length < 1000){
-                return null;
-            }
-
-            //用于存放数据的数组
-            int[] time = new int[3];
-            //总毫秒转秒数
-            length = length/1000;
-
-            if ( (length/60) > 60){
-                // 有小时数
-                int hours = (int)(length/60/60);
-                time[0] = hours;
-                //求减去已统计的小时数的毫秒数
-                length -= hours*60*60;
-            }else {
-                //如果没有则设为 0
-                time[0] = 0;
-            }
-
-            if ( (length/60) > 0){
-                //有分钟数
-                int mins = (int)(length/60);
-                time[1] = mins;
-                //求减去已统计的小时数的毫秒数
-                length -= mins*60;
-            }else {
-                time[1] = 0;
-            }
-
-            time[2] = (int)(length);
-
-            return time;
-        }
-
-        /**
          * 扫描获取设置的目录下的音频文件
          * @return  音频文件列表
          * @throws Exception
@@ -545,7 +462,6 @@ public class MediaScanner {
                     songItem.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
                     songItem.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
                     songItem.setLength(musicLength);
-                    songItem.setLengthSet(getTimes(musicLength));
                     songItem.setFileName(musicFile.getName());
                     songItem.setPath(musicFile.getPath());
                     songItem.setFileSize(Long.toString(musicFile.length()));
@@ -582,14 +498,18 @@ public class MediaScanner {
          * @param songItem  操作的歌曲数据
          */
         private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem){
-            Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
+            Bitmap coverImage = null;
+            try {
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+            } catch (IOException ignored) {}
+
             if (retriever != null && coverImage == null){
                 //如果没有缓存过图像 , 则获取图像资源并进行缓存和提取图像颜色资源
                 byte[] bytes = retriever.getEmbeddedPicture();
                 coverImage = BitmapFactory.decodeByteArray(bytes , 0 , bytes.length);
                 bytes = null;
                 if (coverImage != null){
-                    OCImageLoader.loader().cacheImage(songItem.getPath(),coverImage);
+                    CoverImage2File.getInstance().makeImage2File(coverImage,songItem.getPath());
                     songItem.setPaletteColor(getAlbumCoverColor(coverImage));
                     songItem.setHaveCover(true);
                 }else {

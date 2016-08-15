@@ -1,25 +1,21 @@
 package com.ocwvar.darkpurple.Adapters;
 
-import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.support.v4.graphics.ColorUtils;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
-import com.ocwvar.darkpurple.Units.SquareImageView;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.ocwvar.darkpurple.Units.SquareWidthImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by 区成伟
@@ -30,16 +26,46 @@ import java.util.List;
  */
 public class AllMusicAdapter extends RecyclerView.Adapter {
 
+    private ArrayList<SongItem> checkedItems;
     private ArrayList<SongItem> arrayList;
-    private OnClick onClick;
     private Drawable defaultCover;
+    private OnClick onClick;
+
+    boolean isMuiltSelecting = false;
 
     public AllMusicAdapter() {
+        checkedItems = new ArrayList<>();
         arrayList = new ArrayList<>();
     }
 
     public void setOnClick(OnClick onClick) {
         this.onClick = onClick;
+    }
+
+    /**
+     * 开启多选模式
+     */
+    public void startMuiltMode(){
+        checkedItems.clear();
+        isMuiltSelecting = true;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 关闭多选模式
+     * @return  返回已选择的项目
+     */
+    public ArrayList<SongItem> stopMuiltMode(){
+        isMuiltSelecting = false;
+        notifyDataSetChanged();
+        return checkedItems;
+    }
+
+    /**
+     * 当前是否是多选模式
+     */
+    public boolean isMuiltSelecting() {
+        return isMuiltSelecting;
     }
 
     /**
@@ -68,7 +94,10 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0){
-            return new OptionItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_option,parent,false));
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_option,parent,false);
+            itemView.getLayoutParams().width = (parent.getWidth()/2);
+            itemView.getLayoutParams().height = (parent.getWidth()/2);
+            return new OptionItemViewHolder(itemView);
         }else {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_card,parent,false);
             itemView.getLayoutParams().width = (parent.getWidth()/2);
@@ -91,8 +120,22 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
         viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
 
+        viewHolder.marker.setVisibility(View.GONE);
+        if (isMuiltSelecting){
+            //如果当前是多选模式 , 则先检查是否已经被选择了
+            if (checkedItems.contains(songItem)) {
+                //如果已经被选择了
+                viewHolder.marker.setVisibility(View.VISIBLE);
+            }else {
+                viewHolder.marker.setVisibility(View.GONE);
+            }
+        }
+
         if (songItem.isHaveCover()){
-            OCImageLoader.loader().loadImage(songItem.getPath(),viewHolder.cover);
+            Picasso
+                    .with(AppConfigs.ApplicationContext)
+                    .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                    .into(viewHolder.cover);
         }else {
             if (defaultCover == null){
                 defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
@@ -110,13 +153,15 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        SquareImageView cover;
+        SquareWidthImageView cover;
+        ImageView marker;
         TextView title;
         TextView artist;
 
         public MusicItemViewHolder(View itemView) {
             super(itemView);
-            cover = (SquareImageView)itemView.findViewById(R.id.item_cover);
+            cover = (SquareWidthImageView)itemView.findViewById(R.id.item_cover);
+            marker = (ImageView)itemView.findViewById(R.id.item_selector_marker);
             title = (TextView)itemView.findViewById(R.id.item_title);
             artist = (TextView)itemView.findViewById(R.id.item_artist);
 
@@ -126,7 +171,22 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View view) {
             if (onClick != null){
-                onClick.onListClick(arrayList,getAdapterPosition()-1);
+                if (isMuiltSelecting){
+                    SongItem songItem = arrayList.get( getAdapterPosition()-1 );
+                    if (checkedItems.contains(songItem)){
+                        //如果点击的时候 , 这个项目已经是被选中了 , 则应该执行取消选中动作
+                        checkedItems.remove(songItem);
+                        marker.setVisibility(View.GONE);
+                    }else {
+                        //如果是没选中状态 , 则应该被标记上
+                        checkedItems.add(songItem);
+                        marker.setVisibility(View.VISIBLE);
+                    }
+                    notifyItemChanged(getAdapterPosition());
+
+                }else {
+                    onClick.onListClick( arrayList , getAdapterPosition()-1 );
+                }
             }
         }
 
@@ -141,7 +201,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            if (onClick != null){
+            if (onClick != null && !isMuiltSelecting){
                 onClick.onOptionClick();
             }
         }

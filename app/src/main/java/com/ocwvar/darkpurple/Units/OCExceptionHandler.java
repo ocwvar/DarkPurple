@@ -57,7 +57,7 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
     private final static Class RESTART_ACTIVITY = SelectMusicActivity.class;
     private final static String LOG_NAME_HEAD = "OCLog";
     private final static String LOG_SAVE_FOLDER = "/log/";
-    private final static boolean SAVE_LOGS = false;
+    private final static boolean SAVE_LOGS = true;
 
     public final static String THROWABLE_OBJECT = "Throwable";
     public final static String IS_RECOVERY = "IsRecover";
@@ -68,10 +68,11 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
     @Override
     public void onCreate() {
         super.onCreate();
-        Thread.setDefaultUncaughtExceptionHandler(this);
+        //Thread.setDefaultUncaughtExceptionHandler(this);
 
         //初始化各项保存的设置
         AppConfigs.initDefaultValue(getApplicationContext());
+        PlaylistUnits.getInstance().initSPData();
 
         //如果有物理键的返回和菜单键 , 则代表没有虚拟导航栏
         boolean hasMenuKey = ViewConfiguration.get(getApplicationContext()).hasPermanentMenuKey();

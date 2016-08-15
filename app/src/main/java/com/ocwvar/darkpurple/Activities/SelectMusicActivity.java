@@ -13,12 +13,14 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.FragmentPages.AllMusicFragment;
+import com.ocwvar.darkpurple.FragmentPages.PlaylistPageFragment;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
@@ -28,6 +30,9 @@ public class SelectMusicActivity extends AppCompatActivity{
     ViewPager viewPager;
     MainViewPagerAdapter viewPagerAdapter;
     ServiceConnection serviceConnection;
+
+    AllMusicFragment allMusicFragment;
+    PlaylistPageFragment playlistPageFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +50,16 @@ public class SelectMusicActivity extends AppCompatActivity{
         viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
                 new String[]{
                         getText(R.string.ViewPage_Tab_AllMusic).toString(),
-                        getText(R.string.ViewPage_Tab_RecentAdded).toString(),
+                        getText(R.string.ViewPage_Tab_Playlist).toString(),
                         getText(R.string.ViewPage_Tab_RecentPlayed).toString()
                 });
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        viewPagerAdapter.addFragmentPage(new AllMusicFragment());
+        allMusicFragment = new AllMusicFragment();
+        playlistPageFragment = new PlaylistPageFragment();
+        viewPagerAdapter.addFragmentPageToEnd(allMusicFragment);
+        viewPagerAdapter.addFragmentPageToEnd(playlistPageFragment);
 
         if (ServiceHolder.getInstance().getService() == null){
             //如果当前没有获取到服务对象 , 则创建一个保存
@@ -123,6 +131,24 @@ public class SelectMusicActivity extends AppCompatActivity{
             case 1:
                 AppConfigs.reInitOptionValues();
                 break;
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (viewPager.getCurrentItem()) {
+            case 0:
+                if (allMusicFragment == null){
+                    return super.onKeyDown(keyCode, event);
+                }else {
+                    if (!allMusicFragment.onActivityKeyDown(keyCode, event)){
+                        return super.onKeyDown(keyCode, event);
+                    }else {
+                        return false;
+                    }
+                }
+            default:
+                return super.onKeyDown(keyCode, event);
         }
     }
 }

@@ -16,11 +16,14 @@ import android.support.v7.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
+import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -218,9 +221,10 @@ public class AudioService extends Service {
                 remoteView.setImageViewUri(R.id.notification_cover,songItem.getAlbumCoverUri());
             }else if (songItem.getPath() != null){
                 //如果有歌曲路径 , 则尝试获取预先存好的缓存 , 如果成功则设置图像 , 否则设置默认图像
-                Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
-                if (coverImage != null){
-                    remoteView.setImageViewBitmap(R.id.notification_cover,coverImage);
+                if (CoverImage2File.getInstance().isAlreadyCached(songItem.getPath())){
+                    Picasso.with(AppConfigs.ApplicationContext)
+                            .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                            .into(remoteView , R.id.notification_cover , notificationID ,notification);
                 }else {
                     remoteView.setImageViewResource(R.id.notification_cover,R.drawable.ic_cd);
                 }

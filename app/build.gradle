@@ -19,6 +19,12 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', 'src/main/java-gen']
+        }
+    }
+
 }
 
 repositories {
@@ -38,4 +44,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.github.clans:fab:1.6.4'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.picasso:picasso:2.3.2'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
 }

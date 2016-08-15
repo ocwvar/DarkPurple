@@ -18,7 +18,6 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -26,13 +25,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -48,10 +44,12 @@ import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioCore;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
-import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -476,7 +474,11 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
         @Override
         protected Bitmap doInBackground(Integer... integers) {
             //先获取已缓存好的图像
-            Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
+            Bitmap coverImage = null;
+            try {
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+            } catch (IOException ignored) {}
+
             if (coverImage != null){
 
                 //将图像进行一个缩放 , 以得到一个模糊程度很高的图像

@@ -1,13 +1,8 @@
 package com.ocwvar.darkpurple.Adapters;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,9 +10,8 @@ import android.widget.ImageView;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.ImageLoader.HandleOnLoaded;
-import com.ocwvar.darkpurple.Units.ImageLoader.OCImageLoader;
-import com.ocwvar.darkpurple.Units.ImageLoader.OnImageLoad;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -67,11 +61,11 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final int viewPagerWidth = container.getMeasuredWidth();
 
-        final float imageWidth = viewPagerWidth / 1.5f;
+        final int imageWidth = (int)(viewPagerWidth / 1.5f);
 
         if (songItem.isHaveCover()){
             //如果先前缓存有图像 , 则开始读取
-            OCImageLoader.loader().loadImage(
+            /*OCImageLoader.loader().loadImage(
                     songItem.getPath(), null, cover, new OnImageLoad() {
 
                 @Override
@@ -92,22 +86,16 @@ public class CoverShowerAdapter extends PagerAdapter {
                     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 }
 
-            });
+            });*/
+            Picasso.with(AppConfigs.ApplicationContext)
+                    .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                    .resize(imageWidth,imageWidth)
+                    .into(cover);
         }else {
 
             cover.setImageDrawable(defaultCover);
 
         }
-
-
-        /*if (songItem != null){
-            Bitmap coverImage = OCImageLoader.loader().getCache(songItem.getPath());
-            if (coverImage != null){
-                cover.setImageBitmap(coverImage);
-            }else {
-                cover.setImageDrawable(defaultCover);
-            }
-        }*/
 
         container.addView(cover);
 

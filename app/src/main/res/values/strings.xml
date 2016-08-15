@@ -9,11 +9,23 @@
     <!--文字信息-->
     <string name="service_error">服务创建失败 , 将无法使用音频功能</string>
     <string name="service_ok">服务连接成功</string>
+    <string name="simple_cancel">取消</string>
+    <string name="simple_done">确定</string>
+    <string name="title_dialog_playlist_more">对选择的播放列表进行操作</string>
+    <string name="button_dialog_playlist_delete">删除列表</string>
+    <string name="button_dialog_playlist_detail">列表详情</string>
+
+    <!--播放列表项目文字信息-->
+    <string name="text_playlist_name">播放列表名称</string>
+    <string name="text_playlist_count">包含音频数量</string>
+    <string name="text_playlist_countEND">首</string>
+    <string name="text_playlist_loading">正在读取播放列表数据中 , 请稍候 . . .</string>
+    <string name="text_playlist_loadFailed">播放列表数据读取失败</string>
 
     <!--ViewPager滚动标签栏-->
     <string name="ViewPage_Tab_Playing">正在播放</string>
-    <string name="ViewPage_Tab_AllMusic">我的音乐</string>
-    <string name="ViewPage_Tab_RecentAdded">最近添加</string>
+    <string name="ViewPage_Tab_AllMusic">音乐库</string>
+    <string name="ViewPage_Tab_Playlist">播放列表</string>
     <string name="ViewPage_Tab_RecentPlayed">最近播放</string>
 
     <!--扫描目录版面信息-->
@@ -26,9 +38,16 @@
     <string name="textview_option">点此设置设置歌曲文件夹</string>
     <string name="noMusic">无歌曲扫描结果</string>
     <string name="gotMusicDone">扫描结束</string>
+    <string name="wrongPlaylistName">无效名称 , 请重新输入</string>
+    <string name="existedlaylistName">已经有相同名称的播放列表</string>
+    <string name="startSelectPlaylist">请从列表中选择要添加的歌曲</string>
+    <string name="playliseSaved">列表储存成功</string>
+    <string name="playliseSaveFailed">列表储存失败</string>
+    <string name="playliseSaveCanceled">已取消添加播放列表操作</string>
     <string name="music_failed">歌曲不存在或已损坏</string>
     <string name="title_sorttype">设置歌曲排序类型</string>
     <string name="title_addFav">创建播放列表</string>
+    <string name="title_newplaylist_dialog">请输入新建播放列表的名称</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_addDialog">请在此输入歌曲文件夹路径</string>

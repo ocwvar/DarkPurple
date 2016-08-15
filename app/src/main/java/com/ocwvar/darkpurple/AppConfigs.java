@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -23,6 +24,15 @@ import java.util.Set;
  * 应用的全局设置
  */
 public class AppConfigs {
+
+    //图片缓存目录
+    public static final  String ImageCacheFolder = Environment.getExternalStorageDirectory().getPath()+"/DarkPurple/ImageCache/";
+
+    //Json数据储存位置
+    public static String JsonFilePath = Environment.getExternalStorageDirectory().getPath()+"/DarkPurple/JSONData";
+
+    //应用是否为第一次启动
+    public static boolean IsFirstBoot = true;
 
     //设置扫描的路径数组集合 如果存在数据不为NULL , 则会扫描指定目录  否则扫描数据库
     public static String[] MusicFolders = null;
@@ -41,6 +51,9 @@ public class AppConfigs {
 
     //歌曲列表排序类型
     public static MediaScanner.SortType SortType = MediaScanner.SortType.ByName;
+
+    //歌曲储存分隔符
+    public static final String SeparationChar = "⊙";
 
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
@@ -67,6 +80,9 @@ public class AppConfigs {
 
             NevBarHeight = preferences.getInt("NevBarHeight",-1);
 
+            IsFirstBoot = !preferences.contains("isNotFirstRunning");
+            preferences.edit().putBoolean("isNotFirstRunning",true).apply();
+
             String value = preferences.getString("scanner_sort_type","0");
             switch (value){
                 case "0":
@@ -79,6 +95,9 @@ public class AppConfigs {
                     SortType = MediaScanner.SortType.ByName;
                     break;
             }
+
+            new File(ImageCacheFolder).mkdirs();
+            new File(JsonFilePath).mkdirs();
 
         }else {
             Logger.error("初始化全局变量","ApplicationContext 为空,无法读取数据");

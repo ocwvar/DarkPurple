@@ -28,8 +28,13 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
         fragmentPages = new ArrayList<>();
     }
 
-    public void addFragmentPage(Fragment fragment){
+    public void addFragmentPageToStart(Fragment fragment){
         addFragmentPage(fragment,0);
+    }
+
+    public void addFragmentPageToEnd(Fragment fragment){
+        fragmentPages.add(fragment);
+        notifyDataSetChanged();
     }
 
     public void addFragmentPage(Fragment fragment , int index){

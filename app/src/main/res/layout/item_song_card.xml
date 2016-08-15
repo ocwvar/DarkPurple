@@ -10,7 +10,8 @@
     android:layout_margin="3dp"
     >
 
-    <com.ocwvar.darkpurple.Units.SquareImageView
+    <!--封面图像-->
+    <com.ocwvar.darkpurple.Units.SquareWidthImageView
         android:id="@+id/item_cover"
         android:src="@drawable/ic_cd"
         android:layout_width="match_parent"
@@ -18,6 +19,7 @@
         android:scaleType="fitXY"
         android:layout_gravity="center"/>
 
+    <!--歌曲信息-->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -43,5 +45,12 @@
             android:maxLines="1" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/item_selector_marker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#6a000000"
+        android:src="@drawable/ic_action_marker"/>
 
 </FrameLayout>

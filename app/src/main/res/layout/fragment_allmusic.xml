@@ -13,31 +13,17 @@
         android:layout_height="match_parent"
         />
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/FloatingActionMenu"
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/floatMenu_createList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_gravity="bottom|end"
-        app:menu_fab_size="normal"
-        app:menu_showShadow="true"
-        app:menu_shadowColor="#66000000"
-        app:menu_shadowRadius="4dp"
-        app:menu_labels_textColor="#fff"
-        >
-
-        <com.github.clans.fab.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_favorite"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/card_backgroundColor_Dark"
-            app:fab_label="@string/title_addFav"
-            />
-
-    </com.github.clans.fab.FloatingActionMenu>
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:src="@drawable/ic_action_favorite"
+        app:fab_colorNormal="@color/colorAccent"
+        app:fab_colorPressed="@color/card_backgroundColor_Dark"
+        android:layout_gravity="end|bottom"
+        />
 
     <LinearLayout
         android:clickable="true"
