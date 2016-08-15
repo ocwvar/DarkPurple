@@ -217,6 +217,18 @@ public class PlaylistUnits {
         return playlists;
     }
 
+    public PlaylistItem getPlaylistIten(int position){
+        if (playlists != null && position >= 0 && position < playlists.size()){
+            return playlists.get(position);
+        }else {
+            return null;
+        }
+    }
+
+    public int indexOfPlaylistItem(PlaylistItem playlistItem){
+        return playlists.indexOf(playlistItem);
+    }
+
     final class GetPlaylistAudioesThread extends AsyncTask<Integer , Void , ArrayList<SongItem>>{
 
         private PlaylistItem playlistItem;

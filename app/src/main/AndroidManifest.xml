@@ -39,6 +39,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/musicFolder_name"/>
 
+        <activity
+            android:name=".Activities.PlaylistDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
         <service android:name=".Services.AudioService"/>
 
     </application>

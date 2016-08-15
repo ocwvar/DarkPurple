@@ -15,6 +15,10 @@
     <string name="button_dialog_playlist_delete">删除列表</string>
     <string name="button_dialog_playlist_detail">列表详情</string>
 
+    <!--播放列表详情页面文字数据-->
+    <string name="title_detail">列表详情</string>
+    <string name="info">长按项目进行拖动排序 , 滑动项目进行删除</string>
+
     <!--播放列表项目文字信息-->
     <string name="text_playlist_name">播放列表名称</string>
     <string name="text_playlist_count">包含音频数量</string>

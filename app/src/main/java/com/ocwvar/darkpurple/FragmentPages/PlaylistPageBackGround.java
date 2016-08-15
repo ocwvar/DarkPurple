@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
+import com.ocwvar.darkpurple.Activities.PlaylistDetailActivity;
 import com.ocwvar.darkpurple.Adapters.PlaylistItemAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
@@ -172,6 +173,40 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 moreDialog.dismiss();
                 break;
             case R.id.fb_detail:
+                if (selectedPlaylistItem.getPlaylist() == null){
+                    //如果选择的播放列表内容为空 , 则去获取 , 否则就开始转跳
+                    PlaylistUnits.getInstance().loadPlaylistAudioesData(new PlaylistUnits.PlaylistLoadingCallbacks() {
+                        @Override
+                        public void onPreLoad() {
+                            if (loadingDialog != null){
+                                loadingDialog.show();
+                            }
+                        }
+
+                        @Override
+                        public void onLoadCompleted(ArrayList<SongItem> data) {
+                            //获取数据成功的时候就进行转跳
+                            if (loadingDialog != null){
+                                loadingDialog.dismiss();
+                            }
+                            Intent intent  = new Intent(getActivity() , PlaylistDetailActivity.class);
+                            intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onLoadFailed() {
+                            if (loadingDialog != null){
+                                loadingDialog.dismiss();
+                                Snackbar.make(fragmentView,R.string.text_playlist_loadFailed,Snackbar.LENGTH_SHORT).show();
+                            }
+                        }
+                    } , selectedPlaylistItem);
+                }else {
+                    Intent intent  = new Intent(getActivity() , PlaylistDetailActivity.class);
+                    intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                    startActivity(intent);
+                }
                 moreDialog.dismiss();
                 break;
         }
