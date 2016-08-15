@@ -316,7 +316,10 @@ public class AudioCore {
                 BASS.BASS_ChannelStop(playingChannel);
             }
             final boolean result = BASS.BASS_StreamFree(playingChannel);
+            playingIndex = 0;
+            songList = null;
             playingChannel = 0;
+            applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             return result;
         }else {
             return false;

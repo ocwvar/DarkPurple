@@ -10,6 +10,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -141,6 +142,29 @@ public class PlaylistUnits {
         }).start();
 
         return true;
+    }
+
+    /**
+     * 移除播放列表
+     * @param playlistName  播放列表名称
+     */
+    @SuppressLint("CommitPrefEdits")
+    public void removePlaylist(@NonNull String playlistName){
+        SharedPreferences sharedPreferences = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName , 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        //获取播放列表名称合集 , 移除请求的关键字
+        Set<String> names = sharedPreferences.getStringSet("names",new LinkedHashSet<String>());
+        if (names.contains(playlistName)){
+            names.remove(playlistName);
+        }
+        //移除请求的关键字下的基础信息
+        editor.remove(playlistName);
+        editor.putStringSet("names",names);
+        //异步执行
+        editor.commit();
+        //移除播放列表Json数据文件
+        new File(AppConfigs.JsonFilePath+playlistName+".pl").delete();
     }
 
     /**

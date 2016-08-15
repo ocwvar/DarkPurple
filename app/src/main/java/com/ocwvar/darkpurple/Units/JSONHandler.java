@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class JSONHandler {
 
     //数据储存位置
-    private static String folderPath = AppConfigs.JsonFilePath+"/Playlist/";
+    private static String folderPath = AppConfigs.JsonFilePath+"Playlist/";
 
     /**
      *  以Json方式储存播放列表数据

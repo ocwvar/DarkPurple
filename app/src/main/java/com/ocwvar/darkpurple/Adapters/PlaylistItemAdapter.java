@@ -46,6 +46,13 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
         this.callback = callback;
     }
 
+    public void removePlaylist(int position){
+        if (playlistItems != null && position >= 0 && position< playlistItems.size()){
+            PlaylistUnits.getInstance().removePlaylist(playlistItems.remove(position).getName());
+            notifyItemRemoved(position);
+        }
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new PlaylistItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_playlist,parent,false));
@@ -64,6 +71,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
 
         Picasso.with(AppConfigs.ApplicationContext)
                 .load(CoverImage2File.getInstance().getCacheFile(playlistItem.getFirstAudioPath()))
+                .error(R.drawable.ic_cd)
                 .into(itemViewHolder.cover);
 
     }

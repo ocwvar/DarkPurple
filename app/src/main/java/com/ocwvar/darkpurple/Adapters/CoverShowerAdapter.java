@@ -65,31 +65,10 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         if (songItem.isHaveCover()){
             //如果先前缓存有图像 , 则开始读取
-            /*OCImageLoader.loader().loadImage(
-                    songItem.getPath(), null, cover, new OnImageLoad() {
-
-                @Override
-                public void onLoadCompleted(Bitmap image, String tag) {}
-
-                @Override
-                public void onLoadFailed() {
-                    cover.setImageDrawable(defaultCover);
-                }
-
-            }, new HandleOnLoaded() {
-
-                @Override
-                public Bitmap reduce(Bitmap bitmap, String tag) {
-                    Matrix matrix = new Matrix();
-                    float scaleTimes = imageWidth / (float)bitmap.getWidth();
-                    matrix.postScale( scaleTimes , scaleTimes );
-                    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                }
-
-            });*/
             Picasso.with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                     .resize(imageWidth,imageWidth)
+                    .error(R.drawable.ic_cd)
                     .into(cover);
         }else {
 

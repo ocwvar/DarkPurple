@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 播放列表页面的工作页面
  */
-public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdapter.OnButtonClickCallback, PlaylistUnits.PlaylistChangedCallbacks{
+public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdapter.OnButtonClickCallback, PlaylistUnits.PlaylistChangedCallbacks, View.OnClickListener {
 
     final public static String TAG = "PlaylistPageBackGround";
 
@@ -42,6 +42,9 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     PlaylistItemAdapter adapter;
     ProgressDialog loadingDialog;
     AlertDialog moreDialog;
+
+    PlaylistItem selectedPlaylistItem = null;
+    int selectedPosition = -1;
 
     @Nullable
     @Override
@@ -76,6 +79,8 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
 
             AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext() , R.style.FullScreen_TransparentBG);
             View dialogView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_playlist_more,null);
+            (dialogView.findViewById(R.id.fb_delete)).setOnClickListener(this);
+            (dialogView.findViewById(R.id.fb_detail)).setOnClickListener(this);
             builder.setView(dialogView);
             moreDialog = builder.create();
         }
@@ -101,6 +106,8 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             adapter.setCallback(null);
             adapter = null;
         }
+        selectedPlaylistItem = null;
+        selectedPosition = -1;
     }
 
     //点击了播放列表右上角的播放按钮
@@ -144,6 +151,8 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     @Override
     public void onMoreButtonClick(PlaylistItem playlistItem , int position) {
         if (moreDialog != null){
+            selectedPlaylistItem = playlistItem;
+            selectedPosition = position;
             moreDialog.show();
         }
     }
@@ -152,6 +161,19 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     public void onPlaylistDataChanged() {
         if (adapter != null){
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.fb_delete:
+                adapter.removePlaylist(selectedPosition);
+                moreDialog.dismiss();
+                break;
+            case R.id.fb_detail:
+                moreDialog.dismiss();
+                break;
         }
     }
 

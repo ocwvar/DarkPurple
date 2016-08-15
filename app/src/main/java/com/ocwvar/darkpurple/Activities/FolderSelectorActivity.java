@@ -30,6 +30,9 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
     RecyclerView recyclerView;
     EditText editText;
 
+    public static final int DATA_CHANGED = 1;
+    public static final int DATA_UNCHANGED = 0;
+
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,8 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
         recyclerView = (RecyclerView)findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(FolderSelectorActivity.this,LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
+
+        setResult(DATA_UNCHANGED);
     }
 
     @Override
@@ -101,6 +106,7 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
     public void onRemovedPath() {
         AppConfigs.updatePathSet(adapter.getPaths());
         Snackbar.make(findViewById(android.R.id.content),R.string.info_removedPath,Snackbar.LENGTH_LONG).show();
+        setResult(DATA_CHANGED);
     }
 
     /**
@@ -110,6 +116,7 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
     public void onAddedPath() {
         AppConfigs.updatePathSet(adapter.getPaths());
         Snackbar.make(findViewById(android.R.id.content),R.string.info_addedPath,Snackbar.LENGTH_LONG).show();
+        setResult(DATA_CHANGED);
     }
 
     /**

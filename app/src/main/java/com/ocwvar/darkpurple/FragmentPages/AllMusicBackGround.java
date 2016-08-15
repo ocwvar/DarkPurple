@@ -262,7 +262,17 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     @Override
     public void onOptionClick() {
-        startActivity(new Intent(getActivity() , FolderSelectorActivity.class));
+        startActivityForResult(new Intent(getActivity() , FolderSelectorActivity.class),9);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 9 && resultCode == FolderSelectorActivity.DATA_CHANGED){
+            //当用户更改了选歌目录 , 我们就需要马上更新目录下的歌曲 , 同时停止当前的播放
+            ServiceHolder.getInstance().getService().release();
+            refreshData();
+        }
     }
 
     @Override

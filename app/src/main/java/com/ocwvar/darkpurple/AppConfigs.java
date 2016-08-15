@@ -29,7 +29,7 @@ public class AppConfigs {
     public static final  String ImageCacheFolder = Environment.getExternalStorageDirectory().getPath()+"/DarkPurple/ImageCache/";
 
     //Json数据储存位置
-    public static String JsonFilePath = Environment.getExternalStorageDirectory().getPath()+"/DarkPurple/JSONData";
+    public static String JsonFilePath = Environment.getExternalStorageDirectory().getPath()+"/DarkPurple/JSONData/";
 
     //应用是否为第一次启动
     public static boolean IsFirstBoot = true;

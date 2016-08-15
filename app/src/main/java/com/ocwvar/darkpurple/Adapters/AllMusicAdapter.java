@@ -135,6 +135,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                    .error(R.drawable.ic_cd)
                     .into(viewHolder.cover);
         }else {
             if (defaultCover == null){
