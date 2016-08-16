@@ -52,7 +52,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter{
 
     public void removePlaylist(int position){
         if (playlistItems != null && position >= 0 && position< playlistItems.size()){
-            PlaylistUnits.getInstance().removePlaylist(playlistItems.remove(position).getName());
+            PlaylistUnits.getInstance().removePlaylist(playlistItems.remove(position));
             notifyItemRemoved(position);
         }
     }

@@ -150,25 +150,30 @@ public class PlaylistUnits {
 
     /**
      * 移除播放列表
-     * @param playlistName  播放列表名称
+     * @param playlistItem  播放列表对象
      */
     @SuppressLint("CommitPrefEdits")
-    public void removePlaylist(@NonNull String playlistName){
+    public void removePlaylist(@NonNull PlaylistItem playlistItem){
         SharedPreferences sharedPreferences = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName , 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //移除列表内的数据对象
+        if (playlists.contains(playlistItem)){
+            playlists.remove(playlistItem);
+        }
+
         //获取播放列表名称合集 , 移除请求的关键字
         Set<String> names = sharedPreferences.getStringSet("names",new LinkedHashSet<String>());
-        if (names.contains(playlistName)){
-            names.remove(playlistName);
+        if (names.contains(playlistItem.getName())){
+            names.remove(playlistItem.getName());
         }
         //移除请求的关键字下的基础信息
-        editor.remove(playlistName);
+        editor.remove(playlistItem.getName());
         editor.putStringSet("names",names);
         //异步执行
         editor.commit();
         //移除播放列表Json数据文件
-        new File(AppConfigs.JsonFilePath+playlistName+".pl").delete();
+        new File(AppConfigs.JsonFilePath+playlistItem.getName()+".pl").delete();
     }
 
     /**

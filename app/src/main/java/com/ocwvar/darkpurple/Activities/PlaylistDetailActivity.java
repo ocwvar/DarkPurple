@@ -97,9 +97,24 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
         return true;
     }
 
+    /**
+     * 点击了播放列表中的播放按钮
+     *
+     * PS: 当前界面 finish() 之后 , 会返回上一个界面 , 如果页面结束的时候 result 为 LIST_CHANGED , 则会触发保存
+     * 如果上一个界面被回收了 , 则不会被保存. 所以应该在转跳到播放界面 结束当前界面 之前进行保存操作. 并
+     * 设置 result 为 LIST_UNCHANGED
+     *
+     * @param position  点击播放的音频位置
+     */
     @Override
     public void onPlayButtonClick(int position) {
+        //保存数据
+        PlaylistUnits.getInstance().savePlaylist(selectPlaylistItem.getName(),selectPlaylistItem.getPlaylist());
+        //设置结果
+        setResult(LIST_UNCHANGED);
+        //播放音频
         ServiceHolder.getInstance().getService().play(this.selectPlaylistItem.getPlaylist(),position);
+        //转跳到播放界面
         startActivity(new Intent(PlaylistDetailActivity.this,PlayingActivity.class));
         finish();
     }

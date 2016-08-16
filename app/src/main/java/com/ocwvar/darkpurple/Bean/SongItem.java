@@ -183,13 +183,12 @@ public class SongItem {
 
         SongItem songItem = (SongItem) o;
 
-        return title.equals(songItem.title);
+        return path.equals(songItem.path);
 
     }
 
     @Override
     public int hashCode() {
-        return title.hashCode();
+        return path.hashCode();
     }
-
 }

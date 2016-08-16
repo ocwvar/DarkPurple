@@ -17,7 +17,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -26,6 +30,7 @@ import com.ocwvar.darkpurple.Activities.FolderSelectorActivity;
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.Adapters.AllMusicAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
+import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
 import com.ocwvar.darkpurple.R;
@@ -34,6 +39,7 @@ import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
@@ -55,8 +61,13 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     AllMusicAdapter allMusicAdapter;
     AlphaInAnimationAdapter animationAdapter;
     FloatingActionButton floatingActionButton;
-    AlertDialog alertDialog;
+    WeakReference<AlertDialog> moreDialog;
+    SelectPlaylistDialogHolder addToPLDialogHolder;
+    AlertDialog newPlaylistDialog;
     EditText getPlaylistTitle;
+
+    SongItem selectedSongitem;
+    int selectedPosition = -1;
 
     public AllMusicBackGround() {
         setRetainInstance(true);
@@ -107,7 +118,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * 显示新建播放列表对话框
      */
     private void showAlertDialog(){
-        if (alertDialog == null){
+        if (newPlaylistDialog == null){
             //创建输入框对象
             getPlaylistTitle = new EditText(fragmentView.getContext());
             getPlaylistTitle.setMaxLines(1);
@@ -151,9 +162,41 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     dialogInterface.dismiss();
                 }
             });
-            alertDialog = builder.create();
+            newPlaylistDialog = builder.create();
         }
-        alertDialog.show();
+        newPlaylistDialog.show();
+    }
+
+    /**
+     * 显示音频的更多选项
+     */
+    private void showMoreDialog(){
+        if (moreDialog == null || moreDialog.get() == null){
+            View itemView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_allmusic_more,null);
+            if (itemView != null){
+                //删除按钮
+                (itemView.findViewById(R.id.fb_delete)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        moreDialog.get().dismiss();
+                        if (selectedPosition != -1){
+                            allMusicAdapter.removeItem(selectedPosition);
+                            allMusicAdapter.notifyItemRemoved(selectedPosition+1);
+                            animationAdapter.notifyItemRemoved(selectedPosition+1);
+                        }
+                    }
+                });
+                //添加按钮
+                (itemView.findViewById(R.id.fb_add)).setOnClickListener(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext(),R.style.FullScreen_TransparentBG);
+                builder.setView(itemView);
+                moreDialog = new WeakReference<>(builder.create());
+            }
+        }
+
+        if (moreDialog != null && moreDialog.get() != null){
+            moreDialog.get().show();
+        }
     }
 
     /**
@@ -211,7 +254,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             fragmentView = null;
             floatingActionButton = null;
             getPlaylistTitle = null;
-            alertDialog = null;
+            newPlaylistDialog = null;
             MediaScanner.getInstance().setCallback(null);
         }
 
@@ -241,6 +284,11 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         return false;
     }
 
+    /**
+     * 列表歌曲点击回调
+     * @param songList  所属歌曲列表
+     * @param position  在歌曲列表中的位置
+     */
     @Override
     public void onListClick(ArrayList<SongItem> songList, int position) {
         if (ServiceHolder.getInstance().getService() != null){
@@ -260,6 +308,21 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         }
     }
 
+    /**
+     * 列表歌曲长按回调
+     * @param songItem  歌曲信息对象
+     * @param position  歌曲信息在列表中的位置
+     */
+    @Override
+    public void onListItemLongClick(SongItem songItem , int position) {
+        selectedSongitem = songItem;
+        selectedPosition = position;
+        showMoreDialog();
+    }
+
+    /**
+     * 列表选项项目点击回调
+     */
     @Override
     public void onOptionClick() {
         startActivityForResult(new Intent(getActivity() , FolderSelectorActivity.class),9);
@@ -297,6 +360,13 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.fb_add:
+                moreDialog.get().dismiss();
+                if (addToPLDialogHolder == null){
+                    addToPLDialogHolder = new SelectPlaylistDialogHolder();
+                }
+                addToPLDialogHolder.showDialog();
+                break;
             case R.id.floatMenu_createList:
                 if (allMusicAdapter.isMuiltSelecting()){
                     //如果已经是选择模式 , 则关闭并且开始记录数据
@@ -315,6 +385,64 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 }
                 break;
         }
+    }
+
+    /**
+     * 播放列表选择对话框ViewHolder
+     */
+    class SelectPlaylistDialogHolder implements AdapterView.OnItemClickListener {
+
+        View itemView;
+        ListView listView;
+        ArrayAdapter<String> stringArrayAdapter;
+        WeakReference<AlertDialog> addToDialog;
+
+        private void createItemView(){
+            if (this.itemView == null){
+                this.itemView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_addto_playlist,null);
+                this.listView =(ListView) itemView.findViewById(R.id.listview);
+                this.stringArrayAdapter = new ArrayAdapter<>(itemView.getContext() , R.layout.simple_textview);
+                this.listView.setAdapter(stringArrayAdapter);
+                this.listView.setOnItemClickListener(this);
+            }
+        }
+
+        private void refreshPlaylistSet(){
+            if (stringArrayAdapter != null){
+                stringArrayAdapter.clear();
+                ArrayList<PlaylistItem> playlistItems = PlaylistUnits.getInstance().getPlaylists();
+                for (PlaylistItem item : playlistItems) {
+                    stringArrayAdapter.add(item.getName());
+                }
+                stringArrayAdapter.notifyDataSetChanged();
+            }
+        }
+
+        /**
+         * 显示添加对话框
+         */
+        private void showDialog(){
+            if (addToDialog == null || addToDialog.get() == null){
+                if (itemView == null){
+                    createItemView();
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext() , R.style.FullScreen_TransparentBG);
+                builder.setView(this.itemView);
+                addToDialog = new WeakReference<>(builder.create());
+            }
+
+            if (addToDialog.get() != null){
+                refreshPlaylistSet();
+                addToDialog.get().show();
+            }
+
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+        }
+
     }
 
 }

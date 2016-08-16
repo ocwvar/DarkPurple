@@ -152,7 +152,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         return arrayList.size() + 1;
     }
 
-    class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         SquareWidthImageView cover;
         ImageView marker;
@@ -167,6 +167,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             artist = (TextView)itemView.findViewById(R.id.item_artist);
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -189,6 +190,14 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                     onClick.onListClick( arrayList , getAdapterPosition()-1 );
                 }
             }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (onClick != null && !isMuiltSelecting){
+                onClick.onListItemLongClick(arrayList.get(getAdapterPosition()) , getAdapterPosition()-1);
+            }
+            return false;
         }
 
     }
@@ -215,6 +224,8 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     public interface OnClick{
 
         void onListClick(ArrayList<SongItem> songList , int position);
+
+        void onListItemLongClick(SongItem songItem , int position);
 
         void onOptionClick();
     }

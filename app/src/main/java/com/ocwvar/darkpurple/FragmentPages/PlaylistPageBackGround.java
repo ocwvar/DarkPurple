@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -40,7 +42,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     RecyclerView recyclerView;
     PlaylistItemAdapter adapter;
     ProgressDialog loadingDialog;
-    AlertDialog moreDialog;
+    WeakReference<AlertDialog> moreDialog;
 
     PlaylistItem selectedPlaylistItem = null;
     int selectedPosition = -1;
@@ -73,13 +75,6 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             loadingDialog = new ProgressDialog(fragmentView.getContext() , R.style.AlertDialog_AppCompat_ProgressDialog);
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext() , R.style.FullScreen_TransparentBG);
-            View dialogView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_playlist_more,null);
-            (dialogView.findViewById(R.id.fb_delete)).setOnClickListener(this);
-            (dialogView.findViewById(R.id.fb_detail)).setOnClickListener(this);
-            builder.setView(dialogView);
-            moreDialog = builder.create();
         }
     }
 
@@ -105,6 +100,26 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         }
         selectedPlaylistItem = null;
         selectedPosition = -1;
+    }
+
+    /**
+     * 显示更多选项对话框
+     */
+    @SuppressLint("InflateParams")
+    protected void showMoreDialog(){
+        if (moreDialog == null || moreDialog.get() == null){
+            View dialogView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_playlist_more,null);
+            (dialogView.findViewById(R.id.fb_delete)).setOnClickListener(this);
+            (dialogView.findViewById(R.id.fb_detail)).setOnClickListener(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext(),R.style.FullScreen_TransparentBG);
+            builder.setView(dialogView);
+            moreDialog = new WeakReference<>(builder.create());
+        }
+
+        if (moreDialog != null && moreDialog.get() != null){
+            moreDialog.get().show();
+        }
+
     }
 
     //点击了播放列表右上角的播放按钮
@@ -147,11 +162,9 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     //点击了播放列表的 更多 按钮
     @Override
     public void onMoreButtonClick(PlaylistItem playlistItem , int position) {
-        if (moreDialog != null){
-            selectedPlaylistItem = playlistItem;
-            selectedPosition = position;
-            moreDialog.show();
-        }
+        selectedPlaylistItem = playlistItem;
+        selectedPosition = position;
+        showMoreDialog();
     }
 
     @Override
@@ -167,7 +180,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         switch (view.getId()){
             case R.id.fb_delete:
                 adapter.removePlaylist(selectedPosition);
-                moreDialog.dismiss();
+                moreDialog.get().dismiss();
                 break;
             case R.id.fb_detail:
                 if (selectedPlaylistItem.getPlaylist() == null){
@@ -204,7 +217,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                     intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
                     startActivityForResult(intent , 9);
                 }
-                moreDialog.dismiss();
+                moreDialog.get().dismiss();
                 break;
         }
     }
@@ -217,12 +230,19 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             int position = data.getIntExtra("position" , -1);
             if (position != -1){
                 PlaylistItem playlistItem = PlaylistUnits.getInstance().getPlaylistIten(position);
-                PlaylistUnits.getInstance().savePlaylist(playlistItem.getName() , playlistItem.getPlaylist());
+                if (playlistItem.getPlaylist().size() == 0){
+                    //如果用户删除了所有的歌曲 , 则移除整个播放列表
+                    PlaylistUnits.getInstance().removePlaylist(playlistItem);
+                    Snackbar.make(fragmentView , R.string.text_playlist_clear , Snackbar.LENGTH_SHORT).show();
+                }else {
+                    PlaylistUnits.getInstance().savePlaylist(playlistItem.getName() , playlistItem.getPlaylist());
+                    Snackbar.make(fragmentView , R.string.text_playlist_saved , Snackbar.LENGTH_SHORT).show();
+                }
                 adapter.notifyDataSetChanged();
-                Snackbar.make(fragmentView , R.string.text_playlist_saved , Snackbar.LENGTH_SHORT).show();
                 return;
             }
             Snackbar.make(fragmentView , R.string.text_playlist_saveFail , Snackbar.LENGTH_SHORT).show();
         }
     }
+
 }

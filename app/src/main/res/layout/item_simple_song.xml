@@ -14,6 +14,8 @@
         android:layout_gravity="left|top"
         android:textSize="15sp"
         android:textColor="#fff"
+        android:maxLines="1"
+        android:maxLength="15"
         android:paddingLeft="5dp"
         android:paddingStart="5dp"
         />

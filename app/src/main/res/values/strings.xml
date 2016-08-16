@@ -11,13 +11,16 @@
     <string name="service_ok">服务连接成功</string>
     <string name="simple_cancel">取消</string>
     <string name="simple_done">确定</string>
+    <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
+    <string name="button_dialog_allmusic_delete">删除音频</string>
+    <string name="button_dialog_allmusic_add">添加到列表</string>
     <string name="title_dialog_playlist_more">对选择的播放列表进行操作</string>
     <string name="button_dialog_playlist_delete">删除列表</string>
     <string name="button_dialog_playlist_detail">列表详情</string>
 
     <!--播放列表详情页面文字数据-->
     <string name="title_detail">列表详情</string>
-    <string name="info">长按项目进行拖动排序 , 滑动项目进行删除</string>
+    <string name="info">长按项目进行拖动排序 , 滑动项目进行删除. 如果删除所有歌曲将会自动移除此播放列表</string>
 
     <!--播放列表项目文字信息-->
     <string name="text_playlist_name">播放列表名称</string>
@@ -26,6 +29,7 @@
     <string name="text_playlist_loading">正在读取播放列表数据中 , 请稍候 . . .</string>
     <string name="text_playlist_loadFailed">播放列表数据读取失败</string>
     <string name="text_playlist_saved">播放列表数据保存成功</string>
+    <string name="text_playlist_clear">播放列表无数据 , 已删除空列表</string>
     <string name="text_playlist_saveFail">播放列表数据未做更改</string>
 
     <!--ViewPager滚动标签栏-->
@@ -54,6 +58,7 @@
     <string name="title_sorttype">设置歌曲排序类型</string>
     <string name="title_addFav">创建播放列表</string>
     <string name="title_newplaylist_dialog">请输入新建播放列表的名称</string>
+    <string name="title_addPL_dialog">选择需要添加到的播放列表</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_addDialog">请在此输入歌曲文件夹路径</string>
