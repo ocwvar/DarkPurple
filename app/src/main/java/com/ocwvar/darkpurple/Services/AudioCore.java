@@ -122,9 +122,8 @@ public class AudioCore {
                 case BASS.BASS_ACTIVE_PLAYING:
                     return AudioStatus.Playing;
                 case BASS.BASS_ACTIVE_PAUSED:
-                    return AudioStatus.Paused;
                 case BASS.BASS_ACTIVE_STOPPED:
-                    return AudioStatus.Stopped;
+                    return AudioStatus.Paused;
                 default:
                     return AudioStatus.Error;
             }
@@ -157,6 +156,7 @@ public class AudioCore {
             if (playAudio(songList.get(playIndex) , false)){
                 //如果播放成功 , 则记录当前数据和列表 , 同时发送开始播放的广播
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 this.playingIndex = playIndex;
                 if (this.songList == null || !this.songList.equals(songList)){
                     Logger.warnning(TAG,"播放列表已更新!");
@@ -209,7 +209,12 @@ public class AudioCore {
     protected boolean stopAudio(){
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED){
             //如果当前加载了频道数据 , 同时当前状态不是停止播放状态
-            return BASS.BASS_ChannelStop(playingChannel);
+            boolean result = BASS.BASS_ChannelStop(playingChannel);
+            if (result){
+                applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PAUSED));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
+            }
+            return result;
         }else {
             return false;
         }
@@ -225,6 +230,7 @@ public class AudioCore {
             boolean result = BASS.BASS_ChannelPause(playingChannel);
             if (result){
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PAUSED));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
         }else {
@@ -244,6 +250,7 @@ public class AudioCore {
             result = BASS.BASS_ChannelPlay(playingChannel , false);
             if (result){
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_RESUMED));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
         }else if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_STOPPED){
@@ -251,6 +258,7 @@ public class AudioCore {
             result = BASS.BASS_ChannelPlay(playingChannel, true);
             if (result){
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_RESUMED));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
         }else {

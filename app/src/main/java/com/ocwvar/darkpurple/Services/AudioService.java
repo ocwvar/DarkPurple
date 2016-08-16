@@ -4,11 +4,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothHeadset;
+import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -38,7 +42,9 @@ public class AudioService extends Service {
     //音频处理类
     private  AudioCore core;
     //状态栏控制回调
-    private NotificationControl control;
+    private NotificationControl notificationControl;
+    //耳机断开监听回调
+    HeadsetReceiver headsetReceiver;
     //Notification  的管理器 , 用于更新界面数据
     private NotificationManager nm;
     //播放的状态提示
@@ -77,14 +83,18 @@ public class AudioService extends Service {
     /**
      * 当音频服务创建的时候
      *
-     * 创建音频引擎对象 和 状态栏广播接收器对象
+     * 创建音频引擎对象 和 状态栏广播接收器对象 注册耳机拔出监听
      */
     @Override
     public void onCreate() {
         super.onCreate();
         Logger.warnning(TAG,"onCreate");
         core = new AudioCore(getApplicationContext());
-        control = new NotificationControl();
+        notificationControl = new NotificationControl();
+        headsetReceiver = new HeadsetReceiver();
+
+        registerReceiver(headsetReceiver,headsetReceiver.filter);
+        headsetReceiver.registed =true;
     }
 
     /**
@@ -117,9 +127,13 @@ public class AudioService extends Service {
             core.releaseAudio();
         }
         hideNotification();
-        if (control.registed){
-            control.registed = false;
-            unregisterReceiver(control);
+        if (notificationControl != null && notificationControl.registed){
+            notificationControl.registed = false;
+            unregisterReceiver(notificationControl);
+        }
+        if (headsetReceiver != null && headsetReceiver.registed){
+            headsetReceiver.registed = false;
+            unregisterReceiver(headsetReceiver);
         }
     }
 
@@ -176,6 +190,7 @@ public class AudioService extends Service {
                     break;
                 case NOTIFICATION_REFRESH:
                     updateNotification();
+                    result = false; //不重复更新状态栏布局
                     break;
             }
 
@@ -183,6 +198,44 @@ public class AudioService extends Service {
                 updateNotification();
             }
 
+        }
+
+    }
+
+    /**
+     * 耳机拔出广播接收器 蓝牙耳机 & 有线耳机
+     */
+    private class HeadsetReceiver extends BroadcastReceiver{
+
+        IntentFilter filter;
+        BluetoothAdapter bluetoothAdapter;
+
+        boolean registed = false;
+
+        public HeadsetReceiver() {
+            filter = new IntentFilter();
+            filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+            filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()){
+                case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
+                    if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
+                        //蓝牙耳机断开连接 同时当前音乐正在播放
+                        core.stopAudio();
+                    }
+                    break;
+                case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
+                    if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
+                        //有线耳机断开连接 同时当前音乐正在播放
+                        core.stopAudio();
+                    }
+                    break;
+            }
         }
 
     }
@@ -204,6 +257,7 @@ public class AudioService extends Service {
      */
     private void updateNotification(){
         SongItem songItem = core.getPlayingSong();
+        System.out.println("updateNotification");
         if (smallRemoteView != null && remoteView != null && songItem != null){
             Logger.warnning(TAG,"已更新状态栏布局. 歌曲:"+songItem.getTitle());
             //如果有歌曲信息
@@ -218,7 +272,9 @@ public class AudioService extends Service {
             //更新封面
             if (songItem.getAlbumCoverUri() != null){
                 //如果有封面图像Uri路径则设置图像
-                remoteView.setImageViewUri(R.id.notification_cover,songItem.getAlbumCoverUri());
+                Picasso.with(AppConfigs.ApplicationContext)
+                        .load(songItem.getAlbumCoverUri())
+                        .into(remoteView , R.id.notification_cover , notificationID ,notification);
             }else if (songItem.getPath() != null){
                 //如果有歌曲路径 , 则尝试获取预先存好的缓存 , 如果成功则设置图像 , 否则设置默认图像
                 if (CoverImage2File.getInstance().isAlreadyCached(songItem.getPath())){
@@ -337,8 +393,8 @@ public class AudioService extends Service {
             //封面点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_cover,pendingIntent);
             //注册监听的广播接收器
-            control.registed = true;
-            registerReceiver(control,control.filter);
+            notificationControl.registed = true;
+            registerReceiver(notificationControl,notificationControl.filter);
             return true;
         }else {
             return false;
