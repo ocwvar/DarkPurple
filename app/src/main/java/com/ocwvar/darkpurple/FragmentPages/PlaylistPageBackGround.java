@@ -4,12 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,14 +64,12 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         fragmentView = getTargetFragment().getView();
         if (fragmentView != null){
             adapter = new PlaylistItemAdapter();
+            adapter.setOnButtonClickCallback(this);
             recyclerView = (RecyclerView)fragmentView.findViewById(R.id.recycleView);
             recyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext(),LinearLayoutManager.VERTICAL,false));
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
-
-            adapter.setCallback(this);
             PlaylistUnits.getInstance().setPlaylistChangedCallbacks(this);
-
             loadingDialog = new ProgressDialog(fragmentView.getContext() , R.style.AlertDialog_AppCompat_ProgressDialog);
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
@@ -104,7 +100,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         fragmentView = null;
         recyclerView = null;
         if (adapter != null){
-            adapter.setCallback(null);
+            adapter.setOnButtonClickCallback(null);
             adapter = null;
         }
         selectedPlaylistItem = null;
@@ -165,6 +161,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         }
     }
 
+    //点击对话框内 删除按钮 和 详情按钮 的回调处
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -191,7 +188,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                             }
                             Intent intent  = new Intent(getActivity() , PlaylistDetailActivity.class);
                             intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                            startActivity(intent);
+                            startActivityForResult(intent , 9);
                         }
 
                         @Override
@@ -205,11 +202,27 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 }else {
                     Intent intent  = new Intent(getActivity() , PlaylistDetailActivity.class);
                     intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                    startActivity(intent);
+                    startActivityForResult(intent , 9);
                 }
                 moreDialog.dismiss();
                 break;
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 9 && resultCode == PlaylistDetailActivity.LIST_CHANGED && data != null){
+            //如果列表被进行了操作 , 在退出界面的时候就进行保存
+            int position = data.getIntExtra("position" , -1);
+            if (position != -1){
+                PlaylistItem playlistItem = PlaylistUnits.getInstance().getPlaylistIten(position);
+                PlaylistUnits.getInstance().savePlaylist(playlistItem.getName() , playlistItem.getPlaylist());
+                adapter.notifyDataSetChanged();
+                Snackbar.make(fragmentView , R.string.text_playlist_saved , Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            Snackbar.make(fragmentView , R.string.text_playlist_saveFail , Snackbar.LENGTH_SHORT).show();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Adapters;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +9,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Bean.SongItem;
+import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by 区成伟
@@ -19,7 +22,7 @@ import java.util.ArrayList;
  * Data: 2016/8/16 1:22
  * Project: DarkPurple
  */
-public class PlaylistDetailAdapter extends RecyclerView.Adapter {
+public class PlaylistDetailAdapter extends RecyclerView.Adapter  implements OnDragChangedCallback {
 
     private ArrayList<SongItem> songItems;
     private OnPlayButtonClickCallback clickCallback;
@@ -61,6 +64,18 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter {
         }else {
             return songItems.size();
         }
+    }
+
+    @Override
+    public void onItemPositionChange(RecyclerView.ViewHolder viewHolder , int originalPosition, int targetPosition) {
+        Collections.swap(songItems , originalPosition , targetPosition);
+        notifyItemMoved(originalPosition , targetPosition);
+    }
+
+    @Override
+    public void onItemDelete(int position) {
+        songItems.remove(position);
+        notifyItemRemoved(position);
     }
 
     class SimpleDetailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

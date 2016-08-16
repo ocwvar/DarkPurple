@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.ocwvar.darkpurple.Activities.PlaylistDetailActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
+import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
+import com.ocwvar.darkpurple.FragmentPages.PlaylistPageBackGround;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
@@ -17,6 +20,7 @@ import com.ocwvar.darkpurple.Units.SquareHightImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by 区成伟
@@ -25,7 +29,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 播放列表项目的列表适配器
  */
-public class PlaylistItemAdapter extends RecyclerView.Adapter {
+public class PlaylistItemAdapter extends RecyclerView.Adapter{
 
     ArrayList<PlaylistItem> playlistItems;
     OnButtonClickCallback callback;
@@ -42,7 +46,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
         playlistItems = PlaylistUnits.getInstance().getPlaylists();
     }
 
-    public void setCallback(OnButtonClickCallback callback) {
+    public void setOnButtonClickCallback(OnButtonClickCallback callback) {
         this.callback = callback;
     }
 

@@ -112,6 +112,8 @@ public class PlaylistUnits {
         playlistItem.setColor(playlist.get(0).getPaletteColor());
         playlistItem.setFirstAudioPath(playlist.get(0).getPath());
         playlistItem.setPlaylist(playlist);
+        //移除旧的数据 , 添加新的数据
+        this.playlists.remove(playlistItem);
         this.playlists.add(playlistItem);
 
         //回调更新数据
@@ -124,14 +126,16 @@ public class PlaylistUnits {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         //保存名字索引
         Set<String> keys = sharedPreferences.getStringSet("names",new LinkedHashSet<String>());
-        keys.add(name);
+        if (!keys.contains(name)){
+            keys.add(name);
+        }
         //保存基本数据
         Set<String> values = new LinkedHashSet<>();
         values.add("name_"+playlistItem.getName());    //储存播放列表名字
         values.add("fap_"+playlistItem.getFirstAudioPath());     //储存播放列表第一个对象的路径
         values.add("color_"+Integer.toString(playlistItem.getColor()));      //储存第一个对象的颜色
         values.add("count_"+Integer.toString(playlist.size()));      //储存列表的总体大小
-        editor.putStringSet(name , values).putStringSet("names",keys).commit();    //异步储存
+        editor.remove(name).putStringSet(name , values).putStringSet("names",keys).commit();    //异步操作 : 删除旧的数据 , 添加新的数据
 
         //异步储存到本地文件
         new Thread(new Runnable() {

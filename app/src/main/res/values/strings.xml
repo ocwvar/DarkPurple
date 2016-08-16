@@ -25,6 +25,8 @@
     <string name="text_playlist_countEND">首</string>
     <string name="text_playlist_loading">正在读取播放列表数据中 , 请稍候 . . .</string>
     <string name="text_playlist_loadFailed">播放列表数据读取失败</string>
+    <string name="text_playlist_saved">播放列表数据保存成功</string>
+    <string name="text_playlist_saveFail">播放列表数据未做更改</string>
 
     <!--ViewPager滚动标签栏-->
     <string name="ViewPage_Tab_Playing">正在播放</string>
