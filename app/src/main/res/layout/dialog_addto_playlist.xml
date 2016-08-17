@@ -3,24 +3,16 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_addPL_dialog"
-            android:id="@+id/textView12"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#fff" />
-
-    </LinearLayout>
+        android:text="@string/title_addPL_dialog"
+        android:id="@+id/textView12"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#fff"
+        android:layout_gravity="center"
+        android:padding="10dp" />
 
     <ListView
         android:id="@+id/listview"

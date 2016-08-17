@@ -13,7 +13,6 @@
     <!--封面图像-->
     <com.ocwvar.darkpurple.Units.SquareWidthImageView
         android:id="@+id/item_cover"
-        android:src="@drawable/ic_cd"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
@@ -51,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#6a000000"
-        android:src="@drawable/ic_action_marker"/>
+        android:src="@drawable/ic_action_marker"
+        android:visibility="gone" />
 
 </FrameLayout>

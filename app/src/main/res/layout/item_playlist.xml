@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageButton_more"
-            android:background="#00000000"
+            android:background="@null"
             android:src="@drawable/ic_action_playlist_more"
             android:padding="3dp"
             android:layout_marginRight="10dp"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageButton_play"
-            android:background="#00000000"
+            android:background="@null"
             android:src="@drawable/ic_action_playlist_play"
             android:padding="3dp"
             android:layout_marginRight="10dp"
@@ -46,16 +46,15 @@
             android:layout_height="match_parent"
             android:id="@+id/imageView_cover"
             android:layout_gravity="center_vertical"
-            android:background="#83000000"
-            android:scaleType="fitXY"
-            android:visibility="visible" />
+            android:background="@null"
+            android:scaleType="fitXY" />
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end|center_vertical"
-            android:background="#83000000"
+            android:background="@null"
             android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:visibility="visible">
@@ -64,7 +63,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_playlist_name"
-                android:id="@+id/textView7"
                 android:textSize="10sp"
                 android:textColor="#97ffffff"
                 android:paddingTop="3dp" />
@@ -72,7 +70,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
                 android:id="@+id/textView_title"
                 android:textColor="#fff"
                 android:paddingTop="2dp"
@@ -84,18 +81,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_playlist_count"
-                android:id="@+id/textView8"
                 android:textSize="10sp"
                 android:textColor="#97ffffff" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
                 android:id="@+id/textView_count"
                 android:textColor="#fff"
                 android:paddingTop="2dp"
                 android:paddingBottom="15dp" />
+
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

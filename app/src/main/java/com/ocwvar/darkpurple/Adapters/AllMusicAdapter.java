@@ -53,12 +53,12 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     /**
      * 关闭多选模式
-     * @return  返回已选择的项目
+     * @return  返回已选择的项目列表副本
      */
     public ArrayList<SongItem> stopMuiltMode(){
         isMuiltSelecting = false;
         notifyDataSetChanged();
-        return checkedItems;
+        return new ArrayList<>(checkedItems);
     }
 
     /**

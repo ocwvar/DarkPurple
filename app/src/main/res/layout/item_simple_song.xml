@@ -3,13 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="3dp"
-    android:background="#64000000">
+    android:padding="3dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/textView_title"
         android:layout_gravity="left|top"
         android:textSize="15sp"
@@ -23,7 +21,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/textView_artist"
         android:layout_gravity="left|center_vertical"
         android:textSize="12sp"
@@ -37,7 +34,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageButton_play"
         android:layout_gravity="right|center_vertical"
-        android:background="#00000000"
+        android:background="@null"
         android:src="@drawable/ic_action_playing"
         android:padding="10dp" />
 
