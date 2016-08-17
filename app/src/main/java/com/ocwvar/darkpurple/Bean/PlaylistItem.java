@@ -20,11 +20,14 @@ public class PlaylistItem {
     public PlaylistItem() {
     }
 
-    public PlaylistItem(String[] simpleValues) {
+    public PlaylistItem(String name) {
+        this.name = name;
+    }
+
+    public PlaylistItem(String name , String[] simpleValues) {
+        this.name = name;
         for (String value : simpleValues) {
-            if (value.startsWith("name_")){
-                this.name = value.replaceFirst("name_","");
-            }else if (value.startsWith("fap_")){
+            if (value.startsWith("fap_")){
                 this.firstAudioPath = value.replaceFirst("fap_","");
             }else if (value.startsWith("color_")){
                 this.color = Integer.parseInt(value.replaceFirst("color_",""));

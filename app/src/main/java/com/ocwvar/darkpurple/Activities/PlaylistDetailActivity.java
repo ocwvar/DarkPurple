@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,13 +8,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import com.ocwvar.darkpurple.Adapters.PlaylistDetailAdapter;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
@@ -21,6 +26,8 @@ import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by 区成伟
@@ -34,17 +41,21 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
     Snackbar info = null;
     PlaylistItem selectPlaylistItem = null;
     PlaylistDetailAdapter adapter = null;
+    WeakReference<AlertDialog> renameDialog = new WeakReference<>(null);
+    EditText getNewname;
 
     public static final int LIST_CHANGED = 1;
     public static final int LIST_UNCHANGED = 2;
 
     Intent intent = null;
+    int thisPosition = -1;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         intent = new Intent();
+        intent.putExtra("renamed",false);
 
         setResult(LIST_UNCHANGED , null);
 
@@ -53,8 +64,8 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
             finish();
             return;
         }else {
-            int position = getIntent().getExtras().getInt("position");
-            this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistIten(position);
+            thisPosition = getIntent().getExtras().getInt("position");
+            this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistIten(thisPosition);
             if (this.selectPlaylistItem == null){
                 //如果无法获取到播放列表数据对象 , 结束当前页面
                 finish();
@@ -64,8 +75,6 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
                 finish();
                 return;
             }
-            //创建一个Intent 给予当列表更改时 , 返回上一个界面带回的数据 , 用于在那边进行列表的保存操作
-            intent.putExtra("position" , position);
         }
 
         setContentView(R.layout.activity_playlist_detail);
@@ -88,13 +97,65 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_playlist_rename,menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.menu_action_rename:
+                showRenameDialog();
+                break;
         }
         return true;
+    }
+
+    /**
+     * 显示更改名字对话框
+     */
+    private void showRenameDialog(){
+        if (renameDialog.get() == null){
+            if (getNewname == null){
+                getNewname = new EditText(PlaylistDetailActivity.this);
+                getNewname.setMaxLines(1);
+                getNewname.setBackgroundColor(Color.argb(120,0,0,0));
+                getNewname.setTextSize(15f);
+                getNewname.setTextColor(Color.WHITE);
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(PlaylistDetailActivity.this,R.style.FullScreen_TransparentBG);
+            builder.setTitle(R.string.title_newplaylist_dialog);
+            builder.setView(getNewname);
+            builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if (!TextUtils.isEmpty(getNewname.getText().toString())){
+                        if (getNewname.getText().toString().equals(selectPlaylistItem.getName())){
+                            //输入的名字跟原本的相同
+                            getNewname.setError(getApplicationContext().getString(R.string.title_dialog_error));
+                        }else if (PlaylistUnits.getInstance().isPlaylistExisted(getNewname.getText().toString())){
+                            //输入的名字和其他的播放列表名字相同
+                            getNewname.setError(getApplicationContext().getString(R.string.title_dialog_error2));
+                        }else {
+                            //可以开始更改
+                            PlaylistUnits.getInstance().renamePlaylist(selectPlaylistItem.getName() , getNewname.getText().toString());
+                            getNewname.getText().clear();
+                            setTitle(selectPlaylistItem.getName()+" "+getApplicationContext().getString(R.string.title_detail));
+                            intent.putExtra("renamed",true);
+                            setResult(LIST_CHANGED , intent);
+                            dialogInterface.dismiss();
+                        }
+                    }
+                }
+            });
+            renameDialog = new WeakReference<>(builder.create());
+        }
+        getNewname.setText(selectPlaylistItem.getName());
+        renameDialog.get().show();
     }
 
     /**
@@ -164,6 +225,7 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
                 return false;
             }else {
                 changedCallback.onItemPositionChange( viewHolder , viewHolder.getAdapterPosition() , target.getAdapterPosition() );
+                intent.putExtra("position",thisPosition);
                 setResult(LIST_CHANGED , intent);
                 return true;
             }
@@ -175,6 +237,7 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             changedCallback.onItemDelete( viewHolder.getAdapterPosition() );
+            intent.putExtra("position",thisPosition);
             setResult(LIST_CHANGED , intent);
         }
 

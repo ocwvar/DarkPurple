@@ -195,13 +195,25 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
 
                         @Override
                         public void onLoadCompleted(ArrayList<SongItem> data) {
-                            //获取数据成功的时候就进行转跳
-                            if (loadingDialog != null){
-                                loadingDialog.dismiss();
+                            if (data != null){
+                                //获取数据成功的时候就进行转跳
+                                if (loadingDialog != null){
+                                    loadingDialog.dismiss();
+                                }
+                                Intent intent  = new Intent(getActivity() , PlaylistDetailActivity.class);
+                                intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                                startActivityForResult(intent , 9);
+                            }else {
+                                //如果获取得到的数据为空 , 则说明这个播放列表无效 , 自动进行移除操作
+                                PlaylistUnits.getInstance().removePlaylist(selectedPlaylistItem);
+                                selectedPlaylistItem = null;
+                                selectedPosition = -1;
+                                adapter.notifyDataSetChanged();
+                                Snackbar.make(fragmentView,R.string.error_auto_deletePL,Snackbar.LENGTH_LONG).show();
+                                if (loadingDialog != null){
+                                    loadingDialog.dismiss();
+                                }
                             }
-                            Intent intent  = new Intent(getActivity() , PlaylistDetailActivity.class);
-                            intent.putExtra("position",PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                            startActivityForResult(intent , 9);
                         }
 
                         @Override
@@ -227,6 +239,10 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 9 && resultCode == PlaylistDetailActivity.LIST_CHANGED && data != null){
             //如果列表被进行了操作 , 在退出界面的时候就进行保存
+            final boolean isRenamed = data.getExtras().getBoolean("renamed",false);
+            if (isRenamed){
+                adapter.notifyDataSetChanged();
+            }
             int position = data.getIntExtra("position" , -1);
             if (position != -1){
                 PlaylistItem playlistItem = PlaylistUnits.getInstance().getPlaylistIten(position);
@@ -241,7 +257,9 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 adapter.notifyDataSetChanged();
                 return;
             }
-            Snackbar.make(fragmentView , R.string.text_playlist_saveFail , Snackbar.LENGTH_SHORT).show();
+            if (!isRenamed){
+                Snackbar.make(fragmentView , R.string.text_playlist_saveFail , Snackbar.LENGTH_SHORT).show();
+            }
         }
     }
 

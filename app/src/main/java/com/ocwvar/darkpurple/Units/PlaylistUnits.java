@@ -82,9 +82,9 @@ public class PlaylistUnits {
                 //逐个从SP中获取播放列表数据
                 Logger.warnning(TAG , "正在获取基本数据  "+playlistName);
                 String[] playlistValues = loadStringArray( sp , playlistName );
-                if (playlistValues != null && playlistValues.length == 4){
-                    //如果字符集合有效 , 同时数量为4
-                    this.playlists.add(new PlaylistItem(playlistValues));
+                if (playlistValues != null && playlistValues.length == 3){
+                    //如果字符集合有效 , 同时数量为3
+                    this.playlists.add(new PlaylistItem(playlistName , playlistValues));
                 }
             }
             Logger.warnning(TAG , "基本数据获取完毕.  总计: "+playlists.size());
@@ -125,13 +125,12 @@ public class PlaylistUnits {
         SharedPreferences sharedPreferences = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName , 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         //保存名字索引
-        Set<String> keys = sharedPreferences.getStringSet("names",new LinkedHashSet<String>());
+        final Set<String> keys = sharedPreferences.getStringSet("names",new LinkedHashSet<String>());
         if (!keys.contains(name)){
             keys.add(name);
         }
         //保存基本数据
         Set<String> values = new LinkedHashSet<>();
-        values.add("name_"+playlistItem.getName());    //储存播放列表名字
         values.add("fap_"+playlistItem.getFirstAudioPath());     //储存播放列表第一个对象的路径
         values.add("color_"+Integer.toString(playlistItem.getColor()));      //储存第一个对象的颜色
         values.add("count_"+Integer.toString(playlist.size()));      //储存列表的总体大小
@@ -173,7 +172,82 @@ public class PlaylistUnits {
         //异步执行
         editor.commit();
         //移除播放列表Json数据文件
-        new File(AppConfigs.JsonFilePath+playlistItem.getName()+".pl").delete();
+        new File(JSONHandler.folderPath+playlistItem.getName()+".pl").delete();
+    }
+
+    /**
+     * 更改播放列表名字
+     * @param oldName   旧的名字
+     * @param newName   新的名字
+     * @return  执行结果
+     */
+    @SuppressLint("CommitPrefEdits")
+    public boolean renamePlaylist(@NonNull String oldName , @NonNull final String newName){
+        if (playlists.contains(new PlaylistItem(oldName)) && !playlists.contains(new PlaylistItem(newName))){
+            //如果旧的列表的确存在 同时不存在与新名字相同的列表 , 则可以执行
+            //获取名字集合 , 更改后重新保存到SP中
+            final SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences( playlistSPName , 0 );
+            final Set<String> newKeys = new LinkedHashSet<>();
+            String[] names = loadStringArray(sp , "names" );
+            if (names != null && names.length >= 1){
+                for (String name : names) {
+                    if (name.equals(oldName)){
+                        name = newName;
+                    }
+                    newKeys.add(name);
+                }
+                names = null;
+                sp.edit().putStringSet("names",newKeys).commit();
+            }else {
+                Logger.error(TAG,"当前SP内没有播放列表数据 , 无法更改不存在的数据");
+                return false;
+            }
+
+            //修改旧的基础数据的名称
+            final Set<String> newValues = sp.getStringSet(oldName,null);
+            if (newValues != null){
+                sp.edit().remove(oldName).putStringSet(newName,newValues).commit();
+            }else {
+                Logger.error(TAG,"原始播放列表基本数据丢失 , 修改失败");
+                return false;
+            }
+
+            //获取要改名的对象 , 更改名字
+            final PlaylistItem playlistItem = playlists.get(playlists.indexOf(new PlaylistItem(oldName)));
+            playlistItem.setName(newName);
+
+            //更改本地播放列表音频数据储存文件
+            File plFile = new File(JSONHandler.folderPath+oldName+".pl");
+            if (plFile.exists()){
+                //先删除与新名字相同的残留文件
+                if (new File(JSONHandler.folderPath+newName+".pl").delete()){
+                    Logger.warnning(TAG,"发现残留文件 , 已删除");
+                }
+                //如果文件存在 , 则进行重命名操作
+                boolean result = plFile.renameTo(new File(JSONHandler.folderPath+newName+".pl"));
+                plFile = null;
+                if (result){
+                    Logger.warnning(TAG,"播放列表名称成功修改.  "+oldName+" --> "+newName);
+                    return true;
+                }else {
+                    Logger.error(TAG,"播放列表名称修改失败.  无法重命名本地数据文件.");
+                    return false;
+                }
+            }else {
+                //如果文件不存在 , 则创建新文件
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONHandler.savePlaylist(newName , playlistItem.getPlaylist());
+                    }
+                }).start();
+                Logger.warnning(TAG,"播放列表数据原始文件不存在 , 重新创建数据列表.");
+                return true;
+            }
+        }else {
+            Logger.error(TAG,"播放列表名称修改失败.  没有找到需求改名的数据");
+            return false;
+        }
     }
 
     /**

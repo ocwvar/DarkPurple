@@ -15,11 +15,16 @@
     <string name="button_dialog_allmusic_delete">删除音频</string>
     <string name="button_dialog_allmusic_add">添加到列表</string>
     <string name="title_dialog_playlist_more">对选择的播放列表进行操作</string>
+    <string name="error_auto_deletePL">播放列表数据丢失 , 已自动移除空列表.</string>
     <string name="button_dialog_playlist_delete">删除列表</string>
     <string name="button_dialog_playlist_detail">列表详情</string>
 
     <!--播放列表详情页面文字数据-->
     <string name="title_detail">列表详情</string>
+    <string name="title_menu_rename">修改名字</string>
+    <string name="title_dialog_rename">请输入新的播放列表名字</string>
+    <string name="title_dialog_error">新名字与当前名字相同</string>
+    <string name="title_dialog_error2">新名字与其他播放列表名字相同</string>
     <string name="info">长按项目进行拖动排序 , 滑动项目进行删除. 如果删除所有歌曲将会自动移除此播放列表</string>
 
     <!--播放列表项目文字信息-->
