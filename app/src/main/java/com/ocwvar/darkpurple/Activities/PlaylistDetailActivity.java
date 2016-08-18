@@ -136,10 +136,12 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
                     if (!TextUtils.isEmpty(getNewname.getText().toString())){
                         if (getNewname.getText().toString().equals(selectPlaylistItem.getName())){
                             //输入的名字跟原本的相同
-                            getNewname.setError(getApplicationContext().getString(R.string.title_dialog_error));
+                            getNewname.getText().clear();
+                            Snackbar.make(findViewById(android.R.id.content) , R.string.title_dialog_error , Snackbar.LENGTH_SHORT).show();
                         }else if (PlaylistUnits.getInstance().isPlaylistExisted(getNewname.getText().toString())){
                             //输入的名字和其他的播放列表名字相同
-                            getNewname.setError(getApplicationContext().getString(R.string.title_dialog_error2));
+                            getNewname.getText().clear();
+                            Snackbar.make(findViewById(android.R.id.content) , R.string.title_dialog_error2 , Snackbar.LENGTH_SHORT).show();
                         }else {
                             //可以开始更改
                             PlaylistUnits.getInstance().renamePlaylist(selectPlaylistItem.getName() , getNewname.getText().toString());
