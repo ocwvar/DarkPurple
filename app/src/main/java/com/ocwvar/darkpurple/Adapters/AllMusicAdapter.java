@@ -15,6 +15,7 @@ import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.SquareWidthImageView;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -82,7 +83,9 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
      * @param position  项目位置
      */
     public void removeItem(int position){
-        arrayList.remove(position);
+        String filePath = arrayList.remove(position).getPath();
+        //删除歌曲文件
+        new File(filePath).delete();
         notifyItemRemoved(position+1);
     }
 
