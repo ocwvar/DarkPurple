@@ -65,7 +65,7 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
             return;
         }else {
             thisPosition = getIntent().getExtras().getInt("position");
-            this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistIten(thisPosition);
+            this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistItem(thisPosition);
             if (this.selectPlaylistItem == null){
                 //如果无法获取到播放列表数据对象 , 结束当前页面
                 finish();

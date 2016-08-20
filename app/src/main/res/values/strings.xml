@@ -7,10 +7,11 @@
     <string name="setting_base_playing">当前播放</string>
 
     <!--文字信息-->
-    <string name="service_error">服务创建失败 , 将无法使用音频功能</string>
-    <string name="service_ok">服务连接成功</string>
     <string name="simple_cancel">取消</string>
     <string name="simple_done">确定</string>
+    <string name="simple_loading">正在读取中 , 请稍候</string>
+    <string name="service_error">服务创建失败 , 将无法使用音频功能</string>
+    <string name="service_ok">服务连接成功</string>
     <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
     <string name="button_dialog_allmusic_delete">删除音频</string>
     <string name="button_dialog_allmusic_add">添加到列表</string>
@@ -36,6 +37,8 @@
     <string name="text_playlist_saved">播放列表数据保存成功</string>
     <string name="text_playlist_clear">播放列表无数据 , 已删除空列表</string>
     <string name="text_playlist_saveFail">播放列表数据未做更改</string>
+    <string name="text_playlist_addNewSong">成功添加音频</string>
+    <string name="text_playlist_addNewSong_Failed">添加音频失败 , 可能存在同名音频</string>
 
     <!--ViewPager滚动标签栏-->
     <string name="ViewPage_Tab_Playing">正在播放</string>

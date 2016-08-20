@@ -198,7 +198,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         @Override
         public boolean onLongClick(View view) {
             if (onClick != null && !isMuiltSelecting){
-                onClick.onListItemLongClick(arrayList.get(getAdapterPosition()) , getAdapterPosition()-1);
+                onClick.onListItemLongClick(arrayList.get(getAdapterPosition()-1) , getAdapterPosition()-1);
             }
             return false;
         }

@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,13 +20,11 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.ocwvar.darkpurple.Activities.FolderSelectorActivity;
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.Adapters.AllMusicAdapter;
@@ -61,9 +60,10 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     AllMusicAdapter allMusicAdapter;
     AlphaInAnimationAdapter animationAdapter;
     FloatingActionButton floatingActionButton;
-    WeakReference<AlertDialog> moreDialog;
+    WeakReference<AlertDialog> moreDialog = new WeakReference<>(null);
     SelectPlaylistDialogHolder addToPLDialogHolder;
     AlertDialog newPlaylistDialog;
+    ProgressDialog loadingDialog;
     EditText getPlaylistTitle;
 
     SongItem selectedSongitem;
@@ -228,6 +228,10 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
             floatingActionButton.setPadding(0,0,0, AppConfigs.NevBarHeight);
             floatingActionButton.setOnClickListener(this);
+
+            loadingDialog = new ProgressDialog(fragmentView.getContext());
+            loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
+            loadingDialog.setCancelable(false);
 
             if (MediaScanner.getInstance().isUpdated()) {
                 allMusicAdapter.setDatas(MediaScanner.getInstance().getCachedDatas());
@@ -395,7 +399,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         View itemView;
         ListView listView;
         ArrayAdapter<String> stringArrayAdapter;
-        WeakReference<AlertDialog> addToDialog;
+        WeakReference<AlertDialog> addToDialog = new WeakReference<>(null);
 
         private void createItemView(){
             if (this.itemView == null){
@@ -440,7 +444,50 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            if (PlaylistUnits.getInstance().getPlaylistItem(i).getPlaylist() == null){
+                //如果要添加到的列表还没加载 , 则先加载
+                PlaylistUnits.getInstance().loadPlaylistAudioesData(new PlaylistUnits.PlaylistLoadingCallbacks() {
 
+                    @Override
+                    public void onPreLoad() {
+                        if (loadingDialog != null){
+                            loadingDialog.show();
+                        }
+                    }
+
+                    @Override
+                    public void onLoadCompleted(PlaylistItem playlistItem , ArrayList<SongItem> data) {
+                        if (loadingDialog != null){
+                            loadingDialog.dismiss();
+                        }
+                        if(PlaylistUnits.getInstance().addAudio(playlistItem,selectedSongitem)){
+                            Snackbar.make(fragmentView,R.string.text_playlist_addNewSong,Snackbar.LENGTH_SHORT).show();
+                        }else{
+                            Snackbar.make(fragmentView,R.string.text_playlist_addNewSong_Failed,Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onLoadFailed() {
+                        if (loadingDialog != null){
+                            loadingDialog.dismiss();
+                        }
+                        Snackbar.make(fragmentView,R.string.text_playlist_loadFailed,Snackbar.LENGTH_SHORT).show();
+                    }
+
+
+                },PlaylistUnits.getInstance().getPlaylistItem(i));
+            }else {
+                //如果已经加载了 , 则直接添加进去
+                if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().getPlaylistItem(i),selectedSongitem)){
+                    Snackbar.make(fragmentView,R.string.text_playlist_addNewSong,Snackbar.LENGTH_SHORT).show();
+                }else {
+                    Snackbar.make(fragmentView,R.string.text_playlist_addNewSong_Failed,Snackbar.LENGTH_SHORT).show();
+                }
+            }
+            if (addToDialog != null && addToDialog.get() != null){
+                addToDialog.get().dismiss();
+            }
         }
 
     }

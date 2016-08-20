@@ -22,6 +22,7 @@ import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
 import java.lang.ref.WeakReference;
@@ -98,6 +99,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             adapter.setOnButtonClickCallback(null);
             adapter = null;
         }
+        moreDialog = new WeakReference<>(null);
         selectedPlaylistItem = null;
         selectedPosition = -1;
     }
@@ -136,7 +138,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 }
 
                 @Override
-                public void onLoadCompleted(ArrayList<SongItem> data) {
+                public void onLoadCompleted(PlaylistItem playlistItem1 , ArrayList<SongItem> data) {
                     //获取数据成功的时候就进行播放操作
                     if (loadingDialog != null){
                         loadingDialog.dismiss();
@@ -170,6 +172,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     @Override
     public void onPlaylistDataChanged() {
         if (adapter != null){
+            Logger.warnning(TAG,"收到播放列表变更信息 , 更新适配器");
             adapter.notifyDataSetChanged();
         }
     }
@@ -194,7 +197,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                         }
 
                         @Override
-                        public void onLoadCompleted(ArrayList<SongItem> data) {
+                        public void onLoadCompleted(PlaylistItem playlistItem , ArrayList<SongItem> data) {
                             if (data != null){
                                 //获取数据成功的时候就进行转跳
                                 if (loadingDialog != null){
@@ -245,7 +248,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             }
             int position = data.getIntExtra("position" , -1);
             if (position != -1){
-                PlaylistItem playlistItem = PlaylistUnits.getInstance().getPlaylistIten(position);
+                PlaylistItem playlistItem = PlaylistUnits.getInstance().getPlaylistItem(position);
                 if (playlistItem.getPlaylist().size() == 0){
                     //如果用户删除了所有的歌曲 , 则移除整个播放列表
                     PlaylistUnits.getInstance().removePlaylist(playlistItem);

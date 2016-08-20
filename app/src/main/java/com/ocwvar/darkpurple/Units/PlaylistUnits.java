@@ -37,7 +37,7 @@ public class PlaylistUnits {
 
         void onPreLoad();
 
-        void onLoadCompleted(ArrayList<SongItem> data);
+        void onLoadCompleted(PlaylistItem playlistItem , ArrayList<SongItem> data);
 
         void onLoadFailed();
 
@@ -161,6 +161,11 @@ public class PlaylistUnits {
             playlists.remove(playlistItem);
         }
 
+        //回调更新数据
+        if (changedCallbacks != null){
+            changedCallbacks.onPlaylistDataChanged();
+        }
+
         //获取播放列表名称合集 , 移除请求的关键字
         Set<String> names = sharedPreferences.getStringSet("names",new LinkedHashSet<String>());
         if (names.contains(playlistItem.getName())){
@@ -216,6 +221,11 @@ public class PlaylistUnits {
             final PlaylistItem playlistItem = playlists.get(playlists.indexOf(new PlaylistItem(oldName)));
             playlistItem.setName(newName);
 
+            //回调更新数据
+            if (changedCallbacks != null){
+                changedCallbacks.onPlaylistDataChanged();
+            }
+
             //更改本地播放列表音频数据储存文件
             File plFile = new File(JSONHandler.folderPath+oldName+".pl");
             if (plFile.exists()){
@@ -247,6 +257,26 @@ public class PlaylistUnits {
         }else {
             Logger.error(TAG,"播放列表名称修改失败.  没有找到需求改名的数据");
             return false;
+        }
+    }
+
+    /**
+     *  添加歌曲到播放列表中
+     * @param playlistItem  要添加到的播放列表
+     * @param songItem  要添加的歌曲对象
+     * @return  执行结果
+     */
+    public boolean addAudio(@NonNull PlaylistItem playlistItem ,@NonNull SongItem songItem){
+        if (playlistItem.getPlaylist() == null){
+            //列表没有初始化过
+            Logger.error(TAG,"播放列表没有初始化过 , 无法添加");
+            return false;
+        }else if (playlistItem.getPlaylist().contains(songItem)){
+            //列表内存在相同路径的音频文件
+            return false;
+        }else {
+            playlistItem.getPlaylist().add(songItem);
+            return savePlaylist(playlistItem.getName(),playlistItem.getPlaylist());
         }
     }
 
@@ -300,7 +330,7 @@ public class PlaylistUnits {
         return playlists;
     }
 
-    public PlaylistItem getPlaylistIten(int position){
+    public PlaylistItem getPlaylistItem(int position){
         if (playlists != null && position >= 0 && position < playlists.size()){
             return playlists.get(position);
         }else {
@@ -343,7 +373,7 @@ public class PlaylistUnits {
                     callbacks.onLoadFailed();
                 }else {
                     playlistItem.setPlaylist(songItems);
-                    callbacks.onLoadCompleted(songItems);
+                    callbacks.onLoadCompleted(playlistItem,songItems);
                 }
             }
         }
