@@ -8,10 +8,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
@@ -27,7 +27,6 @@ import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -53,6 +52,10 @@ public class AudioService extends Service {
     private RemoteViews remoteView;
     //Notification  普通布局
     private RemoteViews smallRemoteView;
+    //音频服务
+    private AudioManager audioManager;
+    //连接接收器
+    private ComponentName componentName;
 
     //参数变量
     private final int notificationID = 888;
@@ -93,6 +96,9 @@ public class AudioService extends Service {
         notificationControl = new NotificationControl();
         headsetReceiver = new HeadsetReceiver();
 
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        componentName = new ComponentName(getPackageName(),HeadsetButtonReceiver.class.getName());
+        audioManager.registerMediaButtonEventReceiver(componentName);
         registerReceiver(headsetReceiver,headsetReceiver.filter);
         headsetReceiver.registed =true;
     }
@@ -134,6 +140,7 @@ public class AudioService extends Service {
         if (headsetReceiver != null && headsetReceiver.registed){
             headsetReceiver.registed = false;
             unregisterReceiver(headsetReceiver);
+            audioManager.unregisterMediaButtonEventReceiver(componentName);
         }
     }
 
@@ -203,7 +210,7 @@ public class AudioService extends Service {
     }
 
     /**
-     * 耳机拔出广播接收器 蓝牙耳机 & 有线耳机
+     * 耳机广播接收器 蓝牙耳机 & 有线耳机
      */
     private class HeadsetReceiver extends BroadcastReceiver{
 
@@ -214,8 +221,8 @@ public class AudioService extends Service {
 
         public HeadsetReceiver() {
             filter = new IntentFilter();
-            filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-            filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+            filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY); //有线耳机拔出变化
+            filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED); //蓝牙耳机连接变化
 
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         }
@@ -354,6 +361,7 @@ public class AudioService extends Service {
             builder.setCustomBigContentView(remoteView);
             builder.setCustomContentView(smallRemoteView);
             builder.setContentIntent(pendingIntent);
+            builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             notification = builder.build();
             notification.flags = Notification.FLAG_FOREGROUND_SERVICE;
             Logger.warnning(TAG,"创建状态栏布局对象完成");
@@ -509,6 +517,22 @@ public class AudioService extends Service {
      */
     public boolean seek2Position(double position){
         return core.seek2Position(position);
+    }
+
+    /**
+     * 播放上一首音频
+     * @return  执行结果
+     */
+    public boolean playPrevious(){
+        return core.playPrevious();
+    }
+
+    /**
+     * 播放下一首音频
+     * @return  执行结果
+     */
+    public boolean playNext(){
+        return core.playNext();
     }
 
 }

@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:layout_margin="3dp"
     >
 
     <!--封面图像-->

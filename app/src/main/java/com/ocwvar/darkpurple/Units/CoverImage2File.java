@@ -36,6 +36,11 @@ public class CoverImage2File {
      * @return 缓存结果
      */
     public boolean makeImage2File(Bitmap bitmap , String audioPath){
+        if (bitmap == null){
+            Logger.error(TAG,"图像文件无效");
+            return false;
+        }
+
         //获取缓存图像文件对象
         File imageFile = new File( getCachePath(audioPath) );
 
