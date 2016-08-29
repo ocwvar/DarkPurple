@@ -17,6 +17,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.view.KeyEvent;
 import android.widget.RemoteViews;
 
 import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
@@ -43,7 +44,7 @@ public class AudioService extends Service {
     //状态栏控制回调
     private NotificationControl notificationControl;
     //耳机断开监听回调
-    HeadsetReceiver headsetReceiver;
+    private HeadsetReceiver headsetReceiver;
     //Notification  的管理器 , 用于更新界面数据
     private NotificationManager nm;
     //播放的状态提示
@@ -56,6 +57,12 @@ public class AudioService extends Service {
     private AudioManager audioManager;
     //连接接收器
     private ComponentName componentName;
+    //耳机按钮次数延时器
+    private MediaButtonPressCountingThread countingThread;
+
+    //操作的全局变量
+    public static int mediaButtonPressCount = 0;
+    private boolean isMediaButtonHandling = false;
 
     //参数变量
     private final int notificationID = 888;
@@ -245,6 +252,88 @@ public class AudioService extends Service {
             }
         }
 
+    }
+
+    /**
+     * 耳机媒体按钮次数统计线程
+     */
+    private class MediaButtonPressCountingThread extends Thread{
+
+        private final String TAG = "按键计数延时器";
+
+        @Override
+        public void run() {
+            super.run();
+            isMediaButtonHandling = false;
+            try {
+                //线程等待 0.5 秒 , 用户在此期间触发媒体按键的次数会被记录下
+                //当超过时间之后 在执行完对应次数的事件期间 , 用户的按键将不会被响应
+                Thread.sleep(500);
+            } catch (InterruptedException ignore) {}
+
+            isMediaButtonHandling = true;
+
+            Logger.warnning( TAG , "此次按键次数为: "+mediaButtonPressCount );
+
+            switch (mediaButtonPressCount){
+                case 1:
+                    //点击一次暂停播放
+                    pause();
+                    break;
+                case 2:
+                    //点击两次播放下一首
+                    playNext();
+                    break;
+                case 3:
+                    //点击三次播放上一首
+                    playPrevious();
+                    break;
+                default:
+                    break;
+            }
+
+            //响应变量复位
+            try {
+                //允许下一次多媒体响应时间前间隔 1 秒
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {}
+            mediaButtonPressCount = 0;
+            isMediaButtonHandling = false;
+
+        }
+
+    }
+
+    /**
+     * 当媒体按键触发的时候调用此方法
+     * @param keyIntent 广播得到的 Intent
+     */
+    public synchronized void onMediaButtonPress(Intent keyIntent){
+        if ( ! isMediaButtonHandling ){
+            //如果当前没有正在处理上一次的媒体按钮事件 , 即可开始响应接下来的事件
+            switch (keyIntent.getAction()){
+                case Intent.ACTION_MEDIA_BUTTON:
+                    if (keyIntent.getExtras() != null && keyIntent.hasExtra(Intent.EXTRA_KEY_EVENT)){
+                        KeyEvent event = keyIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                        if (event.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK && event.getAction() == KeyEvent.ACTION_DOWN){
+                            //当用户按下耳机按钮的时候
+                            Logger.warnning(TAG,"耳机按钮事件");
+                            //增加按键次数计数
+                            mediaButtonPressCount += 1;
+                            if (countingThread != null && countingThread.getState() != Thread.State.TERMINATED){
+                                //如果当前存在延时器线程 , 则不做处理
+                                break;
+                            }else {
+                                //如果延时器线程不存在 , 则开始执行线程
+                                countingThread = null;
+                                countingThread = new MediaButtonPressCountingThread();
+                                countingThread.start();
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
     }
 
     /**
