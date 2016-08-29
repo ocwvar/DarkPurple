@@ -5,10 +5,17 @@
     >
 
     <item
+        android:id="@+id/menu_ui"
+        android:icon="@drawable/ic_action_open_ui"
+        android:title="@string/title_action_op_ui"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/menu_add_folder"
         android:title="@string/menu_add_folder"
         android:icon="@drawable/ic_action_add"
-        app:showAsAction="always|withText"
+        app:showAsAction="always"
         />
 
 </menu>

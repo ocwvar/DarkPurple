@@ -13,7 +13,7 @@ android {
     buildToolsVersion "24.0.1"
     defaultConfig {
         applicationId "com.ocwvar.darkpurple"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,8 @@ android {
         main {
             java.srcDirs = ['src/main/java', 'src/main/java-gen']
         }
+    }
+    productFlavors {
     }
 }
 

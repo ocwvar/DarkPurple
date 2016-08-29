@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.MusicFolderAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
@@ -24,10 +28,12 @@ import java.io.File;
  * Project: DarkPurple
  * 歌曲扫描目录设置
  */
-public class FolderSelectorActivity extends AppCompatActivity implements MusicFolderAdapter.OnPathChangedCallback {
+public class FolderSelectorActivity extends AppCompatActivity implements MusicFolderAdapter.OnPathChangedCallback, View.OnClickListener {
 
     MusicFolderAdapter adapter;
     RecyclerView recyclerView;
+    TextView openUI;
+    ImageButton addPath;
     EditText editText;
 
     public static final int DATA_CHANGED = 1;
@@ -39,6 +45,8 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_musicfloder);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        openUI = (TextView)findViewById(R.id.openUI);
+        addPath = (ImageButton)findViewById(R.id.imageButton_addPath);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -50,13 +58,9 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
         recyclerView.setLayoutManager(new LinearLayoutManager(FolderSelectorActivity.this,LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
 
+        openUI.setOnClickListener(this);
+        addPath.setOnClickListener(this);
         setResult(DATA_UNCHANGED);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_addfolder,menu);
-        return true;
     }
 
     @Override
@@ -65,18 +69,30 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.menu_add_folder:
-                String string = editText.getText().toString();
-                //先检查路径是否有效
-                if (isPathVaild(string)){
-                    adapter.addPath(string);
-                }else {
-                    Snackbar.make(findViewById(android.R.id.content),R.string.info_wrongPath,Snackbar.LENGTH_LONG).show();
-                }
-                editText.getText().clear();
-                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 777 && resultCode == FolderSelectorUI.RESULT_CODE){
+            //从浏览器返回时检查数据
+            if (data != null){
+                try {
+                    File[] folders = (File[]) data.getExtras().getSerializable("Data");
+                    if (folders != null){
+                        for (File folder : folders) {
+                            if (isPathVaild(folder.getPath())){
+                                adapter.addPath(folder.getPath(),true);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -127,4 +143,22 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
         Snackbar.make(findViewById(android.R.id.content),R.string.info_existPath,Snackbar.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.openUI:
+                startActivityForResult(new Intent(FolderSelectorActivity.this , FolderSelectorUI.class) , 777);
+                break;
+            case R.id.imageButton_addPath:
+                String string = editText.getText().toString();
+                //先检查路径是否有效
+                if (isPathVaild(string)){
+                    adapter.addPath(string,false);
+                }else {
+                    Snackbar.make(findViewById(android.R.id.content),R.string.info_wrongPath,Snackbar.LENGTH_LONG).show();
+                }
+                editText.getText().clear();
+                break;
+        }
+    }
 }

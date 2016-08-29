@@ -266,9 +266,9 @@ public class AudioService extends Service {
             super.run();
             isMediaButtonHandling = false;
             try {
-                //线程等待 0.5 秒 , 用户在此期间触发媒体按键的次数会被记录下
+                //线程等待 800 毫秒 , 用户在此期间触发媒体按键的次数会被记录下
                 //当超过时间之后 在执行完对应次数的事件期间 , 用户的按键将不会被响应
-                Thread.sleep(500);
+                Thread.sleep(800);
             } catch (InterruptedException ignore) {}
 
             isMediaButtonHandling = true;
@@ -278,15 +278,15 @@ public class AudioService extends Service {
             switch (mediaButtonPressCount){
                 case 1:
                     //点击一次暂停播放
-                    pause();
+                    sendBroadcast(new Intent(NOTIFICATION_MAIN));
                     break;
                 case 2:
                     //点击两次播放下一首
-                    playNext();
+                    sendBroadcast(new Intent(NOTIFICATION_NEXT));
                     break;
                 case 3:
                     //点击三次播放上一首
-                    playPrevious();
+                    sendBroadcast(new Intent(NOTIFICATION_BACK));
                     break;
                 default:
                     break;

@@ -14,25 +14,59 @@
         app:titleTextAppearance="@style/TextAppearance.AppCompat.NoActionBar"
         />
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:text="@string/title_action_op_ui"
+        android:id="@+id/openUI"
+        android:layout_gravity="center_horizontal"
+        android:padding="5dp"
+        android:textColor="@drawable/textview_selector"
         android:background="@color/colorPrimary"
-        android:singleLine="true"
-        android:textColor="#fff"
-        android:textColorHint="#a8ffffff"
-        android:hint="@string/title_addDialog"
-        android:textSize="16sp"
-        android:padding="10dp" />
+        android:drawableStart="@drawable/ic_action_folder"
+        android:gravity="center_vertical"
+        android:clickable="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:singleLine="true"
+            android:textColor="#fff"
+            android:textColorHint="#a8ffffff"
+            android:hint="@string/title_addDialog"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_toLeftOf="@+id/imageButton_addPath"
+            android:layout_toStartOf="@+id/imageButton_addPath"
+            android:background="@null"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton_addPath"
+            android:layout_gravity="right|center_vertical"
+            android:background="@null"
+            android:src="@drawable/fab_add"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/info_musicFloder"
-        android:id="@+id/textView5"
-        android:padding="10dp"
-        android:textColor="#e4e4e4" />
+        android:text="@string/info_recycle_title"
+        android:id="@+id/textView3"
+        android:paddingTop="15dp"
+        android:paddingLeft="10dp"
+        android:textColor="@color/colorAccent"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycleView"

@@ -40,8 +40,9 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
     /**
      * 添加一条数据到头部
      * @param path  路径数据
+     * @param ignoreResult  是否忽略结果
      */
-    public void addPath(String path){
+    public void addPath(String path , boolean ignoreResult){
         if (!TextUtils.isEmpty(path)){
             if (path.length() > 1 ){
                 //如果路径长度大于 1 则排除了 " / "目录的状态 , 我们只需要把字符串最后的 "/" 去掉即可 , 如果不存在则不操作
@@ -54,7 +55,9 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
 
             if (paths.contains(path)){
                 //如果已经添加过的则放弃
-                callback.onAddedFailed();
+                if (!ignoreResult){
+                    callback.onAddedFailed();
+                }
                 return;
             }
 

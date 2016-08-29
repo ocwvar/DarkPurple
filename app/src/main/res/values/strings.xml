@@ -69,11 +69,18 @@
     <string name="title_addPL_dialog">选择需要添加到的播放列表</string>
 
     <!--添加歌曲文件夹 版面信息-->
-    <string name="title_addDialog">请在此输入歌曲文件夹路径</string>
+    <string name="title_select_folder_ui">选择要扫描的音乐文件夹</string>
+    <string name="title_addDialog">在此手动输入文件夹路径</string>
     <string name="info_wrongPath">请输入正确的文件夹路径</string>
     <string name="info_existPath">请勿重复添加相同的路径</string>
     <string name="info_addedPath">路径添加成功</string>
     <string name="info_removedPath">路径移除成功</string>
+    <string name="info_folder_ui">单击进入浏览文件夹 , 长按选中目标文件夹</string>
+    <string name="title_action_op_ui">使用浏览器添加</string>
+    <string name="info_recycle_title">以下是已添加条目 (扫描时不包含子目录) </string>
+    <string name="info_noPrevious">没有更上一级的目录了哟 :)</string>
+    <string name="info_folder_count">当前已选择文件夹数: </string>
+    <string name="info_confirm">您当前已有选择的目录 , 确认不保存直接返回吗 ?</string>
 
     <!--菜单各类选项-->
     <string name="menu_allmusic_refresh">刷新歌曲</string>
