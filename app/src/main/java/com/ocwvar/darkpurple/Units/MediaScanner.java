@@ -186,6 +186,12 @@ public class MediaScanner {
                 while (cursor.moveToNext()){
                     SongItem songItem = new SongItem();
 
+                    //文件尺寸
+                    songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
+                    //文件名
+                    songItem.setFileName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
+                    //文件路径
+                    songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                     //歌曲长度
                     final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                     if (length < AppConfigs.LengthLimited) continue;
@@ -195,16 +201,23 @@ public class MediaScanner {
 
                     //标题
                     songItem.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                    if (TextUtils.isEmpty(songItem.getTitle())){
+                        //如果无法获取到歌曲名 , 则使用文件名代替
+                        songItem.setTitle(songItem.getFileName());
+                    }
                     //专辑名
                     songItem.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                    if (TextUtils.isEmpty(songItem.getAlbum())){
+                        //如果无法获取到专辑名 , 则使用未知代替
+                        songItem.setAlbum(AppConfigs.UNKNOWN);
+                    }
                     //作者
                     songItem.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                    //文件尺寸
-                    songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
-                    //文件名
-                    songItem.setFileName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
-                    //文件路径
-                    songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                    if (TextUtils.isEmpty(songItem.getArtist())){
+                        //如果无法获取到歌手名 , 则使用未知代替
+                        songItem.setArtist(AppConfigs.UNKNOWN);
+                    }
+
 
                     //专辑ID  主要用于读取封面图像
                     final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
@@ -459,12 +472,26 @@ public class MediaScanner {
 
 
                     songItem.setTitle(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+                    if (TextUtils.isEmpty(songItem.getTitle())){
+                        //如果无法获取到歌曲名 , 则使用文件名代替
+                        songItem.setTitle(musicFile.getName());
+                    }
                     songItem.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+                    if (TextUtils.isEmpty(songItem.getArtist())){
+                        //如果无法获取到歌手名 , 则使用未知代替
+                        songItem.setArtist(AppConfigs.UNKNOWN);
+                    }
                     songItem.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                    if (TextUtils.isEmpty(songItem.getAlbum())){
+                        //如果无法获取到专辑名 , 则使用未知代替
+                        songItem.setAlbum(AppConfigs.UNKNOWN);
+                    }
                     songItem.setLength(musicLength);
                     songItem.setFileName(musicFile.getName());
                     songItem.setPath(musicFile.getPath());
                     songItem.setFileSize(Long.toString(musicFile.length()));
+
+
 
                     cacheAlbumCover(retriever,songItem);
 
@@ -506,14 +533,18 @@ public class MediaScanner {
             if (retriever != null && coverImage == null){
                 //如果没有缓存过图像 , 则获取图像资源并进行缓存和提取图像颜色资源
                 byte[] bytes = retriever.getEmbeddedPicture();
-                coverImage = BitmapFactory.decodeByteArray(bytes , 0 , bytes.length);
-                bytes = null;
-                if (coverImage != null){
-                    CoverImage2File.getInstance().makeImage2File(coverImage,songItem.getPath());
-                    songItem.setPaletteColor(getAlbumCoverColor(coverImage));
-                    songItem.setHaveCover(true);
+                if (bytes != null){
+                    coverImage = BitmapFactory.decodeByteArray(bytes , 0 , bytes.length);
+                    bytes = null;
+                    if (coverImage != null){
+                        CoverImage2File.getInstance().makeImage2File(coverImage,songItem.getPath());
+                        songItem.setPaletteColor(getAlbumCoverColor(coverImage));
+                        songItem.setHaveCover(true);
+                    }else {
+                        Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
+                    }
                 }else {
-                    Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
+                    Logger.error("媒体库扫描器","该音频没有图像文件");
                 }
             }else {
                 songItem.setPaletteColor(getAlbumCoverColor(coverImage));

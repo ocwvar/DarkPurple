@@ -31,6 +31,9 @@ public class AppConfigs {
     //Json数据储存位置
     public static String JsonFilePath = Environment.getExternalStorageDirectory().getPath()+"/DarkPurple/JSONData/";
 
+    //未知文字占位资源
+    public static String UNKNOWN = "未知";
+
     //应用是否为第一次启动
     public static boolean IsFirstBoot = true;
 
@@ -71,6 +74,8 @@ public class AppConfigs {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
 
             //开始依次每条读取本地保存的数据
+
+            UNKNOWN = applicationContext.getString(R.string.simple_unknown);
 
             MusicFolders = getPathSet();
 

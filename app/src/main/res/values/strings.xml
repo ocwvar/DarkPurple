@@ -7,6 +7,7 @@
     <string name="setting_base_playing">当前播放</string>
 
     <!--文字信息-->
+    <string name="simple_unknown">未知</string>
     <string name="simple_cancel">取消</string>
     <string name="simple_done">确定</string>
     <string name="simple_loading">正在读取中 , 请稍候</string>
