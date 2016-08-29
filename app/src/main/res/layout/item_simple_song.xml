@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="3dp">
+    android:padding="8dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,17 +18,6 @@
         android:paddingStart="5dp"
         />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView_artist"
-        android:layout_gravity="left|center_vertical"
-        android:textSize="12sp"
-        android:textColor="#c133b2"
-        android:paddingLeft="5dp"
-        android:paddingStart="5dp"
-        />
-
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,5 +26,16 @@
         android:background="@null"
         android:src="@drawable/ic_action_playing"
         android:padding="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView_artist"
+        android:layout_gravity="left|bottom"
+        android:textSize="12sp"
+        android:textColor="#c133b2"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
+        android:maxLength="10"/>
 
 </FrameLayout>

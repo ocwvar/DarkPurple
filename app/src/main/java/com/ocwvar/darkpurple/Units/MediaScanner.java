@@ -184,52 +184,65 @@ public class MediaScanner {
                 ArrayList<SongItem> songList = new ArrayList<>();
 
                 while (cursor.moveToNext()){
-                    SongItem songItem = new SongItem();
 
-                    //文件尺寸
-                    songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
-                    //文件名
-                    songItem.setFileName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
-                    //文件路径
-                    songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
-                    //歌曲长度
-                    final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    if (length < AppConfigs.LengthLimited) continue;
-                    else {
-                        songItem.setLength(length);
+                    String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+
+                    if (isMusicFile(fileName)){
+                        //如果当前的是支持的歌曲文件格式 , 则开始解析
+                        SongItem songItem = new SongItem();
+
+                        //文件名
+                        songItem.setFileName(fileName);
+                        //文件尺寸
+                        songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
+                        //文件路径
+                        songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                        //歌曲长度
+                        final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                        if (length < AppConfigs.LengthLimited) {
+                            //如果歌曲长度不符合最低要求 , 则不继续解析
+                            songItem = null;
+                            continue;
+                        }
+                        else {
+                            songItem.setLength(length);
+                        }
+
+                        //标题
+                        songItem.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                        if (TextUtils.isEmpty(songItem.getTitle())){
+                            //如果无法获取到歌曲名 , 则使用文件名代替
+                            songItem.setTitle(songItem.getFileName());
+                        }
+                        //专辑名
+                        songItem.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                        if (TextUtils.isEmpty(songItem.getAlbum())){
+                            //如果无法获取到专辑名 , 则使用未知代替
+                            songItem.setAlbum(AppConfigs.UNKNOWN);
+                        }
+                        //作者
+                        songItem.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                        if (TextUtils.isEmpty(songItem.getArtist())){
+                            //如果无法获取到歌手名 , 则使用未知代替
+                            songItem.setArtist(AppConfigs.UNKNOWN);
+                        }
+
+
+                        //专辑ID  主要用于读取封面图像
+                        final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                        if (albumID > 0){
+                            songItem.setAlbumID(albumID);
+                            songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),albumID));
+                        }
+
+                        Logger.normal("媒体库扫描器",songItem.getTitle());
+                        cacheAlbumCover(songItem);
+
+                        songList.add(songItem);
+                    }else {
+                        fileName = null;
+                        continue;
                     }
-
-                    //标题
-                    songItem.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-                    if (TextUtils.isEmpty(songItem.getTitle())){
-                        //如果无法获取到歌曲名 , 则使用文件名代替
-                        songItem.setTitle(songItem.getFileName());
-                    }
-                    //专辑名
-                    songItem.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                    if (TextUtils.isEmpty(songItem.getAlbum())){
-                        //如果无法获取到专辑名 , 则使用未知代替
-                        songItem.setAlbum(AppConfigs.UNKNOWN);
-                    }
-                    //作者
-                    songItem.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                    if (TextUtils.isEmpty(songItem.getArtist())){
-                        //如果无法获取到歌手名 , 则使用未知代替
-                        songItem.setArtist(AppConfigs.UNKNOWN);
-                    }
-
-
-                    //专辑ID  主要用于读取封面图像
-                    final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-                    if (albumID > 0){
-                        songItem.setAlbumID(albumID);
-                        songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),albumID));
-                    }
-
-                    Logger.normal("媒体库扫描器",songItem.getTitle());
-                    cacheAlbumCover(songItem);
-
-                    songList.add(songItem);
                 }
 
                 cursor.close();
@@ -250,6 +263,37 @@ public class MediaScanner {
 
             return null;
 
+        }
+
+        /**
+         * 判断文件是否为音乐文件
+         * @param fileName  要检查的文件名
+         * @return  有效性
+         */
+        private boolean isMusicFile(String fileName){
+            if (TextUtils.isEmpty(fileName)){
+                return false;
+            }
+
+            String[] temp;
+            try {
+                temp = fileName.split("\\.");
+            } catch (Exception e) {
+                //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
+                return false;
+            }
+            if (temp.length >= 1){
+                //开始从后缀名判断是否为音频文件
+                switch (temp[temp.length-1]){
+                    case "mp3":
+                    case "wav":
+                        return true;
+                    default:
+                        return false;
+                }
+            }else {
+                return false;
+            }
         }
 
         /**
