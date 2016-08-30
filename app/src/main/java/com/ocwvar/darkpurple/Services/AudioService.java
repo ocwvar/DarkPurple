@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
@@ -59,6 +60,8 @@ public class AudioService extends Service {
     private ComponentName componentName;
     //耳机按钮次数延时器
     private MediaButtonPressCountingThread countingThread;
+    //耳机插入广播接收器
+    private HeadsetPlugInReceiver headsetPlugInReceiver;
 
     //操作的全局变量
     public static int mediaButtonPressCount = 0;
@@ -102,12 +105,15 @@ public class AudioService extends Service {
         core = new AudioCore(getApplicationContext());
         notificationControl = new NotificationControl();
         headsetReceiver = new HeadsetReceiver();
+        headsetPlugInReceiver = new HeadsetPlugInReceiver();
 
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         componentName = new ComponentName(getPackageName(),HeadsetButtonReceiver.class.getName());
         audioManager.registerMediaButtonEventReceiver(componentName);
+        registerReceiver(headsetPlugInReceiver,headsetPlugInReceiver.filter);
         registerReceiver(headsetReceiver,headsetReceiver.filter);
-        headsetReceiver.registed =true;
+        headsetPlugInReceiver.registered = true;
+        headsetReceiver.registered = true;
     }
 
     /**
@@ -140,14 +146,18 @@ public class AudioService extends Service {
             core.releaseAudio();
         }
         hideNotification();
-        if (notificationControl != null && notificationControl.registed){
-            notificationControl.registed = false;
+        if (notificationControl != null && notificationControl.registered){
+            notificationControl.registered = false;
             unregisterReceiver(notificationControl);
         }
-        if (headsetReceiver != null && headsetReceiver.registed){
-            headsetReceiver.registed = false;
+        if (headsetReceiver != null && headsetReceiver.registered){
+            headsetReceiver.registered = false;
             unregisterReceiver(headsetReceiver);
             audioManager.unregisterMediaButtonEventReceiver(componentName);
+        }
+        if (headsetPlugInReceiver != null && headsetPlugInReceiver.registered){
+            headsetPlugInReceiver.registered = false;
+            unregisterReceiver(headsetPlugInReceiver);
         }
     }
 
@@ -167,8 +177,9 @@ public class AudioService extends Service {
      */
     private class NotificationControl extends BroadcastReceiver{
 
-        public IntentFilter filter;
-        public boolean registed = false;
+        final IntentFilter filter;
+
+        public boolean registered = false;
 
         public NotificationControl() {
             filter = new IntentFilter();
@@ -221,10 +232,10 @@ public class AudioService extends Service {
      */
     private class HeadsetReceiver extends BroadcastReceiver{
 
-        IntentFilter filter;
-        BluetoothAdapter bluetoothAdapter;
+        final IntentFilter filter;
+        final BluetoothAdapter bluetoothAdapter;
 
-        boolean registed = false;
+        boolean registered = false;
 
         public HeadsetReceiver() {
             filter = new IntentFilter();
@@ -240,15 +251,44 @@ public class AudioService extends Service {
                 case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
                     if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
                         //蓝牙耳机断开连接 同时当前音乐正在播放
-                        core.stopAudio();
+                        core.pauseAudio();
                     }
                     break;
                 case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
                     if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
                         //有线耳机断开连接 同时当前音乐正在播放
-                        core.stopAudio();
+                        core.pauseAudio();
                     }
                     break;
+            }
+        }
+
+    }
+
+    /**
+     * 耳机插入广播接收器
+     */
+    public class HeadsetPlugInReceiver extends BroadcastReceiver {
+
+        final IntentFilter filter;
+        boolean registered = false;
+
+        public HeadsetPlugInReceiver() {
+            filter = new IntentFilter();
+           if (Build.VERSION.SDK_INT >= 21){
+                filter.addAction(AudioManager.ACTION_HEADSET_PLUG);
+            }else {
+                filter.addAction(Intent.ACTION_HEADSET_PLUG);
+            }
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.hasExtra("state")){
+                final boolean isPlugIn = intent.getExtras().getInt("state") == 1;
+                if (isPlugIn){
+                    resume();
+                }
             }
         }
 
@@ -490,8 +530,8 @@ public class AudioService extends Service {
             //封面点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_cover,pendingIntent);
             //注册监听的广播接收器
-            notificationControl.registed = true;
             registerReceiver(notificationControl,notificationControl.filter);
+            notificationControl.registered = true;
             return true;
         }else {
             return false;
