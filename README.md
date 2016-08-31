@@ -1,20 +1,24 @@
-#DarkPurple Simple Music player
-####深紫 简易音乐播放器
+# *DarkPurple Music player*
 
-- 1.搜索指定目录下的音频(可以指定路径或从文件夹浏览器查找) 或 搜索设备内所有音频
-- 2.状态栏 Notification 音频控制
-- 3.耳机移除音频暂停  耳机插入继续播放
-- 4.搜索歌曲的长度限制
-- 5.友好的播放界面
-- 7.播放列表支持
-- 8.BASS音频引擎
-- 9.还有很多功能没做完 , 做好了我在这里添加上~!  期待我哦~哦尼酱!
-- 10.耳机按钮控制歌曲  1次-暂停/播放  2次-下一首  3次-上一首
-- 啊 这个玩意儿 很多BUG的  作者又懒的不行
-- 上面那条默认屏蔽 不能让游客看到 还有你的第6条呢
+#### 深紫 音乐播放器
 
-###预览效果 (更新于:2016/8/31)
-####如果加载卡顿请直接打开gif文件:https://github.com/ocwvar/DarkPurple/blob/master/preview.gif
+##### 功能介绍  Features introduce
+
+---
+- 可通过耳机按钮和状态栏Notification来控制音乐的播放
+- 拔出耳机自动暂停 , 插入耳机自动恢复播放
+- 用户可以通过手动输入路径或从浏览器中限定音乐文件夹或扫描所有音频
+- 提供可编辑播放列表功能
+- 可根据音频长度进行过滤
+- 可根据歌曲名字或歌曲添加时间进行排序
+- UI 设计采用 Material Design
+- 音频处理使用un4seen的 BASS 音频引擎  详情: www.un4seen.com
+
+---
+##### 预览效果 Preview (2016/8/31)
+##### *因GIF图像体积过大 , 如果无法进行流畅的预览 , 请直接访问图像资源地址进行下载*
+https://github.com/ocwvar/DarkPurple/blob/master/preview.gif
+
 ![](https://github.com/ocwvar/DarkPurple/blob/master/preview.gif)
 
 
