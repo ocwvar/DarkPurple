@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Units;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -51,7 +52,7 @@ import java.util.Date;
  * LOG_SAVE_FOLDER                          日志保存目录
  * SAVE_LOGS                                    是否生成日志
  */
-public class OCExceptionHandler extends Application implements Thread.UncaughtExceptionHandler {
+public class OCExceptionHandler extends Application implements Thread.UncaughtExceptionHandler , Application.ActivityLifecycleCallbacks {
 
     private final static long SLEEPTIME_RESTART_ACTIVITY = 2000;
     private final static Class RESTART_ACTIVITY = SelectMusicActivity.class;
@@ -69,6 +70,7 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
     public void onCreate() {
         super.onCreate();
         //Thread.setDefaultUncaughtExceptionHandler(this);
+        registerActivityLifecycleCallbacks(this);
 
         //初始化各项保存的设置
         AppConfigs.initDefaultValue(getApplicationContext());
@@ -237,6 +239,41 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
         }else {
             return false;
         }
+    }
+
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+        ActivityManager.getInstance().add(activity);
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
     }
 
 }

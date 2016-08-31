@@ -102,6 +102,7 @@ public class SelectMusicActivity extends AppCompatActivity{
                     Snackbar.make(findViewById(android.R.id.content),R.string.musicFolder_noPermission,Snackbar.LENGTH_SHORT).show();
                 }
             }
+
         }
     }
 

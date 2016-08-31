@@ -25,6 +25,7 @@ import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
+import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.picasso.Picasso;
@@ -66,6 +67,7 @@ public class AudioService extends Service {
     //操作的全局变量
     public static int mediaButtonPressCount = 0;
     private boolean isMediaButtonHandling = false;
+    private boolean isRunningFreground = false;
 
     //参数变量
     private final int notificationID = 888;
@@ -82,16 +84,18 @@ public class AudioService extends Service {
     public static final String NOTIFICATION_COVER = "ac4";
     //手动更新状态
     public static final String NOTIFICATION_REFRESH = "ac5";
+    //点击关闭I按钮
+    public static final String NOTIFICATION_CLOSE = "ac6";
 
     //全局参数变量  -- 音频变化广播Action
     //有音频被播放
-    public static final String AUDIO_PLAY = "ac6";
+    public static final String AUDIO_PLAY = "ac7";
     //有音频被暂停
-    public static final String AUDIO_PAUSED = "ac7";
+    public static final String AUDIO_PAUSED = "ac8";
     //有音频从暂停中恢复
-    public static final String AUDIO_RESUMED = "ac8";
+    public static final String AUDIO_RESUMED = "ac9";
     //当音频进行切换
-    public static final String AUDIO_SWITCH = "ac9";
+    public static final String AUDIO_SWITCH = "ac10";
 
     /**
      * 当音频服务创建的时候
@@ -126,8 +130,6 @@ public class AudioService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Logger.warnning(TAG,"onBind");
-        showNotification();
-        updateNotification();
         return new ServiceObject();
     }
 
@@ -188,6 +190,7 @@ public class AudioService extends Service {
             filter.addAction(NOTIFICATION_MAIN);
             filter.addAction(NOTIFICATION_NEXT);
             filter.addAction(NOTIFICATION_REFRESH);
+            filter.addAction(NOTIFICATION_CLOSE);
         }
 
         @Override
@@ -217,6 +220,9 @@ public class AudioService extends Service {
                     updateNotification();
                     result = false; //不重复更新状态栏布局
                     break;
+                case NOTIFICATION_CLOSE:
+                     closeApp();
+                    break;
             }
 
             if (result){
@@ -228,7 +234,7 @@ public class AudioService extends Service {
     }
 
     /**
-     * 耳机广播接收器 蓝牙耳机 & 有线耳机
+     * 耳机拔出广播接收器
      */
     private class HeadsetReceiver extends BroadcastReceiver{
 
@@ -247,20 +253,23 @@ public class AudioService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()){
-                case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
-                    if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
-                        //蓝牙耳机断开连接 同时当前音乐正在播放
-                        core.pauseAudio();
-                    }
-                    break;
-                case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
-                    if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
-                        //有线耳机断开连接 同时当前音乐正在播放
-                        core.pauseAudio();
-                    }
-                    break;
-            }
+           if (isRunningFreground){
+               //当前是正在运行的时候才能通过媒体按键来操作音频
+               switch (intent.getAction()){
+                   case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
+                       if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
+                           //蓝牙耳机断开连接 同时当前音乐正在播放
+                           core.pauseAudio();
+                       }
+                       break;
+                   case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
+                       if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing){
+                           //有线耳机断开连接 同时当前音乐正在播放
+                           core.pauseAudio();
+                       }
+                       break;
+               }
+           }
         }
 
     }
@@ -287,7 +296,13 @@ public class AudioService extends Service {
             if (intent != null && intent.hasExtra("state")){
                 final boolean isPlugIn = intent.getExtras().getInt("state") == 1;
                 if (isPlugIn){
-                    resume();
+
+                    if (getAudioStatus() == AudioCore.AudioStatus.Paused){
+                        //如果插入耳机的时候 , 当前有暂停的音频 , 则会继续播放 , 同时显示状态栏数据
+                        showNotification();
+                        resume();
+                    }
+
                 }
             }
         }
@@ -349,7 +364,7 @@ public class AudioService extends Service {
      * @param keyIntent 广播得到的 Intent
      */
     public synchronized void onMediaButtonPress(Intent keyIntent){
-        if ( ! isMediaButtonHandling ){
+        if ( isRunningFreground && ! isMediaButtonHandling ){
             //如果当前没有正在处理上一次的媒体按钮事件 , 即可开始响应接下来的事件
             switch (keyIntent.getAction()){
                 case Intent.ACTION_MEDIA_BUTTON:
@@ -379,22 +394,25 @@ public class AudioService extends Service {
     /**
      * 显示状态栏的   Notification       同时进入后台模式
      */
-    private void showNotification(){
+    public void showNotification(){
         if (nm == null || notification == null){
             //如果Notification 为空 或 NotificationManager为空 , 则重新创建对象
             initNotification();
         }
-        startForeground(notificationID,notification);
+        if (!isRunningFreground){
+            startForeground(notificationID,notification);
+            isRunningFreground = true;
+        }
         Logger.warnning(TAG,"音频服务正在后台运行");
     }
 
     /**
      * 更新当前播放的音频信息数据到   Notification
      */
-    private void updateNotification(){
+    public void updateNotification(){
         SongItem songItem = core.getPlayingSong();
         System.out.println("updateNotification");
-        if (smallRemoteView != null && remoteView != null && songItem != null){
+        if (isRunningFreground && smallRemoteView != null && remoteView != null && songItem != null){
             Logger.warnning(TAG,"已更新状态栏布局. 歌曲:"+songItem.getTitle());
             //如果有歌曲信息
             //更新标题
@@ -437,7 +455,7 @@ public class AudioService extends Service {
                     break;
 
             }
-        }else if (smallRemoteView != null && remoteView != null){
+        }else if (isRunningFreground && smallRemoteView != null && remoteView != null){
             Logger.warnning(TAG,"更新状态栏失败 , 使用默认文字资源. 原因:当前没有歌曲加载");
             //更新标题
             remoteView.setTextViewText(R.id.notification_title,getResources().getText(R.string.notification_string_empty));
@@ -463,6 +481,7 @@ public class AudioService extends Service {
      */
     private void hideNotification(){
         stopForeground(true);
+        isRunningFreground = false;
         Logger.warnning(TAG,"音频服务已停止后台运行");
     }
 
@@ -485,6 +504,11 @@ public class AudioService extends Service {
             //如果创建回调成功 , 则开始创建Notification对象
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder.setTicker(getResources().getText(R.string.notification_ticker));
+            if (Build.VERSION.SDK_INT  >= 23){
+                builder.setColor(getColor(R.color.backgroundColor_Dark));
+            }else {
+                builder.setColor(getResources().getColor(R.color.backgroundColor_Dark));
+            }
             builder.setSmallIcon(R.drawable.ic_action_small_icon);
             builder.setOngoing(true);
             builder.setCustomBigContentView(remoteView);
@@ -499,6 +523,11 @@ public class AudioService extends Service {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder.setTicker(getResources().getText(R.string.notification_ticker));
             builder.setSmallIcon(R.drawable.ic_action_small_icon);
+            if (Build.VERSION.SDK_INT  >= 23){
+                builder.setColor(getColor(R.color.backgroundColor_Dark));
+            }else {
+                builder.setColor(getResources().getColor(R.color.backgroundColor_Dark));
+            }
             builder.setOngoing(true);
             builder.setContentText("点击返回主界面");
             builder.setContentIntent(pendingIntent);
@@ -529,6 +558,9 @@ public class AudioService extends Service {
             smallRemoteView.setOnClickPendingIntent(R.id.notification_back,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_BACK),0));
             //封面点击广播
             remoteView.setOnClickPendingIntent(R.id.notification_cover,pendingIntent);
+            //关闭按钮点击广播
+            remoteView.setOnClickPendingIntent(R.id.notification_close,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_CLOSE),0));
+            smallRemoteView.setOnClickPendingIntent(R.id.notification_close,PendingIntent.getBroadcast(getApplicationContext(),0,new Intent(NOTIFICATION_CLOSE),0));
             //注册监听的广播接收器
             registerReceiver(notificationControl,notificationControl.filter);
             notificationControl.registered = true;
@@ -539,12 +571,27 @@ public class AudioService extends Service {
     }
 
     /**
+     * 关闭App的所有页面 , 但不退出服务
+     */
+    private void closeApp(){
+        //结束掉所有Activity页面
+        ActivityManager.getInstance().release();
+        //不显示当前的状态栏
+        hideNotification();
+        //暂停当前的播放
+        pause();
+    }
+
+    /**
      * 播放音频
      * @param songList  要播放的音频列表
      * @param playIndex  要播放的音频位置
      * @return  执行结果
      */
     public boolean play(ArrayList<SongItem> songList , int playIndex){
+        if(!isRunningFreground){
+            showNotification();
+        }
         boolean result = core.play(songList, playIndex);
         if (remoteView != null){
             updateNotification();
