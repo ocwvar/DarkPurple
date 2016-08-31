@@ -1,3 +1,4 @@
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png) 
 # *DarkPurple Music player*
 
 #### 深紫 音乐播放器
