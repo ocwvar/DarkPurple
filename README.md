@@ -14,6 +14,7 @@
 - 上面那条默认屏蔽 不能让游客看到 还有你的第6条呢
 
 ###预览效果 (更新于:2016/8/31)
+####如果加载卡顿请直接打开gif文件:https://github.com/ocwvar/DarkPurple/blob/master/preview.gif
 ![](https://github.com/ocwvar/DarkPurple/blob/master/preview.gif)
 
 
