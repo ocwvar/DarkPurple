@@ -111,7 +111,14 @@
     <string name="setting_defaultValue_musicFolder"> </string>
 
     <string name="setting_title_lengthLimit">最短歌曲长度(单位:秒)</string>
+    <string name="setting_info_lengthLimit">当扫描的歌曲长度小于设置的长度时将不识别进行跳过</string>
     <string name="setting_defaultValue_lengthLimit">20</string>
+
+    <string name="setting_title_isListenMediaButton">监听耳机按钮</string>
+    <string name="setting_info_isListenMediaButton">响应耳机按钮对应的操作: \n1次-暂停/播放 2次-下一首  3次-上一首</string>
+
+    <string name="setting_title_isResumeAudioWhenPlugin">监听耳机插入/连接</string>
+    <string name="setting_info_isResumeAudioWhenPlugin">在耳机重新插入/连接上的时候继续播放上次被暂停的音频</string>
 
     <!--播放界面文字-->
     <string name="main_default_title">当前没有播放数据</string>

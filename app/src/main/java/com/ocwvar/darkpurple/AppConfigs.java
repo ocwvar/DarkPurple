@@ -55,8 +55,11 @@ public class AppConfigs {
     //歌曲列表排序类型
     public static MediaScanner.SortType SortType = MediaScanner.SortType.ByName;
 
-    //歌曲储存分隔符
-    public static final String SeparationChar = "⊙";
+    //是否监听耳机的多媒体按钮
+    public static boolean isListenMediaButton = true;
+
+    //是否在耳机重新插入/连接之后继续播放
+    public static boolean isResumeAudioWhenPlugin = true;
 
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
@@ -86,6 +89,11 @@ public class AppConfigs {
             NevBarHeight = preferences.getInt("NevBarHeight",-1);
 
             IsFirstBoot = !preferences.contains("isNotFirstRunning");
+
+            isListenMediaButton = preferences.getBoolean("isListenMediaButton" , true);
+
+            isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin" , true);
+
             preferences.edit().putBoolean("isNotFirstRunning",true).apply();
 
             String value = preferences.getString("scanner_sort_type","0");
@@ -118,6 +126,10 @@ public class AppConfigs {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationContext);
 
             LengthLimited = Integer.parseInt(preferences.getString("length_limit","35")) * 1000L;
+
+            isListenMediaButton = preferences.getBoolean("isListenMediaButton" , true);
+
+            isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin" , true);
 
             String value = preferences.getString("scanner_sort_type","0");
             switch (value){

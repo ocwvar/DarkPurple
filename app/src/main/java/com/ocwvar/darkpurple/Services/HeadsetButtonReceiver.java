@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.ocwvar.darkpurple.AppConfigs;
+
 /**
  * Project DarkPurple
  * Created by 区成伟
@@ -20,7 +22,9 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        audioService.onMediaButtonPress(intent);
+        if (AppConfigs.isListenMediaButton){
+            audioService.onMediaButtonPress(intent);
+        }
     }
 
 }

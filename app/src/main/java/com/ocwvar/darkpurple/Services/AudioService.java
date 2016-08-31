@@ -293,7 +293,7 @@ public class AudioService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null && intent.hasExtra("state")){
+            if (intent != null && intent.hasExtra("state") && AppConfigs.isResumeAudioWhenPlugin){
                 final boolean isPlugIn = intent.getExtras().getInt("state") == 1;
                 if (isPlugIn){
 

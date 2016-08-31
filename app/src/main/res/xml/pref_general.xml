@@ -19,4 +19,18 @@
         android:defaultValue="0"
         />
 
+    <CheckBoxPreference
+        android:key="isResumeAudioWhenPlugin"
+        android:title="@string/setting_title_isResumeAudioWhenPlugin"
+        android:summary="@string/setting_info_isResumeAudioWhenPlugin"
+        android:defaultValue="true"
+        />
+
+    <CheckBoxPreference
+        android:key="isListenMediaButton"
+        android:title="@string/setting_title_isListenMediaButton"
+        android:summary="@string/setting_info_isListenMediaButton"
+        android:defaultValue="true"
+        />
+
 </PreferenceScreen>
