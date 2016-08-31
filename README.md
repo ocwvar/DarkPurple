@@ -13,17 +13,7 @@
 - 啊 这个玩意儿 很多BUG的  作者又懒的不行
 - 上面那条默认屏蔽 不能让游客看到 还有你的第6条呢
 
-##下面就是截图啦
-####在我做完未来的功能之后 , 会做Android 5.0+的酷炫动画适配哦 (哦你妹
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-175023.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-174905.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-174919.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-174929.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-174934.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-174941.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-174949.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-175023.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-175035.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/screenshots/Screenshot_20160817-175040.jpg)
+###预览效果 (更新于:2016/8/31)
+![](https://github.com/ocwvar/DarkPurple/blob/master/preview.gif)
 
 
