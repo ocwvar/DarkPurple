@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.R;
+import com.ocwvar.darkpurple.Units.MediaScanner;
 
 /**
  * Created by 区成伟
@@ -88,7 +89,13 @@ public class AllMusicFragment extends Fragment {
         }
 
         workFragment.initData();
-        workFragment.refreshData();
+        if (MediaScanner.getInstance().isHasCachedData()){
+            //如果有上一次搜索的记录缓存 , 则直接使用
+            workFragment.getLastTimeData();
+        }else {
+            //如果没有缓存 , 则重新搜索数据
+            workFragment.refreshData();
+        }
 
     }
 

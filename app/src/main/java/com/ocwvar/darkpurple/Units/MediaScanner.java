@@ -134,6 +134,30 @@ public class MediaScanner {
     }
 
     /**
+     * 检查是否有上一次储存的数据
+     * @return  数据是否可用
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public boolean isHasCachedData(){
+        File cachedFile = new File(JSONHandler.folderPath+AppConfigs.CACHE_NAME+".pl");
+        if ( cachedFile.exists() && cachedFile.length() > 0){
+            cachedFile = null;
+            return true;
+        }else {
+            cachedFile.delete();
+            cachedFile = null;
+            return false;
+        }
+    }
+
+    /**
+     * 读取上次缓存的数据
+     */
+    public void getLastTimeCachedData(){
+        threadExecutor.submit(new FutureTask<>(new LoadCachedData()),LoadCachedData.TAG);
+    }
+
+    /**
      * 扫描器 (扫描本地媒体数据库)
      */
     final class ScanByMediaStore implements Callable<String>{
@@ -155,6 +179,7 @@ public class MediaScanner {
                 //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
                 cacheDatas(arrayList);
             }else {
+                JSONHandler.cacheSearchResult(arrayList);
                 onCompleted(arrayList);
             }
 
@@ -403,6 +428,7 @@ public class MediaScanner {
                     //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
                     cacheDatas(arrayList);
                 }else {
+                    JSONHandler.cacheSearchResult(arrayList);
                     onCompleted(arrayList);
                 }
             }
@@ -637,6 +663,38 @@ public class MediaScanner {
                 item += 1;
             }
             return color;
+        }
+
+    }
+
+    /**
+     * 加载上一次搜索记录线程
+     */
+    final class LoadCachedData implements Callable<String>{
+        final public static String TAG = "LoadCachedData";
+
+        @Override
+        public String call() throws Exception {
+
+            ArrayList<SongItem> cachedList = JSONHandler.loadPlaylist(AppConfigs.CACHE_NAME);
+
+            if (callback == null){
+                cacheDatas(cachedList);
+            }else {
+                onCompleted(cachedList);
+            }
+
+            threadExecutor.removeTag(TAG);
+            return null;
+        }
+
+        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList){
+            runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onScanCompleted(arrayList);
+                }
+            });
         }
 
     }

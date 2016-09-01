@@ -201,6 +201,17 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     }
 
     /**
+     * 获取上一次 的搜索记录
+     */
+    public void getLastTimeData(){
+        if (loadingPanel != null) {
+            loadingPanel.setVisibility(View.VISIBLE);
+        }
+        MediaScanner.getInstance().setCallback(this);
+        MediaScanner.getInstance().getLastTimeCachedData();
+    }
+
+    /**
      * 刷新数据
      */
     public void refreshData() {
@@ -395,7 +406,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     /**
      * 播放列表选择对话框ViewHolder
      */
-    class SelectPlaylistDialogHolder implements AdapterView.OnItemClickListener {
+    private final class SelectPlaylistDialogHolder implements AdapterView.OnItemClickListener {
 
         View itemView;
         ListView listView;

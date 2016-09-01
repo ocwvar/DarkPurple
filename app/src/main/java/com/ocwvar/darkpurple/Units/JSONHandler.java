@@ -120,6 +120,89 @@ public class JSONHandler {
     }
 
     /**
+     * 缓存搜索记录
+     * @param playlist 搜索得到的数据
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void cacheSearchResult(ArrayList<SongItem> playlist){
+        final String TAG = "搜索记录缓存";
+        if (playlist == null){
+            Logger.error(TAG,"缓存列表为 NULL , 不进行缓存");
+            return;
+        }
+
+        File dataFile = new File(folderPath);
+        dataFile.mkdirs();
+        dataFile = new File(folderPath+AppConfigs.CACHE_NAME+".pl");
+        if (!dataFile.exists()){
+            try {
+                dataFile.createNewFile();
+            } catch (IOException e) {
+                //文件创建失败 , 则保存失败
+                Logger.error(TAG,"文件创建失败");
+                return;
+            }
+        }
+
+        //创建一个JsonArray用于存放整个数据
+        JsonArray jsonArray = new JsonArray();
+
+        for (SongItem singleSong : playlist) {
+            JsonObject object = new JsonObject();
+            object.addProperty("name",singleSong.getTitle());
+            object.addProperty("path",singleSong.getPath());
+            object.addProperty("album",singleSong.getAlbum());
+            object.addProperty("artist",singleSong.getArtist());
+            object.addProperty("filename",singleSong.getFileName());
+            object.addProperty("length",Long.toString(singleSong.getLength()));
+            object.addProperty("albumid",Long.toString(singleSong.getAlbumID()));
+            object.addProperty("color",Integer.toString(singleSong.getPaletteColor()));
+            object.addProperty("ishavecover",singleSong.isHaveCover());
+            if (singleSong.getAlbumCoverUri() == null){
+                object.addProperty("albumuri","");
+            }else {
+                object.addProperty("albumuri",singleSong.getAlbumCoverUri().toString());
+            }
+
+            jsonArray.add(object);
+        }
+
+        //创建字节缓冲数组
+        byte[] buffer = new byte[512];
+        //创建字符串字节数组
+        byte[] jsonArrayByteArray;
+        try {
+            jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Logger.error(TAG,"保存搜索结果数据时UTF-8转码出现异常 , 使用默认编码");
+            jsonArrayByteArray = jsonArray.toString().getBytes();
+        }
+        //读取的长度
+        int length;
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(dataFile,false);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonArrayByteArray);
+            while ((length = byteArrayInputStream.read(buffer)) != -1){
+                fileOutputStream.write(buffer,0,length);
+            }
+            byteArrayInputStream.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            byteArrayInputStream = null;
+            fileOutputStream = null;
+            dataFile = null;
+        } catch (Exception e) {
+            //无法创建数据输出流
+            jsonArray = null;
+            buffer = null;
+            dataFile = null;
+            Logger.error(TAG,"创建文件输出流失败");
+        }
+        Logger.warnning(TAG,"搜索结果保存成功 !");
+    }
+
+    /**
      * 从文件读取Json形式保存的播放列表数据
      * @param name  播放列表名称
      * @return  如果读取成功 , 则返回歌曲列表 , 否则返回 NULL
@@ -213,6 +296,9 @@ public class JSONHandler {
 
                     if (isJsonObjectVaild( object , "albumuri" )){
                         songItem.setAlbumCoverUri(Uri.parse(object.get("albumuri").getAsString()));
+                        if (TextUtils.isEmpty(songItem.getAlbumCoverUri().getPath())){
+                            songItem.setAlbumCoverUri(null);
+                        }
                     }else {
                         songItem.setAlbumCoverUri(null);
                     }

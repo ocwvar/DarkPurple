@@ -60,10 +60,18 @@ public class PlaylistUnits {
         return playlistUnits;
     }
 
+    /**
+     * 设置播放列表读取回调
+     * @param loadingCallbacks  回调接口
+     */
     public void setPlaylistLoadingCallbacks(PlaylistLoadingCallbacks loadingCallbacks) {
         this.loadingCallbacks = loadingCallbacks;
     }
 
+    /**
+     * 设置播放列表变动回调
+     * @param changedCallbacks  回调接口
+     */
     public void setPlaylistChangedCallbacks(PlaylistChangedCallbacks changedCallbacks) {
         this.changedCallbacks = changedCallbacks;
     }
@@ -379,5 +387,7 @@ public class PlaylistUnits {
         }
 
     }
+
+
 
 }

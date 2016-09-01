@@ -34,6 +34,9 @@ public class AppConfigs {
     //未知文字占位资源
     public static String UNKNOWN = "未知";
 
+    //系统保留播放列表名字 , 用于缓存上一次的搜索记录
+    public final static String CACHE_NAME = ".cached";
+
     //应用是否为第一次启动
     public static boolean IsFirstBoot = true;
 
