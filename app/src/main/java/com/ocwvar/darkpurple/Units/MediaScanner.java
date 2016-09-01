@@ -678,6 +678,18 @@ public class MediaScanner {
 
             ArrayList<SongItem> cachedList = JSONHandler.loadPlaylist(AppConfigs.CACHE_NAME);
 
+            if (cachedList != null){
+                //进行歌曲文件的排序
+                switch (AppConfigs.SortType){
+                    case ByDate:
+                        Collections.sort(cachedList,new ComparatorByData());
+                        break;
+                    case ByName:
+                        Collections.sort(cachedList,new ComparatorByName());
+                        break;
+                }
+            }
+
             if (callback == null){
                 cacheDatas(cachedList);
             }else {
