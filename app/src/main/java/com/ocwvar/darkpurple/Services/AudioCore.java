@@ -9,6 +9,7 @@ import com.ocwvar.darkpurple.Units.Logger;
 import com.un4seen.bass.BASS;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
@@ -23,6 +24,7 @@ public class AudioCore {
 
     private Context applicationContext;
 
+    private ByteBuffer byteBuffer;
     private int playingChannel = 0;
     private ArrayList<SongItem> songList;
     private int playingIndex = -1;
@@ -71,6 +73,27 @@ public class AudioCore {
         }else {
             return false;
         }
+    }
+
+    /**
+     * 得到当前的频谱
+     * @return  频谱数据数组
+     */
+    public float[] getSpectrum() {
+
+        if (playingChannel == 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_PLAYING){
+            return null;
+        }else {
+            if (byteBuffer == null){
+                byteBuffer = ByteBuffer.allocate(256 << 1);
+                byteBuffer.order(null);
+            }
+            BASS.BASS_ChannelGetData(playingChannel,byteBuffer,BASS.BASS_DATA_FFT256);
+            float[] spectrum = new float[256 >> 1];
+            byteBuffer.asFloatBuffer().get(spectrum);
+            return spectrum;
+        }
+
     }
 
     /**

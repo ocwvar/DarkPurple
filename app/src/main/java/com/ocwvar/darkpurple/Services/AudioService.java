@@ -634,6 +634,14 @@ public class AudioService extends Service {
     }
 
     /**
+     * 获取频谱数据
+     * @return  当前声音的频谱数据
+     */
+    public float[] getSpectrum(){
+        return core.getSpectrum();
+    }
+
+    /**
      * 释放歌曲占用的资源
      * @return  执行结果
      */

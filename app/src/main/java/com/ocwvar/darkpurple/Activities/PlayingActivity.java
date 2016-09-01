@@ -24,16 +24,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.CoverShowerAdapter;
@@ -47,6 +53,7 @@ import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.ocwvar.darkpurple.Units.SurfaceViewControler;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -62,7 +69,7 @@ import java.util.Locale;
  * Project: DarkPurple
  * 正在播放页面
  */
-public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener, SlidingListAdapter.OnSlidingMenuClickCallback {
+public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener, SlidingListAdapter.OnSlidingMenuClickCallback, CompoundButton.OnCheckedChangeListener {
 
     //音频服务
     AudioService audioService;
@@ -76,7 +83,6 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
     AudioChangeReceiver audioChangeReceiver;
     //滚动条控制器
     SeekBarControler seekBarControler;
-
     //侧滑父容器
     DrawerLayout drawerLayout;
     //封面轮播控件
@@ -89,10 +95,15 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
     ImageButton mainButton;
     //歌曲进度条
     SeekBar musicSeekBar;
+    //动画切换器
+    SwitchCompat switchCompat;
     //侧滑快捷切歌列表
     RecyclerView recyclerView;
+    //用于显示频谱的SurfaceView
+    SurfaceView surfaceView;
+    SurfaceViewControler surfaceViewControler;
     //模糊画面显示位置
-    View backGround;
+    View backGround , surfaceViewBG;
 
     //侧滑菜单适配器
     SlidingListAdapter slidingListAdapter;
@@ -132,9 +143,13 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
         audioChangeReceiver = new AudioChangeReceiver();
         playingList = new ArrayList<>();
+        surfaceViewControler = new SurfaceViewControler();
         showerAdapter = new CoverShowerAdapter(playingList);
 
+        surfaceViewBG = findViewById(R.id.surfaceViewBG);
         backGround = findViewById(R.id.contener);
+        switchCompat = (SwitchCompat)findViewById(R.id.switcher);
+        surfaceView = (SurfaceView)findViewById(R.id.surfaceView);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
         recyclerView = (RecyclerView)findViewById(R.id.recycleView);
         coverShower = (ViewPager)findViewById(R.id.coverShower);
@@ -145,6 +160,10 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
         restTime = (TextView)findViewById(R.id.shower_rest_position);
         mainButton = (ImageButton)findViewById(R.id.shower_mainButton);
         musicSeekBar = (SeekBar) findViewById(R.id.seekBar);
+
+        //设置频谱的控制器
+        switchCompat.setOnCheckedChangeListener(this);
+        surfaceView.getHolder().addCallback(surfaceViewControler);
 
         //Toolbar属性设置
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -223,6 +242,9 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
         if (updatingTimerThread != null){
             updatingTimerThread.interrupt();
             updatingTimerThread = null;
+        }
+        if (switchCompat.isChecked()){
+            switchCompat.toggle();
         }
     }
 
@@ -385,13 +407,27 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
                 if (audioService != null){
                     switch (audioService.getAudioStatus()){
                         case Playing:
+                            //当前是播放状态 , 则执行暂停操作
                             audioService.pause();
                             mainButton.setImageResource(R.drawable.ic_action_play);
+                            if (surfaceView.isShown()){
+                                //如果当前正在显示频谱 , 则停止刷新
+                                if (surfaceViewControler.isDrawing()){
+                                    surfaceViewControler.stop();
+                                }
+                            }
                             break;
                         case Stopped:
                         case Paused:
+                            //当前是暂停/停止状态 , 则执行继续播放操作
                             audioService.resume();
                             mainButton.setImageResource(R.drawable.ic_action_pause);
+                            if (surfaceView.isShown()){
+                                //如果当前正在显示频谱 , 则开始
+                                if (!surfaceViewControler.isDrawing()){
+                                    surfaceViewControler.start();
+                                }
+                            }
                             break;
                     }
                     //更新播放按钮状态
@@ -458,6 +494,75 @@ public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPa
     public void onSlidingMenuClick(SongItem songItem, int position) {
         audioService.play(playingList,position);
         updateInfomation(false);
+    }
+
+    /**
+     * 切换是否显示频谱效果
+     * @param isSwitchOn    当前是否被打开了
+     */
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean isSwitchOn) {
+        //先让控件不可用
+        switchCompat.setEnabled(false);
+        switchCompat.setAlpha(0.5f);
+
+        //判断用户是要显示还是隐藏动画
+        if (isSwitchOn){
+            //显示频谱动画的时候 , 先执行背景淡入动画 , 动画结束后显示SurfaceView , 然后开始绘制频谱动画
+            final Animation anim = new AlphaAnimation(0f,1f);
+            anim.setDuration(500);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    //当动画演示完成
+                    switchCompat.setEnabled(true);
+                    switchCompat.setAlpha(1f);
+                    surfaceView.setVisibility(View.VISIBLE);
+                    if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing){
+                        //如果当前是正在播放 , 才执行动画
+                        surfaceViewControler.start();
+                    }
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            surfaceViewBG.startAnimation(anim);
+            surfaceViewBG.setVisibility(View.VISIBLE);
+        }else {
+            //不显示频谱动画的时候 , 隐藏SurfaceView 和 SurfaceView BG , 然后停止动画刷新
+            final Animation anim = new AlphaAnimation(1f,0f);
+            anim.setDuration(500);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    //当动画演示完成
+                    switchCompat.setEnabled(true);
+                    switchCompat.setAlpha(1f);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            surfaceViewControler.stop();
+            surfaceView.setVisibility(View.GONE);
+            surfaceViewBG.startAnimation(anim);
+            surfaceViewBG.setVisibility(View.GONE);
+        }
     }
 
     /**
