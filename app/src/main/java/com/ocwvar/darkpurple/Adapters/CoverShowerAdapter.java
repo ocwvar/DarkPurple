@@ -61,7 +61,7 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final int viewPagerWidth = container.getMeasuredWidth();
 
-        final int imageWidth = (int)(viewPagerWidth / 1.5f);
+        final int imageWidth = (int)(viewPagerWidth / 1.6f);
 
         if (songItem.isHaveCover()){
             //如果先前缓存有图像 , 则开始读取

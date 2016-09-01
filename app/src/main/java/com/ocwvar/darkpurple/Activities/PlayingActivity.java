@@ -39,7 +39,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.CoverShowerAdapter;
@@ -69,7 +68,8 @@ import java.util.Locale;
  * Project: DarkPurple
  * 正在播放页面
  */
-public class PlayingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener, SlidingListAdapter.OnSlidingMenuClickCallback, CompoundButton.OnCheckedChangeListener {
+public class PlayingActivity extends AppCompatActivity
+        implements ViewPager.OnPageChangeListener, View.OnClickListener, SlidingListAdapter.OnSlidingMenuClickCallback, CompoundButton.OnCheckedChangeListener {
 
     //音频服务
     AudioService audioService;
