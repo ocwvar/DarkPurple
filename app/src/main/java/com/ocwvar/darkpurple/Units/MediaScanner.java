@@ -51,13 +51,13 @@ public class MediaScanner {
     private boolean isUpdated = false;
 
     public MediaScanner() {
-        threadExecutor = new OCThreadExecutor(1,"Scanner");
+        threadExecutor = new OCThreadExecutor(1, "Scanner");
         handler = new Handler(Looper.getMainLooper());
         cachedList = new ArrayList<>();
     }
 
     public static synchronized MediaScanner getInstance() {
-        if (mediaScanner == null){
+        if (mediaScanner == null) {
             mediaScanner = new MediaScanner();
         }
         return mediaScanner;
@@ -65,11 +65,12 @@ public class MediaScanner {
 
     /**
      * UI 线程
+     *
      * @param runnable 在UI线程运行的任务
      */
-    private void runOnUIThread(Runnable runnable){
+    private void runOnUIThread(Runnable runnable) {
         boolean done = handler.post(runnable);
-        while (!done){
+        while (!done) {
             handler = new Handler(Looper.getMainLooper());
             runOnUIThread(runnable);
         }
@@ -77,7 +78,8 @@ public class MediaScanner {
 
     /**
      * 设置扫描器回调接口
-     * @param callback  回调接口
+     *
+     * @param callback 回调接口
      */
     public void setCallback(@Nullable MediaScannerCallback callback) {
         this.callback = callback;
@@ -85,29 +87,26 @@ public class MediaScanner {
 
     /**
      * 缓存数据结果
+     *
      * @param datas 要缓存的数据
      */
-    private void cacheDatas(ArrayList<SongItem> datas){
+    private void cacheDatas(ArrayList<SongItem> datas) {
         isUpdated = true;
         cachedList.clear();
-        if (datas != null){
+        if (datas != null) {
             cachedList.addAll(datas);
         } //如果就算没扫描到结果 , 也当作是扫描结果
     }
 
     /**
      * 得到缓存之后的数据
-     * @return  缓存数据
+     *
+     * @return 缓存数据
      */
-    public ArrayList<SongItem> getCachedDatas(){
+    public ArrayList<SongItem> getCachedDatas() {
         isUpdated = false;
         return cachedList;
     }
-
-    /**
-     * 列表排序类型枚举
-     */
-    public enum SortType{       ByDate , ByName     }
 
     /**
      * 数据是否有更新
@@ -119,31 +118,32 @@ public class MediaScanner {
     /**
      * 开始扫描 , 如果有已缓存的数据 则直接返回数据
      */
-    public void start(){
-        if (isUpdated && callback != null){
+    public void start() {
+        if (isUpdated && callback != null) {
             callback.onScanCompleted(cachedList);
-        }else {
-            if (AppConfigs.MusicFolders == null){
+        } else {
+            if (AppConfigs.MusicFolders == null) {
                 //如果没有设置音乐文件夹 , 则从媒体数据库中获取
-                threadExecutor.submit(new FutureTask<>( new ScanByMediaStore() ) , ScanByMediaStore.TAG);
-            }else {
+                threadExecutor.submit(new FutureTask<>(new ScanByMediaStore()), ScanByMediaStore.TAG);
+            } else {
                 //如果有设置音乐文件夹 , 则扫描每个目录
-                threadExecutor.submit(new FutureTask<>( new ScanByFolder(AppConfigs.MusicFolders) ) , ScanByFolder.TAG);
+                threadExecutor.submit(new FutureTask<>(new ScanByFolder(AppConfigs.MusicFolders)), ScanByFolder.TAG);
             }
         }
     }
 
     /**
      * 检查是否有上一次储存的数据
-     * @return  数据是否可用
+     *
+     * @return 数据是否可用
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public boolean isHasCachedData(){
-        File cachedFile = new File(JSONHandler.folderPath+AppConfigs.CACHE_NAME+".pl");
-        if ( cachedFile.exists() && cachedFile.length() > 0){
+    public boolean isHasCachedData() {
+        File cachedFile = new File(JSONHandler.folderPath + AppConfigs.CACHE_NAME + ".pl");
+        if (cachedFile.exists() && cachedFile.length() > 0) {
             cachedFile = null;
             return true;
-        }else {
+        } else {
             cachedFile.delete();
             cachedFile = null;
             return false;
@@ -153,14 +153,21 @@ public class MediaScanner {
     /**
      * 读取上次缓存的数据
      */
-    public void getLastTimeCachedData(){
-        threadExecutor.submit(new FutureTask<>(new LoadCachedData()),LoadCachedData.TAG);
+    public void getLastTimeCachedData() {
+        threadExecutor.submit(new FutureTask<>(new LoadCachedData()), LoadCachedData.TAG);
+    }
+
+    /**
+     * 列表排序类型枚举
+     */
+    public enum SortType {
+        ByDate, ByName
     }
 
     /**
      * 扫描器 (扫描本地媒体数据库)
      */
-    final class ScanByMediaStore implements Callable<String>{
+    final class ScanByMediaStore implements Callable<String> {
 
         final public static String TAG = "ScanByMediaStore";
         final private Context context = AppConfigs.ApplicationContext;
@@ -171,14 +178,14 @@ public class MediaScanner {
             ArrayList<SongItem> arrayList = null;
 
             try {
-                arrayList  = core();
+                arrayList = core();
             } catch (Exception ignored) {
             }
 
-            if (callback == null){
+            if (callback == null) {
                 //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
                 cacheDatas(arrayList);
-            }else {
+            } else {
                 JSONHandler.cacheSearchResult(arrayList);
                 onCompleted(arrayList);
             }
@@ -187,7 +194,7 @@ public class MediaScanner {
             return null;
         }
 
-        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList){
+        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList) {
             runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
@@ -198,21 +205,24 @@ public class MediaScanner {
 
         /**
          * 扫描媒体库
-         * @return  扫描结果,如果没有数据或失败则返回Null
-         * @throws Exception    执行过程中产生的异常
+         *
+         * @return 扫描结果, 如果没有数据或失败则返回Null
+         * @throws Exception 执行过程中产生的异常
          */
-        private @Nullable ArrayList<SongItem> core() throws Exception{
+        private
+        @Nullable
+        ArrayList<SongItem> core() throws Exception {
             //从系统媒体数据库扫描
-            final Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+            final Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
 
-            if (cursor != null && cursor.getCount() > 0){
+            if (cursor != null && cursor.getCount() > 0) {
                 ArrayList<SongItem> songList = new ArrayList<>();
 
-                while (cursor.moveToNext()){
+                while (cursor.moveToNext()) {
 
                     String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
 
-                    if (isMusicFile(fileName)){
+                    if (isMusicFile(fileName)) {
                         //如果当前的是支持的歌曲文件格式 , 则开始解析
                         SongItem songItem = new SongItem();
 
@@ -228,26 +238,25 @@ public class MediaScanner {
                             //如果歌曲长度不符合最低要求 , 则不继续解析
                             songItem = null;
                             continue;
-                        }
-                        else {
+                        } else {
                             songItem.setLength(length);
                         }
 
                         //标题
                         songItem.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-                        if (TextUtils.isEmpty(songItem.getTitle())){
+                        if (TextUtils.isEmpty(songItem.getTitle())) {
                             //如果无法获取到歌曲名 , 则使用文件名代替
                             songItem.setTitle(songItem.getFileName());
                         }
                         //专辑名
                         songItem.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                        if (TextUtils.isEmpty(songItem.getAlbum())){
+                        if (TextUtils.isEmpty(songItem.getAlbum())) {
                             //如果无法获取到专辑名 , 则使用未知代替
                             songItem.setAlbum(AppConfigs.UNKNOWN);
                         }
                         //作者
                         songItem.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                        if (TextUtils.isEmpty(songItem.getArtist())){
+                        if (TextUtils.isEmpty(songItem.getArtist())) {
                             //如果无法获取到歌手名 , 则使用未知代替
                             songItem.setArtist(AppConfigs.UNKNOWN);
                         }
@@ -255,16 +264,16 @@ public class MediaScanner {
 
                         //专辑ID  主要用于读取封面图像
                         final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-                        if (albumID > 0){
+                        if (albumID > 0) {
                             songItem.setAlbumID(albumID);
-                            songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),albumID));
+                            songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumID));
                         }
 
-                        Logger.normal("媒体库扫描器",songItem.getTitle());
+                        Logger.normal("媒体库扫描器", songItem.getTitle());
                         cacheAlbumCover(songItem);
 
                         songList.add(songItem);
-                    }else {
+                    } else {
                         fileName = null;
                         continue;
                     }
@@ -273,12 +282,12 @@ public class MediaScanner {
                 cursor.close();
 
                 //进行歌曲文件的排序
-                switch (AppConfigs.SortType){
+                switch (AppConfigs.SortType) {
                     case ByDate:
-                        Collections.sort(songList,new ComparatorByData());
+                        Collections.sort(songList, new ComparatorByData());
                         break;
                     case ByName:
-                        Collections.sort(songList,new ComparatorByName());
+                        Collections.sort(songList, new ComparatorByName());
                         break;
                 }
 
@@ -292,11 +301,12 @@ public class MediaScanner {
 
         /**
          * 判断文件是否为音乐文件
-         * @param fileName  要检查的文件名
-         * @return  有效性
+         *
+         * @param fileName 要检查的文件名
+         * @return 有效性
          */
-        private boolean isMusicFile(String fileName){
-            if (TextUtils.isEmpty(fileName)){
+        private boolean isMusicFile(String fileName) {
+            if (TextUtils.isEmpty(fileName)) {
                 return false;
             }
 
@@ -307,41 +317,43 @@ public class MediaScanner {
                 //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
                 return false;
             }
-            if (temp.length >= 1){
+            if (temp.length >= 1) {
                 //开始从后缀名判断是否为音频文件
-                switch (temp[temp.length-1]){
+                switch (temp[temp.length - 1]) {
                     case "mp3":
                     case "wav":
                         return true;
                     default:
                         return false;
                 }
-            }else {
+            } else {
                 return false;
             }
         }
 
         /**
          * 预先缓存专辑图像
-         * @param songItem  要处理的歌曲信息
+         *
+         * @param songItem 要处理的歌曲信息
          */
-        private void cacheAlbumCover(SongItem songItem){
+        private void cacheAlbumCover(SongItem songItem) {
             Bitmap coverImage = null;
             try {
                 coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
 
-            if (coverImage == null){
+            if (coverImage == null) {
                 try {
-                    coverImage = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(),songItem.getAlbumCoverUri());
-                    CoverImage2File.getInstance().makeImage2File(coverImage,songItem.getPath());
+                    coverImage = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(), songItem.getAlbumCoverUri());
+                    CoverImage2File.getInstance().makeImage2File(coverImage, songItem.getPath());
                 } catch (Exception e) {
-                    Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
+                    Logger.error("媒体库扫描器", "缓存封面图像失败 " + songItem.getTitle());
                     return;
                 }
                 songItem.setHaveCover(true);
                 songItem.setPaletteColor(getAlbumCoverColor(coverImage));
-            }else {
+            } else {
                 songItem.setHaveCover(true);
                 songItem.setPaletteColor(getAlbumCoverColor(coverImage));
             }
@@ -349,10 +361,11 @@ public class MediaScanner {
 
         /**
          * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-         * @param coverImage    封面图像
-         * @return  混合颜色
+         *
+         * @param coverImage 封面图像
+         * @return 混合颜色
          */
-        private int getAlbumCoverColor(Bitmap coverImage){
+        private int getAlbumCoverColor(Bitmap coverImage) {
             Palette palette;
 
             try {
@@ -362,10 +375,10 @@ public class MediaScanner {
                 return AppConfigs.DefaultPaletteColor;
             }
 
-            int color = AppConfigs.DefaultPaletteColor , item = 0;
+            int color = AppConfigs.DefaultPaletteColor, item = 0;
             //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-            while (color == AppConfigs.DefaultPaletteColor && item < 7){
-                switch (item){
+            while (color == AppConfigs.DefaultPaletteColor && item < 7) {
+                switch (item) {
                     case 0:
                         color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
                         break;
@@ -395,17 +408,16 @@ public class MediaScanner {
     /**
      * 文件夹音频扫描器
      */
-    final class ScanByFolder implements Callable<String>{
+    final class ScanByFolder implements Callable<String> {
         final public static String TAG = "ScanByFolder";
-
-        //文件夹路径集合
-        private String[] paths;
         private final FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File file) {
                 return isMusicFile(file);
             }
         };
+        //文件夹路径集合
+        private String[] paths;
 
         public ScanByFolder(String[] paths) {
             this.paths = paths;
@@ -414,20 +426,20 @@ public class MediaScanner {
         @Override
         public String call() throws Exception {
 
-            if (chackFolders(paths)){
+            if (chackFolders(paths)) {
                 //如果设置的目录都合法的话才进行扫描
 
                 ArrayList<SongItem> arrayList = null;
 
                 try {
-                    arrayList  = core();
+                    arrayList = core();
                 } catch (Exception ignored) {
                 }
 
-                if (callback == null){
+                if (callback == null) {
                     //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
                     cacheDatas(arrayList);
-                }else {
+                } else {
                     JSONHandler.cacheSearchResult(arrayList);
                     onCompleted(arrayList);
                 }
@@ -437,7 +449,7 @@ public class MediaScanner {
             return null;
         }
 
-        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList){
+        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList) {
             runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
@@ -448,22 +460,23 @@ public class MediaScanner {
 
         /**
          * 检查目录是否有效
-         * @param paths  目录地址
-         * @return  目录的有效性
+         *
+         * @param paths 目录地址
+         * @return 目录的有效性
          */
-        private boolean chackFolders(String[] paths){
-            if (paths == null || paths.length <= 0){
+        private boolean chackFolders(String[] paths) {
+            if (paths == null || paths.length <= 0) {
                 return false;
-            }else {
-                for (String path: paths) {
-                    if (!TextUtils.isEmpty(path)){
+            } else {
+                for (String path : paths) {
+                    if (!TextUtils.isEmpty(path)) {
                         File folder = new File(path);
                         if (!folder.isDirectory() || !folder.canWrite()) {
                             folder = null;
                             return false;
                         }
                         folder = null;
-                    }else {
+                    } else {
                         return false;
                     }
                 }
@@ -473,14 +486,15 @@ public class MediaScanner {
 
         /**
          * 判断文件是否为音乐文件
-         * @param file  要检查的文件
-         * @return  有效性
+         *
+         * @param file 要检查的文件
+         * @return 有效性
          */
-        private boolean isMusicFile(File file){
-            if (file.length() <= 0){
+        private boolean isMusicFile(File file) {
+            if (file.length() <= 0) {
                 //如果文件大小为 0 则肯定不合法
                 return false;
-            }else {
+            } else {
                 String[] temp;
                 try {
                     temp = file.getName().split("\\.");
@@ -488,16 +502,16 @@ public class MediaScanner {
                     //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
                     return false;
                 }
-                if (temp.length >= 1){
+                if (temp.length >= 1) {
                     //开始从后缀名判断是否为音频文件
-                    switch (temp[temp.length-1]){
+                    switch (temp[temp.length - 1]) {
                         case "mp3":
                         case "wav":
                             return true;
                         default:
                             return false;
                     }
-                }else {
+                } else {
                     return false;
                 }
             }
@@ -505,10 +519,13 @@ public class MediaScanner {
 
         /**
          * 扫描获取设置的目录下的音频文件
-         * @return  音频文件列表
+         *
+         * @return 音频文件列表
          * @throws Exception
          */
-        private @Nullable ArrayList<SongItem> core() throws Exception{
+        private
+        @Nullable
+        ArrayList<SongItem> core() throws Exception {
 
             ArrayList<SongItem> songList = new ArrayList<>();
 
@@ -529,7 +546,7 @@ public class MediaScanner {
 
                     try {
                         musicLength = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                        if (musicLength < AppConfigs.LengthLimited){
+                        if (musicLength < AppConfigs.LengthLimited) {
                             //如果歌曲长度小于限制 , 则不继续解析这个文件
                             continue;
                         }
@@ -542,17 +559,17 @@ public class MediaScanner {
 
 
                     songItem.setTitle(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-                    if (TextUtils.isEmpty(songItem.getTitle())){
+                    if (TextUtils.isEmpty(songItem.getTitle())) {
                         //如果无法获取到歌曲名 , 则使用文件名代替
                         songItem.setTitle(musicFile.getName());
                     }
                     songItem.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-                    if (TextUtils.isEmpty(songItem.getArtist())){
+                    if (TextUtils.isEmpty(songItem.getArtist())) {
                         //如果无法获取到歌手名 , 则使用未知代替
                         songItem.setArtist(AppConfigs.UNKNOWN);
                     }
                     songItem.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-                    if (TextUtils.isEmpty(songItem.getAlbum())){
+                    if (TextUtils.isEmpty(songItem.getAlbum())) {
                         //如果无法获取到专辑名 , 则使用未知代替
                         songItem.setAlbum(AppConfigs.UNKNOWN);
                     }
@@ -562,26 +579,25 @@ public class MediaScanner {
                     songItem.setFileSize(Long.toString(musicFile.length()));
 
 
-
-                    cacheAlbumCover(retriever,songItem);
+                    cacheAlbumCover(retriever, songItem);
 
                     songList.add(songItem);
-                    Logger.normal("歌曲文件扫描器",songItem.getTitle());
+                    Logger.normal("歌曲文件扫描器", songItem.getTitle());
                 }
 
             }
 
-            if (songList.size() == 0 ){
+            if (songList.size() == 0) {
                 songList = null;
                 return null;
-            }else {
+            } else {
                 //进行歌曲文件的排序
-                switch (AppConfigs.SortType){
+                switch (AppConfigs.SortType) {
                     case ByDate:
-                        Collections.sort(songList,new ComparatorByData());
+                        Collections.sort(songList, new ComparatorByData());
                         break;
                     case ByName:
-                        Collections.sort(songList,new ComparatorByName());
+                        Collections.sort(songList, new ComparatorByName());
                         break;
                 }
                 return songList;
@@ -591,32 +607,34 @@ public class MediaScanner {
 
         /**
          * 缓存歌曲封面图像
-         * @param retriever  MediaMetadataRetriever
+         *
+         * @param retriever MediaMetadataRetriever
          * @param songItem  操作的歌曲数据
          */
-        private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem){
+        private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem) {
             Bitmap coverImage = null;
             try {
                 coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
 
-            if (retriever != null && coverImage == null){
+            if (retriever != null && coverImage == null) {
                 //如果没有缓存过图像 , 则获取图像资源并进行缓存和提取图像颜色资源
                 byte[] bytes = retriever.getEmbeddedPicture();
-                if (bytes != null){
-                    coverImage = BitmapFactory.decodeByteArray(bytes , 0 , bytes.length);
+                if (bytes != null) {
+                    coverImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     bytes = null;
-                    if (coverImage != null){
-                        CoverImage2File.getInstance().makeImage2File(coverImage,songItem.getPath());
+                    if (coverImage != null) {
+                        CoverImage2File.getInstance().makeImage2File(coverImage, songItem.getPath());
                         songItem.setPaletteColor(getAlbumCoverColor(coverImage));
                         songItem.setHaveCover(true);
-                    }else {
-                        Logger.error("媒体库扫描器","缓存封面图像失败 "+songItem.getTitle());
+                    } else {
+                        Logger.error("媒体库扫描器", "缓存封面图像失败 " + songItem.getTitle());
                     }
-                }else {
-                    Logger.error("媒体库扫描器","该音频没有图像文件");
+                } else {
+                    Logger.error("媒体库扫描器", "该音频没有图像文件");
                 }
-            }else {
+            } else {
                 songItem.setPaletteColor(getAlbumCoverColor(coverImage));
                 songItem.setHaveCover(true);
             }
@@ -624,10 +642,11 @@ public class MediaScanner {
 
         /**
          * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-         * @param coverImage    封面图像
-         * @return  混合颜色
+         *
+         * @param coverImage 封面图像
+         * @return 混合颜色
          */
-        private int getAlbumCoverColor(Bitmap coverImage){
+        private int getAlbumCoverColor(Bitmap coverImage) {
             Palette palette;
 
             try {
@@ -637,10 +656,10 @@ public class MediaScanner {
                 return AppConfigs.DefaultPaletteColor;
             }
 
-            int color = AppConfigs.DefaultPaletteColor , item = 0;
+            int color = AppConfigs.DefaultPaletteColor, item = 0;
             //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-            while (color == AppConfigs.DefaultPaletteColor && item < 7){
-                switch (item){
+            while (color == AppConfigs.DefaultPaletteColor && item < 7) {
+                switch (item) {
                     case 0:
                         color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
                         break;
@@ -670,7 +689,7 @@ public class MediaScanner {
     /**
      * 加载上一次搜索记录线程
      */
-    final class LoadCachedData implements Callable<String>{
+    final class LoadCachedData implements Callable<String> {
         final public static String TAG = "LoadCachedData";
 
         @Override
@@ -678,21 +697,21 @@ public class MediaScanner {
 
             ArrayList<SongItem> cachedList = JSONHandler.loadPlaylist(AppConfigs.CACHE_NAME);
 
-            if (cachedList != null){
+            if (cachedList != null) {
                 //进行歌曲文件的排序
-                switch (AppConfigs.SortType){
+                switch (AppConfigs.SortType) {
                     case ByDate:
-                        Collections.sort(cachedList,new ComparatorByData());
+                        Collections.sort(cachedList, new ComparatorByData());
                         break;
                     case ByName:
-                        Collections.sort(cachedList,new ComparatorByName());
+                        Collections.sort(cachedList, new ComparatorByName());
                         break;
                 }
             }
 
-            if (callback == null){
+            if (callback == null) {
                 cacheDatas(cachedList);
-            }else {
+            } else {
                 onCompleted(cachedList);
             }
 
@@ -700,7 +719,7 @@ public class MediaScanner {
             return null;
         }
 
-        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList){
+        private void onCompleted(@Nullable final ArrayList<SongItem> arrayList) {
             runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
@@ -714,10 +733,10 @@ public class MediaScanner {
     /**
      * 按文件创建日期排序器
      */
-    final class ComparatorByData implements Comparator<SongItem>{
+    final class ComparatorByData implements Comparator<SongItem> {
 
         public ComparatorByData() {
-            Logger.warnning("ComparatorByData","正在按照日期排序");
+            Logger.warnning("ComparatorByData", "正在按照日期排序");
         }
 
         @Override
@@ -736,10 +755,10 @@ public class MediaScanner {
     /**
      * 按名字排序器
      */
-    final class ComparatorByName implements Comparator<SongItem>{
+    final class ComparatorByName implements Comparator<SongItem> {
 
         public ComparatorByName() {
-            Logger.warnning("ComparatorByName","正在按照名称排序");
+            Logger.warnning("ComparatorByName", "正在按照名称排序");
         }
 
         @Override

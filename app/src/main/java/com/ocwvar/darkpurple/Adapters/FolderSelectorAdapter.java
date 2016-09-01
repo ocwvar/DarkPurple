@@ -28,26 +28,18 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
     private Set<File> selectedFolder;
     private OnFolderSelectCallback callback;
 
-    public interface OnFolderSelectCallback{
-
-        void onEnter(File path);
-
-        void onSelectedFolderChanged();
-
+    public FolderSelectorAdapter() {
+        this.folders = new ArrayList<>();
+        this.selectedFolder = new LinkedHashSet<>();
     }
 
     public void setCallback(OnFolderSelectCallback callback) {
         this.callback = callback;
     }
 
-    public FolderSelectorAdapter() {
-        this.folders = new ArrayList<>();
-        this.selectedFolder = new LinkedHashSet<>();
-    }
-
-    public void addDatas( List<File> source){
+    public void addDatas(List<File> source) {
         this.folders.clear();
-        if (source != null){
+        if (source != null) {
             this.folders.addAll(source);
         }
         notifyDataSetChanged();
@@ -57,13 +49,13 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
         return selectedFolder;
     }
 
-    public int getSelectedPathCount(){
+    public int getSelectedPathCount() {
         return selectedFolder.size();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new FolderItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_folder,parent,false));
+        return new FolderItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_folder, parent, false));
     }
 
     @Override
@@ -72,9 +64,9 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
         final File folder = folders.get(position);
         viewHolder.name.setText(folder.getName());
 
-        if (selectedFolder.contains(folder)){
+        if (selectedFolder.contains(folder)) {
             viewHolder.itemView.setBackgroundColor(AppConfigs.DefaultPaletteColor);
-        }else {
+        } else {
             viewHolder.itemView.setBackground(null);
         }
     }
@@ -82,6 +74,14 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return folders.size();
+    }
+
+    public interface OnFolderSelectCallback {
+
+        void onEnter(File path);
+
+        void onSelectedFolderChanged();
+
     }
 
     class FolderItemViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
@@ -100,12 +100,12 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
 
             File folder = folders.get(getAdapterPosition());
 
-            if  ( !selectedFolder.add( folder ) ){
+            if (!selectedFolder.add(folder)) {
                 selectedFolder.remove(folder);
             }
 
             notifyItemChanged(getAdapterPosition());
-            if (callback != null){
+            if (callback != null) {
                 callback.onSelectedFolderChanged();
             }
             return false;
@@ -113,7 +113,7 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            if (callback != null){
+            if (callback != null) {
                 callback.onEnter(folders.get(getAdapterPosition()));
             }
         }

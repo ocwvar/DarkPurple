@@ -5,10 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.ocwvar.darkpurple.FragmentPages.AllMusicFragment;
-
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  * Created by 区成伟
@@ -22,24 +19,24 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
     private String[] titles;
     private ArrayList<Fragment> fragmentPages;
 
-    public MainViewPagerAdapter(@NonNull FragmentManager fm ,@NonNull String[] titles) {
+    public MainViewPagerAdapter(@NonNull FragmentManager fm, @NonNull String[] titles) {
         super(fm);
         this.titles = titles;
         fragmentPages = new ArrayList<>();
     }
 
-    public void addFragmentPageToStart(Fragment fragment){
-        addFragmentPage(fragment,0);
+    public void addFragmentPageToStart(Fragment fragment) {
+        addFragmentPage(fragment, 0);
     }
 
-    public void addFragmentPageToEnd(Fragment fragment){
+    public void addFragmentPageToEnd(Fragment fragment) {
         fragmentPages.add(fragment);
         notifyDataSetChanged();
     }
 
-    public void addFragmentPage(Fragment fragment , int index){
-        if (fragment != null && (fragmentPages.size() == 0 && index >= 0) || (fragmentPages.size() > 0 && index >=0 && index < fragmentPages.size())){
-            fragmentPages.add(index,fragment);
+    public void addFragmentPage(Fragment fragment, int index) {
+        if (fragment != null && (fragmentPages.size() == 0 && index >= 0) || (fragmentPages.size() > 0 && index >= 0 && index < fragmentPages.size())) {
+            fragmentPages.add(index, fragment);
             notifyDataSetChanged();
         }
     }
@@ -56,9 +53,9 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (position < titles.length && position >= 0){
+        if (position < titles.length && position >= 0) {
             return titles[position];
-        }else {
+        } else {
             return null;
         }
     }

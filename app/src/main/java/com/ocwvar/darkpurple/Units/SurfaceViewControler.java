@@ -55,7 +55,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
      * 开始频谱动画播放
      */
     public void start() {
-        if (updateThread != null){
+        if (updateThread != null) {
             updateThread.interrupt();
             updateThread = null;
         }
@@ -68,7 +68,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
      * 停止频谱动画播放
      */
     public void stop() {
-        if (updateThread != null){
+        if (updateThread != null) {
             updateThread.interrupt();
             updateThread = null;
         }
@@ -100,14 +100,14 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
             //画笔1 ：用于第一层频谱
             this.c1 = new Paint();
-            c1.setColor(Color.rgb(199,64,247));
+            c1.setColor(Color.rgb(199, 64, 247));
             c1.setAntiAlias(true);
             c1.setStrokeWidth(strokeWidth);
 
         }
 
         @Override
-        public void run(){
+        public void run() {
 
             //当音频处于已经加载的状态才进行显示
             if (service.getAudioStatus() != AudioCore.AudioStatus.Empty) {
@@ -132,7 +132,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          * @param surfaceHolder 要绘制图形的 SurfaceHolder
          * @param points        频谱圆圈切割后的点集合
          */
-        private void updateThread(SurfaceHolder surfaceHolder, ArrayList<Point> points){
+        private void updateThread(SurfaceHolder surfaceHolder, ArrayList<Point> points) {
 
             while (surfaceHolder != null && !isInterrupted()) {
                 System.out.println("update surfaceview");
@@ -145,7 +145,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                 if (fftDatas != null && canvas != null) {
 
                     //清屏
-                    canvas.drawColor(Color.rgb(26,44,54));
+                    canvas.drawColor(Color.rgb(26, 44, 54));
 
                     for (int i = 0; i < points.size(); i++) {
 

@@ -27,12 +27,11 @@ import java.util.ArrayList;
  */
 public class AllMusicAdapter extends RecyclerView.Adapter {
 
+    boolean isMuiltSelecting = false;
     private ArrayList<SongItem> checkedItems;
     private ArrayList<SongItem> arrayList;
     private Drawable defaultCover;
     private OnClick onClick;
-
-    boolean isMuiltSelecting = false;
 
     public AllMusicAdapter() {
         checkedItems = new ArrayList<>();
@@ -46,7 +45,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     /**
      * 开启多选模式
      */
-    public void startMuiltMode(){
+    public void startMuiltMode() {
         checkedItems.clear();
         isMuiltSelecting = true;
         notifyDataSetChanged();
@@ -54,9 +53,10 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     /**
      * 关闭多选模式
-     * @return  返回已选择的项目列表副本
+     *
+     * @return 返回已选择的项目列表副本
      */
-    public ArrayList<SongItem> stopMuiltMode(){
+    public ArrayList<SongItem> stopMuiltMode() {
         isMuiltSelecting = false;
         notifyDataSetChanged();
         return new ArrayList<>(checkedItems);
@@ -71,22 +71,24 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     /**
      * 重置并添加数据
+     *
      * @param songItems 数据源
      */
-    public void setDatas(ArrayList<SongItem> songItems){
+    public void setDatas(ArrayList<SongItem> songItems) {
         this.arrayList.clear();
         this.arrayList.addAll(songItems);
     }
 
     /**
      * 移除单个项目
-     * @param position  项目位置
+     *
+     * @param position 项目位置
      */
-    public void removeItem(int position){
+    public void removeItem(int position) {
         String filePath = arrayList.remove(position).getPath();
         //删除歌曲文件
         new File(filePath).delete();
-        notifyItemRemoved(position+1);
+        notifyItemRemoved(position + 1);
     }
 
     @Override
@@ -96,15 +98,15 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == 0){
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_option,parent,false);
-            itemView.getLayoutParams().width = (parent.getWidth()/2);
-            itemView.getLayoutParams().height = (parent.getWidth()/2);
+        if (viewType == 0) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_option, parent, false);
+            itemView.getLayoutParams().width = (parent.getWidth() / 2);
+            itemView.getLayoutParams().height = (parent.getWidth() / 2);
             return new OptionItemViewHolder(itemView);
-        }else {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_card,parent,false);
-            itemView.getLayoutParams().width = (parent.getWidth()/2);
-            itemView.getLayoutParams().height = (parent.getWidth()/2);
+        } else {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_card, parent, false);
+            itemView.getLayoutParams().width = (parent.getWidth() / 2);
+            itemView.getLayoutParams().height = (parent.getWidth() / 2);
             return new MusicItemViewHolder(itemView);
         }
     }
@@ -124,24 +126,24 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
 
         viewHolder.marker.setVisibility(View.GONE);
-        if (isMuiltSelecting){
+        if (isMuiltSelecting) {
             //如果当前是多选模式 , 则先检查是否已经被选择了
             if (checkedItems.contains(songItem)) {
                 //如果已经被选择了
                 viewHolder.marker.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 viewHolder.marker.setVisibility(View.GONE);
             }
         }
 
-        if (songItem.isHaveCover()){
+        if (songItem.isHaveCover()) {
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                     .error(R.drawable.ic_cd)
                     .into(viewHolder.cover);
-        }else {
-            if (defaultCover == null){
+        } else {
+            if (defaultCover == null) {
                 defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
             }
             viewHolder.cover.setImageDrawable(defaultCover);
@@ -155,6 +157,18 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         return arrayList.size() + 1;
     }
 
+    /**
+     * 点击的回调接口
+     */
+    public interface OnClick {
+
+        void onListClick(ArrayList<SongItem> songList, int position);
+
+        void onListItemLongClick(SongItem songItem, int position);
+
+        void onOptionClick();
+    }
+
     class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         SquareWidthImageView cover;
@@ -164,10 +178,10 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         public MusicItemViewHolder(View itemView) {
             super(itemView);
-            cover = (SquareWidthImageView)itemView.findViewById(R.id.item_cover);
-            marker = (ImageView)itemView.findViewById(R.id.item_selector_marker);
-            title = (TextView)itemView.findViewById(R.id.item_title);
-            artist = (TextView)itemView.findViewById(R.id.item_artist);
+            cover = (SquareWidthImageView) itemView.findViewById(R.id.item_cover);
+            marker = (ImageView) itemView.findViewById(R.id.item_selector_marker);
+            title = (TextView) itemView.findViewById(R.id.item_title);
+            artist = (TextView) itemView.findViewById(R.id.item_artist);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -175,37 +189,37 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            if (onClick != null){
-                if (isMuiltSelecting){
-                    SongItem songItem = arrayList.get( getAdapterPosition()-1 );
-                    if (checkedItems.contains(songItem)){
+            if (onClick != null) {
+                if (isMuiltSelecting) {
+                    SongItem songItem = arrayList.get(getAdapterPosition() - 1);
+                    if (checkedItems.contains(songItem)) {
                         //如果点击的时候 , 这个项目已经是被选中了 , 则应该执行取消选中动作
                         checkedItems.remove(songItem);
                         marker.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         //如果是没选中状态 , 则应该被标记上
                         checkedItems.add(songItem);
                         marker.setVisibility(View.VISIBLE);
                     }
                     notifyItemChanged(getAdapterPosition());
 
-                }else {
-                    onClick.onListClick( arrayList , getAdapterPosition()-1 );
+                } else {
+                    onClick.onListClick(arrayList, getAdapterPosition() - 1);
                 }
             }
         }
 
         @Override
         public boolean onLongClick(View view) {
-            if (onClick != null && !isMuiltSelecting){
-                onClick.onListItemLongClick(arrayList.get(getAdapterPosition()-1) , getAdapterPosition()-1);
+            if (onClick != null && !isMuiltSelecting) {
+                onClick.onListItemLongClick(arrayList.get(getAdapterPosition() - 1), getAdapterPosition() - 1);
             }
             return false;
         }
 
     }
 
-    class OptionItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class OptionItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public OptionItemViewHolder(View itemView) {
             super(itemView);
@@ -214,23 +228,11 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            if (onClick != null && !isMuiltSelecting){
+            if (onClick != null && !isMuiltSelecting) {
                 onClick.onOptionClick();
             }
         }
 
-    }
-
-    /**
-     * 点击的回调接口
-     */
-    public interface OnClick{
-
-        void onListClick(ArrayList<SongItem> songList , int position);
-
-        void onListItemLongClick(SongItem songItem , int position);
-
-        void onOptionClick();
     }
 
 }

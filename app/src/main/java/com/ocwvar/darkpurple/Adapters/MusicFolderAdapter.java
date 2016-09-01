@@ -27,7 +27,7 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
 
     public MusicFolderAdapter(OnPathChangedCallback callback) {
         paths = new ArrayList<>();
-        if (AppConfigs.MusicFolders != null){
+        if (AppConfigs.MusicFolders != null) {
             Collections.addAll(paths, AppConfigs.MusicFolders);
         }
         this.callback = callback;
@@ -39,39 +39,40 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
 
     /**
      * 添加一条数据到头部
-     * @param path  路径数据
-     * @param ignoreResult  是否忽略结果
+     *
+     * @param path         路径数据
+     * @param ignoreResult 是否忽略结果
      */
-    public void addPath(String path , boolean ignoreResult){
-        if (!TextUtils.isEmpty(path)){
-            if (path.length() > 1 ){
+    public void addPath(String path, boolean ignoreResult) {
+        if (!TextUtils.isEmpty(path)) {
+            if (path.length() > 1) {
                 //如果路径长度大于 1 则排除了 " / "目录的状态 , 我们只需要把字符串最后的 "/" 去掉即可 , 如果不存在则不操作
                 char[] chars = path.toCharArray();
-                if (chars[chars.length-1] == '/' ){
-                    path = path.substring(0,path.length()-1);
+                if (chars[chars.length - 1] == '/') {
+                    path = path.substring(0, path.length() - 1);
                     chars = null;
                 }
             }
 
-            if (paths.contains(path)){
+            if (paths.contains(path)) {
                 //如果已经添加过的则放弃
-                if (!ignoreResult){
+                if (!ignoreResult) {
                     callback.onAddedFailed();
                 }
                 return;
             }
 
-            paths.add( 0 , path );
+            paths.add(0, path);
             notifyItemInserted(0);
             callback.onAddedPath();
-        }else {
+        } else {
             callback.onAddedFailed();
         }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PathViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_path,parent,false));
+        return new PathViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_path, parent, false));
     }
 
     @Override
@@ -86,6 +87,15 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
         return paths.size();
     }
 
+    public interface OnPathChangedCallback {
+
+        void onRemovedPath();
+
+        void onAddedPath();
+
+        void onAddedFailed();
+    }
+
     class PathViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
         TextView textView;
@@ -93,7 +103,7 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
         public PathViewHolder(View itemView) {
             super(itemView);
             itemView.setOnLongClickListener(this);
-            textView = (TextView)itemView.findViewById(R.id.textView);
+            textView = (TextView) itemView.findViewById(R.id.textView);
         }
 
         @Override
@@ -103,15 +113,6 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
             callback.onRemovedPath();
             return false;
         }
-    }
-
-    public interface OnPathChangedCallback{
-
-        void onRemovedPath();
-
-        void onAddedPath();
-
-        void onAddedFailed();
     }
 
 }

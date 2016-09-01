@@ -34,7 +34,7 @@ public class SquareWidthImageView extends ImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(widthMeasureSpec,widthMeasureSpec);
+        setMeasuredDimension(widthMeasureSpec, widthMeasureSpec);
     }
 
 

@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.ocwvar.darkpurple.R;
@@ -46,7 +46,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 break;
@@ -103,7 +103,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
-
 
 
     }

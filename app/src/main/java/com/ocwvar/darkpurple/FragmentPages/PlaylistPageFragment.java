@@ -23,9 +23,9 @@ public class PlaylistPageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (container != null){
-            return inflater.inflate(R.layout.fragment_playlist_page,container,false);
-        }else {
+        if (container != null) {
+            return inflater.inflate(R.layout.fragment_playlist_page, container, false);
+        } else {
             return null;
         }
     }
@@ -35,12 +35,12 @@ public class PlaylistPageFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         workFragment = (PlaylistPageBackGround) getFragmentManager().findFragmentByTag(PlaylistPageBackGround.TAG);
-        if (workFragment == null){
+        if (workFragment == null) {
             workFragment = new PlaylistPageBackGround();
-            workFragment.setTargetFragment(this,0);
-            getFragmentManager().beginTransaction().add(workFragment,PlaylistPageBackGround.TAG).commit();
-        }else {
-            workFragment.setTargetFragment(this,0);
+            workFragment.setTargetFragment(this, 0);
+            getFragmentManager().beginTransaction().add(workFragment, PlaylistPageBackGround.TAG).commit();
+        } else {
+            workFragment.setTargetFragment(this, 0);
         }
 
         workFragment.initData();
@@ -49,7 +49,7 @@ public class PlaylistPageFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (workFragment != null){
+        if (workFragment != null) {
             workFragment.refreshData();
         }
     }

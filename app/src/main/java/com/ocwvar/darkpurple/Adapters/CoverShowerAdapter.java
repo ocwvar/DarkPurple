@@ -29,9 +29,9 @@ public class CoverShowerAdapter extends PagerAdapter {
 
     public CoverShowerAdapter(ArrayList<SongItem> playingList) {
         this.playingList = playingList;
-        if (Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             this.defaultCover = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_cd);
-        }else {
+        } else {
             this.defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
         }
     }
@@ -61,16 +61,16 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final int viewPagerWidth = container.getMeasuredWidth();
 
-        final int imageWidth = (int)(viewPagerWidth / 1.6f);
+        final int imageWidth = (int) (viewPagerWidth / 1.6f);
 
-        if (songItem.isHaveCover()){
+        if (songItem.isHaveCover()) {
             //如果先前缓存有图像 , 则开始读取
             Picasso.with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
-                    .resize(imageWidth,imageWidth)
+                    .resize(imageWidth, imageWidth)
                     .error(R.drawable.ic_cd)
                     .into(cover);
-        }else {
+        } else {
 
             cover.setImageDrawable(defaultCover);
 
@@ -86,7 +86,7 @@ public class CoverShowerAdapter extends PagerAdapter {
      */
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ImageView imageView = (ImageView)object;
+        ImageView imageView = (ImageView) object;
         imageView.setImageBitmap(null);
         imageView.setImageDrawable(null);
         container.removeView(imageView);

@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class ActivityManager {
 
-    private List<Activity> activityList;
     private static ActivityManager manager;
+    private List<Activity> activityList;
 
     public ActivityManager() {
         this.activityList = new ArrayList<>();
@@ -28,15 +28,15 @@ public class ActivityManager {
         return manager;
     }
 
-    public void add(Activity activity){
-        activityList.add(0,activity);
+    public void add(Activity activity) {
+        activityList.add(0, activity);
     }
 
-    public void remove(Activity activity){
+    public void remove(Activity activity) {
         activityList.remove(activity);
     }
 
-    public void remove(int position){
+    public void remove(int position) {
         try {
             activityList.remove(position);
         } catch (Exception e) {
@@ -44,7 +44,7 @@ public class ActivityManager {
         }
     }
 
-    public void removeTOP(){
+    public void removeTOP() {
         try {
             activityList.remove(0);
         } catch (Exception e) {
@@ -52,9 +52,9 @@ public class ActivityManager {
         }
     }
 
-    public void release(){
-        if (activityList.size() > 0){
-            for (Activity activity: activityList) {
+    public void release() {
+        if (activityList.size() > 0) {
+            for (Activity activity : activityList) {
                 activity.finish();
             }
         }

@@ -1,6 +1,5 @@
 package com.ocwvar.darkpurple.Adapters;
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,25 +21,19 @@ import java.util.Collections;
  * Data: 2016/8/16 1:22
  * Project: DarkPurple
  */
-public class PlaylistDetailAdapter extends RecyclerView.Adapter  implements OnDragChangedCallback {
+public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDragChangedCallback {
 
     private ArrayList<SongItem> songItems;
     private OnPlayButtonClickCallback clickCallback;
 
-    public interface OnPlayButtonClickCallback{
-
-        void onPlayButtonClick(int position);
-
-    }
-
-    public PlaylistDetailAdapter(ArrayList<SongItem> songItems , OnPlayButtonClickCallback clickCallback) {
+    public PlaylistDetailAdapter(ArrayList<SongItem> songItems, OnPlayButtonClickCallback clickCallback) {
         this.songItems = songItems;
         this.clickCallback = clickCallback;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new SimpleDetailViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_simple_song,parent,false));
+        return new SimpleDetailViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_simple_song, parent, false));
     }
 
     @Override
@@ -49,27 +42,27 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter  implements OnDr
         SongItem songItem = songItems.get(position);
         viewHolder.title.setText(songItem.getTitle());
         viewHolder.artist.setText(songItem.getArtist());
-        if (new File((songItem.getPath())).exists()){
+        if (new File((songItem.getPath())).exists()) {
             //如果文件的确存在 , 则显示播放按钮
             viewHolder.playButton.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             viewHolder.playButton.setVisibility(View.GONE);
         }
     }
 
     @Override
     public int getItemCount() {
-        if (songItems == null){
+        if (songItems == null) {
             return 0;
-        }else {
+        } else {
             return songItems.size();
         }
     }
 
     @Override
-    public void onItemPositionChange(RecyclerView.ViewHolder viewHolder , int originalPosition, int targetPosition) {
-        Collections.swap(songItems , originalPosition , targetPosition);
-        notifyItemMoved(originalPosition , targetPosition);
+    public void onItemPositionChange(RecyclerView.ViewHolder viewHolder, int originalPosition, int targetPosition) {
+        Collections.swap(songItems, originalPosition, targetPosition);
+        notifyItemMoved(originalPosition, targetPosition);
     }
 
     @Override
@@ -78,23 +71,29 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter  implements OnDr
         notifyItemRemoved(position);
     }
 
+    public interface OnPlayButtonClickCallback {
+
+        void onPlayButtonClick(int position);
+
+    }
+
     class SimpleDetailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView title , artist;
+        TextView title, artist;
         ImageButton playButton;
 
         public SimpleDetailViewHolder(View itemView) {
             super(itemView);
-            title = (TextView)itemView.findViewById(R.id.textView_title);
-            artist = (TextView)itemView.findViewById(R.id.textView_artist);
-            playButton = (ImageButton)itemView.findViewById(R.id.imageButton_play);
+            title = (TextView) itemView.findViewById(R.id.textView_title);
+            artist = (TextView) itemView.findViewById(R.id.textView_artist);
+            playButton = (ImageButton) itemView.findViewById(R.id.imageButton_play);
 
             playButton.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (clickCallback != null){
+            if (clickCallback != null) {
                 clickCallback.onPlayButtonClick(getAdapterPosition());
             }
         }

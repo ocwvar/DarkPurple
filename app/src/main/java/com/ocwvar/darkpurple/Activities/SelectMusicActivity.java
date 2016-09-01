@@ -25,7 +25,7 @@ import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 
-public class SelectMusicActivity extends AppCompatActivity{
+public class SelectMusicActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     MainViewPagerAdapter viewPagerAdapter;
@@ -45,8 +45,8 @@ public class SelectMusicActivity extends AppCompatActivity{
         setTitle("");
         toolbar.setLogo(R.drawable.ic_logo_title);
 
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.Main_TabLayout);
-        viewPager = (ViewPager)findViewById(R.id.Main_ViewPager);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.Main_TabLayout);
+        viewPager = (ViewPager) findViewById(R.id.Main_ViewPager);
         viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
                 new String[]{
                         getText(R.string.ViewPage_Tab_AllMusic).toString(),
@@ -61,24 +61,24 @@ public class SelectMusicActivity extends AppCompatActivity{
         viewPagerAdapter.addFragmentPageToEnd(allMusicFragment);
         viewPagerAdapter.addFragmentPageToEnd(playlistPageFragment);
 
-        if (ServiceHolder.getInstance().getService() == null){
+        if (ServiceHolder.getInstance().getService() == null) {
             //如果当前没有获取到服务对象 , 则创建一个保存
             serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     //当服务连接上的时候
 
-                    if (iBinder != null){
+                    if (iBinder != null) {
                         //获取服务对象
                         AudioService service = ((AudioService.ServiceObject) iBinder).getService();
-                        if (service != null){
+                        if (service != null) {
                             //如果获取服务成功 , 则保存到全局储存器中 , 然后解除绑定
                             ServiceHolder.getInstance().setService(service);
-                            Snackbar.make(findViewById(android.R.id.content),R.string.service_ok,Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(android.R.id.content), R.string.service_ok, Snackbar.LENGTH_LONG).show();
                             unbindService(this);
-                        }else {
+                        } else {
                             //否则提示用户
-                            Snackbar.make(findViewById(android.R.id.content),R.string.service_error,Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(android.R.id.content), R.string.service_error, Snackbar.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -91,15 +91,15 @@ public class SelectMusicActivity extends AppCompatActivity{
             };
 
             //开始连接服务
-            Intent intent = new Intent(SelectMusicActivity.this,AudioService.class);
+            Intent intent = new Intent(SelectMusicActivity.this, AudioService.class);
             startService(intent);
-            bindService(intent , serviceConnection,BIND_AUTO_CREATE);
+            bindService(intent, serviceConnection, BIND_AUTO_CREATE);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 //如果当前系统版本大于 23 则先检测是否有文件读写权限
-                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
-                    Snackbar.make(findViewById(android.R.id.content),R.string.musicFolder_noPermission,Snackbar.LENGTH_SHORT).show();
+                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+                    Snackbar.make(findViewById(android.R.id.content), R.string.musicFolder_noPermission, Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -108,18 +108,18 @@ public class SelectMusicActivity extends AppCompatActivity{
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_base,menu);
+        getMenuInflater().inflate(R.menu.menu_base, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_base_setting:
-                startActivityForResult(new Intent(SelectMusicActivity.this,SettingsActivity.class),1);
+                startActivityForResult(new Intent(SelectMusicActivity.this, SettingsActivity.class), 1);
                 break;
             case R.id.menu_base_playing:
-                startActivity(new Intent(SelectMusicActivity.this,PlayingActivity.class));
+                startActivity(new Intent(SelectMusicActivity.this, PlayingActivity.class));
                 break;
         }
         return false;
@@ -128,7 +128,7 @@ public class SelectMusicActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
                 AppConfigs.reInitOptionValues();
                 break;
@@ -139,12 +139,12 @@ public class SelectMusicActivity extends AppCompatActivity{
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (viewPager.getCurrentItem()) {
             case 0:
-                if (allMusicFragment == null){
+                if (allMusicFragment == null) {
                     return super.onKeyDown(keyCode, event);
-                }else {
-                    if (!allMusicFragment.onActivityKeyDown(keyCode, event)){
+                } else {
+                    if (!allMusicFragment.onActivityKeyDown(keyCode, event)) {
                         return super.onKeyDown(keyCode, event);
-                    }else {
+                    } else {
                         return false;
                     }
                 }

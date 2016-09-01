@@ -13,15 +13,17 @@ public interface OnDragChangedCallback {
 
     /**
      * 当Item被拖动更换位置的回调
-     * @param originalPosition  Item原本位置
-     * @param targetPosition    Item要转移到的位置
+     *
+     * @param originalPosition Item原本位置
+     * @param targetPosition   Item要转移到的位置
      */
-    void onItemPositionChange(RecyclerView.ViewHolder viewHolder , int originalPosition , int targetPosition );
+    void onItemPositionChange(RecyclerView.ViewHolder viewHolder, int originalPosition, int targetPosition);
 
     /**
      * 当Item被Swipe动作删除的时候的回调
-     * @param position  被操作的Item位置
+     *
+     * @param position 被操作的Item位置
      */
-    void onItemDelete( int position );
+    void onItemDelete(int position);
 
 }

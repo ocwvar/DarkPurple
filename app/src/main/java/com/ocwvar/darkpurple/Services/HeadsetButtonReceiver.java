@@ -22,7 +22,7 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (AppConfigs.isListenMediaButton){
+        if (AppConfigs.isListenMediaButton) {
             audioService.onMediaButtonPress(intent);
         }
     }

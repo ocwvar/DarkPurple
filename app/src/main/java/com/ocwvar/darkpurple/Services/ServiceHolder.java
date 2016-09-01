@@ -13,7 +13,7 @@ public class ServiceHolder {
     private AudioService service;
 
     public static ServiceHolder getInstance() {
-        if (holder == null){
+        if (holder == null) {
             holder = new ServiceHolder();
         }
         return holder;

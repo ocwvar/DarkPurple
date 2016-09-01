@@ -33,7 +33,7 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new SlideMusicViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_slide,parent,false));
+        return new SlideMusicViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_slide, parent, false));
     }
 
     @Override
@@ -45,11 +45,17 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        if (songItems != null){
+        if (songItems != null) {
             return songItems.size();
-        }else {
+        } else {
             return 0;
         }
+    }
+
+    public interface OnSlidingMenuClickCallback {
+
+        void onSlidingMenuClick(SongItem songItem, int position);
+
     }
 
     class SlideMusicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -58,21 +64,15 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
         public SlideMusicViewHolder(View itemView) {
             super(itemView);
-            title = (TextView)itemView.findViewById(R.id.textView);
+            title = (TextView) itemView.findViewById(R.id.textView);
 
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            callback.onSlidingMenuClick( songItems.get(getAdapterPosition()) , getAdapterPosition());
+            callback.onSlidingMenuClick(songItems.get(getAdapterPosition()), getAdapterPosition());
         }
-
-    }
-
-    public interface OnSlidingMenuClickCallback{
-
-        void onSlidingMenuClick(SongItem songItem , int position);
 
     }
 

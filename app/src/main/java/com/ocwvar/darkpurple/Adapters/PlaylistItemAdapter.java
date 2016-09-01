@@ -8,11 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.ocwvar.darkpurple.Activities.PlaylistDetailActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
-import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
-import com.ocwvar.darkpurple.FragmentPages.PlaylistPageBackGround;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
@@ -20,7 +17,6 @@ import com.ocwvar.darkpurple.Units.SquareHightImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by 区成伟
@@ -29,18 +25,10 @@ import java.util.Collections;
  * Project: DarkPurple
  * 播放列表项目的列表适配器
  */
-public class PlaylistItemAdapter extends RecyclerView.Adapter{
+public class PlaylistItemAdapter extends RecyclerView.Adapter {
 
     ArrayList<PlaylistItem> playlistItems;
     OnButtonClickCallback callback;
-
-    public interface OnButtonClickCallback{
-
-        void onPlayButtonClick(PlaylistItem playlistItem , int position);
-
-        void onMoreButtonClick(PlaylistItem playlistItem , int position);
-
-    }
 
     public PlaylistItemAdapter() {
         playlistItems = PlaylistUnits.getInstance().getPlaylists();
@@ -50,8 +38,8 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter{
         this.callback = callback;
     }
 
-    public void removePlaylist(int position){
-        if (playlistItems != null && position >= 0 && position< playlistItems.size()){
+    public void removePlaylist(int position) {
+        if (playlistItems != null && position >= 0 && position < playlistItems.size()) {
             PlaylistUnits.getInstance().removePlaylist(playlistItems.remove(position));
             notifyItemRemoved(position);
         }
@@ -59,7 +47,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter{
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PlaylistItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_playlist,parent,false));
+        return new PlaylistItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_playlist, parent, false));
     }
 
     @SuppressLint("SetTextI18n")
@@ -84,12 +72,20 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter{
         return playlistItems.size();
     }
 
+    public interface OnButtonClickCallback {
+
+        void onPlayButtonClick(PlaylistItem playlistItem, int position);
+
+        void onMoreButtonClick(PlaylistItem playlistItem, int position);
+
+    }
+
     class PlaylistItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         View backGround;
         SquareHightImageView cover;
-        ImageButton more , play;
-        TextView title , count;
+        ImageButton more, play;
+        TextView title, count;
 
         public PlaylistItemViewHolder(View itemView) {
             super(itemView);
@@ -108,13 +104,13 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter{
 
         @Override
         public void onClick(View view) {
-            if (callback != null){
-                switch (view.getId()){
+            if (callback != null) {
+                switch (view.getId()) {
                     case R.id.imageButton_more:
-                        callback.onMoreButtonClick(playlistItems.get(getAdapterPosition()) , getAdapterPosition());
+                        callback.onMoreButtonClick(playlistItems.get(getAdapterPosition()), getAdapterPosition());
                         break;
                     case R.id.imageButton_play:
-                        callback.onPlayButtonClick(playlistItems.get(getAdapterPosition()) , getAdapterPosition());
+                        callback.onPlayButtonClick(playlistItems.get(getAdapterPosition()), getAdapterPosition());
                         break;
                 }
             }

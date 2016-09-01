@@ -24,15 +24,15 @@ public class PlaylistItem {
         this.name = name;
     }
 
-    public PlaylistItem(String name , String[] simpleValues) {
+    public PlaylistItem(String name, String[] simpleValues) {
         this.name = name;
         for (String value : simpleValues) {
-            if (value.startsWith("fap_")){
-                this.firstAudioPath = value.replaceFirst("fap_","");
-            }else if (value.startsWith("color_")){
-                this.color = Integer.parseInt(value.replaceFirst("color_",""));
-            }else if (value.startsWith("count_")){
-                this.count = Integer.parseInt(value.replaceFirst("count_",""));
+            if (value.startsWith("fap_")) {
+                this.firstAudioPath = value.replaceFirst("fap_", "");
+            } else if (value.startsWith("color_")) {
+                this.color = Integer.parseInt(value.replaceFirst("color_", ""));
+            } else if (value.startsWith("count_")) {
+                this.count = Integer.parseInt(value.replaceFirst("count_", ""));
             }
         }
     }
@@ -54,9 +54,9 @@ public class PlaylistItem {
     }
 
     public int getCounts() {
-        if (playlist == null){
+        if (playlist == null) {
             return count;
-        }else {
+        } else {
             return playlist.size();
         }
     }

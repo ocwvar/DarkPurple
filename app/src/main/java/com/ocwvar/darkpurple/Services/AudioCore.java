@@ -29,14 +29,6 @@ public class AudioCore {
     private ArrayList<SongItem> songList;
     private int playingIndex = -1;
 
-    public enum AudioStatus{
-        Playing,
-        Paused,
-        Stopped,
-        Empty,
-        Error
-    }
-
     protected AudioCore(Context applicationContext) {
         this.applicationContext = applicationContext;
         BASS.BASS_Init(-1, 44100, BASS.BASS_DEVICE_LATENCY);
@@ -45,50 +37,52 @@ public class AudioCore {
 
     /**
      * 播放音频
-     * @param songItem  音频信息集合
-     * @param onlyInit  只加载音频 , 而不播放
-     * @return  执行结果
+     *
+     * @param songItem 音频信息集合
+     * @param onlyInit 只加载音频 , 而不播放
+     * @return 执行结果
      */
-    private boolean playAudio(SongItem songItem , boolean onlyInit){
-        if (playingChannel != 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED){
+    private boolean playAudio(SongItem songItem, boolean onlyInit) {
+        if (playingChannel != 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
             //如果当前仍有音频数据 , 则先释放旧的
             releaseAudio();
             //释放掉回调
-            BASS.BASS_ChannelRemoveSync(playingChannel,BASS.BASS_SYNC_END);
-            Logger.warnning(TAG , "已释放旧资源");
+            BASS.BASS_ChannelRemoveSync(playingChannel, BASS.BASS_SYNC_END);
+            Logger.warnning(TAG, "已释放旧资源");
         }
 
         //加载音频数据
         playingChannel = initAudio(songItem.getPath());
 
-        if (playingChannel != 0 ){
+        if (playingChannel != 0) {
             //创建播放回调 , 使得能自动播放下一首
             initCallback(playingChannel);
-            Logger.warnning(TAG , "音频资源已加载");
-            if (onlyInit){
+            Logger.warnning(TAG, "音频资源已加载");
+            if (onlyInit) {
                 return true;
-            }else {
-                return BASS.BASS_ChannelPlay(playingChannel,true);
+            } else {
+                return BASS.BASS_ChannelPlay(playingChannel, true);
             }
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
      * 得到当前的频谱
-     * @return  频谱数据数组
+     *
+     * @return 频谱数据数组
      */
     public float[] getSpectrum() {
 
-        if (playingChannel == 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_PLAYING){
+        if (playingChannel == 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_PLAYING) {
             return null;
-        }else {
-            if (byteBuffer == null){
+        } else {
+            if (byteBuffer == null) {
                 byteBuffer = ByteBuffer.allocate(256 << 1);
                 byteBuffer.order(null);
             }
-            BASS.BASS_ChannelGetData(playingChannel,byteBuffer,BASS.BASS_DATA_FFT256);
+            BASS.BASS_ChannelGetData(playingChannel, byteBuffer, BASS.BASS_DATA_FFT256);
             float[] spectrum = new float[256 >> 1];
             byteBuffer.asFloatBuffer().get(spectrum);
             return spectrum;
@@ -98,38 +92,40 @@ public class AudioCore {
 
     /**
      * 注册音频播放结束回调
-     * @param playingChannel    需要注册的音频数据
+     *
+     * @param playingChannel 需要注册的音频数据
      */
-    private void initCallback(int playingChannel){
+    private void initCallback(int playingChannel) {
         BASS.BASS_ChannelSetSync(playingChannel, BASS.BASS_SYNC_END, 0, new BASS.SYNCPROC() {
             @Override
             public void SYNCPROC(int handle, int channel, int data, Object user) {
-                if (applicationContext != null){
-                    Logger.warnning(TAG,"播放结束!");
+                if (applicationContext != null) {
+                    Logger.warnning(TAG, "播放结束!");
                     applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_NEXT));
                 }
             }
-        },0);
+        }, 0);
         BASS.BASS_ChannelSetSync(playingChannel, BASS.BASS_SYNC_POS, 0, new BASS.SYNCPROC() {
             @Override
             public void SYNCPROC(int handle, int channel, int data, Object user) {
 
             }
-        },0);
+        }, 0);
     }
 
     /**
      * 加载歌曲数据
-     * @param path  歌曲文件路径
-     * @return  返回歌曲的Channel数据 , 否则返回 0 表示失败
+     *
+     * @param path 歌曲文件路径
+     * @return 返回歌曲的Channel数据 , 否则返回 0 表示失败
      */
-    private int initAudio(String path){
-        if (!TextUtils.isEmpty(path)){
+    private int initAudio(String path) {
+        if (!TextUtils.isEmpty(path)) {
             //路径不为空
             File audioFile = new File(path);
-            if (audioFile.exists() && audioFile.length() > 0){
+            if (audioFile.exists() && audioFile.length() > 0) {
                 audioFile = null;
-                return BASS.BASS_StreamCreateFile(path,0,0,0);
+                return BASS.BASS_StreamCreateFile(path, 0, 0, 0);
             }
         }
         return 0;
@@ -137,11 +133,12 @@ public class AudioCore {
 
     /**
      * 获取当前音频播放的状态
-     * @return  当前状态
+     *
+     * @return 当前状态
      */
-    protected AudioStatus getCurrectStatus(){
-        if (playingChannel != 0){
-            switch (BASS.BASS_ChannelIsActive(playingChannel)){
+    protected AudioStatus getCurrectStatus() {
+        if (playingChannel != 0) {
+            switch (BASS.BASS_ChannelIsActive(playingChannel)) {
                 case BASS.BASS_ACTIVE_PLAYING:
                     return AudioStatus.Playing;
                 case BASS.BASS_ACTIVE_PAUSED:
@@ -150,47 +147,49 @@ public class AudioCore {
                 default:
                     return AudioStatus.Error;
             }
-        }else {
+        } else {
             return AudioStatus.Empty;
         }
     }
 
     /**
      * 得到当前已激活的歌曲
-     * @return  有则返回歌曲集合 , 没有则返回 NULL
+     *
+     * @return 有则返回歌曲集合 , 没有则返回 NULL
      */
-    protected SongItem getPlayingSong(){
-        if (songList != null && playingIndex != -1){
+    protected SongItem getPlayingSong() {
+        if (songList != null && playingIndex != -1) {
             return songList.get(playingIndex);
-        }else {
+        } else {
             return null;
         }
     }
 
     /**
      * 播放音频
+     *
      * @param songList  要播放的音频列表
-     * @param playIndex  要播放的音频位置
-     * @return  执行结果
+     * @param playIndex 要播放的音频位置
+     * @return 执行结果
      */
-    protected boolean play(ArrayList<SongItem> songList , int playIndex){
-        if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()){
+    protected boolean play(ArrayList<SongItem> songList, int playIndex) {
+        if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()) {
             //如果音频列表和播放位置合法 , 则开始读取
-            if (playAudio(songList.get(playIndex) , false)){
+            if (playAudio(songList.get(playIndex), false)) {
                 //如果播放成功 , 则记录当前数据和列表 , 同时发送开始播放的广播
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
                 applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 this.playingIndex = playIndex;
-                if (this.songList == null || !this.songList.equals(songList)){
-                    Logger.warnning(TAG,"播放列表已更新!");
+                if (this.songList == null || !this.songList.equals(songList)) {
+                    Logger.warnning(TAG, "播放列表已更新!");
                     this.songList = songList;
                 }
                 return true;
-            }else if (this.songList != null && this.songList.size() > 1){
+            } else if (this.songList != null && this.songList.size() > 1) {
                 //如果读取不成功 , 同时列表还有下一个音频 , 则播放下一个
                 this.playingIndex = playIndex;
                 playNext();
-            }else {
+            } else {
                 // 如果列表只有这一个损坏的音频 , 则返回失败 , 同时放弃这个列表
                 this.playingIndex = -1;
                 this.songList = null;
@@ -201,22 +200,23 @@ public class AudioCore {
 
     /**
      * 仅预加载音频 , 加载完后是 已停止 状态
+     *
      * @param songList  要播放的音频列表
-     * @param playIndex  要播放的音频位置
-     * @return  执行结果
+     * @param playIndex 要播放的音频位置
+     * @return 执行结果
      */
-    protected boolean onlyInitAudio(ArrayList<SongItem> songList , int playIndex){
-        if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()){
+    protected boolean onlyInitAudio(ArrayList<SongItem> songList, int playIndex) {
+        if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()) {
             //如果音频列表和播放位置合法 , 则开始读取
-            if (playAudio(songList.get(playIndex) , true)){
+            if (playAudio(songList.get(playIndex), true)) {
                 //如果读取成功 , 则记录当前数据和列表
                 this.playingIndex = playIndex;
-                if (this.songList == null || !this.songList.equals(songList)){
-                    Logger.warnning(TAG,"播放列表已更新!");
+                if (this.songList == null || !this.songList.equals(songList)) {
+                    Logger.warnning(TAG, "播放列表已更新!");
                     this.songList = songList;
                 }
                 return true;
-            }else {
+            } else {
                 //如果读取不成功 ,则放弃使用这个列表 , 并清空数据
                 this.playingIndex = -1;
                 this.songList = null;
@@ -227,122 +227,128 @@ public class AudioCore {
 
     /**
      * 停止播放音频
-     * @return  执行结果
+     *
+     * @return 执行结果
      */
-    protected boolean stopAudio(){
-        if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED){
+    protected boolean stopAudio() {
+        if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
             //如果当前加载了频道数据 , 同时当前状态不是停止播放状态
             boolean result = BASS.BASS_ChannelStop(playingChannel);
-            if (result){
+            if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PAUSED));
                 applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
      * 暂停播放音频
-     * @return  执行结果
+     *
+     * @return 执行结果
      */
-    protected boolean pauseAudio(){
-        if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PLAYING){
+    protected boolean pauseAudio() {
+        if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PLAYING) {
             //如果当前加载了频道数据 , 同时当前状态为正在播放
             boolean result = BASS.BASS_ChannelPause(playingChannel);
-            if (result){
+            if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PAUSED));
                 applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
      * 继续播放音频 , 如果音频是被暂停则继续播放  如果音频是被停止则从头播放 , 如果操作成功 , 则会发送广播
-     * @return  执行结果
+     *
+     * @return 执行结果
      */
-    protected boolean resumeAudio(){
+    protected boolean resumeAudio() {
         boolean result;
 
-        if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PAUSED){
+        if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PAUSED) {
             //暂停 , 继续播放
-            result = BASS.BASS_ChannelPlay(playingChannel , false);
-            if (result){
+            result = BASS.BASS_ChannelPlay(playingChannel, false);
+            if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_RESUMED));
                 applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
-        }else if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_STOPPED){
+        } else if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_STOPPED) {
             //停止 , 从头播放
             result = BASS.BASS_ChannelPlay(playingChannel, true);
-            if (result){
+            if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_RESUMED));
                 applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
             return result;
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
      * 播放前一个音频数据
-     * @return  执行结果
+     *
+     * @return 执行结果
      */
-    protected boolean playPrevious(){
-        if (songList != null){
-            if (playingIndex == 0){
+    protected boolean playPrevious() {
+        if (songList != null) {
+            if (playingIndex == 0) {
                 //如果当前正在播放的位置就是第一个 , 则跳到最后一个位置
-                playingIndex = songList.size()-1;
-            }else {
+                playingIndex = songList.size() - 1;
+            } else {
                 //否则就继续向前一个位置读取数据
                 playingIndex -= 1;
             }
-            boolean result = play(songList,playingIndex);
-            if (result){
+            boolean result = play(songList, playingIndex);
+            if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
             }
             return result;
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
      * 播放下一个音频数据
-     * @return  执行结果
+     *
+     * @return 执行结果
      */
-    protected boolean playNext(){
-        if (songList != null){
-            if (playingIndex == songList.size()-1){
+    protected boolean playNext() {
+        if (songList != null) {
+            if (playingIndex == songList.size() - 1) {
                 //如果当前播放的位置就是最后一个 , 则跳到第一个位置
                 playingIndex = 0;
-            }else {
+            } else {
                 //否则就继续向下一个位置读取数据
                 playingIndex += 1;
             }
-            boolean result = play(songList,playingIndex);
-            if (result){
+            boolean result = play(songList, playingIndex);
+            if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
             }
             return result;
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
      * 释放歌曲占用的资源
-     * @return  执行结果
+     *
+     * @return 执行结果
      */
-    protected boolean releaseAudio(){
-        if (playingChannel != 0 ){
+    protected boolean releaseAudio() {
+        if (playingChannel != 0) {
             //如果频道有数据
-            if ( BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED){
+            if (BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
                 //如果当前正在播放或者是暂停 , 则全部停止
                 BASS.BASS_ChannelStop(playingChannel);
             }
@@ -352,60 +358,71 @@ public class AudioCore {
             playingChannel = 0;
             applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             return result;
-        }else {
+        } else {
             return false;
         }
     }
 
     /**
-     * @return  当前播放的音频列表
+     * @return 当前播放的音频列表
      */
-    protected ArrayList<SongItem> getPlayingList(){
+    protected ArrayList<SongItem> getPlayingList() {
         return this.songList;
     }
 
     /**
-     * @return  获取当前播放的位置 , 无的时候为 -1
+     * @return 获取当前播放的位置 , 无的时候为 -1
      */
-    protected int getPlayingIndex(){
+    protected int getPlayingIndex() {
         return this.playingIndex;
     }
 
     /**
      * 获取当前播放的位置
-     * @return  当前音频播放位置
+     *
+     * @return 当前音频播放位置
      */
-    protected double getPlayingPosition(){
-        if (playingChannel != 0){
-            return BASS.BASS_ChannelBytes2Seconds(playingChannel , BASS.BASS_ChannelGetPosition(playingChannel,BASS.BASS_POS_BYTE));
-        }else {
+    protected double getPlayingPosition() {
+        if (playingChannel != 0) {
+            return BASS.BASS_ChannelBytes2Seconds(playingChannel, BASS.BASS_ChannelGetPosition(playingChannel, BASS.BASS_POS_BYTE));
+        } else {
             return 0d;
         }
     }
 
     /**
      * 获取当前播放的音频长度
-     * @return  音频长度
+     *
+     * @return 音频长度
      */
-    protected double getAudioLength(){
-        if (playingChannel != 0){
-            return BASS.BASS_ChannelBytes2Seconds(playingChannel , BASS.BASS_ChannelGetLength(playingChannel,BASS.BASS_POS_BYTE));
-        }else {
+    protected double getAudioLength() {
+        if (playingChannel != 0) {
+            return BASS.BASS_ChannelBytes2Seconds(playingChannel, BASS.BASS_ChannelGetLength(playingChannel, BASS.BASS_POS_BYTE));
+        } else {
             return 0d;
         }
     }
 
     /**
      * 歌曲播放位置设置
-     * @param position  位置长度
-     * @return  执行结果
+     *
+     * @param position 位置长度
+     * @return 执行结果
      */
-    protected boolean seek2Position(double position){
-        if (playingChannel != 0){
-            return BASS.BASS_ChannelSetPosition(playingChannel,BASS.BASS_ChannelSeconds2Bytes(playingChannel,position),BASS.BASS_POS_BYTE);
-        }else {
+    protected boolean seek2Position(double position) {
+        if (playingChannel != 0) {
+            return BASS.BASS_ChannelSetPosition(playingChannel, BASS.BASS_ChannelSeconds2Bytes(playingChannel, position), BASS.BASS_POS_BYTE);
+        } else {
             return false;
         }
+    }
+
+    public enum AudioStatus {
+        Playing,
+        Paused,
+        Stopped,
+        Empty,
+        Error
     }
 
 }
