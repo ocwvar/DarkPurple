@@ -23,6 +23,7 @@ https://github.com/ocwvar/DarkPurple/blob/master/preview.gif
 https://github.com/ocwvar/DarkPurple/blob/master/Spectrum%20Preview.gif
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/preview.gif)
+
 ![](https://github.com/ocwvar/DarkPurple/blob/master/Spectrum%20Preview.gif)
 
 
