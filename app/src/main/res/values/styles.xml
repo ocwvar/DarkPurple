@@ -7,16 +7,19 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/backgroundColor_Dark</item>
+        <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
     </style>
 
     <style name="AppTheme.NoActionBar.PlayingActivity">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
     </style>
 
     <style name="Setting_AlertTheme" parent="Theme.AppCompat.Dialog">
@@ -43,6 +46,7 @@
         <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="android:alertDialogTheme">@style/Setting_AlertTheme</item>
         <item name="android:dialogTheme">@style/Setting_AlertTheme</item>
+        <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
     </style>
 
     <style name="TextAppearance.AppCompat.NoActionBar" parent="TextAppearance.AppCompat">
@@ -71,5 +75,14 @@
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ActivityAnimation">
+        //进入新界面时
+        <item name="android:activityOpenEnterAnimation">@anim/activity_open_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_open_out</item>
+        //退回旧界面时
+        <item name="android:activityCloseEnterAnimation">@anim/activity_close_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_close_out</item>
+    </style>
 
 </resources>

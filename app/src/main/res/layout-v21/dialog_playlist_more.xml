@@ -24,7 +24,8 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:padding="10dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:transitionName="spName">
 
         <TextView
             android:layout_width="wrap_content"

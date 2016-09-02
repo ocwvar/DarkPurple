@@ -1,8 +1,10 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -230,7 +232,11 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 } else {
                     Intent intent = new Intent(getActivity(), PlaylistDetailActivity.class);
                     intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                    startActivityForResult(intent, 9);
+                    if (Build.VERSION.SDK_INT >= 21){
+                        startActivityForResult(intent, 9, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view,"spName").toBundle());
+                    }else {
+                        startActivityForResult(intent, 9);
+                    }
                 }
                 moreDialog.get().dismiss();
                 break;

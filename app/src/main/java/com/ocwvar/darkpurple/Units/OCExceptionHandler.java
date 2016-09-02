@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
+import com.netease.nis.bugrpt.CrashHandler;
 import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 
@@ -97,6 +98,7 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
     public void onCreate() {
         super.onCreate();
         //Thread.setDefaultUncaughtExceptionHandler(this);
+        CrashHandler.init(getApplicationContext());
         registerActivityLifecycleCallbacks(this);
 
         //初始化各项保存的设置
