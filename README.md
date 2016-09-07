@@ -2,6 +2,7 @@
 # *DarkPurple Music player*
 
 #### 深紫 音乐播放器
+###### (Android 4.2.2 ~ Android 7.0)
 
 ##### 功能介绍  Features introduce
 
