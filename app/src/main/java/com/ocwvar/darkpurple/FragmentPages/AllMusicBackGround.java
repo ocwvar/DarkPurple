@@ -1,9 +1,12 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -218,7 +221,15 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             loadingPanel.setVisibility(View.VISIBLE);
         }
         MediaScanner.getInstance().setCallback(this);
-        MediaScanner.getInstance().start();
+
+        if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
+            //拥有权限的时候 , 才开始搜索
+            MediaScanner.getInstance().start();
+        }else {
+            //否则提示对应的消息
+            Snackbar.make(fragmentView,R.string.error_noPermission,Snackbar.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
@@ -342,8 +353,15 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      */
     @Override
     public void onOptionClick() {
-        startActivityForResult(new Intent(getActivity(), FolderSelectorActivity.class), 9);
+        if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            //如果当前系统不是Android6.0或者已经授予文件读写权限 , 才打开歌曲文件夹设置
+            startActivityForResult(new Intent(getActivity(), FolderSelectorActivity.class), 9);
+        }else {
+            //如果权限不正常 , 则提示错误
+            Snackbar.make(fragmentView,R.string.error_noPermission,Snackbar.LENGTH_SHORT).show();
+        }
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

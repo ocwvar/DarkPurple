@@ -83,7 +83,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
         private AudioService service;                       //音频服务
         private Rect drawArea;                                //总绘制区域  (自动计算)
         private int spectrumCount = 100;                //每一份频谱条所占的角度
-        private float strokeWidth = 7f;                    //频谱条的厚度
+        private float strokeWidth = 15f;                    //频谱条的厚度
         private int r;                                                //频谱圆圈半径   (自动计算)
         private int centerX = sfWidth / 2;                  //绘制区域中心点  X 轴坐标
         private int centerY = sfHeight / 2;                 //绘制区域中心点  Y 轴坐标
@@ -171,6 +171,12 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
                     //更新画布
                     surfaceHolder.unlockCanvasAndPost(canvas);
+
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 } else {
                     //如果频谱数据为 NULL ， 则休眠 1000 毫秒再请求
                     surfaceHolder.unlockCanvasAndPost(canvas);
