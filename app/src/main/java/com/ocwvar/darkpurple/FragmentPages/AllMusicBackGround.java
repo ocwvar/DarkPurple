@@ -222,12 +222,13 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         }
         MediaScanner.getInstance().setCallback(this);
 
-        if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
+        if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && AppConfigs.ApplicationContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
             //拥有权限的时候 , 才开始搜索
             MediaScanner.getInstance().start();
         }else {
             //否则提示对应的消息
             Snackbar.make(fragmentView,R.string.error_noPermission,Snackbar.LENGTH_SHORT).show();
+            loadingPanel.setVisibility(View.GONE);
         }
 
     }
@@ -353,7 +354,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      */
     @Override
     public void onOptionClick() {
-        if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+        if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && AppConfigs.ApplicationContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             //如果当前系统不是Android6.0或者已经授予文件读写权限 , 才打开歌曲文件夹设置
             startActivityForResult(new Intent(getActivity(), FolderSelectorActivity.class), 9);
         }else {
