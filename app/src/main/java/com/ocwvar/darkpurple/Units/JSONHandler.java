@@ -7,7 +7,9 @@ import android.text.TextUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.ocwvar.darkpurple.AppConfigs;
+import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
 
 import java.io.ByteArrayInputStream;
@@ -210,9 +212,7 @@ public class JSONHandler {
      * @param name 播放列表名称
      * @return 如果读取成功 , 则返回歌曲列表 , 否则返回 NULL
      */
-    public static
-    @Nullable
-    ArrayList<SongItem> loadPlaylist(String name) {
+    public static @Nullable ArrayList<SongItem> loadPlaylist(String name) {
         final String TAG = "JSON播放列表  读取";
         if (TextUtils.isEmpty(name)) {
             Logger.error(TAG, "请求数据无效");
@@ -324,6 +324,43 @@ public class JSONHandler {
                 return null;
             }
         }
+    }
+
+    /**
+     * 解析出封面预览的数据列表
+     * @param jsonData  获取到的Json数据
+     * @return  封面数据集合
+     */
+    public static ArrayList<CoverPreviewBean> loadCoverPreviewList(String jsonData){
+        final String TAG = "解析封面Json数据";
+
+        if (TextUtils.isEmpty(jsonData)){
+            return null;
+        }
+
+        JsonObject jsonObject;
+
+        try {
+            jsonObject = new JsonParser().parse(jsonData).getAsJsonObject();
+        } catch (Exception e) {
+            Logger.error(TAG,"数据解析失败");
+            return null;
+        }
+
+        if (isJsonObjectVaild(jsonObject,"results")){
+            JsonArray jsonArray = jsonObject.get("results").getAsJsonArray();
+            if (jsonArray.size() > 0){
+                // TODO: 2016/9/14
+                return null;
+            }else {
+                Logger.error(TAG,"无封面数据");
+                return null;
+            }
+        }else {
+            Logger.error(TAG,"无封面数据");
+            return null;
+        }
+
     }
 
     /**

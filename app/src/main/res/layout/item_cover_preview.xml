@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="5dp">
+
+    <com.ocwvar.darkpurple.Units.SquareWidthImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView_cover_preview_image"
+        android:src="@drawable/ic_picture_loading"
+        android:scaleType="fitXY"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂无数据"
+        android:id="@+id/textView_cover_preview_name"
+        android:textColor="#ebebeb"
+        android:paddingTop="10dp"/>
+
+</LinearLayout>

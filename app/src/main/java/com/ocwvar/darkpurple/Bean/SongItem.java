@@ -1,6 +1,8 @@
 package com.ocwvar.darkpurple.Bean;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.ocwvar.darkpurple.AppConfigs;
 
@@ -11,7 +13,7 @@ import com.ocwvar.darkpurple.AppConfigs;
  * Project: DarkPurple
  * 音乐信息Bean
  */
-public class SongItem {
+public class SongItem implements Parcelable{
 
     //歌曲名
     private String title;
@@ -40,6 +42,33 @@ public class SongItem {
 
     public SongItem() {
     }
+
+    protected SongItem(Parcel in) {
+        title = in.readString();
+        album = in.readString();
+        albumID = in.readLong();
+        albumCoverUri = in.readParcelable(Uri.class.getClassLoader());
+        artist = in.readString();
+        length = in.readLong();
+        lengthSet = in.createIntArray();
+        fileSize = in.readString();
+        fileName = in.readString();
+        path = in.readString();
+        paletteColor = in.readInt();
+        haveCover = in.readByte() != 0;
+    }
+
+    public static final Creator<SongItem> CREATOR = new Creator<SongItem>() {
+        @Override
+        public SongItem createFromParcel(Parcel in) {
+            return new SongItem(in);
+        }
+
+        @Override
+        public SongItem[] newArray(int size) {
+            return new SongItem[size];
+        }
+    };
 
     /**
      * 毫秒转 小时,分钟,秒数
@@ -190,5 +219,26 @@ public class SongItem {
     @Override
     public int hashCode() {
         return path.hashCode();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(album);
+        parcel.writeLong(albumID);
+        parcel.writeParcelable(albumCoverUri, i);
+        parcel.writeString(artist);
+        parcel.writeLong(length);
+        parcel.writeIntArray(lengthSet);
+        parcel.writeString(fileSize);
+        parcel.writeString(fileName);
+        parcel.writeString(path);
+        parcel.writeInt(paletteColor);
+        parcel.writeByte((byte) (haveCover ? 1 : 0));
     }
 }
