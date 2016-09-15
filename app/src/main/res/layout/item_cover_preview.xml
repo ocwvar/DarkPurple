@@ -20,6 +20,7 @@
         android:id="@+id/textView_cover_preview_name"
         android:textColor="#ebebeb"
         android:gravity="center"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        android:maxLines="2"/>
 
 </LinearLayout>

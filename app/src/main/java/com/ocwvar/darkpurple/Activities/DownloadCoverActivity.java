@@ -1,17 +1,20 @@
 package com.ocwvar.darkpurple.Activities;
 
-import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ocwvar.darkpurple.Adapters.CoverPreviewAdapter;
@@ -31,6 +34,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +54,12 @@ public class DownloadCoverActivity extends AppCompatActivity{
 
     String headResult;
     String headSearch;
+    View panel;
+    TextView progress;
+    WeakReference<AlertDialog> copyRightDialog = new WeakReference<>(null);
+    WeakReference<AlertDialog> infoDialog = new WeakReference<>(null);
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,11 +79,16 @@ public class DownloadCoverActivity extends AppCompatActivity{
         adapter = new CoverPreviewAdapter();
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(headResult+"0");
+        panel = findViewById(R.id.view_panel);
+        progress = (TextView)findViewById(R.id.textView_cover_progress);
         recyclerView = (RecyclerView)findViewById(R.id.recycleView);
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(DownloadCoverActivity.this,2,LinearLayoutManager.VERTICAL,false));
+
+        showInfoDialog();
 
         if (TextUtils.isEmpty(songItem.getAlbum()) || songItem.getAlbum().equals("<unknown>")){
             //如果没有专辑名称,则使用音频文件名来搜索
@@ -138,37 +152,93 @@ public class DownloadCoverActivity extends AppCompatActivity{
     }
 
     /**
+     * 显示信息对话框
+     */
+    private void showInfoDialog(){
+        AlertDialog dialog = infoDialog.get();
+        if (dialog == null){
+            AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this,R.style.FullScreen_TransparentBG);
+            builder.setMessage(R.string.cover_info);
+            builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            dialog = builder.create();
+            infoDialog = new WeakReference<>(dialog);
+        }
+        dialog.show();
+    }
+
+    /**
+     * 显示版权对话框
+     */
+    private void showCopyRightDialog(){
+        AlertDialog dialog = copyRightDialog.get();
+        if (dialog == null){
+            AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this,R.style.FullScreen_TransparentBG);
+            builder.setMessage(R.string.coverbox_info);
+            builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            dialog = builder.create();
+            copyRightDialog = new WeakReference<>(dialog);
+        }
+        dialog.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_cover_download,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.menu_action_info:
+                showCopyRightDialog();
+                break;
+        }
+        return true;
+    }
+
+    /**
      * 获取歌曲封面预览图任务
      */
     class LoadAllPreviewTask extends AsyncTask<Integer,Integer,ArrayList<CoverPreviewBean>>{
         final String TAG = "封面搜索任务";
-        final ProgressDialog progressDialog;
         final String searchText;
 
         @SuppressWarnings("ConstantConditions")
         public LoadAllPreviewTask(String searchText) {
             this.searchText = searchText;
-            progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
-            progressDialog.setMessage(DownloadCoverActivity.this.getString(R.string.simple_loading));
-            progressDialog.setCancelable(false);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.setMax(3);
             getSupportActionBar().setSubtitle(headSearch+searchText);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog.show();
+            progress.setText(R.string.simple_loading);
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            progressDialog.setProgress(values[0]);
-            if (progressDialog.getProgress() == progressDialog.getMax()){
-                progressDialog.dismiss();
-                progressDialog.setProgress(0);
+            switch (values[0]){
+                case 1:
+                    progress.setText(R.string.progress_loading);
+                    break;
+                case 2:
+                    progress.setText(R.string.progress_decode);
+                    break;
             }
         }
 
@@ -181,13 +251,12 @@ public class DownloadCoverActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(ArrayList<CoverPreviewBean> list) {
             super.onPostExecute(list);
-            progressDialog.setProgress(3);
-            progressDialog.dismiss();
             if (list == null || list.size() <= 0){
                 setTitle(headResult+"0");
-                Snackbar.make(findViewById(android.R.id.content),R.string.noResult,Snackbar.LENGTH_LONG).show();
+                progress.setText(R.string.noResult);
             }else {
                 setTitle(headResult+String.valueOf(list.size()));
+                panel.setVisibility(View.GONE);
             }
             adapter.addDatas(list);
 

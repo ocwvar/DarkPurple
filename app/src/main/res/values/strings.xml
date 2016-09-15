@@ -88,10 +88,13 @@
     <!--封面图像下载界面信息-->
     <string name="error_songitem">请求数据不完整,请重试</string>
     <string name="noResult">无法搜索到相应的封面</string>
-    <string name="coverbox_info">所有搜索结果均解析自 coverbox.sinaapp.com \nCoverBox is created by Henry Hu\nE-mail: henry@henryhu.cn</string>
-    <string name="cover_info">搜索结果为低分辨率预览图像,点击对应的封面预览即可下载高分辨率尺寸.\n请勿频繁重复请求同一歌曲,否则会在一定时间内无法得到结果.</string>
+    <string name="progress_loading">正在获取搜索结果页面信息</string>
+    <string name="progress_decode">正在解析页面数据</string>
+    <string name="coverbox_info">所有搜索结果均解析自   coverbox.sinaapp.com \n\nCoverBox is created by Henry Hu\nE-mail: henry@henryhu.cn</string>
+    <string name="cover_info">1.搜索结果为低分辨率预览图像,点击对应的封面预览即可下载高分辨率尺寸.\n\n2.请勿频繁重复请求同一歌曲,否则会在一定时间内无法得到结果.</string>
     <string name="head_result">搜索结果数量:</string>
     <string name="head_searchText">搜索依据:</string>
+    <string name="menu_title_cover_info">数据来源</string>
 
     <!--菜单各类选项-->
     <string name="menu_allmusic_refresh">刷新歌曲</string>
