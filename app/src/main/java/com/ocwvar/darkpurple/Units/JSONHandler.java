@@ -350,8 +350,28 @@ public class JSONHandler {
         if (isJsonObjectVaild(jsonObject,"results")){
             JsonArray jsonArray = jsonObject.get("results").getAsJsonArray();
             if (jsonArray.size() > 0){
-                // TODO: 2016/9/14
-                return null;
+                ArrayList<CoverPreviewBean> previewBeen = new ArrayList<>();
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject object = jsonArray.get(i).getAsJsonObject();
+                    CoverPreviewBean bean = new CoverPreviewBean();
+
+                    if (isJsonObjectVaild(object,"collectionName")){
+                        bean.setAlbumName(object.get("collectionName").getAsString());
+                    }
+
+                    if (isJsonObjectVaild(object,"artworkUrl60")){
+                        bean.setArtworkUrl60(object.get("artworkUrl60").getAsString());
+                    }
+
+                    if (isJsonObjectVaild(object,"artworkUrl100")){
+                        bean.setArtworkUrl100(object.get("artworkUrl100").getAsString());
+                    }
+
+                    previewBeen.add(bean);
+
+                }
+
+                return previewBeen;
             }else {
                 Logger.error(TAG,"无封面数据");
                 return null;

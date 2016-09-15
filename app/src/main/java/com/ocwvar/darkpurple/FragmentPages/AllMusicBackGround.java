@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
+import com.ocwvar.darkpurple.Activities.DownloadCoverActivity;
 import com.ocwvar.darkpurple.Activities.FolderSelectorActivity;
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.Adapters.AllMusicAdapter;
@@ -191,6 +192,18 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 });
                 //添加按钮
                 (itemView.findViewById(R.id.fb_add)).setOnClickListener(this);
+                //获取封面图像按钮
+                (itemView.findViewById(R.id.fb_download_cover)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        moreDialog.get().dismiss();
+                        if (selectedSongitem != null) {
+                            Intent intent = new Intent(getActivity(), DownloadCoverActivity.class);
+                            intent.putExtra("item",selectedSongitem);
+                            startActivity(intent);
+                        }
+                    }
+                });
                 AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext(), R.style.FullScreen_TransparentBG);
                 builder.setView(itemView);
                 moreDialog = new WeakReference<>(builder.create());

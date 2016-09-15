@@ -10,12 +10,13 @@
     <string name="simple_unknown">未知</string>
     <string name="simple_cancel">取消</string>
     <string name="simple_done">确定</string>
-    <string name="simple_loading">正在读取中 , 请稍候</string>
-    <string name="service_error">服务创建失败 , 将无法使用音频功能</string>
+    <string name="simple_loading">正在读取中,请稍候</string>
+    <string name="service_error">服务创建失败,将无法使用音频功能</string>
     <string name="service_ok">服务连接成功</string>
     <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
     <string name="button_dialog_allmusic_delete">删除音频</string>
     <string name="button_dialog_allmusic_add">添加到列表</string>
+    <string name="button_dialog_allmusic_cover">从网络获取封面图像</string>
     <string name="title_dialog_playlist_more">对选择的播放列表进行操作</string>
     <string name="error_auto_deletePL">播放列表数据丢失 , 已自动移除空列表.</string>
     <string name="button_dialog_playlist_delete">删除列表</string>
@@ -53,11 +54,11 @@
     <string name="info_musicFloder">按右上角按钮进行添加目录 , 长按已添加的条目进行删除. 目录内的子目录并不会被扫描.</string>
 
     <!--All Music 版面信息-->
-    <string name="textview_loading">扫描中 , 请稍候…</string>
+    <string name="textview_loading">扫描中,请稍候…</string>
     <string name="textview_option">点此设置设置歌曲文件夹</string>
     <string name="noMusic">无歌曲扫描结果</string>
     <string name="gotMusicDone">扫描结束</string>
-    <string name="wrongPlaylistName">无效名称 , 请重新输入</string>
+    <string name="wrongPlaylistName">无效名称,请重新输入</string>
     <string name="existedlaylistName">已经有相同名称的播放列表</string>
     <string name="startSelectPlaylist">请从列表中选择要添加的歌曲</string>
     <string name="playliseSaved">列表储存成功</string>
@@ -83,6 +84,14 @@
     <string name="info_noPrevious">没有更上一级的目录了哟 :)</string>
     <string name="info_folder_count">当前已选择文件夹数: </string>
     <string name="info_confirm">您当前已有选择的目录 , 确认不保存直接返回吗 ?</string>
+
+    <!--封面图像下载界面信息-->
+    <string name="error_songitem">请求数据不完整,请重试</string>
+    <string name="noResult">无法搜索到相应的封面</string>
+    <string name="coverbox_info">所有搜索结果均解析自 coverbox.sinaapp.com \nCoverBox is created by Henry Hu\nE-mail: henry@henryhu.cn</string>
+    <string name="cover_info">搜索结果为低分辨率预览图像,点击对应的封面预览即可下载高分辨率尺寸.\n请勿频繁重复请求同一歌曲,否则会在一定时间内无法得到结果.</string>
+    <string name="head_result">搜索结果数量:</string>
+    <string name="head_searchText">搜索依据:</string>
 
     <!--菜单各类选项-->
     <string name="menu_allmusic_refresh">刷新歌曲</string>

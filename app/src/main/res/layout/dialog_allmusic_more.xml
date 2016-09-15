@@ -22,9 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:padding="10dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,7 +40,16 @@
             app:fab_size="normal"
             app:fab_colorNormal="#ab1b0f"
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
-            android:layout_marginRight="20dp"
+            />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fb_download_cover"
+            android:src="@drawable/ic_action_download_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_size="normal"
+            app:fab_colorNormal="#009de6"
+            app:fab_colorPressed="@color/card_backgroundColor_Dark"
             />
 
         <com.github.clans.fab.FloatingActionButton
@@ -51,7 +59,8 @@
             android:layout_height="wrap_content"
             app:fab_size="normal"
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
-            app:fab_colorNormal="#9636ca"/>
+            app:fab_colorNormal="#9636ca"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -61,4 +70,14 @@
             android:textColor="#fff" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_dialog_allmusic_cover"
+        android:id="@+id/textView4"
+        android:textColor="#fff"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"/>
+
 </LinearLayout>

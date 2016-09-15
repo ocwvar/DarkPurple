@@ -67,6 +67,12 @@
             />
 
         <activity
+            android:name=".Activities.DownloadCoverActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
+
+        <activity
             android:name=".Activities.FolderSelectorUI"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/title_select_folder_ui"

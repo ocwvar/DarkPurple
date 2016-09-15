@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:padding="5dp">
 
     <com.ocwvar.darkpurple.Units.SquareWidthImageView
@@ -10,14 +10,16 @@
         android:layout_height="match_parent"
         android:id="@+id/textView_cover_preview_image"
         android:src="@drawable/ic_picture_loading"
-        android:scaleType="fitXY"/>
+        android:scaleType="center"
+        android:background="#7f000000"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="暂无数据"
         android:id="@+id/textView_cover_preview_name"
         android:textColor="#ebebeb"
-        android:paddingTop="10dp"/>
+        android:gravity="center"
+        android:padding="10dp"/>
 
 </LinearLayout>

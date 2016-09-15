@@ -9,16 +9,16 @@ package com.ocwvar.darkpurple.Bean;
  */
 public class CoverPreviewBean {
 
-    private String collectionName;
+    private String albumName;
     private String artworkUrl100;
     private String artworkUrl60;
 
-    public String getCollectionName() {
-        return collectionName;
+    public String getAlbumName() {
+        return albumName;
     }
 
-    public void setCollectionName(String collectionName) {
-        this.collectionName = collectionName;
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
     }
 
     public String getArtworkUrl100() {
