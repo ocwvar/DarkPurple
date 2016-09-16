@@ -87,7 +87,9 @@
 
     <!--封面图像下载界面信息-->
     <string name="error_songitem">请求数据不完整,请重试</string>
-    <string name="noResult">无法搜索到相应的封面</string>
+    <string name="error_oom">运行内存不足,创建资源失败,请重试</string>
+    <string name="noResult_Preview">无法搜索到相应的封面</string>
+    <string name="noResult_Detail">无法得到封面详情数据,请检查是否网络异常</string>
     <string name="progress_loading">正在获取搜索结果页面信息</string>
     <string name="progress_decode">正在解析页面数据</string>
     <string name="coverbox_info">所有搜索结果均解析自   coverbox.sinaapp.com \n\nCoverBox is created by Henry Hu\nE-mail: henry@henryhu.cn</string>
@@ -95,6 +97,7 @@
     <string name="head_result">搜索结果数量:</string>
     <string name="head_searchText">搜索依据:</string>
     <string name="menu_title_cover_info">数据来源</string>
+    <string name="title_selector_dialog">请选择需要下载的封面尺寸</string>
 
     <!--菜单各类选项-->
     <string name="menu_allmusic_refresh">刷新歌曲</string>

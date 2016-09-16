@@ -45,6 +45,8 @@ public class AppConfigs {
     public static long LengthLimited = 30000;
     //歌曲列表排序类型
     public static MediaScanner.SortType SortType = MediaScanner.SortType.ByName;
+    //一次性信息储存文件名称
+    public static String SP_ONCE = "ONCE";
 
     //是否监听耳机的多媒体按钮
     public static boolean isListenMediaButton = true;

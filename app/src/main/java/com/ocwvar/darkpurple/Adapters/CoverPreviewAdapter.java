@@ -34,24 +34,28 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
     public CoverPreviewAdapter() {
         list = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             loadingRes = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_picture_loading);
-        }else {
+        } else {
             loadingRes = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_picture_loading);
         }
     }
 
-    public void addDatas(ArrayList<CoverPreviewBean> source){
+    public void addDatas(ArrayList<CoverPreviewBean> source) {
         list.clear();
-        if (source != null){
+        if (source != null) {
             list.addAll(source);
         }
         notifyDataSetChanged();
     }
 
+    public void setCallback(OnPreviewClickCallback callback) {
+        this.callback = callback;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CoverPreviewViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cover_preview,parent,false));
+        return new CoverPreviewViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cover_preview, parent, false));
     }
 
     @Override
@@ -61,10 +65,10 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
         viewHolder.album.setText(bean.getAlbumName());
         viewHolder.cover.setImageDrawable(loadingRes);
-        if (!TextUtils.isEmpty(bean.getArtworkUrl60())){
-            Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(bean.getArtworkUrl60())).resize(320,320).into(viewHolder.cover);
-        }else {
-            Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(bean.getArtworkUrl100())).resize(200,200).into(viewHolder.cover);
+        if (!TextUtils.isEmpty(bean.getArtworkUrl60())) {
+            Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(bean.getArtworkUrl60())).resize(320, 320).into(viewHolder.cover);
+        } else {
+            Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(bean.getArtworkUrl100())).resize(200, 200).into(viewHolder.cover);
         }
 
     }
@@ -74,6 +78,12 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
         return list.size();
     }
 
+    public interface OnPreviewClickCallback {
+
+        void onPreviewClick(CoverPreviewBean coverPreviewBean);
+
+    }
+
     class CoverPreviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView cover;
@@ -81,23 +91,17 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
         public CoverPreviewViewHolder(View itemView) {
             super(itemView);
-            cover = (ImageView)itemView.findViewById(R.id.textView_cover_preview_image);
-            album = (TextView)itemView.findViewById(R.id.textView_cover_preview_name);
+            cover = (ImageView) itemView.findViewById(R.id.textView_cover_preview_image);
+            album = (TextView) itemView.findViewById(R.id.textView_cover_preview_name);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (callback != null){
+            if (callback != null) {
                 callback.onPreviewClick(list.get(getAdapterPosition()));
             }
         }
-
-    }
-
-    public interface OnPreviewClickCallback {
-
-        void onPreviewClick(CoverPreviewBean coverPreviewBean);
 
     }
 }
