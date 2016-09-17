@@ -22,7 +22,8 @@ import java.util.Set;
  * 应用的全局设置
  */
 public class AppConfigs {
-
+    //封面下载目录
+    public static final String DownloadCoversFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/DownloadCovers/";
     //图片缓存目录
     public static final String ImageCacheFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/ImageCache/";
     //系统保留播放列表名字 , 用于缓存上一次的搜索记录
@@ -105,6 +106,7 @@ public class AppConfigs {
 
             new File(ImageCacheFolder).mkdirs();
             new File(JsonFilePath).mkdirs();
+            new File(DownloadCoversFolder).mkdirs();
 
         } else {
             Logger.error("初始化全局变量", "ApplicationContext 为空,无法读取数据");

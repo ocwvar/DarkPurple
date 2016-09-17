@@ -32,6 +32,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     private ArrayList<SongItem> arrayList;
     private Drawable defaultCover;
     private OnClick onClick;
+    private int imageSize;
 
     public AllMusicAdapter() {
         checkedItems = new ArrayList<>();
@@ -80,6 +81,16 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     }
 
     /**
+     * 替换列表中的其中一个数据
+     *
+     * @param songItem  要替换进列表的数据
+     */
+    public void replaceSongItem(SongItem songItem){
+        int position = arrayList.indexOf(songItem);
+        arrayList.set(position,songItem);
+    }
+
+    /**
      * 移除单个项目
      *
      * @param position 项目位置
@@ -98,15 +109,16 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        imageSize = parent.getWidth() / 2;
         if (viewType == 0) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_option, parent, false);
-            itemView.getLayoutParams().width = (parent.getWidth() / 2);
-            itemView.getLayoutParams().height = (parent.getWidth() / 2);
+            itemView.getLayoutParams().width = imageSize;
+            itemView.getLayoutParams().height = imageSize;
             return new OptionItemViewHolder(itemView);
         } else {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_card, parent, false);
-            itemView.getLayoutParams().width = (parent.getWidth() / 2);
-            itemView.getLayoutParams().height = (parent.getWidth() / 2);
+            itemView.getLayoutParams().width = imageSize;
+            itemView.getLayoutParams().height = imageSize;
             return new MusicItemViewHolder(itemView);
         }
     }
@@ -136,11 +148,23 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             }
         }
 
-        if (songItem.isHaveCover()) {
+        final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
+
+        if (downloadedCover.exists()){
+            //如果有用户手动下载的封面,则优先使用
+            Picasso
+                    .with(AppConfigs.ApplicationContext)
+                    .load(downloadedCover)
+                    .error(R.drawable.ic_cd)
+                    .resize(imageSize,imageSize)
+                    .into(viewHolder.cover);
+        } else if (songItem.isHaveCover()) {
+            //没有下载的封面,则使用读取到的封面文件
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                     .error(R.drawable.ic_cd)
+                    .resize(imageSize,imageSize)
                     .into(viewHolder.cover);
         } else {
             if (defaultCover == null) {

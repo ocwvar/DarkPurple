@@ -13,6 +13,7 @@ import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -63,7 +64,17 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final int imageWidth = (int) (viewPagerWidth / 1.6f);
 
-        if (songItem.isHaveCover()) {
+        final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
+
+        if (downloadedCover.exists()){
+            //如果有用户手动下载的封面,则优先使用
+            Picasso
+                    .with(AppConfigs.ApplicationContext)
+                    .load(downloadedCover)
+                    .error(R.drawable.ic_cd)
+                    .resize(imageWidth,imageWidth)
+                    .into(cover);
+        } else if (songItem.isHaveCover()) {
             //如果先前缓存有图像 , 则开始读取
             Picasso.with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))

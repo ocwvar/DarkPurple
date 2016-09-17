@@ -44,14 +44,6 @@ public class ActivityManager {
         }
     }
 
-    public void removeTOP() {
-        try {
-            activityList.remove(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public void release() {
         if (activityList.size() > 0) {
             for (Activity activity : activityList) {

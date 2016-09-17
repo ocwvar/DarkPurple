@@ -10,6 +10,10 @@
     <string name="simple_unknown">未知</string>
     <string name="simple_cancel">取消</string>
     <string name="simple_done">确定</string>
+    <string name="simple_downloading">正在下载中</string>
+    <string name="simple_download_completed">已成功下载文件</string>
+    <string name="simple_download_failed">下载文件失败,请检查网络状态</string>
+    <string name="simple_download_existed">已有相同的文件,不需要再次下载</string>
     <string name="simple_loading">正在读取中,请稍候</string>
     <string name="service_error">服务创建失败,将无法使用音频功能</string>
     <string name="service_ok">服务连接成功</string>
@@ -92,6 +96,9 @@
     <string name="noResult_Detail">无法得到封面详情数据,请检查是否网络异常</string>
     <string name="progress_loading">正在获取搜索结果页面信息</string>
     <string name="progress_decode">正在解析页面数据</string>
+    <string name="recover">撤销自定义封面</string>
+    <string name="recover_successful">已还原旧封面数据</string>
+    <string name="recover_failed">尚未设置新的封面数据,不需要还原</string>
     <string name="coverbox_info">所有搜索结果均解析自   coverbox.sinaapp.com \n\nCoverBox is created by Henry Hu\nE-mail: henry@henryhu.cn</string>
     <string name="cover_info">1.搜索结果为低分辨率预览图像,点击对应的封面预览即可下载高分辨率尺寸.\n\n2.请勿频繁重复请求同一歌曲,否则会在一定时间内无法得到结果.</string>
     <string name="head_result">搜索结果数量:</string>

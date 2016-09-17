@@ -3,6 +3,9 @@ package com.ocwvar.darkpurple.Activities;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +35,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -43,7 +48,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -110,6 +118,10 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
             //用专辑名来搜索数据
             new LoadAllPreviewTask(songItem.getAlbum()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
+
+        Intent intent = new Intent();
+        intent.putExtra("item",songItem);
+        setResult(11,intent);
 
     }
 
@@ -180,6 +192,80 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                 break;
         }
         return true;
+    }
+
+    /**
+     * 恢复原本的封面
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Override
+    public void onRecoverCover() {
+
+        final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
+
+        if (downloadedCover.exists() && downloadedCover.delete()){
+            if (songItem.isHaveCover()){
+                //如果歌曲在定义封面之前是有默认封面的,则重新设置 混合颜色
+                Bitmap bitmap = BitmapFactory.decodeFile(CoverImage2File.getInstance().getCachePath(songItem.getPath()));
+                if (bitmap != null){
+                    songItem.setPaletteColor(getAlbumCoverColor(bitmap));
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+            }else {
+                //否则使用默认颜色
+                songItem.setPaletteColor(AppConfigs.DefaultPaletteColor);
+            }
+            Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful , Toast.LENGTH_SHORT).show();
+            finish();
+        }else {
+            Snackbar.make(findViewById(android.R.id.content),R.string.recover_failed,Snackbar.LENGTH_LONG).show();
+        }
+
+    }
+
+    /**
+     * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+     *
+     * @param coverImage 封面图像
+     * @return 混合颜色
+     */
+    private int getAlbumCoverColor(Bitmap coverImage) {
+        Palette palette;
+
+        try {
+            palette = new Palette.Builder(coverImage).generate();
+        } catch (Exception e) {
+            //如果图像解析失败 或 图像为Null 则使用默认颜色
+            return AppConfigs.DefaultPaletteColor;
+        }
+
+        int color = AppConfigs.DefaultPaletteColor, item = 0;
+        //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+        while (color == AppConfigs.DefaultPaletteColor && item < 7) {
+            switch (item) {
+                case 0:
+                    color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
+                    break;
+                case 1:
+                    color = palette.getDarkVibrantColor(AppConfigs.DefaultPaletteColor);
+                    break;
+                case 3:
+                    color = palette.getMutedColor(AppConfigs.DefaultPaletteColor);
+                    break;
+                case 4:
+                    color = palette.getLightMutedColor(AppConfigs.DefaultPaletteColor);
+                    break;
+                case 5:
+                    color = palette.getLightVibrantColor(AppConfigs.DefaultPaletteColor);
+                    break;
+                default:
+                    color = AppConfigs.DefaultPaletteColor;
+                    break;
+            }
+            item += 1;
+        }
+        return color;
     }
 
     /**
@@ -498,7 +584,10 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                new DownloadThread(result.get(i)[1],songItem.getFileName()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+                if (selectorDialog.get() != null){
+                    selectorDialog.get().dismiss();
+                }
             }
 
             class SelectorViewHolder {
@@ -511,6 +600,112 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
             }
 
+        }
+
+    }
+
+    /**
+     * 简易图片下载线程
+     */
+    final class DownloadThread extends AsyncTask<Integer,Integer,Boolean>{
+
+        final String url;
+        final String fileName;
+
+        final ProgressDialog progressDialog;
+
+        public DownloadThread(String url, String fileName) {
+            this.url = url;
+            this.fileName = fileName;
+            this.progressDialog = new ProgressDialog(DownloadCoverActivity.this,R.style.FullScreen_TransparentBG);
+            progressDialog.setMessage(getString(R.string.simple_downloading));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    cancel(true);
+                }
+            });
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setMax(100);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            progressDialog.setProgress(values[0]);
+        }
+
+        @SuppressWarnings("ResultOfMethodCallIgnored")
+        @Override
+        protected Boolean doInBackground(Integer... integers) {
+
+            OkHttpClient client = new OkHttpClient();
+            client.setWriteTimeout(10,TimeUnit.SECONDS);
+            client.setReadTimeout(10,TimeUnit.SECONDS);
+            client.setConnectTimeout(10,TimeUnit.SECONDS);
+
+            Request request = new Request.Builder().url(url).build();
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()){
+                    File file = new File(AppConfigs.DownloadCoversFolder+fileName+".jpg");
+                    if (!file.exists()){
+                        file.createNewFile();
+                    }
+                    FileOutputStream fileOutputStream = new FileOutputStream(file,false);
+                    InputStream inputStream = response.body().byteStream();
+                    byte[] buffer = new byte[1024];
+                    long totalLength = response.body().contentLength();
+                    int readLength , totalReaded = 0;
+                    while ((readLength = inputStream.read(buffer)) != -1){
+                        fileOutputStream.write(buffer,0,readLength);
+                        totalReaded += readLength;
+                        publishProgress((int)(((float)totalReaded/(float)totalLength)*100));
+                    }
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                    inputStream.close();
+                    response.body().close();
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+                    if (bitmap != null){
+                        songItem.setPaletteColor(getAlbumCoverColor(bitmap));
+                        bitmap.recycle();
+                        bitmap = null;
+                    }
+                    return true;
+                }else {
+                    return false;
+                }
+            } catch (IOException e) {
+                new File(AppConfigs.DownloadCoversFolder+fileName+".jpg").delete();
+                return false;
+            }
+        }
+
+        @SuppressWarnings("ResultOfMethodCallIgnored")
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            new File(AppConfigs.DownloadCoversFolder+fileName+".jpg").delete();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            progressDialog.dismiss();
+            if (!aBoolean){
+                Snackbar.make(findViewById(android.R.id.content),R.string.simple_download_failed,Snackbar.LENGTH_LONG).show();
+            }else {
+                Toast.makeText(DownloadCoverActivity.this, R.string.simple_download_completed, Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
 
     }

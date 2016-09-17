@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -55,6 +56,7 @@ import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.SurfaceViewControler;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -620,7 +622,14 @@ public class PlayingActivity
             //先获取已缓存好的图像
             Bitmap coverImage = null;
             try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+
+                final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
+
+                if (downloadedCover.exists()){
+                    coverImage = BitmapFactory.decodeFile(downloadedCover.getPath());
+                }else {
+                    coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+                }
             } catch (IOException ignored) {
             }
 
