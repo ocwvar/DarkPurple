@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Units;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
 
@@ -77,17 +78,18 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
     /**
      * 更新动画的任务类
      */
-    private class SPShowerThread extends Thread {
+    private final class SPShowerThread extends Thread {
 
         private SurfaceHolder surfaceHolder;           //绘制的SurfaceHolder
-        private AudioService service;                       //音频服务
+        final private AudioService service;                       //音频服务
+        final private Paint c1;                             //条纹部分的画笔
+
         private Rect drawArea;                                //总绘制区域  (自动计算)
         private int spectrumCount = 100;                //每一份频谱条所占的角度
         private float strokeWidth = 15f;                    //频谱条的厚度
         private int r;                                                //频谱圆圈半径   (自动计算)
         private int centerX = sfWidth / 2;                  //绘制区域中心点  X 轴坐标
         private int centerY = sfHeight / 2;                 //绘制区域中心点  Y 轴坐标
-        private Paint c1;                            //各个部分的画笔
 
         /**
          * 在构造方法中进行画笔的初始化
@@ -135,30 +137,31 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
         private void updateThread(SurfaceHolder surfaceHolder, ArrayList<Point> points) {
 
             while (surfaceHolder != null && !isInterrupted()) {
-                System.out.println("update surfaceview");
 
                 //获取频谱数据
                 final float[] fftDatas = service.getSpectrum();
                 //获取画布
-                Canvas canvas = surfaceHolder.lockCanvas(drawArea);
+                final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
 
                 if (fftDatas != null && canvas != null) {
 
                     //清屏
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     canvas.drawColor(Color.rgb(26, 44, 54));
 
                     for (int i = 0; i < points.size(); i++) {
 
-                        Point point = points.get(i);
+                        final Point point = points.get(i);
 
                         float fftData;
+
                         try {
                             fftData = fftDatas[i];
                         } catch (IndexOutOfBoundsException e) {
                             fftData = 0f;
                         }
 
-                        //外圈频谱， 第三层
+                        //频谱条纹
                         canvas.drawLine(
                                 point.x,
                                 point.y,
@@ -219,7 +222,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          * @return 频谱圆圈切割后的点集合
          */
         private ArrayList<Point> splitCircle(int centerX, int centerY, int r, int spectrumCount) {
-            ArrayList<Point> points = new ArrayList<>();
+            final ArrayList<Point> points = new ArrayList<>();
 
             //最小份数为 2
             if (spectrumCount <= 1) {

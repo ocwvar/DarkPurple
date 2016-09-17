@@ -56,6 +56,7 @@ import com.ocwvar.darkpurple.Units.SurfaceViewControler;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,8 +78,6 @@ public class PlayingActivity
 
     //音频服务
     AudioService audioService;
-    //封面模糊处理线程
-    BlurCoverThread blurCoverThread;
     //轮播滚动等待线程
     PendingStartThread pendingStartThread;
     //刷新界面播放位置线程
@@ -113,11 +112,16 @@ public class PlayingActivity
     SlidingListAdapter slidingListAdapter;
     //封面轮播适配器
     CoverShowerAdapter showerAdapter;
-    //当前播放的歌曲信息列表
-    ArrayList<SongItem> playingList;
+    //背景模糊图片弱引用
+    private WeakReference<Bitmap> blurBG = new WeakReference<>(null);
+    //背景模糊图片处理线程弱引用
+    private WeakReference<BlurCoverThread> blurCoverThreadObject = new WeakReference<>(null);
+
     //用于时间转换的类
     SimpleDateFormat dateFormat;
     Date date;
+    //当前播放的歌曲信息列表
+    ArrayList<SongItem> playingList;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -139,8 +143,7 @@ public class PlayingActivity
         }
 
         setContentView(R.layout.activity_playing);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         seekBarControler = new SeekBarControler();
         date = new Date();
@@ -205,7 +208,7 @@ public class PlayingActivity
             this.playingList.addAll(audioService.getPlayingList());
             showerAdapter.notifyDataSetChanged();
 
-            slidingListAdapter.setSongItems(audioService.getPlayingList());
+            slidingListAdapter.setSongItems(this.playingList);
 
         }
 
@@ -250,6 +253,31 @@ public class PlayingActivity
         if (switchCompat.isChecked()) {
             switchCompat.toggle();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Logger.warnning("播放界面","开始释放内存");
+        blurBG.clear();
+        blurCoverThreadObject.clear();
+        dateFormat = null;
+        date = null;
+        recyclerView.setAdapter(null);
+        recyclerView = null;
+        coverShower.setAdapter(null);
+        coverShower.addOnPageChangeListener(null);
+        coverShower = null;
+        showerAdapter = null;
+        slidingListAdapter.setCallback(null);
+        slidingListAdapter = null;
+        updatingTimerThread = null;
+        switchCompat = null;
+        title = null;
+        album = null;
+        artist = null;
+        currectTime = null;
+        restTime = null;
     }
 
     /**
@@ -332,21 +360,22 @@ public class PlayingActivity
     private void generateBlurBackGround() {
         if (audioService != null) {
             //先获取当前播放的数据
-            SongItem playingSong = playingList.get(audioService.getPlayingIndex());
+            final SongItem playingSong = playingList.get(audioService.getPlayingIndex());
 
             //判断当前播放的音频是否有封面  同时  当前背景是否已经有相同的图像显示了
-            if (playingSong.isHaveCover() && !backGround.getTag().equals(playingSong.getAlbum())) {
-                if (blurCoverThread != null && blurCoverThread.getStatus() != AsyncTask.Status.FINISHED) {
+            if (playingSong.isHaveCover() && !backGround.getTag().equals(playingSong.getPath())) {
+                if (blurCoverThreadObject != null && blurCoverThreadObject.get() != null && blurCoverThreadObject.get().getStatus() != AsyncTask.Status.FINISHED) {
                     //如果当前还在处理上一个封面模糊效果 , 则先中断了
-                    blurCoverThread.cancel(true);
-                    blurCoverThread = null;
+                    blurCoverThreadObject.get().cancel(true);
+                    blurCoverThreadObject.clear();
+                    blurCoverThreadObject = null;
                 }
                 //设置当前背景图片ID
-                backGround.setTag(playingSong.getAlbum());
+                backGround.setTag(playingSong.getPath());
 
                 //开始执行模糊背景处理
-                blurCoverThread = new BlurCoverThread(playingSong);
-                blurCoverThread.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+                blurCoverThreadObject = new WeakReference<>(new BlurCoverThread(playingSong));
+                blurCoverThreadObject.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 
             } else if (!playingSong.isHaveCover()) {
                 //封面不存在的时候 , 显示默认的背景
@@ -464,6 +493,8 @@ public class PlayingActivity
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return false;
+                }else {
+                    finish();
                 }
                 break;
         }
@@ -596,7 +627,7 @@ public class PlayingActivity
             if (coverImage != null) {
 
                 //将图像进行一个缩放 , 以得到一个模糊程度很高的图像
-                Matrix matrix = new Matrix();
+                final Matrix matrix = new Matrix();
                 matrix.postScale(0.2f, 0.2f);
                 coverImage = Bitmap.createBitmap(coverImage, 0, 0, coverImage.getWidth(), coverImage.getHeight(), matrix, true);
 
@@ -633,6 +664,7 @@ public class PlayingActivity
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
+            blurBG = new WeakReference<>(bitmap);
             if (bitmap != null) {
                 Drawable prevDrawable;
 
@@ -655,6 +687,7 @@ public class PlayingActivity
                 transitionDrawable.startTransition(1500);
             }
         }
+
     }
 
     /**

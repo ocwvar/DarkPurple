@@ -246,12 +246,12 @@ public class AudioService extends Service {
             //更新主按钮状态
             switch (getAudioStatus()) {
                 case Playing:
-                    remoteView.setImageViewResource(R.id.notification_mainButton, R.drawable.ic_action_pause);
+                    remoteView.setImageViewResource(R.id.notification_mainButton, R.drawable.ic_action_small_pause);
                     smallRemoteView.setImageViewResource(R.id.notification_mainButton, R.drawable.ic_action_pause);
                     break;
                 case Stopped:
                 case Paused:
-                    remoteView.setImageViewResource(R.id.notification_mainButton, R.drawable.ic_action_play);
+                    remoteView.setImageViewResource(R.id.notification_mainButton, R.drawable.ic_action_small_play);
                     smallRemoteView.setImageViewResource(R.id.notification_mainButton, R.drawable.ic_action_play);
                     break;
 

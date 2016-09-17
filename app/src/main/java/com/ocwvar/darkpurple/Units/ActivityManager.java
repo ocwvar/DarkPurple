@@ -57,6 +57,7 @@ public class ActivityManager {
             for (Activity activity : activityList) {
                 activity.finish();
             }
+            activityList.clear();
         }
     }
 

@@ -351,7 +351,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                 result = null;
             }
 
-           return result;
+            return result;
 
         }
 

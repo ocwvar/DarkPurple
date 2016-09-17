@@ -18,8 +18,8 @@
         >
 
         <ImageView
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:id="@+id/notification_cover"
             android:padding="5dp"
             android:scaleType="fitXY"
@@ -47,7 +47,9 @@
                 android:textSize="14sp"
                 android:maxLines="1"
                 android:layout_gravity="center_horizontal"
-                android:paddingTop="2dp" />
+                android:paddingTop="2dp"
+                android:singleLine="true"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -64,7 +66,9 @@
                 android:textSize="14sp"
                 android:maxLines="1"
                 android:layout_gravity="center_horizontal"
-                android:paddingTop="2dp" />
+                android:paddingTop="2dp"
+                android:singleLine="true"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -81,12 +85,15 @@
                 android:textSize="14sp"
                 android:layout_gravity="center_horizontal"
                 android:maxLines="1"
-                android:paddingTop="2dp" />
+                android:paddingTop="2dp"
+                android:singleLine="true"
+                android:gravity="center"
+                android:paddingBottom="2dp"/>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:weightSum="4"
                 >
@@ -110,7 +117,7 @@
 
                 <ImageButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:id="@+id/notification_mainButton"
                     android:background="@null"
                     android:layout_weight="1"
