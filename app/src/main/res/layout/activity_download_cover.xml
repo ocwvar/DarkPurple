@@ -2,9 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -16,27 +16,27 @@
         />
 
     <LinearLayout
+        android:id="@+id/view_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical"
-        android:id="@+id/view_panel">
+        android:orientation="vertical">
 
 
         <ProgressBar
+            android:id="@+id/progressBar2"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/progressBar2"
             android:layout_gravity="center_horizontal"/>
 
         <TextView
+            android:id="@+id/textView_cover_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView_cover_progress"
             android:layout_gravity="center_horizontal"
-            android:textColor="#fff"
-            android:padding="20dp"/>
+            android:padding="20dp"
+            android:textColor="#fff"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

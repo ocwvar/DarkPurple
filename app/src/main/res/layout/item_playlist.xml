@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/bg">
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:gravity="end">
+        android:gravity="end"
+        android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/imageButton_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton_more"
-            android:background="@null"
-            android:src="@drawable/ic_action_playlist_more"
-            android:padding="3dp"
-            android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@null"
+            android:padding="3dp"
+            android:src="@drawable/ic_action_playlist_more"
             />
 
         <ImageButton
+            android:id="@+id/imageButton_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton_play"
-            android:background="@null"
-            android:src="@drawable/ic_action_playlist_play"
-            android:padding="3dp"
-            android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@null"
+            android:padding="3dp"
+            android:src="@drawable/ic_action_playlist_play"
             />
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical|end">
+        android:layout_gravity="center_vertical|end"
+        android:orientation="horizontal">
 
         <com.ocwvar.darkpurple.Units.SquareHightImageView
+            android:id="@+id/imageView_cover"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/imageView_cover"
             android:layout_gravity="center_vertical"
             android:background="@null"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"/>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end|center_vertical"
             android:background="@null"
+            android:orientation="vertical"
             android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:visibility="visible">
@@ -62,35 +62,35 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="3dp"
                 android:text="@string/text_playlist_name"
-                android:textSize="10sp"
                 android:textColor="#97ffffff"
-                android:paddingTop="3dp" />
+                android:textSize="10sp"/>
 
             <TextView
+                android:id="@+id/textView_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_title"
-                android:textColor="#fff"
-                android:paddingTop="2dp"
                 android:paddingBottom="4dp"
-                android:textStyle="bold"
-                android:textSize="20sp" />
+                android:paddingTop="2dp"
+                android:textColor="#fff"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_playlist_count"
-                android:textSize="10sp"
-                android:textColor="#97ffffff" />
+                android:textColor="#97ffffff"
+                android:textSize="10sp"/>
 
             <TextView
+                android:id="@+id/textView_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_count"
-                android:textColor="#fff"
+                android:paddingBottom="15dp"
                 android:paddingTop="2dp"
-                android:paddingBottom="15dp" />
+                android:textColor="#fff"/>
 
         </LinearLayout>
     </LinearLayout>

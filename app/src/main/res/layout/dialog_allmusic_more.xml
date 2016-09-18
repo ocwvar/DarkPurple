@@ -2,82 +2,82 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_dialog_allmusic_more"
-        android:id="@+id/textView9"
         android:layout_gravity="center_horizontal"
-        android:textSize="16sp"
+        android:text="@string/title_dialog_allmusic_more"
         android:textColor="#fff"
-        android:textStyle="bold" />
+        android:textSize="16sp"
+        android:textStyle="bold"/>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/textView11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_dialog_allmusic_delete"
-            android:id="@+id/textView11"
-            android:textColor="#fff" />
+            android:textColor="#fff"/>
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_delete"
-            android:src="@drawable/ic_action_playlist_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="normal"
+            android:src="@drawable/ic_action_playlist_delete"
             app:fab_colorNormal="#ab1b0f"
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            app:fab_size="normal"
             />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_download_cover"
-            android:src="@drawable/ic_action_download_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="normal"
+            android:src="@drawable/ic_action_download_pic"
             app:fab_colorNormal="#009de6"
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            app:fab_size="normal"
             />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_add"
-            android:src="@drawable/ic_action_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="normal"
-            app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            android:src="@drawable/ic_action_add"
             app:fab_colorNormal="#9636ca"
+            app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            app:fab_size="normal"
             />
 
         <TextView
+            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_dialog_allmusic_add"
-            android:id="@+id/textView10"
-            android:textColor="#fff" />
+            android:textColor="#fff"/>
 
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_dialog_allmusic_cover"
-        android:id="@+id/textView4"
-        android:textColor="#fff"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="@string/button_dialog_allmusic_cover"
+        android:textColor="#fff"/>
 
 </LinearLayout>

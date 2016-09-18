@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/backgroundColor_Dark">
+    android:background="@color/backgroundColor_Dark"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/colorPrimary" />
+        android:background="@color/colorPrimary"/>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         >
 
         <ImageView
+            android:id="@+id/notification_cover"
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:id="@+id/notification_cover"
             android:padding="5dp"
             android:scaleType="fitXY"
             />
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="5dp"
             >
 
@@ -36,100 +36,100 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/notification_title"
-                android:textSize="11sp"
-                android:textColor="#a9a9a9" />
+                android:textColor="#a9a9a9"
+                android:textSize="11sp"/>
 
             <TextView
+                android:id="@+id/notification_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/notification_title"
-                android:textColor="#fff"
-                android:textSize="14sp"
-                android:maxLines="1"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:maxLines="1"
                 android:paddingTop="2dp"
                 android:singleLine="true"
-                android:gravity="center"/>
+                android:textColor="#fff"
+                android:textSize="14sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/notification_artist"
-                android:textSize="11sp"
-                android:textColor="#a9a9a9" />
+                android:textColor="#a9a9a9"
+                android:textSize="11sp"/>
 
             <TextView
+                android:id="@+id/notification_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/notification_artist"
-                android:textColor="#fff"
-                android:textSize="14sp"
-                android:maxLines="1"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:maxLines="1"
                 android:paddingTop="2dp"
                 android:singleLine="true"
-                android:gravity="center"/>
+                android:textColor="#fff"
+                android:textSize="14sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/notification_album"
-                android:textSize="11sp"
-                android:textColor="#a9a9a9" />
+                android:textColor="#a9a9a9"
+                android:textSize="11sp"/>
 
             <TextView
+                android:id="@+id/notification_album"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/notification_album"
-                android:textColor="#fff"
-                android:textSize="14sp"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:maxLines="1"
+                android:paddingBottom="2dp"
                 android:paddingTop="2dp"
                 android:singleLine="true"
-                android:gravity="center"
-                android:paddingBottom="2dp"/>
+                android:textColor="#fff"
+                android:textSize="14sp"/>
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:orientation="horizontal"
                 android:weightSum="4"
                 >
 
                 <ImageButton
+                    android:id="@+id/notification_close"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:id="@+id/notification_close"
-                    android:src="@drawable/ic_action_cancel"
-                    android:background="@null"
                     android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_action_cancel"
                     />
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
                     android:id="@+id/notification_back"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_action_back" />
-
-                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_action_back"/>
+
+                <ImageButton
                     android:id="@+id/notification_mainButton"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_action_small_play" />
-
-                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:id="@+id/notification_next"
-                    android:background="@null"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_action_next" />
+                    android:background="@null"
+                    android:src="@drawable/ic_action_small_play"/>
+
+                <ImageButton
+                    android:id="@+id/notification_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_action_next"/>
 
             </LinearLayout>
 

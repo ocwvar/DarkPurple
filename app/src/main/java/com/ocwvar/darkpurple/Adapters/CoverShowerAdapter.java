@@ -64,13 +64,13 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final int imageWidth = (int) (viewPagerWidth / 1.6f);
 
-        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
+        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
             //如果有用户手动下载的封面,则优先使用
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
                     .error(R.drawable.ic_cd)
-                    .resize(imageWidth,imageWidth)
+                    .resize(imageWidth, imageWidth)
                     .into(cover);
         } else if (songItem.isHaveCover()) {
             //如果先前缓存有图像 , 则开始读取

@@ -2,11 +2,11 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="RtlSymmetry"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    tools:ignore="RtlSymmetry"
     >
 
     <!--封面图像-->
@@ -14,33 +14,33 @@
         android:id="@+id/item_cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:scaleType="fitXY"/>
 
     <!--歌曲信息-->
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/item_title"
-            android:textColor="#fff"
-            android:textSize="14sp"
-            android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:padding="5dp"
+            android:textColor="#fff"
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/item_artist"
-            android:textColor="#fff"
-            android:textSize="14sp"
-            android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:padding="5dp"
+            android:textColor="#fff"
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
@@ -50,6 +50,6 @@
         android:layout_height="match_parent"
         android:background="#6a000000"
         android:src="@drawable/ic_action_marker"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
 </FrameLayout>

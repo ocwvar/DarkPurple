@@ -2,65 +2,65 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_dialog_playlist_more"
-        android:id="@+id/textView9"
         android:layout_gravity="center_horizontal"
-        android:textSize="16sp"
+        android:text="@string/title_dialog_playlist_more"
         android:textColor="#fff"
-        android:textStyle="bold" />
+        android:textSize="16sp"
+        android:textStyle="bold"/>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:padding="10dp"
         android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="10dp"
         android:transitionName="spName">
 
         <TextView
+            android:id="@+id/textView11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_dialog_playlist_delete"
-            android:id="@+id/textView11"
-            android:textColor="#fff" />
+            android:textColor="#fff"/>
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_delete"
-            android:src="@drawable/ic_action_playlist_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="normal"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_action_playlist_delete"
             app:fab_colorNormal="#ab1b0f"
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
-            android:layout_marginEnd="20dp"
+            app:fab_size="normal"
             />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_detail"
-            android:src="@drawable/ic_action_playlist_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="normal"
-            app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            android:src="@drawable/ic_action_playlist_detail"
             app:fab_colorNormal="#367cca"
+            app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            app:fab_size="normal"
             />
 
         <TextView
+            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_dialog_playlist_detail"
-            android:id="@+id/textView10"
-            android:textColor="#fff" />
+            android:textColor="#fff"/>
 
     </LinearLayout>
 </LinearLayout>

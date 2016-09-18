@@ -18,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
             app:layout_scrollFlags="snap|scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
             />
 
         <android.support.design.widget.TabLayout
@@ -27,11 +27,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabGravity="fill"
+            app:tabIndicatorColor="#fff"
+            app:tabIndicatorHeight="2dp"
             app:tabMode="fixed"
             app:tabSelectedTextColor="#fff"
             app:tabTextColor="#73ffffff"
-            app:tabIndicatorColor="#fff"
-            app:tabIndicatorHeight="2dp"
             />
 
     </android.support.design.widget.AppBarLayout>

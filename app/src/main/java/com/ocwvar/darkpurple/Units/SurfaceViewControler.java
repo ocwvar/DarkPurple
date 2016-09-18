@@ -80,10 +80,9 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
      */
     private final class SPShowerThread extends Thread {
 
-        private SurfaceHolder surfaceHolder;           //绘制的SurfaceHolder
         final private AudioService service;                       //音频服务
         final private Paint c1;                             //条纹部分的画笔
-
+        private SurfaceHolder surfaceHolder;           //绘制的SurfaceHolder
         private Rect drawArea;                                //总绘制区域  (自动计算)
         private int spectrumCount = 100;                //每一份频谱条所占的角度
         private float strokeWidth = 15f;                    //频谱条的厚度

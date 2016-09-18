@@ -84,11 +84,11 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     /**
      * 替换列表中的其中一个数据
      *
-     * @param songItem  要替换进列表的数据
+     * @param songItem 要替换进列表的数据
      */
-    public void replaceSongItem(SongItem songItem){
+    public void replaceSongItem(SongItem songItem) {
         int position = arrayList.indexOf(songItem);
-        arrayList.set(position,songItem);
+        arrayList.set(position, songItem);
     }
 
     /**
@@ -150,13 +150,13 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             }
         }
 
-        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
+        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
             //如果有用户手动下载的封面,则优先使用
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
                     .error(R.drawable.ic_cd)
-                    .resize(imageSize,imageSize)
+                    .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
         } else if (songItem.isHaveCover()) {
             //没有下载的封面,则使用读取到的封面文件
@@ -164,7 +164,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                     .with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCachePath(songItem.getPath()))
                     .error(R.drawable.ic_cd)
-                    .resize(imageSize,imageSize)
+                    .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
         } else {
             if (defaultCover == null) {

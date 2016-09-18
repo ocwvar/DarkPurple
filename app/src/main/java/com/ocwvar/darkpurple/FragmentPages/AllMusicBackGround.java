@@ -96,6 +96,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     /**
      * 歌曲数据刷新回调
+     *
      * @param songItems 得到的数据
      */
     @Override
@@ -124,7 +125,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     /**
      * 显示新建播放列表对话框
-     *
+     * <p/>
      * 包括其中的点击事件处理
      */
     private void showAlertDialog() {
@@ -179,7 +180,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     /**
      * 显示音频的更多选项
-     *
+     * <p/>
      * 包括其中的点击事件处理
      */
     private void showMoreDialog() {
@@ -208,7 +209,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                         if (selectedSongitem != null) {
                             Intent intent = new Intent(getActivity(), DownloadCoverActivity.class);
                             intent.putExtra("item", selectedSongitem);
-                            startActivityForResult(intent,10);
+                            startActivityForResult(intent, 10);
                         }
                     }
                 });
@@ -390,7 +391,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case 9:
                 if (resultCode == FolderSelectorActivity.DATA_CHANGED) {
                     //当用户更改了选歌目录 , 我们就需要马上更新目录下的歌曲 , 同时停止当前的播放
@@ -400,7 +401,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 break;
             case 10:
                 //更改了封面返回要做列表的刷新操作
-                if (resultCode == DownloadCoverActivity.DATA_CHANGED && data != null && data.getExtras() != null){
+                if (resultCode == DownloadCoverActivity.DATA_CHANGED && data != null && data.getExtras() != null) {
                     SongItem resultItem = data.getParcelableExtra("item");
                     allMusicAdapter.replaceSongItem(resultItem);
                     allMusicAdapter.notifyDataSetChanged();

@@ -31,7 +31,6 @@ import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -228,13 +227,13 @@ public class AudioService extends Service {
             remoteView.setTextViewText(R.id.notification_album, songItem.getAlbum());
 
             //更新封面图像
-            if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
+            if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
                 //如果有用户手动下载的封面,则优先使用
 
                 Picasso
                         .with(AppConfigs.ApplicationContext)
                         .load(songItem.getCustomCoverPath())
-                        .resize(160,160)
+                        .resize(160, 160)
                         .into(remoteView, R.id.notification_cover, notificationID, notification);
 
             } else if (songItem.getAlbumCoverUri() != null) {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,17 +15,17 @@
         />
 
     <TextView
+        android:id="@+id/openUI"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/title_action_op_ui"
-        android:id="@+id/openUI"
         android:layout_gravity="center_horizontal"
-        android:padding="5dp"
-        android:textColor="@drawable/textview_selector"
         android:background="@color/colorPrimary"
+        android:clickable="true"
         android:drawableStart="@drawable/ic_action_folder"
         android:gravity="center_vertical"
-        android:clickable="true"/>
+        android:padding="5dp"
+        android:text="@string/title_action_op_ui"
+        android:textColor="@drawable/textview_selector"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,45 +33,45 @@
         android:background="@color/colorPrimary">
 
         <EditText
+            android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText"
-            android:singleLine="true"
-            android:textColor="#fff"
-            android:textColorHint="#a8ffffff"
-            android:hint="@string/title_addDialog"
-            android:textSize="16sp"
-            android:padding="10dp"
             android:layout_gravity="left|center_vertical"
             android:layout_toLeftOf="@+id/imageButton_addPath"
             android:layout_toStartOf="@+id/imageButton_addPath"
-            android:background="@null"/>
+            android:background="@null"
+            android:hint="@string/title_addDialog"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="#fff"
+            android:textColorHint="#a8ffffff"
+            android:textSize="16sp"/>
 
         <ImageButton
+            android:id="@+id/imageButton_addPath"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton_addPath"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_gravity="right|center_vertical"
             android:background="@null"
-            android:src="@drawable/fab_add"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
+            android:src="@drawable/fab_add"/>
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/info_recycle_title"
-        android:id="@+id/textView3"
-        android:paddingTop="15dp"
         android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:text="@string/info_recycle_title"
         android:textColor="@color/colorAccent"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycleView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5dp" />
+        android:padding="5dp"/>
 
 </LinearLayout>

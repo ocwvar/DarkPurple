@@ -114,16 +114,15 @@ public class PlayingActivity
     SlidingListAdapter slidingListAdapter;
     //封面轮播适配器
     CoverShowerAdapter showerAdapter;
-    //背景模糊图片弱引用
-    private WeakReference<Bitmap> blurBG = new WeakReference<>(null);
-    //背景模糊图片处理线程弱引用
-    private WeakReference<BlurCoverThread> blurCoverThreadObject = new WeakReference<>(null);
-
     //用于时间转换的类
     SimpleDateFormat dateFormat;
     Date date;
     //当前播放的歌曲信息列表
     ArrayList<SongItem> playingList;
+    //背景模糊图片弱引用
+    private WeakReference<Bitmap> blurBG = new WeakReference<>(null);
+    //背景模糊图片处理线程弱引用
+    private WeakReference<BlurCoverThread> blurCoverThreadObject = new WeakReference<>(null);
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -260,7 +259,7 @@ public class PlayingActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Logger.warnning("播放界面","开始释放内存");
+        Logger.warnning("播放界面", "开始释放内存");
         blurBG.clear();
         blurCoverThreadObject.clear();
         dateFormat = null;
@@ -495,7 +494,7 @@ public class PlayingActivity
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return false;
-                }else {
+                } else {
                     finish();
                 }
                 break;
@@ -623,11 +622,11 @@ public class PlayingActivity
             Bitmap coverImage = null;
             try {
 
-                final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
+                final File downloadedCover = new File(AppConfigs.DownloadCoversFolder + songItem.getFileName() + ".jpg");
 
-                if (downloadedCover.exists()){
+                if (downloadedCover.exists()) {
                     coverImage = BitmapFactory.decodeFile(downloadedCover.getPath());
-                }else {
+                } else {
                     coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
                 }
             } catch (IOException ignored) {

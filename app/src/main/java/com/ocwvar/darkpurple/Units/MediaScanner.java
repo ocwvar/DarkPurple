@@ -270,14 +270,14 @@ public class MediaScanner {
                         }
 
                         //检查是否有自定义封面
-                        final File file = new File(AppConfigs.DownloadCoversFolder+fileName+".jpg");
-                        if (file.exists() && file.length() > 0){
-                            songItem.setCustomCoverPath("file:///"+AppConfigs.DownloadCoversFolder+fileName+".jpg");
-                            Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder+fileName+".jpg");
+                        final File file = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                        if (file.exists() && file.length() > 0) {
+                            songItem.setCustomCoverPath("file:///" + AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                            Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
                             songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
                             bitmap.recycle();
                             bitmap = null;
-                        }else {
+                        } else {
                             //noinspection ResultOfMethodCallIgnored
                             file.delete();
                         }
@@ -593,14 +593,14 @@ public class MediaScanner {
                     songItem.setFileSize(Long.toString(musicFile.length()));
 
                     //检查是否有自定义封面
-                    final File file = new File(AppConfigs.DownloadCoversFolder+musicFile.getPath()+".jpg");
-                    if (file.exists() && file.length() > 0){
-                        songItem.setCustomCoverPath("file:///"+AppConfigs.DownloadCoversFolder+musicFile.getPath()+".jpg");
-                        Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder+musicFile.getPath()+".jpg");
+                    final File file = new File(AppConfigs.DownloadCoversFolder + musicFile.getPath() + ".jpg");
+                    if (file.exists() && file.length() > 0) {
+                        songItem.setCustomCoverPath("file:///" + AppConfigs.DownloadCoversFolder + musicFile.getPath() + ".jpg");
+                        Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder + musicFile.getPath() + ".jpg");
                         songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
                         bitmap.recycle();
                         bitmap = null;
-                    }else {
+                    } else {
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
                     }

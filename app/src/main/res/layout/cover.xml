@@ -3,9 +3,9 @@
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cover"
-    android:padding="50dp"
-    android:scaleType="center"
     android:layout_width="150dp"
     android:layout_height="150dp"
     android:background="#00000000"
-     />
+    android:padding="50dp"
+    android:scaleType="center"
+    />

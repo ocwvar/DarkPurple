@@ -63,7 +63,7 @@
         <item name="android:shadowRadius">15</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="buttonTint">#fff</item>
     </style>
 
@@ -74,7 +74,7 @@
         <item name="android:windowBackground">@color/backgroundColor_Dark</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <style name="ActivityAnimation">
         //进入新界面时

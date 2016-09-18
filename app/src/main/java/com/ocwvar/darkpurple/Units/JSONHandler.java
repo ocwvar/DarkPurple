@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
@@ -216,7 +215,9 @@ public class JSONHandler {
      * @param name 播放列表名称
      * @return 如果读取成功 , 则返回歌曲列表 , 否则返回 NULL
      */
-    public static @Nullable ArrayList<SongItem> loadPlaylist(String name) {
+    public static
+    @Nullable
+    ArrayList<SongItem> loadPlaylist(String name) {
         final String TAG = "JSON播放列表  读取";
         if (TextUtils.isEmpty(name)) {
             Logger.error(TAG, "请求数据无效");
@@ -303,11 +304,11 @@ public class JSONHandler {
                         songItem.setHaveCover(object.get("ishavecover").getAsBoolean());
                     }
 
-                    if (isJsonObjectVaild(object, "customCoverPath")){
+                    if (isJsonObjectVaild(object, "customCoverPath")) {
                         songItem.setCustomCoverPath(object.get("customCoverPath").getAsString());
                     }
 
-                    if (isJsonObjectVaild(object, "customPaletteColor")){
+                    if (isJsonObjectVaild(object, "customPaletteColor")) {
                         songItem.setCustomPaletteColor(object.get("customPaletteColor").getAsInt());
                     }
 
@@ -340,13 +341,14 @@ public class JSONHandler {
 
     /**
      * 解析出封面预览的数据列表
-     * @param jsonData  获取到的Json数据
-     * @return  封面数据集合
+     *
+     * @param jsonData 获取到的Json数据
+     * @return 封面数据集合
      */
-    public static ArrayList<CoverPreviewBean> loadCoverPreviewList(String jsonData){
+    public static ArrayList<CoverPreviewBean> loadCoverPreviewList(String jsonData) {
         final String TAG = "解析封面Json数据";
 
-        if (TextUtils.isEmpty(jsonData)){
+        if (TextUtils.isEmpty(jsonData)) {
             return null;
         }
 
@@ -355,27 +357,27 @@ public class JSONHandler {
         try {
             jsonObject = new JsonParser().parse(jsonData).getAsJsonObject();
         } catch (Exception e) {
-            Logger.error(TAG,"数据解析失败");
+            Logger.error(TAG, "数据解析失败");
             return null;
         }
 
-        if (isJsonObjectVaild(jsonObject,"results")){
+        if (isJsonObjectVaild(jsonObject, "results")) {
             JsonArray jsonArray = jsonObject.get("results").getAsJsonArray();
-            if (jsonArray.size() > 0){
+            if (jsonArray.size() > 0) {
                 ArrayList<CoverPreviewBean> previewBeen = new ArrayList<>();
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JsonObject object = jsonArray.get(i).getAsJsonObject();
                     CoverPreviewBean bean = new CoverPreviewBean();
 
-                    if (isJsonObjectVaild(object,"collectionName")){
+                    if (isJsonObjectVaild(object, "collectionName")) {
                         bean.setAlbumName(object.get("collectionName").getAsString());
                     }
 
-                    if (isJsonObjectVaild(object,"artworkUrl60")){
+                    if (isJsonObjectVaild(object, "artworkUrl60")) {
                         bean.setArtworkUrl60(object.get("artworkUrl60").getAsString());
                     }
 
-                    if (isJsonObjectVaild(object,"artworkUrl100")){
+                    if (isJsonObjectVaild(object, "artworkUrl100")) {
                         bean.setArtworkUrl100(object.get("artworkUrl100").getAsString());
                     }
 
@@ -384,12 +386,12 @@ public class JSONHandler {
                 }
 
                 return previewBeen;
-            }else {
-                Logger.error(TAG,"无封面数据");
+            } else {
+                Logger.error(TAG, "无封面数据");
                 return null;
             }
-        }else {
-            Logger.error(TAG,"无封面数据");
+        } else {
+            Logger.error(TAG, "无封面数据");
             return null;
         }
 

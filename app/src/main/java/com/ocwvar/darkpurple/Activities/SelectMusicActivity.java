@@ -17,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.netease.nis.bugrpt.CrashHandler;
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.FragmentPages.AllMusicFragment;
@@ -39,7 +38,7 @@ public class SelectMusicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("");
         toolbar.setLogo(R.drawable.ic_logo_title);

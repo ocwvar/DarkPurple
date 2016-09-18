@@ -232,9 +232,9 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 } else {
                     Intent intent = new Intent(getActivity(), PlaylistDetailActivity.class);
                     intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                    if (Build.VERSION.SDK_INT >= 21){
-                        startActivityForResult(intent, 9, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view,"spName").toBundle());
-                    }else {
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        startActivityForResult(intent, 9, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, "spName").toBundle());
+                    } else {
                         startActivityForResult(intent, 9);
                     }
                 }

@@ -13,8 +13,19 @@ import com.ocwvar.darkpurple.AppConfigs;
  * Project: DarkPurple
  * 音乐信息Bean
  */
-public class SongItem implements Parcelable{
+public class SongItem implements Parcelable {
 
+    public static final Creator<SongItem> CREATOR = new Creator<SongItem>() {
+        @Override
+        public SongItem createFromParcel(Parcel in) {
+            return new SongItem(in);
+        }
+
+        @Override
+        public SongItem[] newArray(int size) {
+            return new SongItem[size];
+        }
+    };
     //歌曲名
     private String title;
     //专辑名
@@ -63,18 +74,6 @@ public class SongItem implements Parcelable{
         customCoverPath = in.readString();
         customPaletteColor = in.readInt();
     }
-
-    public static final Creator<SongItem> CREATOR = new Creator<SongItem>() {
-        @Override
-        public SongItem createFromParcel(Parcel in) {
-            return new SongItem(in);
-        }
-
-        @Override
-        public SongItem[] newArray(int size) {
-            return new SongItem[size];
-        }
-    };
 
     /**
      * 毫秒转 小时,分钟,秒数

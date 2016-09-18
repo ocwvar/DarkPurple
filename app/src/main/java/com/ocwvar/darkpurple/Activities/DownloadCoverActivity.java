@@ -35,7 +35,6 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -43,8 +42,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.squareup.picasso.Cache;
-import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -67,19 +64,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class DownloadCoverActivity extends AppCompatActivity implements CoverPreviewAdapter.OnPreviewClickCallback {
 
+    public static int DATA_UNCHANGED = 0;
+    public static int DATA_CHANGED = 1;
     CoverPreviewAdapter adapter;
     RecyclerView recyclerView;
     SongItem songItem;
-
     String headResult;
     String headSearch;
     View panel;
     TextView progress;
     WeakReference<AlertDialog> copyRightDialog = new WeakReference<>(null);
     WeakReference<AlertDialog> infoDialog = new WeakReference<>(null);
-
-    public static int DATA_UNCHANGED = 0;
-    public static int DATA_CHANGED = 1;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -124,7 +119,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
             new LoadAllPreviewTask(songItem.getAlbum()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
 
-        setResult(DATA_UNCHANGED,null);
+        setResult(DATA_UNCHANGED, null);
 
     }
 
@@ -204,16 +199,16 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
     @Override
     public void onRecoverCover() {
 
-        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
+        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
             songItem.setCustomCoverPath("");
             songItem.setCustomPaletteColor(AppConfigs.DefaultPaletteColor);
-            Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful , Toast.LENGTH_SHORT).show();
+            Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent();
-            intent.putExtra("item",songItem);
-            setResult(DATA_CHANGED,intent);
+            intent.putExtra("item", songItem);
+            setResult(DATA_CHANGED, intent);
             finish();
-        }else {
-            Snackbar.make(findViewById(android.R.id.content),R.string.recover_failed,Snackbar.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), R.string.recover_failed, Snackbar.LENGTH_LONG).show();
         }
 
     }
@@ -578,8 +573,8 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                new DownloadThread(result.get(i)[1],songItem.getFileName()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-                if (selectorDialog.get() != null){
+                new DownloadThread(result.get(i)[1], songItem.getFileName()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+                if (selectorDialog.get() != null) {
                     selectorDialog.get().dismiss();
                 }
             }
@@ -601,7 +596,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
     /**
      * 简易图片下载线程
      */
-    final class DownloadThread extends AsyncTask<Integer,Integer,Boolean>{
+    final class DownloadThread extends AsyncTask<Integer, Integer, Boolean> {
 
         final String url;
         final String fileName;
@@ -611,7 +606,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
         public DownloadThread(String url, String fileName) {
             this.url = url;
             this.fileName = fileName;
-            this.progressDialog = new ProgressDialog(DownloadCoverActivity.this,R.style.FullScreen_TransparentBG);
+            this.progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
             progressDialog.setMessage(getString(R.string.simple_downloading));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -641,45 +636,45 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
         protected Boolean doInBackground(Integer... integers) {
 
             OkHttpClient client = new OkHttpClient();
-            client.setWriteTimeout(10,TimeUnit.SECONDS);
-            client.setReadTimeout(10,TimeUnit.SECONDS);
-            client.setConnectTimeout(10,TimeUnit.SECONDS);
+            client.setWriteTimeout(10, TimeUnit.SECONDS);
+            client.setReadTimeout(10, TimeUnit.SECONDS);
+            client.setConnectTimeout(10, TimeUnit.SECONDS);
 
             Request request = new Request.Builder().url(url).build();
             try {
                 Response response = client.newCall(request).execute();
-                if (response.isSuccessful()){
-                    File file = new File(AppConfigs.DownloadCoversFolder+fileName+".jpg");
-                    if (!file.exists()){
+                if (response.isSuccessful()) {
+                    File file = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                    if (!file.exists()) {
                         file.createNewFile();
                     }
-                    FileOutputStream fileOutputStream = new FileOutputStream(file,false);
+                    FileOutputStream fileOutputStream = new FileOutputStream(file, false);
                     InputStream inputStream = response.body().byteStream();
                     byte[] buffer = new byte[1024];
                     long totalLength = response.body().contentLength();
-                    int readLength , totalReaded = 0;
-                    while ((readLength = inputStream.read(buffer)) != -1){
-                        fileOutputStream.write(buffer,0,readLength);
+                    int readLength, totalReaded = 0;
+                    while ((readLength = inputStream.read(buffer)) != -1) {
+                        fileOutputStream.write(buffer, 0, readLength);
                         totalReaded += readLength;
-                        publishProgress((int)(((float)totalReaded/(float)totalLength)*100));
+                        publishProgress((int) (((float) totalReaded / (float) totalLength) * 100));
                     }
                     fileOutputStream.flush();
                     fileOutputStream.close();
                     inputStream.close();
                     response.body().close();
                     Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
-                    if (bitmap != null){
+                    if (bitmap != null) {
                         songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
-                        songItem.setCustomCoverPath("file:///"+file.getPath());
+                        songItem.setCustomCoverPath("file:///" + file.getPath());
                         bitmap.recycle();
                         bitmap = null;
                     }
                     return true;
-                }else {
+                } else {
                     return false;
                 }
             } catch (IOException e) {
-                new File(AppConfigs.DownloadCoversFolder+fileName+".jpg").delete();
+                new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg").delete();
                 return false;
             }
         }
@@ -688,19 +683,19 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            new File(AppConfigs.DownloadCoversFolder+fileName+".jpg").delete();
+            new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg").delete();
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             progressDialog.dismiss();
-            if (!aBoolean){
-                Snackbar.make(findViewById(android.R.id.content),R.string.simple_download_failed,Snackbar.LENGTH_LONG).show();
-            }else {
+            if (!aBoolean) {
+                Snackbar.make(findViewById(android.R.id.content), R.string.simple_download_failed, Snackbar.LENGTH_LONG).show();
+            } else {
                 Intent intent = new Intent();
-                intent.putExtra("item",songItem);
-                setResult(DATA_CHANGED,intent);
+                intent.putExtra("item", songItem);
+                setResult(DATA_CHANGED, intent);
                 Toast.makeText(DownloadCoverActivity.this, R.string.simple_download_completed, Toast.LENGTH_SHORT).show();
                 finish();
             }

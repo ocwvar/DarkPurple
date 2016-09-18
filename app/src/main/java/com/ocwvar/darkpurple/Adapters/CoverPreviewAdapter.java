@@ -60,18 +60,18 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == 0){
-            return new CoverReCoverViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recover_cover,parent,false));
-        }else {
+        if (viewType == 0) {
+            return new CoverReCoverViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recover_cover, parent, false));
+        } else {
             return new CoverPreviewViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cover_preview, parent, false));
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position != 0){
+        if (position != 0) {
             CoverPreviewViewHolder viewHolder = (CoverPreviewViewHolder) holder;
-            CoverPreviewBean bean = list.get(position-1);
+            CoverPreviewBean bean = list.get(position - 1);
 
             viewHolder.album.setText(bean.getAlbumName());
             viewHolder.cover.setImageDrawable(loadingRes);
@@ -105,7 +105,7 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            if (callback != null){
+            if (callback != null) {
                 callback.onRecoverCover();
             }
         }
@@ -126,7 +126,7 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View view) {
             if (callback != null) {
-                callback.onPreviewClick(list.get(getAdapterPosition()-1));
+                callback.onPreviewClick(list.get(getAdapterPosition() - 1));
             }
         }
 
