@@ -61,7 +61,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
         itemViewHolder.backGround.setBackgroundColor(playlistItem.getColor());
 
         Picasso.with(AppConfigs.ApplicationContext)
-                .load(CoverImage2File.getInstance().getCacheFile(playlistItem.getFirstAudioPath()))
+                .load(CoverImage2File.getInstance().getCachePath(playlistItem.getFirstAudioPath()))
                 .error(R.drawable.ic_cd)
                 .into(itemViewHolder.cover);
 

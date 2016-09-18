@@ -43,6 +43,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Cache;
+import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -75,6 +77,9 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
     TextView progress;
     WeakReference<AlertDialog> copyRightDialog = new WeakReference<>(null);
     WeakReference<AlertDialog> infoDialog = new WeakReference<>(null);
+
+    public static int DATA_UNCHANGED = 0;
+    public static int DATA_CHANGED = 1;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -119,9 +124,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
             new LoadAllPreviewTask(songItem.getAlbum()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
 
-        Intent intent = new Intent();
-        intent.putExtra("item",songItem);
-        setResult(11,intent);
+        setResult(DATA_UNCHANGED,null);
 
     }
 
@@ -201,22 +204,13 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
     @Override
     public void onRecoverCover() {
 
-        final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
-
-        if (downloadedCover.exists() && downloadedCover.delete()){
-            if (songItem.isHaveCover()){
-                //如果歌曲在定义封面之前是有默认封面的,则重新设置 混合颜色
-                Bitmap bitmap = BitmapFactory.decodeFile(CoverImage2File.getInstance().getCachePath(songItem.getPath()));
-                if (bitmap != null){
-                    songItem.setPaletteColor(getAlbumCoverColor(bitmap));
-                    bitmap.recycle();
-                    bitmap = null;
-                }
-            }else {
-                //否则使用默认颜色
-                songItem.setPaletteColor(AppConfigs.DefaultPaletteColor);
-            }
+        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
+            songItem.setCustomCoverPath("");
+            songItem.setCustomPaletteColor(AppConfigs.DefaultPaletteColor);
             Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful , Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.putExtra("item",songItem);
+            setResult(DATA_CHANGED,intent);
             finish();
         }else {
             Snackbar.make(findViewById(android.R.id.content),R.string.recover_failed,Snackbar.LENGTH_LONG).show();
@@ -675,7 +669,8 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                     response.body().close();
                     Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
                     if (bitmap != null){
-                        songItem.setPaletteColor(getAlbumCoverColor(bitmap));
+                        songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
+                        songItem.setCustomCoverPath("file:///"+file.getPath());
                         bitmap.recycle();
                         bitmap = null;
                     }
@@ -703,6 +698,9 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
             if (!aBoolean){
                 Snackbar.make(findViewById(android.R.id.content),R.string.simple_download_failed,Snackbar.LENGTH_LONG).show();
             }else {
+                Intent intent = new Intent();
+                intent.putExtra("item",songItem);
+                setResult(DATA_CHANGED,intent);
                 Toast.makeText(DownloadCoverActivity.this, R.string.simple_download_completed, Toast.LENGTH_SHORT).show();
                 finish();
             }

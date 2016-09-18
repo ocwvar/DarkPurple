@@ -39,6 +39,10 @@ public class SongItem implements Parcelable{
     private int paletteColor = AppConfigs.DefaultPaletteColor;
     //是否预先缓存了封面图像
     private boolean haveCover = false;
+    //自定义封面
+    private String customCoverPath = "";
+    //自定义封面混合颜色
+    private int customPaletteColor = AppConfigs.DefaultPaletteColor;
 
     public SongItem() {
     }
@@ -56,6 +60,8 @@ public class SongItem implements Parcelable{
         path = in.readString();
         paletteColor = in.readInt();
         haveCover = in.readByte() != 0;
+        customCoverPath = in.readString();
+        customPaletteColor = in.readInt();
     }
 
     public static final Creator<SongItem> CREATOR = new Creator<SongItem>() {
@@ -161,6 +167,22 @@ public class SongItem implements Parcelable{
         this.lengthSet = getTimes(length);
     }
 
+    public String getCustomCoverPath() {
+        return customCoverPath;
+    }
+
+    public void setCustomCoverPath(String customCoverPath) {
+        this.customCoverPath = customCoverPath;
+    }
+
+    public int getCustomPaletteColor() {
+        return customPaletteColor;
+    }
+
+    public void setCustomPaletteColor(int customPaletteColor) {
+        this.customPaletteColor = customPaletteColor;
+    }
+
     public int[] getLengthSet() {
         return lengthSet;
     }
@@ -240,5 +262,7 @@ public class SongItem implements Parcelable{
         parcel.writeString(path);
         parcel.writeInt(paletteColor);
         parcel.writeByte((byte) (haveCover ? 1 : 0));
+        parcel.writeString(customCoverPath);
+        parcel.writeInt(customPaletteColor);
     }
 }

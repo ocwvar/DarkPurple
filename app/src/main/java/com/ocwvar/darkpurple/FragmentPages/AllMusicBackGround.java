@@ -94,6 +94,10 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         setTargetFragment(null, 0);
     }
 
+    /**
+     * 歌曲数据刷新回调
+     * @param songItems 得到的数据
+     */
     @Override
     public void onScanCompleted(ArrayList<SongItem> songItems) {
         if (songItems == null) {
@@ -380,6 +384,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         }
     }
 
+    /**
+     * 用户从设置歌曲目录界面 以及 从设置封面界面返回之后的操作
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -393,7 +400,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 break;
             case 10:
                 //更改了封面返回要做列表的刷新操作
-                if (data != null && data.getExtras() != null){
+                if (resultCode == DownloadCoverActivity.DATA_CHANGED && data != null && data.getExtras() != null){
                     SongItem resultItem = data.getParcelableExtra("item");
                     allMusicAdapter.replaceSongItem(resultItem);
                     allMusicAdapter.notifyDataSetChanged();

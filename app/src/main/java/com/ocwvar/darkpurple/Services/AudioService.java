@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.RemoteViews;
 
@@ -225,27 +226,33 @@ public class AudioService extends Service {
             smallRemoteView.setTextViewText(R.id.notification_artist, songItem.getArtist());
             //更新专辑
             remoteView.setTextViewText(R.id.notification_album, songItem.getAlbum());
-            //更新封面
-            final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
 
-            if (downloadedCover.exists()){
+            //更新封面图像
+            if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
                 //如果有用户手动下载的封面,则优先使用
+
                 Picasso
                         .with(AppConfigs.ApplicationContext)
-                        .load(downloadedCover)
+                        .load(songItem.getCustomCoverPath())
                         .resize(160,160)
                         .into(remoteView, R.id.notification_cover, notificationID, notification);
+
             } else if (songItem.getAlbumCoverUri() != null) {
                 //如果有封面图像Uri路径则设置图像
+
                 Picasso.with(AppConfigs.ApplicationContext)
                         .load(songItem.getAlbumCoverUri())
                         .into(remoteView, R.id.notification_cover, notificationID, notification);
+
             } else if (songItem.getPath() != null) {
                 //如果有歌曲路径 , 则尝试获取预先存好的缓存 , 如果成功则设置图像 , 否则设置默认图像
+
                 if (CoverImage2File.getInstance().isAlreadyCached(songItem.getPath())) {
+
                     Picasso.with(AppConfigs.ApplicationContext)
-                            .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                            .load(CoverImage2File.getInstance().getCachePath(songItem.getPath()))
                             .into(remoteView, R.id.notification_cover, notificationID, notification);
+
                 } else {
                     remoteView.setImageViewResource(R.id.notification_cover, R.drawable.ic_cd);
                 }

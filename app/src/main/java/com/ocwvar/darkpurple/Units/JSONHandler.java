@@ -75,6 +75,8 @@ public class JSONHandler {
                 object.addProperty("albumid", Long.toString(singleSong.getAlbumID()));
                 object.addProperty("color", Integer.toString(singleSong.getPaletteColor()));
                 object.addProperty("ishavecover", singleSong.isHaveCover());
+                object.addProperty("customCoverPath", singleSong.getCustomCoverPath());
+                object.addProperty("customPaletteColor", singleSong.getCustomPaletteColor());
                 if (singleSong.getAlbumCoverUri() == null) {
                     object.addProperty("albumuri", "");
                 } else {
@@ -162,6 +164,8 @@ public class JSONHandler {
             object.addProperty("albumid", Long.toString(singleSong.getAlbumID()));
             object.addProperty("color", Integer.toString(singleSong.getPaletteColor()));
             object.addProperty("ishavecover", singleSong.isHaveCover());
+            object.addProperty("customCoverPath", singleSong.getCustomCoverPath());
+            object.addProperty("customPaletteColor", singleSong.getCustomPaletteColor());
             if (singleSong.getAlbumCoverUri() == null) {
                 object.addProperty("albumuri", "");
             } else {
@@ -297,6 +301,14 @@ public class JSONHandler {
 
                     if (isJsonObjectVaild(object, "ishavecover")) {
                         songItem.setHaveCover(object.get("ishavecover").getAsBoolean());
+                    }
+
+                    if (isJsonObjectVaild(object, "customCoverPath")){
+                        songItem.setCustomCoverPath(object.get("customCoverPath").getAsString());
+                    }
+
+                    if (isJsonObjectVaild(object, "customPaletteColor")){
+                        songItem.setCustomPaletteColor(object.get("customPaletteColor").getAsInt());
                     }
 
                     if (isJsonObjectVaild(object, "albumuri")) {

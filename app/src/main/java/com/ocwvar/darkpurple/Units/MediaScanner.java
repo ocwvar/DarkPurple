@@ -269,6 +269,19 @@ public class MediaScanner {
                             songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumID));
                         }
 
+                        //检查是否有自定义封面
+                        final File file = new File(AppConfigs.DownloadCoversFolder+fileName+".jpg");
+                        if (file.exists() && file.length() > 0){
+                            songItem.setCustomCoverPath("file:///"+AppConfigs.DownloadCoversFolder+fileName+".jpg");
+                            Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder+fileName+".jpg");
+                            songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
+                            bitmap.recycle();
+                            bitmap = null;
+                        }else {
+                            //noinspection ResultOfMethodCallIgnored
+                            file.delete();
+                        }
+
                         Logger.normal("媒体库扫描器", songItem.getTitle());
                         cacheAlbumCover(songItem);
 
@@ -339,7 +352,7 @@ public class MediaScanner {
         private void cacheAlbumCover(SongItem songItem) {
             Bitmap coverImage = null;
             try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCachePath(songItem.getPath())).get();
             } catch (IOException ignored) {
             }
 
@@ -573,11 +586,24 @@ public class MediaScanner {
                         //如果无法获取到专辑名 , 则使用未知代替
                         songItem.setAlbum(AppConfigs.UNKNOWN);
                     }
+
                     songItem.setLength(musicLength);
                     songItem.setFileName(musicFile.getName());
                     songItem.setPath(musicFile.getPath());
                     songItem.setFileSize(Long.toString(musicFile.length()));
 
+                    //检查是否有自定义封面
+                    final File file = new File(AppConfigs.DownloadCoversFolder+musicFile.getPath()+".jpg");
+                    if (file.exists() && file.length() > 0){
+                        songItem.setCustomCoverPath("file:///"+AppConfigs.DownloadCoversFolder+musicFile.getPath()+".jpg");
+                        Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder+musicFile.getPath()+".jpg");
+                        songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
+                        bitmap.recycle();
+                        bitmap = null;
+                    }else {
+                        //noinspection ResultOfMethodCallIgnored
+                        file.delete();
+                    }
 
                     cacheAlbumCover(retriever, songItem);
 
@@ -614,7 +640,7 @@ public class MediaScanner {
         private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem) {
             Bitmap coverImage = null;
             try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCachePath(songItem.getPath())).get();
             } catch (IOException ignored) {
             }
 

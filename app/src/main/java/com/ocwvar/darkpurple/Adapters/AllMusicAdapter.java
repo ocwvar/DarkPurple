@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Adapters;
 
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,6 +96,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
      *
      * @param position 项目位置
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void removeItem(int position) {
         String filePath = arrayList.remove(position).getPath();
         //删除歌曲文件
@@ -148,13 +150,11 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             }
         }
 
-        final File downloadedCover = new File(AppConfigs.DownloadCoversFolder+songItem.getFileName()+".jpg");
-
-        if (downloadedCover.exists()){
+        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())){
             //如果有用户手动下载的封面,则优先使用
             Picasso
                     .with(AppConfigs.ApplicationContext)
-                    .load(downloadedCover)
+                    .load(songItem.getCustomCoverPath())
                     .error(R.drawable.ic_cd)
                     .resize(imageSize,imageSize)
                     .into(viewHolder.cover);
@@ -162,7 +162,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             //没有下载的封面,则使用读取到的封面文件
             Picasso
                     .with(AppConfigs.ApplicationContext)
-                    .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                    .load(CoverImage2File.getInstance().getCachePath(songItem.getPath()))
                     .error(R.drawable.ic_cd)
                     .resize(imageSize,imageSize)
                     .into(viewHolder.cover);

@@ -85,7 +85,7 @@ public class CoverImage2File {
      * @return 图像路径
      */
     public String getCachePath(String audioPath) {
-        return AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
+        return "file:///" + AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
     }
 
     /**
