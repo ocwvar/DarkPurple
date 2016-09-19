@@ -352,7 +352,7 @@ public class MediaScanner {
         private void cacheAlbumCover(SongItem songItem) {
             Bitmap coverImage = null;
             try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCachePath(songItem.getPath())).get();
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath())).get();
             } catch (IOException ignored) {
             }
 
@@ -446,7 +446,8 @@ public class MediaScanner {
 
                 try {
                     arrayList = core();
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 if (callback == null) {
@@ -640,7 +641,7 @@ public class MediaScanner {
         private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem) {
             Bitmap coverImage = null;
             try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCachePath(songItem.getPath())).get();
+                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath())).get();
             } catch (IOException ignored) {
             }
 

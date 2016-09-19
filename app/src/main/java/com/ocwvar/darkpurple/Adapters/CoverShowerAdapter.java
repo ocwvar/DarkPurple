@@ -75,7 +75,7 @@ public class CoverShowerAdapter extends PagerAdapter {
         } else if (songItem.isHaveCover()) {
             //如果先前缓存有图像 , 则开始读取
             Picasso.with(AppConfigs.ApplicationContext)
-                    .load(CoverImage2File.getInstance().getCachePath(songItem.getPath()))
+                    .load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath()))
                     .resize(imageWidth, imageWidth)
                     .error(R.drawable.ic_cd)
                     .into(cover);

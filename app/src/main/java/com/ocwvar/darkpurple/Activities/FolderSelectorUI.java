@@ -157,7 +157,8 @@ public class FolderSelectorUI extends AppCompatActivity implements FolderSelecto
             case R.id.button_done:
                 if (adapter.getSelectedPathCount() > 0) {
                     Intent intent = new Intent();
-                    intent.putExtra("Data", adapter.getSelectedPath().toArray(new File[adapter.getSelectedPathCount()]));
+                    File[] result = adapter.getSelectedPath().toArray(new File[adapter.getSelectedPathCount()]);
+                    intent.putExtra("Data", result);
                     setResult(RESULT_CODE, intent);
                 } else {
                     setResult(RESULT_CODE, null);

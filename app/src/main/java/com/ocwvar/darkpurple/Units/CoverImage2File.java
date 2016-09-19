@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import com.ocwvar.darkpurple.AppConfigs;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
@@ -41,7 +40,7 @@ public class CoverImage2File {
         }
 
         //获取缓存图像文件对象
-        File imageFile = new File(getCachePath(audioPath));
+        File imageFile = new File(getNormalCachePath(audioPath));
 
         if (imageFile.exists() && imageFile.length() <= 0) {
             //图像文件虽然存在 , 但是图像文件无效 , 所以需要删除
@@ -57,9 +56,13 @@ public class CoverImage2File {
         Logger.warnning(TAG, "图像文件缓存中.");
 
         FileOutputStream fileOutputStream;
+
         try {
-            fileOutputStream = new FileOutputStream(imageFile);
-        } catch (FileNotFoundException e) {
+            if (!imageFile.exists()) {
+                imageFile.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(imageFile, false);
+        } catch (Exception e) {
             Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败.");
             imageFile = null;
             return false;
@@ -79,13 +82,43 @@ public class CoverImage2File {
     }
 
     /**
-     * 获取缓存图像路径
+     * 获取缓存图像绝对路径
      *
      * @param audioPath 音频路径
-     * @return 图像路径
+     * @return 缓存图像的相对路径
      */
-    public String getCachePath(String audioPath) {
+    public String getAbsoluteCachePath(String audioPath) {
         return "file:///" + AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
+    }
+
+    /**
+     * 获取自定义图像绝对路径
+     *
+     * @param audioFileName 歌曲文件名
+     * @return 自定义图像的绝对路径
+     */
+    public String getAbsoluteCustomPath(String audioFileName) {
+        return "file:///" + AppConfigs.DownloadCoversFolder + audioFileName + ".cache";
+    }
+
+    /**
+     * 获取缓存图像相对路径
+     *
+     * @param audioPath 音频路径
+     * @return 缓存图像的相对路径
+     */
+    public String getNormalCachePath(String audioPath) {
+        return AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
+    }
+
+    /**
+     * 获取缓存图像相对路径
+     *
+     * @param audioFileName 歌曲文件名
+     * @return 自定义图像的相对路径
+     */
+    public String getNormalCustomPath(String audioFileName) {
+        return AppConfigs.DownloadCoversFolder + audioFileName + ".cache";
     }
 
     /**
@@ -105,7 +138,7 @@ public class CoverImage2File {
      * @return 是否缓存
      */
     public boolean isAlreadyCached(String audioPath) {
-        File imageFile = new File(getCachePath(audioPath));
+        File imageFile = new File(getNormalCachePath(audioPath));
         if (imageFile.exists() && imageFile.length() <= 0) {
             //图像文件存在.  但大小为0,文件无效
             imageFile.delete();

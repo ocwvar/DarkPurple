@@ -42,6 +42,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -111,7 +112,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
         showInfoDialog();
 
-        if (TextUtils.isEmpty(songItem.getAlbum()) || songItem.getAlbum().equals("<unknown>")) {
+        if (TextUtils.isEmpty(songItem.getAlbum()) || songItem.getAlbum().equals("<unknown>") || songItem.getAlbum().equals("未知")) {
             //如果没有专辑名称,则使用音频文件名来搜索
             new LoadAllPreviewTask(songItem.getFileName()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         } else {
@@ -200,9 +201,16 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
     public void onRecoverCover() {
 
         if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
+            //删除下载的封面
+            new File(AppConfigs.DownloadCoversFolder + songItem.getFileName() + ".jpg").delete();
+            //清空自定义数据 和 Picasso的缓存
+            Picasso.with(DownloadCoverActivity.this).invalidate(songItem.getCustomCoverPath());
             songItem.setCustomCoverPath("");
             songItem.setCustomPaletteColor(AppConfigs.DefaultPaletteColor);
+
             Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful, Toast.LENGTH_SHORT).show();
+
+            //设置返回页面结束传递的数据
             Intent intent = new Intent();
             intent.putExtra("item", songItem);
             setResult(DATA_CHANGED, intent);
@@ -665,6 +673,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                     Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
                     if (bitmap != null) {
                         songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
+                        //这里要设置成绝对路径 , 给Picasso读取使用
                         songItem.setCustomCoverPath("file:///" + file.getPath());
                         bitmap.recycle();
                         bitmap = null;
@@ -693,6 +702,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
             if (!aBoolean) {
                 Snackbar.make(findViewById(android.R.id.content), R.string.simple_download_failed, Snackbar.LENGTH_LONG).show();
             } else {
+                Picasso.with(DownloadCoverActivity.this).invalidate(songItem.getCustomCoverPath());
                 Intent intent = new Intent();
                 intent.putExtra("item", songItem);
                 setResult(DATA_CHANGED, intent);

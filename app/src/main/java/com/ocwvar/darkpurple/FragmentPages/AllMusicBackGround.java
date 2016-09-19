@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,6 +40,7 @@ import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
@@ -125,7 +127,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     /**
      * 显示新建播放列表对话框
-     * <p/>
+     * <p>
      * 包括其中的点击事件处理
      */
     private void showAlertDialog() {
@@ -180,7 +182,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     /**
      * 显示音频的更多选项
-     * <p/>
+     * <p>
      * 包括其中的点击事件处理
      */
     private void showMoreDialog() {
@@ -406,6 +408,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     allMusicAdapter.replaceSongItem(resultItem);
                     allMusicAdapter.notifyDataSetChanged();
                     animationAdapter.notifyDataSetChanged();
+                    WeakReference<AsyncUpadteCachedList> task = new WeakReference<>(new AsyncUpadteCachedList(allMusicAdapter.getSongList()));
+                    task.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                 }
                 break;
         }
@@ -558,6 +562,25 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             if (addToDialog != null && addToDialog.get() != null) {
                 addToDialog.get().dismiss();
             }
+        }
+
+    }
+
+    /**
+     * 异步储存播放列表数据
+     */
+    private final class AsyncUpadteCachedList extends AsyncTask<Integer, Void, Boolean> {
+
+        ArrayList<SongItem> list;
+
+        public AsyncUpadteCachedList(ArrayList<SongItem> list) {
+            this.list = list;
+        }
+
+        @Override
+        protected Boolean doInBackground(Integer... integers) {
+            JSONHandler.cacheSearchResult(list);
+            return true;
         }
 
     }

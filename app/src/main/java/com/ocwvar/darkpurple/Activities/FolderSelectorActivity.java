@@ -78,11 +78,11 @@ public class FolderSelectorActivity extends AppCompatActivity implements MusicFo
             //从浏览器返回时检查数据
             if (data != null) {
                 try {
-                    File[] folders = (File[]) data.getExtras().getSerializable("Data");
-                    if (folders != null) {
-                        for (File folder : folders) {
-                            if (isPathVaild(folder.getPath())) {
-                                adapter.addPath(folder.getPath(), true);
+                    Object[] result = (Object[]) data.getExtras().getSerializable("Data");
+                    if (result != null) {
+                        for (Object folder : result) {
+                            if (isPathVaild(((File) (folder)).getPath())) {
+                                adapter.addPath(((File) (folder)).getPath(), true);
                             }
                         }
                     }

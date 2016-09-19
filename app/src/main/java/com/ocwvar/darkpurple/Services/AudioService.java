@@ -96,7 +96,7 @@ public class AudioService extends Service {
 
     /**
      * 当音频服务创建的时候
-     * <p/>
+     * <p>
      * 创建音频引擎对象 和 状态栏广播接收器对象 注册耳机拔出监听
      */
     @Override
@@ -119,7 +119,7 @@ public class AudioService extends Service {
 
     /**
      * 当服务被绑定的时候
-     * <p/>
+     * <p>
      * 便开始后台常驻运行 , 同时显示状态栏布局
      * 返回音频服务的对象
      */
@@ -132,7 +132,7 @@ public class AudioService extends Service {
 
     /**
      * 当服务面临销毁的时候
-     * <p/>
+     * <p>
      * 如果当前音频引擎内不为空 , 则释放引擎内的数据
      * 结束服务常驻后台
      * 反注册状态栏操作监听器
@@ -249,7 +249,7 @@ public class AudioService extends Service {
                 if (CoverImage2File.getInstance().isAlreadyCached(songItem.getPath())) {
 
                     Picasso.with(AppConfigs.ApplicationContext)
-                            .load(CoverImage2File.getInstance().getCachePath(songItem.getPath()))
+                            .load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath()))
                             .into(remoteView, R.id.notification_cover, notificationID, notification);
 
                 } else {

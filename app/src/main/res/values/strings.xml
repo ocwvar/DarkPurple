@@ -105,6 +105,7 @@
     <string name="head_searchText">搜索依据:</string>
     <string name="menu_title_cover_info">数据来源</string>
     <string name="title_selector_dialog">请选择需要下载的封面尺寸</string>
+    <string name="title_update_cache">正在更新本地储存数据…</string>
 
     <!--菜单各类选项-->
     <string name="menu_allmusic_refresh">刷新歌曲</string>

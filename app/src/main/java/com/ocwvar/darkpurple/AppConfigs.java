@@ -104,9 +104,9 @@ public class AppConfigs {
                     break;
             }
 
-            new File(ImageCacheFolder).mkdirs();
-            new File(JsonFilePath).mkdirs();
-            new File(DownloadCoversFolder).mkdirs();
+            System.out.println(new File(ImageCacheFolder).mkdirs());
+            System.out.println(new File(JsonFilePath).mkdirs());
+            System.out.println(new File(DownloadCoversFolder).mkdirs());
 
         } else {
             Logger.error("初始化全局变量", "ApplicationContext 为空,无法读取数据");

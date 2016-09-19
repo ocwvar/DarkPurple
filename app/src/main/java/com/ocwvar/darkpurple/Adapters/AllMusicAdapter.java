@@ -82,6 +82,13 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     }
 
     /**
+     * @return 歌曲列表数据
+     */
+    public ArrayList<SongItem> getSongList() {
+        return arrayList;
+    }
+
+    /**
      * 替换列表中的其中一个数据
      *
      * @param songItem 要替换进列表的数据
@@ -136,8 +143,6 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         viewHolder.title.setText(songItem.getTitle());
         viewHolder.artist.setText(songItem.getArtist());
 
-        viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
-        viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
 
         viewHolder.marker.setVisibility(View.GONE);
         if (isMuiltSelecting) {
@@ -151,21 +156,25 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         }
 
         if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-            //如果有用户手动下载的封面,则优先使用
+            //如果有用户自定义的封面和混合颜色,则优先使用
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
                     .error(R.drawable.ic_cd)
                     .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
+            viewHolder.title.setBackgroundColor(songItem.getCustomPaletteColor());
+            viewHolder.artist.setBackgroundColor(songItem.getCustomPaletteColor());
         } else if (songItem.isHaveCover()) {
-            //没有下载的封面,则使用读取到的封面文件
+            //没有下载的封面,则使用读取到的封面文件和混合颜色
             Picasso
                     .with(AppConfigs.ApplicationContext)
-                    .load(CoverImage2File.getInstance().getCachePath(songItem.getPath()))
+                    .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                     .error(R.drawable.ic_cd)
                     .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
+            viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
+            viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
         } else {
             if (defaultCover == null) {
                 defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
