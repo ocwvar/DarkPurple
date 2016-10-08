@@ -15,21 +15,13 @@
         app:titleTextAppearance="@style/TextAppearance.AppCompat.NoActionBar"
         />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycleView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/textView2"
-        android:layout_below="@+id/toolbar"
-        android:padding="3dp"/>
-
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:background="#79000000"
         android:padding="5dp">
 
         <Button
@@ -52,15 +44,24 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/frameLayout"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="start|top"
         android:padding="5dp"
+        android:background="#79000000"
         android:text="@string/info_folder_ui"
         android:textColor="#fff"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="3dp"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/textView2"
+        android:layout_below="@+id/toolbar"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

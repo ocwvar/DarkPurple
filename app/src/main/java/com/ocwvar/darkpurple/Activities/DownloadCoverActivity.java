@@ -320,7 +320,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                 setTitle(headResult + "0");
                 progress.setText(R.string.noResult_Preview);
             } else {
-                setTitle(headResult + String.valueOf(list.size()));
+                setTitle(headResult + String.valueOf(list.size()-1));
                 panel.setVisibility(View.GONE);
             }
             adapter.addDatas(list);
@@ -652,10 +652,18 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
             try {
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
-                    File file = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
-                    if (!file.exists()) {
+
+                    File file = new File(AppConfigs.DownloadCoversFolder);
+                    if (! file.exists()){
+                        //优先检查是否存在下载的保存目录
+                        file.mkdirs();
+                    }
+                    file = new File( AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                    if (! file.exists()) {
+                        //再检查是否存在文件 , 如果不存在则创建新的空白文件
                         file.createNewFile();
                     }
+                    //无论是否文件内已经写有数据 , 都重新写入
                     FileOutputStream fileOutputStream = new FileOutputStream(file, false);
                     InputStream inputStream = response.body().byteStream();
                     byte[] buffer = new byte[1024];

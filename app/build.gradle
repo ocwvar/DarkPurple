@@ -5,7 +5,7 @@ android {
         OCWVAR {
             keyAlias 'ocwvar'
             keyPassword '2034217'
-            storeFile file('D:/AS/key.jks')
+            storeFile file('D:/AS/releaseKey.jks')
             storePassword '2034217'
         }
     }
@@ -61,4 +61,5 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
     compile 'org.jsoup:jsoup:1.9.2'
     compile files('libs/bugrpt.jar')
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
 }

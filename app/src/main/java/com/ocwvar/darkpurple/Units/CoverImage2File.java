@@ -37,6 +37,9 @@ public class CoverImage2File {
         if (bitmap == null) {
             Logger.error(TAG, "图像文件无效");
             return false;
+        }else if (!new File(AppConfigs.ImageCacheFolder).exists()){
+            //如果缓存文件夹不存在 , 则重新创建
+            new File(AppConfigs.ImageCacheFolder).mkdirs();
         }
 
         //获取缓存图像文件对象
@@ -63,7 +66,7 @@ public class CoverImage2File {
             }
             fileOutputStream = new FileOutputStream(imageFile, false);
         } catch (Exception e) {
-            Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败.");
+            Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败. 原因: "+e.getCause());
             imageFile = null;
             return false;
         }

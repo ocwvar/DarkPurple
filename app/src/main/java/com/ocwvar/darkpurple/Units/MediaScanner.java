@@ -167,7 +167,7 @@ public class MediaScanner {
     /**
      * 扫描器 (扫描本地媒体数据库)
      */
-    final class ScanByMediaStore implements Callable<String> {
+    final private class ScanByMediaStore implements Callable<String> {
 
         final public static String TAG = "ScanByMediaStore";
         final private Context context = AppConfigs.ApplicationContext;
@@ -288,7 +288,6 @@ public class MediaScanner {
                         songList.add(songItem);
                     } else {
                         fileName = null;
-                        continue;
                     }
                 }
 
@@ -421,7 +420,7 @@ public class MediaScanner {
     /**
      * 文件夹音频扫描器
      */
-    final class ScanByFolder implements Callable<String> {
+    final private class ScanByFolder implements Callable<String> {
         final public static String TAG = "ScanByFolder";
         private final FileFilter filter = new FileFilter() {
             @Override
@@ -716,7 +715,7 @@ public class MediaScanner {
     /**
      * 加载上一次搜索记录线程
      */
-    final class LoadCachedData implements Callable<String> {
+    final private class LoadCachedData implements Callable<String> {
         final public static String TAG = "LoadCachedData";
 
         @Override
@@ -760,7 +759,7 @@ public class MediaScanner {
     /**
      * 按文件创建日期排序器
      */
-    final class ComparatorByData implements Comparator<SongItem> {
+    final private class ComparatorByData implements Comparator<SongItem> {
 
         public ComparatorByData() {
             Logger.warnning("ComparatorByData", "正在按照日期排序");
@@ -782,7 +781,7 @@ public class MediaScanner {
     /**
      * 按名字排序器
      */
-    final class ComparatorByName implements Comparator<SongItem> {
+    final private class ComparatorByName implements Comparator<SongItem> {
 
         public ComparatorByName() {
             Logger.warnning("ComparatorByName", "正在按照名称排序");

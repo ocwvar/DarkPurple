@@ -73,11 +73,11 @@ public class SelectMusicActivity extends AppCompatActivity {
                             //如果获取服务成功 , 则保存到全局储存器中 , 然后解除绑定
                             ServiceHolder.getInstance().setService(service);
                             Snackbar.make(findViewById(android.R.id.content), R.string.service_ok, Snackbar.LENGTH_LONG).show();
-                            unbindService(this);
                         } else {
                             //否则提示用户
                             Snackbar.make(findViewById(android.R.id.content), R.string.service_error, Snackbar.LENGTH_LONG).show();
                         }
+                        unbindService(this);
                     }
                 }
 
