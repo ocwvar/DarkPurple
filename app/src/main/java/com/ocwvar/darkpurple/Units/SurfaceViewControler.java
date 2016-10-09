@@ -148,14 +148,17 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     canvas.drawColor(Color.rgb(26, 44, 54));
 
-                    for (int i = 0; i < points.size(); i++) {
+                    for (int i = 0,j=0; i < points.size(); i++,j++) {
 
                         final Point point = points.get(i);
 
                         float fftData;
 
                         try {
-                            fftData = fftDatas[i];
+                            fftData = fftDatas[j];
+                            if (j >= 13){
+                                j = 0;
+                            }
                         } catch (IndexOutOfBoundsException e) {
                             fftData = 0f;
                         }
@@ -164,8 +167,8 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                         canvas.drawLine(
                                 point.x,
                                 point.y,
-                                point.getExpansion_X(fftData, 500),
-                                point.getExpansion_Y(fftData, 500),
+                                point.getExpansion_X(fftData, 250),
+                                point.getExpansion_Y(fftData, 250),
                                 c1
                         );
 

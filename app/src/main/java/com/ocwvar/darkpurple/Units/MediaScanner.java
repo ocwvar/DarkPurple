@@ -261,7 +261,6 @@ public class MediaScanner {
                             songItem.setArtist(AppConfigs.UNKNOWN);
                         }
 
-
                         //专辑ID  主要用于读取封面图像
                         final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
                         if (albumID > 0) {
@@ -593,13 +592,12 @@ public class MediaScanner {
                     songItem.setFileSize(Long.toString(musicFile.length()));
 
                     //检查是否有自定义封面
-                    final File file = new File(AppConfigs.DownloadCoversFolder + musicFile.getPath() + ".jpg");
+                    final File file = new File(AppConfigs.DownloadCoversFolder + musicFile.getName() + ".jpg");
                     if (file.exists() && file.length() > 0) {
-                        songItem.setCustomCoverPath("file:///" + AppConfigs.DownloadCoversFolder + musicFile.getPath() + ".jpg");
-                        Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder + musicFile.getPath() + ".jpg");
+                        songItem.setCustomCoverPath("file:///" + file.getPath());
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
                         songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
                         bitmap.recycle();
-                        bitmap = null;
                     } else {
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();

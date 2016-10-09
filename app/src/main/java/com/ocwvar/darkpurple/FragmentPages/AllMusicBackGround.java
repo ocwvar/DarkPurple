@@ -573,7 +573,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
         ArrayList<SongItem> list;
 
-        public AsyncUpadteCachedList(ArrayList<SongItem> list) {
+        AsyncUpadteCachedList(ArrayList<SongItem> list) {
             this.list = list;
         }
 
