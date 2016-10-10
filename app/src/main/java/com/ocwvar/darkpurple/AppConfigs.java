@@ -22,6 +22,7 @@ import java.util.Set;
  * 应用的全局设置
  */
 public class AppConfigs {
+
     //封面下载目录
     public static final String DownloadCoversFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/DownloadCovers/";
     //图片缓存目录
@@ -54,6 +55,12 @@ public class AppConfigs {
 
     //是否在耳机重新插入/连接之后继续播放
     public static boolean isResumeAudioWhenPlugin = true;
+
+    //是否使用第二种风格的频谱
+    public static boolean isUseSecondStyleSpectrum = false;
+
+    //频谱柱状图颜色设置
+    public static int spectrumColor = Color.argb(108, 146, 51, 180);
 
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
@@ -88,6 +95,10 @@ public class AppConfigs {
             isListenMediaButton = preferences.getBoolean("isListenMediaButton", true);
 
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
+
+            isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
+
+            spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
@@ -126,6 +137,10 @@ public class AppConfigs {
             isListenMediaButton = preferences.getBoolean("isListenMediaButton", true);
 
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
+
+            isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
+
+            spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 
             String value = preferences.getString("scanner_sort_type", "0");
             switch (value) {

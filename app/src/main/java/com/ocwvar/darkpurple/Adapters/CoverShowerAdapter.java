@@ -1,26 +1,21 @@
 package com.ocwvar.darkpurple.Adapters;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CImageView;
-import com.ocwvar.darkpurple.Units.CircleDrawable;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**

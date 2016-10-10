@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="isUseSecondStyleVe"
+        android:title="@string/setting_title_isUseSecondStyleSpectrum"
+        android:summary="@string/setting_info_isUseSecondStyleSpectrum"
+        android:defaultValue="false"
+        />
+
+    <com.chiralcode.colorpicker.ColorPickerPreference
+        android:defaultValue="0xFF9233B4"
+        android:key="spectrum_color"
+        android:title="@string/setting_title_spectrumColor"
+        android:summary="@string/setting_info_spectrumColor"
+        />
+
+</PreferenceScreen>

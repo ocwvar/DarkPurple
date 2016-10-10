@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
 
+import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Services.AudioCore;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
@@ -101,7 +102,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
             //画笔1 ：用于第一层频谱
             this.c1 = new Paint();
-            c1.setColor(Color.rgb(199, 64, 247));
+            c1.setColor(AppConfigs.spectrumColor);
             c1.setAntiAlias(true);
             c1.setStrokeWidth(strokeWidth);
 
@@ -155,9 +156,13 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                         float fftData;
 
                         try {
-                            fftData = fftDatas[j];
-                            if (j >= 13){
-                                j = 0;
+                            if (AppConfigs.isUseSecondStyleSpectrum){
+                                fftData = fftDatas[j];
+                                if (j >= 13){
+                                    j = 0;
+                                }
+                            }else {
+                                fftData = fftDatas[i];
                             }
                         } catch (IndexOutOfBoundsException e) {
                             fftData = 0f;

@@ -126,6 +126,7 @@
 
     <!-- 设置版面数据 -->
     <string name="setting_header_general">基本设置</string>
+    <string name="setting_header_spectrum">频谱动画设置</string>
 
     <string name="setting_title_scanAll">扫描所有音频</string>
     <string name="setting_about_scanAll">开启后,将会从系统数据库中扫描所有音频,而不是仅仅扫描设定的目录.</string>
@@ -143,6 +144,12 @@
 
     <string name="setting_title_isResumeAudioWhenPlugin">监听耳机插入/连接</string>
     <string name="setting_info_isResumeAudioWhenPlugin">在耳机重新插入/连接上的时候继续播放上次被暂停的音频</string>
+
+    <string name="setting_title_isUseSecondStyleSpectrum">使用第二种频谱动画</string>
+    <string name="setting_info_isUseSecondStyleSpectrum">频谱将循环显示头部音频数据</string>
+
+    <string name="setting_title_spectrumColor">自定义频谱显示颜色</string>
+    <string name="setting_info_spectrumColor">设置频谱柱状图颜色</string>
 
     <!--播放界面文字-->
     <string name="main_default_title">当前没有播放数据</string>
