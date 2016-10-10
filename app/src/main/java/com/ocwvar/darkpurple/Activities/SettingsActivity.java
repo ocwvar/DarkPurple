@@ -156,7 +156,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
 
-
     }
 
     public static class SpectrumPreferenceFragment extends PreferenceFragment {
@@ -166,6 +165,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_spectrum);
             setHasOptionsMenu(true);
+            bindPreferenceSummaryToValue(findPreference("spectrum_line_width"));
         }
 
         @Override

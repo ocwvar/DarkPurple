@@ -15,4 +15,11 @@
         android:summary="@string/setting_info_spectrumColor"
         />
 
+    <EditTextPreference
+        android:key="spectrum_line_width"
+        android:title="@string/setting_title_spectrum_width"
+        android:inputType="numberDecimal"
+        android:defaultValue="15.0"
+        />
+
 </PreferenceScreen>

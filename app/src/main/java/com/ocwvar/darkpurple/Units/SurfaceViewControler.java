@@ -86,7 +86,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
         private SurfaceHolder surfaceHolder;           //绘制的SurfaceHolder
         private Rect drawArea;                                //总绘制区域  (自动计算)
         private int spectrumCount = 100;                //每一份频谱条所占的角度
-        private float strokeWidth = 15f;                    //频谱条的厚度
+        private float strokeWidth = AppConfigs.spectrumWidth;                    //频谱条的厚度
         private int r;                                                //频谱圆圈半径   (自动计算)
         private int centerX = sfWidth / 2;                  //绘制区域中心点  X 轴坐标
         private int centerY = sfHeight / 2;                 //绘制区域中心点  Y 轴坐标
@@ -99,6 +99,12 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
         public SPShowerThread(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
             this.service = ServiceHolder.getInstance().getService();
+
+            if (strokeWidth <= 0){
+                strokeWidth = 1.0f;
+            }else if (strokeWidth >= 30.0f){
+                strokeWidth = 30.0f;
+            }
 
             //画笔1 ：用于第一层频谱
             this.c1 = new Paint();
@@ -136,6 +142,15 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          */
         private void updateThread(SurfaceHolder surfaceHolder, ArrayList<Point> points) {
 
+            final int pointsCount = points.size();
+
+            int singleAreaCount = -1 , nextOffset = 0 ;
+
+            if (AppConfigs.isUseSecondStyleSpectrum){
+                singleAreaCount = computeEachArea(points);
+            }
+
+            //开始循环绘制部分
             while (surfaceHolder != null && !isInterrupted()) {
 
                 //获取频谱数据
@@ -151,14 +166,23 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
                     for (int i = 0,j=0; i < points.size(); i++,j++) {
 
-                        final Point point = points.get(i);
+                        final Point point;
 
                         float fftData;
+                        if (!AppConfigs.isUseSecondStyleSpectrum){
+                            //如果当前使用第一种风格 , 则不进行旋转 , 否则进行旋转动画
+                            point = points.get(i);
+                        }else if ( i+nextOffset < pointsCount ){
+                            point = points.get(i+nextOffset);
+                        }else {
+                            point = points.get((i+nextOffset) - pointsCount);
+                        }
 
                         try {
                             if (AppConfigs.isUseSecondStyleSpectrum){
+                                //第二种绘制风格
                                 fftData = fftDatas[j];
-                                if (j >= 13){
+                                if (j >= singleAreaCount){
                                     j = 0;
                                 }
                             }else {
@@ -179,6 +203,17 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
                     }
 
+                    if (AppConfigs.isUseSecondStyleSpectrum){
+                        //下一个偏移量增一
+                        if (nextOffset+1 < pointsCount){
+                            //只在点的数量范围内转一圈偏移度
+                            nextOffset += 1;
+                        }else {
+                            //超过了则从头开始偏移
+                            nextOffset = 0;
+                        }
+                    }
+
                     //更新画布
                     surfaceHolder.unlockCanvasAndPost(canvas);
 
@@ -197,6 +232,23 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                     }
                 }
             }
+        }
+
+        /**
+         * 计算每个区域的柱状图数量
+         *
+         * 仅用于 显示第二种频谱样式 的状态下
+         * @param points        频谱圆圈切割后的点集合
+         */
+        private int computeEachArea(ArrayList<Point> points){
+
+            //分割区域块数
+            final int areaCount = 6;
+            //点的数量
+            final int pointsCount = points.size();
+
+            return pointsCount / areaCount;
+
         }
 
         /**

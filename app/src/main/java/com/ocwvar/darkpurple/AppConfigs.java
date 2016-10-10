@@ -62,6 +62,9 @@ public class AppConfigs {
     //频谱柱状图颜色设置
     public static int spectrumColor = Color.argb(108, 146, 51, 180);
 
+    //频谱柱状宽度
+    public static float spectrumWidth = 15.0f;
+
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
     public static int StatusBarHeight = -1;
@@ -99,6 +102,8 @@ public class AppConfigs {
             isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
 
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
+
+            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width","15.0"));
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
@@ -141,6 +146,8 @@ public class AppConfigs {
             isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
 
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
+
+            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width","15.0"));
 
             String value = preferences.getString("scanner_sort_type", "0");
 

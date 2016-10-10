@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#9233b4</color>
     <color name="colorPrimaryDark">#929233b4</color>
     <color name="colorAccent">#9233b4</color>
 
-    //窗口背景颜色
+    <!--窗口背景颜色-->
     <color name="backgroundColor_Dark">#242c36</color>
 
-    //Card背景颜色
+    <!--Card背景颜色-->
     <color name="card_backgroundColor_Dark">#424242</color>
-    //Card信息显示版面背景
+
+    <!--Card信息显示版面背景-->
     <color name="card_messagePanel_backgroundColor">#9233b4</color>
+
+    <!--文字淡灰色-->
+    <color name="Text_LightGray">#d2d2d2</color>
 
 </resources>

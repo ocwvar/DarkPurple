@@ -151,6 +151,8 @@
     <string name="setting_title_spectrumColor">自定义频谱显示颜色</string>
     <string name="setting_info_spectrumColor">设置频谱柱状图颜色</string>
 
+    <string name="setting_title_spectrum_width">设置频谱柱状图宽度</string>
+
     <!--播放界面文字-->
     <string name="main_default_title">当前没有播放数据</string>
     <string name="main_default_text">--</string>

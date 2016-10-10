@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/shower_mainButton"
                 android:singleLine="true"
-                android:textColor="#e7e7e7"
+                android:textColor="@color/Text_LightGray"
                 android:textSize="18sp"
                 />
 
@@ -84,7 +84,7 @@
                 android:layout_below="@+id/shower_title"
                 android:layout_toStartOf="@+id/shower_mainButton"
                 android:singleLine="true"
-                android:textColor="#e7e7e7"
+                android:textColor="@color/Text_LightGray"
                 android:textSize="15sp"
                 />
 
@@ -95,7 +95,7 @@
                 android:layout_below="@+id/shower_artist"
                 android:layout_toStartOf="@+id/shower_mainButton"
                 android:singleLine="true"
-                android:textColor="#e7e7e7"
+                android:textColor="@color/Text_LightGray"
                 android:textSize="15sp"
                 />
 
@@ -129,7 +129,7 @@
             android:shadowColor="#000"
             android:shadowRadius="10"
             android:text="@string/main_default_text"
-            android:textColor="#fff"
+            android:textColor="@color/Text_LightGray"
             />
 
         <TextView
@@ -142,7 +142,7 @@
             android:shadowColor="#000"
             android:shadowRadius="10"
             android:text="@string/main_default_text"
-            android:textColor="#fff"
+            android:textColor="@color/Text_LightGray"
             />
 
         <android.support.v7.widget.Toolbar
