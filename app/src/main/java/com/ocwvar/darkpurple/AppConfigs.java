@@ -143,6 +143,7 @@ public class AppConfigs {
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 
             String value = preferences.getString("scanner_sort_type", "0");
+
             switch (value) {
                 case "0":
                     SortType = MediaScanner.SortType.ByName;

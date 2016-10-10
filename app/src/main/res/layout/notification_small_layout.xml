@@ -41,15 +41,6 @@
         android:layout_alignParentEnd="true"/>
 
     <ImageButton
-        android:id="@+id/notification_mainButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:src="@drawable/ic_action_play"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/notification_next"/>
-
-    <ImageButton
         android:id="@+id/notification_back"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -66,5 +57,17 @@
         android:src="@drawable/ic_action_cancel"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/notification_back"/>
+
+    <ImageButton
+        android:id="@+id/notification_mainButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00000000"
+        android:src="@drawable/ic_action_play"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/notification_next"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="false"/>
 
 </RelativeLayout>
