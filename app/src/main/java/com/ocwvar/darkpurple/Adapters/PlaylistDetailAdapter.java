@@ -44,9 +44,11 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
         viewHolder.artist.setText(songItem.getArtist());
         if (new File((songItem.getPath())).exists()) {
             //如果文件的确存在 , 则显示播放按钮
-            viewHolder.playButton.setVisibility(View.VISIBLE);
+            viewHolder.playButton.setTag("Available");
+            viewHolder.playButton.setImageResource(R.drawable.ic_action_playing);
         } else {
-            viewHolder.playButton.setVisibility(View.GONE);
+            viewHolder.playButton.setTag("NotAvailable");
+            viewHolder.playButton.setImageResource(R.drawable.ic_action_notava);
         }
     }
 
@@ -94,7 +96,11 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
         @Override
         public void onClick(View view) {
             if (clickCallback != null) {
-                clickCallback.onPlayButtonClick(getAdapterPosition());
+                if (playButton.getTag().equals("Available")){
+                    clickCallback.onPlayButtonClick(getAdapterPosition());
+                }else {
+                    clickCallback.onPlayButtonClick(-1);
+                }
             }
         }
 

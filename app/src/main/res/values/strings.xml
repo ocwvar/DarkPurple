@@ -32,7 +32,7 @@
     <string name="title_dialog_rename">请输入新的播放列表名字</string>
     <string name="title_dialog_error">新名字与当前名字相同</string>
     <string name="title_dialog_error2">新名字与其他播放列表名字相同</string>
-    <string name="info">长按项目进行拖动排序 , 滑动项目进行删除. 如果删除所有歌曲将会自动移除此播放列表</string>
+    <string name="info_playlist">长按项目进行拖动排序 , 滑动项目进行删除.</string>
 
     <!--播放列表项目文字信息-->
     <string name="text_playlist_name">播放列表名称</string>
@@ -45,6 +45,7 @@
     <string name="text_playlist_saveFail">播放列表数据未做更改</string>
     <string name="text_playlist_addNewSong">成功添加音频</string>
     <string name="text_playlist_addNewSong_Failed">添加音频失败 , 可能存在同名音频</string>
+    <string name="text_playlist_play_Failed">音频文件无法播放,可能已经失效</string>
 
     <!--ViewPager滚动标签栏-->
     <string name="ViewPage_Tab_Playing">正在播放</string>

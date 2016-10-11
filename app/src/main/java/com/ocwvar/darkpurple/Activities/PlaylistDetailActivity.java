@@ -90,7 +90,7 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecycleSwipeHelper(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        info = Snackbar.make(findViewById(android.R.id.content), R.string.info, Snackbar.LENGTH_INDEFINITE).setAction(R.string.simple_done, PlaylistDetailActivity.this);
+        info = Snackbar.make(findViewById(android.R.id.content), R.string.info_playlist, Snackbar.LENGTH_INDEFINITE).setAction(R.string.simple_done, PlaylistDetailActivity.this);
         info.show();
     }
 
@@ -169,15 +169,19 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
      */
     @Override
     public void onPlayButtonClick(int position) {
-        //保存数据
-        PlaylistUnits.getInstance().savePlaylist(selectPlaylistItem.getName(), selectPlaylistItem.getPlaylist());
-        //设置结果
-        setResult(LIST_UNCHANGED);
-        //播放音频
-        ServiceHolder.getInstance().getService().play(this.selectPlaylistItem.getPlaylist(), position);
-        //转跳到播放界面
-        startActivity(new Intent(PlaylistDetailActivity.this, PlayingActivity.class));
-        finish();
+        if (position == -1){
+            Snackbar.make(findViewById(android.R.id.content),R.string.text_playlist_play_Failed,Snackbar.LENGTH_SHORT).show();
+        }else{
+            //保存数据
+            PlaylistUnits.getInstance().savePlaylist(selectPlaylistItem.getName(), selectPlaylistItem.getPlaylist());
+            //设置结果
+            setResult(LIST_UNCHANGED);
+            //播放音频
+            ServiceHolder.getInstance().getService().play(this.selectPlaylistItem.getPlaylist(), position);
+            //转跳到播放界面
+            startActivity(new Intent(PlaylistDetailActivity.this, PlayingActivity.class));
+            finish();
+        }
     }
 
     @Override

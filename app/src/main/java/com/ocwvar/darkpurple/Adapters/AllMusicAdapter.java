@@ -179,6 +179,8 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             if (defaultCover == null) {
                 defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
             }
+            viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
+            viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
             viewHolder.cover.setImageDrawable(defaultCover);
         }
 
