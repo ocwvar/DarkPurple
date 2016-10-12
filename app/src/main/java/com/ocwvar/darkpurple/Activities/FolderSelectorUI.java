@@ -3,13 +3,10 @@ package com.ocwvar.darkpurple.Activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +19,7 @@ import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.FolderSelectorAdapter;
 import com.ocwvar.darkpurple.R;
+import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -38,7 +36,7 @@ import java.util.List;
  * File Location com.ocwvar.darkpurple.Activities
  * 文件夹选择UI
  */
-public class FolderSelectorUI extends AppCompatActivity implements FolderSelectorAdapter.OnFolderSelectCallback, View.OnClickListener {
+public class FolderSelectorUI extends BaseBlurActivity implements FolderSelectorAdapter.OnFolderSelectCallback {
 
     public static final int RESULT_CODE = 9990;
 
@@ -52,11 +50,21 @@ public class FolderSelectorUI extends AppCompatActivity implements FolderSelecto
 
     private WeakReference<AlertDialog> confirmDialog = new WeakReference<>(null);
 
-    @SuppressWarnings("ConstantConditions")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_folder_ui);
+    protected boolean onPreSetup() {
+        return true;
+    }
+
+    @Override
+
+    protected int setActivityView() {
+        return R.layout.activity_folder_ui;
+    }
+
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    protected void onSetupViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         setTitle(R.string.title_select_folder_ui);
@@ -84,6 +92,28 @@ public class FolderSelectorUI extends AppCompatActivity implements FolderSelecto
         fetchFolderTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
+    @Override
+    protected void onViewClick(View clickedView) {
+        switch (clickedView.getId()) {
+            case R.id.button_done:
+                if (adapter.getSelectedPathCount() > 0) {
+                    Intent intent = new Intent();
+                    File[] result = adapter.getSelectedPath().toArray(new File[adapter.getSelectedPathCount()]);
+                    intent.putExtra("Data", result);
+                    setResult(RESULT_CODE, intent);
+                } else {
+                    setResult(RESULT_CODE, null);
+                }
+                finish();
+                break;
+        }
+    }
+
+    @Override
+    protected boolean onViewLongClick(View holdedView) {
+        return false;
+    }
+
     /**
      * 进入文件夹回调
      *
@@ -91,9 +121,13 @@ public class FolderSelectorUI extends AppCompatActivity implements FolderSelecto
      */
     @Override
     public void onEnter(File folder) {
-        if (folder != null && !pathIndex.get(0).equals(folder) && fetchFolderTask == null || fetchFolderTask.getStatus() == AsyncTask.Status.FINISHED) {
-            //如果请求的地址不为空 , 请求的地址跟当前地址不相同 , 上一个文件夹获取任务已结束 , 同时满足才进行获取
-            fetchFolderTask = null;
+        if (folder != null && !pathIndex.get(0).equals(folder)) {
+            //如果请求的地址不为空 , 请求的地址跟当前地址不相同 , 同时满足才进行获取
+            if (fetchFolderTask != null && fetchFolderTask.getStatus() != AsyncTask.Status.FINISHED) {
+                fetchFolderTask.cancel(true);
+                fetchFolderTask = null;
+            }
+
             fetchFolderTask = new FetchFolderTask(folder, new OnCompletedCallback() {
                 @Override
                 public void onCompleted(File folder) {
@@ -149,23 +183,6 @@ public class FolderSelectorUI extends AppCompatActivity implements FolderSelecto
         recyclerView = null;
         adapter = null;
         folderCount = null;
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.button_done:
-                if (adapter.getSelectedPathCount() > 0) {
-                    Intent intent = new Intent();
-                    File[] result = adapter.getSelectedPath().toArray(new File[adapter.getSelectedPathCount()]);
-                    intent.putExtra("Data", result);
-                    setResult(RESULT_CODE, intent);
-                } else {
-                    setResult(RESULT_CODE, null);
-                }
-                finish();
-                break;
-        }
     }
 
     /**

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.CImageView;
+import com.ocwvar.darkpurple.widgets.CImageView;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.squareup.picasso.Picasso;
 

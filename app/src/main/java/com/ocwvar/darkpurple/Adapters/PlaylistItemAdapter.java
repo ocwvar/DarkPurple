@@ -13,7 +13,7 @@ import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
-import com.ocwvar.darkpurple.Units.SquareHightImageView;
+import com.ocwvar.darkpurple.widgets.SquareHightImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

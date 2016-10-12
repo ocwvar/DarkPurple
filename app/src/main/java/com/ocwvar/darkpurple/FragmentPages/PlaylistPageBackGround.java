@@ -1,10 +1,9 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -205,9 +204,14 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                                 if (loadingDialog != null) {
                                     loadingDialog.dismiss();
                                 }
-                                Intent intent = new Intent(getActivity(), PlaylistDetailActivity.class);
-                                intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                                startActivityForResult(intent, 9);
+                                //Intent intent = new Intent(getActivity(), PlaylistDetailActivity.class);
+                                //intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                                //startActivityForResult(intent, 9);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putInt("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                                PlaylistDetailActivity.startBlurActivityForResult(10, Color.argb(50, 0, 0, 0), false, getActivity(), PlaylistDetailActivity.class, bundle, 9);
+
                             } else {
                                 //如果获取得到的数据为空 , 则说明这个播放列表无效 , 自动进行移除操作
                                 PlaylistUnits.getInstance().removePlaylist(selectedPlaylistItem);
@@ -230,13 +234,15 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                         }
                     }, selectedPlaylistItem);
                 } else {
-                    Intent intent = new Intent(getActivity(), PlaylistDetailActivity.class);
-                    intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        startActivityForResult(intent, 9, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, "spName").toBundle());
-                    } else {
-                        startActivityForResult(intent, 9);
-                    }
+                    //启动播放列表详情界面
+                    //Intent intent = new Intent(getActivity(),PlaylistDetailActivity.class);
+                    //intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                    //startActivityForResult(intent,9);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
+                    PlaylistDetailActivity.startBlurActivityForResult(10, Color.argb(50, 0, 0, 0), false, getActivity(), PlaylistDetailActivity.class, bundle, 9);
+
                 }
                 moreDialog.get().dismiss();
                 break;

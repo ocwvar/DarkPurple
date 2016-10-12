@@ -3,6 +3,7 @@
     <string name="app_name">DarkPurple</string>
 
     <!--基本菜单名称-->
+    <string name="app_name2">BASS effects test</string>
     <string name="setting_base_setting">设置</string>
     <string name="setting_base_playing">当前播放</string>
 
@@ -10,6 +11,7 @@
     <string name="simple_unknown">未知</string>
     <string name="simple_cancel">取消</string>
     <string name="simple_done">确定</string>
+    <string name="simple_error">哎哟! 发生了异常! 请重新再试一次!</string>
     <string name="simple_downloading">正在下载中</string>
     <string name="simple_download_completed">已成功下载文件</string>
     <string name="simple_download_failed">下载文件失败,请检查网络状态</string>

@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.Units;
+package com.ocwvar.darkpurple.widgets;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,10 +17,10 @@ import android.widget.ImageView;
 
 public class CImageView extends ImageView {
 
-    private float r , x , y;
+    private float r, x, y;
     private int borderColor;
 
-    public CImageView(Context context,float r,float x,float y,int borderColor) {
+    public CImageView(Context context, float r, float x, float y, int borderColor) {
         super(context);
         this.r = r;
         this.x = x;
@@ -43,9 +43,9 @@ public class CImageView extends ImageView {
 
     @Override
     public void setImageDrawable(Drawable drawable) {
-        if (drawable != null){
-            super.setImageDrawable(new CircleDrawable(((BitmapDrawable)drawable).getBitmap(),r,x,y,borderColor));
-        }else {
+        if (drawable != null) {
+            super.setImageDrawable(new CircleDrawable(((BitmapDrawable) drawable).getBitmap(), r, x, y, borderColor));
+        } else {
             super.setImageDrawable(null);
         }
     }

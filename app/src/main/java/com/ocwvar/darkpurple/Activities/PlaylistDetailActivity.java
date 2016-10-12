@@ -4,12 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +22,7 @@ import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
 import java.lang.ref.WeakReference;
@@ -36,7 +34,7 @@ import java.lang.ref.WeakReference;
  * Project: DarkPurple
  * 播放列表详情界面
  */
-public class PlaylistDetailActivity extends AppCompatActivity implements PlaylistDetailAdapter.OnPlayButtonClickCallback, View.OnClickListener {
+public class PlaylistDetailActivity extends BaseBlurActivity implements PlaylistDetailAdapter.OnPlayButtonClickCallback {
 
     public static final int LIST_CHANGED = 1;
     public static final int LIST_UNCHANGED = 2;
@@ -48,10 +46,8 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
     Intent intent = null;
     int thisPosition = -1;
 
-    @SuppressWarnings("ConstantConditions")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected boolean onPreSetup() {
         intent = new Intent();
         intent.putExtra("renamed", false);
 
@@ -59,23 +55,30 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
 
         if (getIntent().getExtras() == null) {
             //没有传递播放列表对象位置 , 结束当前页面
-            finish();
-            return;
+            return false;
         } else {
             thisPosition = getIntent().getExtras().getInt("position");
             this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistItem(thisPosition);
             if (this.selectPlaylistItem == null) {
                 //如果无法获取到播放列表数据对象 , 结束当前页面
-                finish();
-                return;
+                return false;
             } else if (this.selectPlaylistItem.getPlaylist() == null) {
                 //如果没有获取到这播放列表数据的音频列表 , 结束当前页面
                 finish();
-                return;
+                return false;
             }
         }
+        return true;
+    }
 
-        setContentView(R.layout.activity_playlist_detail);
+    @Override
+    protected int setActivityView() {
+        return R.layout.activity_playlist_detail;
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    protected void onSetupViews() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(this.selectPlaylistItem.getName() + " " + getApplicationContext().getString(R.string.title_detail));
@@ -92,6 +95,16 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
 
         info = Snackbar.make(findViewById(android.R.id.content), R.string.info_playlist, Snackbar.LENGTH_INDEFINITE).setAction(R.string.simple_done, PlaylistDetailActivity.this);
         info.show();
+    }
+
+    @Override
+    protected void onViewClick(View clickedView) {
+        info.dismiss();
+    }
+
+    @Override
+    protected boolean onViewLongClick(View holdedView) {
+        return false;
     }
 
     @Override
@@ -169,9 +182,9 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
      */
     @Override
     public void onPlayButtonClick(int position) {
-        if (position == -1){
-            Snackbar.make(findViewById(android.R.id.content),R.string.text_playlist_play_Failed,Snackbar.LENGTH_SHORT).show();
-        }else{
+        if (position == -1) {
+            Snackbar.make(findViewById(android.R.id.content), R.string.text_playlist_play_Failed, Snackbar.LENGTH_SHORT).show();
+        } else {
             //保存数据
             PlaylistUnits.getInstance().savePlaylist(selectPlaylistItem.getName(), selectPlaylistItem.getPlaylist());
             //设置结果
@@ -184,11 +197,6 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        info.dismiss();
-    }
-
     /**
      * RecyclerView 拖动实现工具
      */
@@ -196,7 +204,7 @@ public class PlaylistDetailActivity extends AppCompatActivity implements Playlis
 
         OnDragChangedCallback changedCallback;
 
-        public RecycleSwipeHelper(@NonNull OnDragChangedCallback changedCallback) {
+        RecycleSwipeHelper(@NonNull OnDragChangedCallback changedCallback) {
             this.changedCallback = changedCallback;
         }
 

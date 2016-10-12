@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.Units;
+package com.ocwvar.darkpurple.widgets;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 
 public class CircleDrawable extends Drawable {
 
-    private Paint picPaint , circlePaint , borderPaint;
+    private Paint picPaint, circlePaint, borderPaint;
     private Bitmap bitmap;
     private Rect drawArea;
     private float r, x, y;
@@ -36,7 +36,7 @@ public class CircleDrawable extends Drawable {
         this.x = x;
         this.y = y;
 
-        drawArea.set((int)(x-r) , (int)(y-r) , (int)(x+r) , (int)(y+r));
+        drawArea.set((int) (x - r), (int) (y - r), (int) (x + r), (int) (y + r));
 
         picPaint.setAntiAlias(true);
         circlePaint.setAntiAlias(true);
@@ -52,21 +52,21 @@ public class CircleDrawable extends Drawable {
     @Override
     public void draw(@NonNull Canvas canvas) {
         int saveFlags = Canvas.MATRIX_SAVE_FLAG | Canvas.CLIP_SAVE_FLAG | Canvas.HAS_ALPHA_LAYER_SAVE_FLAG | Canvas.FULL_COLOR_LAYER_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
-        canvas.saveLayer(0, 0, x*2, y*2, null, saveFlags);
-        canvas.drawCircle(x,y,r-3,circlePaint);
-        canvas.drawBitmap(bitmap,null,drawArea,picPaint);
-        canvas.drawCircle(x,y,r-3,borderPaint);
+        canvas.saveLayer(0, 0, x * 2, y * 2, null, saveFlags);
+        canvas.drawCircle(x, y, r - 3, circlePaint);
+        canvas.drawBitmap(bitmap, null, drawArea, picPaint);
+        canvas.drawCircle(x, y, r - 3, borderPaint);
         canvas.restore();
     }
 
     @Override
     public int getIntrinsicWidth() {
-        return (int)x*2;
+        return (int) x * 2;
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return (int)y*2;
+        return (int) y * 2;
     }
 
     @Override

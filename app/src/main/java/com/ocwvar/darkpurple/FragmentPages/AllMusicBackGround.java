@@ -209,9 +209,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     public void onClick(View view) {
                         moreDialog.get().dismiss();
                         if (selectedSongitem != null) {
-                            Intent intent = new Intent(getActivity(), DownloadCoverActivity.class);
-                            intent.putExtra("item", selectedSongitem);
-                            startActivityForResult(intent, 10);
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("item", selectedSongitem);
+                            DownloadCoverActivity.startBlurActivityForResult(10, Color.argb(100, 0, 0, 0), false, getActivity(), DownloadCoverActivity.class, bundle, 10);
                         }
                     }
                 });

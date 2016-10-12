@@ -10,7 +10,7 @@
     >
 
     <!--封面图像-->
-    <com.ocwvar.darkpurple.Units.SquareWidthImageView
+    <com.ocwvar.darkpurple.widgets.SquareWidthImageView
         android:id="@+id/item_cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

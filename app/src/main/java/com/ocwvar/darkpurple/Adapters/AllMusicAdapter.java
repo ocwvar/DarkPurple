@@ -13,7 +13,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
-import com.ocwvar.darkpurple.Units.SquareWidthImageView;
+import com.ocwvar.darkpurple.widgets.SquareWidthImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;

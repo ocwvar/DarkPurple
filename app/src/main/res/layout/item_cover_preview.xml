@@ -5,7 +5,7 @@
               android:orientation="vertical"
               android:padding="5dp">
 
-    <com.ocwvar.darkpurple.Units.SquareWidthImageView
+    <com.ocwvar.darkpurple.widgets.SquareWidthImageView
         android:id="@+id/textView_cover_preview_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

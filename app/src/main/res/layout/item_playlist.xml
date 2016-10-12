@@ -41,7 +41,7 @@
         android:layout_gravity="center_vertical|end"
         android:orientation="horizontal">
 
-        <com.ocwvar.darkpurple.Units.SquareHightImageView
+        <com.ocwvar.darkpurple.widgets.SquareHightImageView
             android:id="@+id/imageView_cover"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

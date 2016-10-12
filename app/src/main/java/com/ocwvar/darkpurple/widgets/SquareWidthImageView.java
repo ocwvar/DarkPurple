@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.Units;
+package com.ocwvar.darkpurple.widgets;
 
 import android.annotation.TargetApi;
 import android.content.Context;

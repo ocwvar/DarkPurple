@@ -6,16 +6,15 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
@@ -24,8 +23,9 @@ import com.ocwvar.darkpurple.FragmentPages.PlaylistPageFragment;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.BaseActivity;
 
-public class SelectMusicActivity extends AppCompatActivity {
+public class SelectMusicActivity extends BaseActivity {
 
     ViewPager viewPager;
     MainViewPagerAdapter viewPagerAdapter;
@@ -35,9 +35,17 @@ public class SelectMusicActivity extends AppCompatActivity {
     PlaylistPageFragment playlistPageFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected boolean onPreSetup() {
+        return true;
+    }
+
+    @Override
+    protected int setActivityView() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void onSetupViews() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("");
@@ -59,6 +67,11 @@ public class SelectMusicActivity extends AppCompatActivity {
         viewPagerAdapter.addFragmentPageToEnd(allMusicFragment);
         viewPagerAdapter.addFragmentPageToEnd(playlistPageFragment);
 
+        onSetupService();
+
+    }
+
+    private void onSetupService() {
         if (ServiceHolder.getInstance().getService() == null) {
             //如果当前没有获取到服务对象 , 则创建一个保存
             serviceConnection = new ServiceConnection() {
@@ -105,6 +118,16 @@ public class SelectMusicActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onViewClick(View clickedView) {
+
+    }
+
+    @Override
+    protected boolean onViewLongClick(View holdedView) {
+        return false;
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_base, menu);
         return true;
@@ -140,11 +163,7 @@ public class SelectMusicActivity extends AppCompatActivity {
                 if (allMusicFragment == null) {
                     return super.onKeyDown(keyCode, event);
                 } else {
-                    if (!allMusicFragment.onActivityKeyDown(keyCode, event)) {
-                        return super.onKeyDown(keyCode, event);
-                    } else {
-                        return false;
-                    }
+                    return !allMusicFragment.onActivityKeyDown(keyCode, event) && super.onKeyDown(keyCode, event);
                 }
             default:
                 return super.onKeyDown(keyCode, event);

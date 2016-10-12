@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +33,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
+import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -63,7 +62,7 @@ import java.util.concurrent.TimeUnit;
  * File Location com.ocwvar.darkpurple.Activities
  * 下载歌曲封面页面 所有数据均解析自网站: coverbox.sinaapp.com
  */
-public class DownloadCoverActivity extends AppCompatActivity implements CoverPreviewAdapter.OnPreviewClickCallback {
+public class DownloadCoverActivity extends BaseBlurActivity implements CoverPreviewAdapter.OnPreviewClickCallback {
 
     public static int DATA_UNCHANGED = 0;
     public static int DATA_CHANGED = 1;
@@ -77,26 +76,29 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
     WeakReference<AlertDialog> copyRightDialog = new WeakReference<>(null);
     WeakReference<AlertDialog> infoDialog = new WeakReference<>(null);
 
-    @SuppressWarnings("ConstantConditions")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    protected boolean onPreSetup() {
         if (getIntent().getExtras() != null) {
             songItem = getIntent().getExtras().getParcelable("item");
         } else {
             Toast.makeText(DownloadCoverActivity.this, R.string.error_songitem, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+            return false;
         }
 
         headResult = getResources().getString(R.string.head_result);
         headSearch = getResources().getString(R.string.head_searchText);
         adapter = new CoverPreviewAdapter();
+        return true;
+    }
 
-        setContentView(R.layout.activity_download_cover);
+    @Override
+    protected int setActivityView() {
+        return R.layout.activity_download_cover;
+    }
 
-
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    protected void onSetupViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(headResult + "0");
@@ -121,7 +123,16 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
         }
 
         setResult(DATA_UNCHANGED, null);
+    }
 
+    @Override
+    protected void onViewClick(View clickedView) {
+
+    }
+
+    @Override
+    protected boolean onViewLongClick(View holdedView) {
+        return false;
     }
 
     /**
@@ -283,7 +294,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
         final String searchText;
 
         @SuppressWarnings("ConstantConditions")
-        public LoadAllPreviewTask(String searchText) {
+        LoadAllPreviewTask(String searchText) {
             this.searchText = searchText;
             getSupportActionBar().setSubtitle(headSearch + searchText);
         }
@@ -320,7 +331,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                 setTitle(headResult + "0");
                 progress.setText(R.string.noResult_Preview);
             } else {
-                setTitle(headResult + String.valueOf(list.size()-1));
+                setTitle(headResult + String.valueOf(list.size() - 1));
                 panel.setVisibility(View.GONE);
             }
             adapter.addDatas(list);
@@ -402,7 +413,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
         WeakReference<AlertDialog> selectorDialog;
 
-        public LoadSizesTask(@NonNull CoverPreviewBean coverPreviewBean) {
+        LoadSizesTask(@NonNull CoverPreviewBean coverPreviewBean) {
             this.coverPreviewBean = coverPreviewBean;
             progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
             progressDialog.setMessage(getString(R.string.simple_loading));
@@ -544,7 +555,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
             ArrayList<String[]> result;
 
-            public SelectorAdapter(ArrayList<String[]> result) {
+            SelectorAdapter(ArrayList<String[]> result) {
                 this.result = result;
             }
 
@@ -591,7 +602,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
                 TextView sizeTextView;
 
-                public SelectorViewHolder(View itemView) {
+                SelectorViewHolder(View itemView) {
                     sizeTextView = (TextView) itemView.findViewById(R.id.textView_cover_selector_size);
                 }
 
@@ -611,7 +622,7 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
 
         final ProgressDialog progressDialog;
 
-        public DownloadThread(String url, String fileName) {
+        DownloadThread(String url, String fileName) {
             this.url = url;
             this.fileName = fileName;
             this.progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
@@ -654,12 +665,12 @@ public class DownloadCoverActivity extends AppCompatActivity implements CoverPre
                 if (response.isSuccessful()) {
 
                     File file = new File(AppConfigs.DownloadCoversFolder);
-                    if (! file.exists()){
+                    if (!file.exists()) {
                         //优先检查是否存在下载的保存目录
                         file.mkdirs();
                     }
-                    file = new File( AppConfigs.DownloadCoversFolder + fileName + ".jpg");
-                    if (! file.exists()) {
+                    file = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                    if (!file.exists()) {
                         //再检查是否存在文件 , 如果不存在则创建新的空白文件
                         file.createNewFile();
                     }

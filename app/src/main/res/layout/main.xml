@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:fillViewport="true" xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout android:layout_width="fill_parent" android:orientation="vertical" android:padding="10dp" android:layout_height="fill_parent">
+    <Button android:layout_height="wrap_content" android:id="@+id/open" android:onClick="OpenClicked" android:text="press here to open a file" android:layout_width="match_parent"></Button>
+    <SeekBar android:id="@+id/eq1" android:tag="0" android:paddingTop="20dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="20" android:progress="10"></SeekBar>
+    <TextView android:text="125 hz" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_gravity="center"></TextView>
+    <SeekBar android:id="@+id/eq2" android:tag="1" android:paddingTop="10dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="20" android:progress="10"></SeekBar>
+    <TextView android:text="1 khz" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_gravity="center"></TextView>
+    <SeekBar android:id="@+id/eq3" android:tag="2" android:paddingTop="10dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="20" android:progress="10"></SeekBar>
+    <TextView android:text="8 khz" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_gravity="center"></TextView>
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent">
+        <TextView android:layout_width="wrap_content" android:text="-10 db" android:layout_height="wrap_content" android:layout_weight="1"></TextView>
+        <TextView android:layout_width="wrap_content" android:text="+10 db" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="right"></TextView>
+    </LinearLayout>
+    <SeekBar android:id="@+id/reverb" android:tag="3" android:paddingTop="10dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="20" android:progress="0"></SeekBar>
+    <TextView android:text="reverb" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_gravity="center"></TextView>
+</LinearLayout>
+</ScrollView>

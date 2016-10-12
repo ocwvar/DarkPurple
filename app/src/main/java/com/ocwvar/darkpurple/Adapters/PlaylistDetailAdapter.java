@@ -20,6 +20,7 @@ import java.util.Collections;
  * Package: com.ocwvar.darkpurple.Adapters
  * Data: 2016/8/16 1:22
  * Project: DarkPurple
+ * 播放列表详情里列表的适配器
  */
 public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDragChangedCallback {
 
@@ -79,12 +80,12 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
 
     }
 
-    class SimpleDetailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class SimpleDetailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView title, artist;
         ImageButton playButton;
 
-        public SimpleDetailViewHolder(View itemView) {
+        SimpleDetailViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.textView_title);
             artist = (TextView) itemView.findViewById(R.id.textView_artist);

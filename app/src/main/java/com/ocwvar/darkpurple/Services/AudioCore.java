@@ -29,7 +29,7 @@ public class AudioCore {
     private ArrayList<SongItem> songList;
     private int playingIndex = -1;
 
-    protected AudioCore(Context applicationContext) {
+    AudioCore(Context applicationContext) {
         this.applicationContext = applicationContext;
         BASS.BASS_Init(-1, 44100, BASS.BASS_DEVICE_LATENCY);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_DEV_BUFFER, 0);
@@ -73,7 +73,7 @@ public class AudioCore {
      *
      * @return 频谱数据数组
      */
-    public float[] getSpectrum() {
+    float[] getSpectrum() {
 
         if (playingChannel == 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_PLAYING) {
             return null;
@@ -136,7 +136,7 @@ public class AudioCore {
      *
      * @return 当前状态
      */
-    protected AudioStatus getCurrectStatus() {
+    AudioStatus getCurrectStatus() {
         if (playingChannel != 0) {
             switch (BASS.BASS_ChannelIsActive(playingChannel)) {
                 case BASS.BASS_ACTIVE_PLAYING:
@@ -157,7 +157,7 @@ public class AudioCore {
      *
      * @return 有则返回歌曲集合 , 没有则返回 NULL
      */
-    protected SongItem getPlayingSong() {
+    SongItem getPlayingSong() {
         if (songList != null && playingIndex != -1) {
             return songList.get(playingIndex);
         } else {
@@ -172,7 +172,7 @@ public class AudioCore {
      * @param playIndex 要播放的音频位置
      * @return 执行结果
      */
-    protected boolean play(ArrayList<SongItem> songList, int playIndex) {
+    boolean play(ArrayList<SongItem> songList, int playIndex) {
         if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()) {
             //如果音频列表和播放位置合法 , 则开始读取
             if (playAudio(songList.get(playIndex), false)) {
@@ -205,7 +205,7 @@ public class AudioCore {
      * @param playIndex 要播放的音频位置
      * @return 执行结果
      */
-    protected boolean onlyInitAudio(ArrayList<SongItem> songList, int playIndex) {
+    boolean onlyInitAudio(ArrayList<SongItem> songList, int playIndex) {
         if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()) {
             //如果音频列表和播放位置合法 , 则开始读取
             if (playAudio(songList.get(playIndex), true)) {
@@ -230,7 +230,7 @@ public class AudioCore {
      *
      * @return 执行结果
      */
-    protected boolean stopAudio() {
+    boolean stopAudio() {
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
             //如果当前加载了频道数据 , 同时当前状态不是停止播放状态
             boolean result = BASS.BASS_ChannelStop(playingChannel);
@@ -249,7 +249,7 @@ public class AudioCore {
      *
      * @return 执行结果
      */
-    protected boolean pauseAudio() {
+    boolean pauseAudio() {
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PLAYING) {
             //如果当前加载了频道数据 , 同时当前状态为正在播放
             boolean result = BASS.BASS_ChannelPause(playingChannel);
@@ -268,7 +268,7 @@ public class AudioCore {
      *
      * @return 执行结果
      */
-    protected boolean resumeAudio() {
+    boolean resumeAudio() {
         boolean result;
 
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PAUSED) {
@@ -297,7 +297,7 @@ public class AudioCore {
      *
      * @return 执行结果
      */
-    protected boolean playPrevious() {
+    boolean playPrevious() {
         if (songList != null) {
             if (playingIndex == 0) {
                 //如果当前正在播放的位置就是第一个 , 则跳到最后一个位置
@@ -321,7 +321,7 @@ public class AudioCore {
      *
      * @return 执行结果
      */
-    protected boolean playNext() {
+    boolean playNext() {
         if (songList != null) {
             if (playingIndex == songList.size() - 1) {
                 //如果当前播放的位置就是最后一个 , 则跳到第一个位置
@@ -345,7 +345,7 @@ public class AudioCore {
      *
      * @return 执行结果
      */
-    protected boolean releaseAudio() {
+    boolean releaseAudio() {
         if (playingChannel != 0) {
             //如果频道有数据
             if (BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
@@ -366,14 +366,14 @@ public class AudioCore {
     /**
      * @return 当前播放的音频列表
      */
-    protected ArrayList<SongItem> getPlayingList() {
+    ArrayList<SongItem> getPlayingList() {
         return this.songList;
     }
 
     /**
      * @return 获取当前播放的位置 , 无的时候为 -1
      */
-    protected int getPlayingIndex() {
+    int getPlayingIndex() {
         return this.playingIndex;
     }
 
@@ -382,7 +382,7 @@ public class AudioCore {
      *
      * @return 当前音频播放位置
      */
-    protected double getPlayingPosition() {
+    double getPlayingPosition() {
         if (playingChannel != 0) {
             return BASS.BASS_ChannelBytes2Seconds(playingChannel, BASS.BASS_ChannelGetPosition(playingChannel, BASS.BASS_POS_BYTE));
         } else {
@@ -395,7 +395,7 @@ public class AudioCore {
      *
      * @return 音频长度
      */
-    protected double getAudioLength() {
+    double getAudioLength() {
         if (playingChannel != 0) {
             return BASS.BASS_ChannelBytes2Seconds(playingChannel, BASS.BASS_ChannelGetLength(playingChannel, BASS.BASS_POS_BYTE));
         } else {
@@ -409,7 +409,7 @@ public class AudioCore {
      * @param position 位置长度
      * @return 执行结果
      */
-    protected boolean seek2Position(double position) {
+    boolean seek2Position(double position) {
         if (playingChannel != 0) {
             return BASS.BASS_ChannelSetPosition(playingChannel, BASS.BASS_ChannelSeconds2Bytes(playingChannel, position), BASS.BASS_POS_BYTE);
         } else {
