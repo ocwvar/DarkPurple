@@ -466,6 +466,25 @@ public class AudioService extends Service {
     }
 
     /**
+     * 获取均衡器频段设置
+     *
+     * @return  频段参数
+     */
+    public int[] getEqParameters(){
+        return core.getEqParameters();
+    }
+
+    /**
+     * 更改均衡器频段参数
+     *
+     * @param eqParameter    均衡器参数 -10 ~ 10
+     * @param eqIndex   调节位置
+     */
+    public void updateEqParameter(int eqParameter , int eqIndex){
+        core.updateEqParameter(eqParameter, eqIndex);
+    }
+
+    /**
      * 释放歌曲占用的资源
      *
      * @return 执行结果

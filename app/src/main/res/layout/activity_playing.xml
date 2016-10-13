@@ -156,6 +156,14 @@
             app:titleTextAppearance="@style/TextAppearance.AppCompat.Playing"
             >
 
+            <ImageButton
+                android:id="@+id/equalizer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_action_equalizer"
+                android:layout_gravity="end"/>
+
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/switcher"
                 android:layout_width="wrap_content"
@@ -163,7 +171,9 @@
                 android:layout_gravity="end"
                 android:checked="false"
                 android:paddingEnd="10dp"
-                android:paddingRight="10dp"/>
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                />
 
         </android.support.v7.widget.Toolbar>
 

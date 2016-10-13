@@ -58,6 +58,7 @@
         <activity
             android:name=".Activities.FolderSelectorActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             android:label="@string/musicFolder_name"/>
 
         <activity
@@ -68,6 +69,12 @@
 
         <activity
             android:name=".Activities.DownloadCoverActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
+
+        <activity
+            android:name=".Activities.EqualizerActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             />
