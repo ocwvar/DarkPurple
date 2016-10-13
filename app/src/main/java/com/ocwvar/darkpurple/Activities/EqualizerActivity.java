@@ -3,7 +3,6 @@ package com.ocwvar.darkpurple.Activities;
 import android.support.design.widget.Snackbar;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ocwvar.darkpurple.R;
@@ -11,6 +10,7 @@ import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.ocwvar.darkpurple.widgets.BezierView;
 import com.ocwvar.darkpurple.widgets.VerticalSeekBar;
 
 /**
@@ -27,6 +27,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
 
     VerticalSeekBar equ1, equ2, equ3, equ4, equ5, equ6, equ7, equ8, equ9, equ10;
     AudioService service;
+    BezierView bezierView;
     int[] eqParameters = null;
 
     @Override
@@ -51,6 +52,10 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
     protected void onSetupViews() {
         //复位键
         (findViewById(R.id.eq_reset)).setOnClickListener(this);
+
+        //背景曲线
+        bezierView = (BezierView)findViewById(R.id.bezierView);
+        bezierView.setCurrentLevels(eqParameters);
 
         equ1 = (VerticalSeekBar) findViewById(R.id.equ1);
         equ1.setOnTouchListener(EqualizerActivity.this);
@@ -118,6 +123,9 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
             //获取调整的数值 , 区间在 -10 ~ 10
             int eqParameter = seekBar.getProgress() - 10;
 
+            //设置曲线变化
+            bezierView.setLevel(eqIndex,seekBar.getProgress());
+
             Logger.warnning(TAG, "发生调节   位置: " + eqIndex + "   数值: " + eqParameter);
 
             if (service != null) {
@@ -143,6 +151,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
             equ9.setProgress(10);
             equ10.setProgress(10);
             service.resetEqualizer();
+            bezierView.resetLevel();
             Snackbar.make(findViewById(android.R.id.content),R.string.eq_reset_successful,Snackbar.LENGTH_SHORT).show();
         }else {
             Snackbar.make(findViewById(android.R.id.content),R.string.eq_reset_failed,Snackbar.LENGTH_SHORT).show();
