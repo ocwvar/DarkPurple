@@ -29,7 +29,7 @@ public class AudioCore {
     private ArrayList<SongItem> songList;
     private int playingIndex = -1;
 
-    private int[] eqIndexs = new int[10];
+    private int[] eqIndexs =     new int[]{0,0,0,0,0,0,0,0,0,0};
     private int[] eqParameters = new int[]{0,0,0,0,0,0,0,0,0,0};
 
     AudioCore(Context applicationContext) {
@@ -72,9 +72,9 @@ public class AudioCore {
             eqIndexs[7]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
             eqIndexs[8]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
             eqIndexs[9]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+
             BASS.BASS_DX8_PARAMEQ p=new BASS.BASS_DX8_PARAMEQ();
-            p.fGain=0;
-            p.fBandwidth=1;
+            p.fBandwidth=18;
             p.fCenter=31.25f;
             p.fGain=eqParameters[0];
             BASS.BASS_FXSetParameters(eqIndexs[0], p);
@@ -130,12 +130,29 @@ public class AudioCore {
      *
      * @param eqParameter    均衡器参数 -10 ~ 10
      * @param eqIndex   调节位置
+     * @return 执行结果
      */
-    void updateEqParameter(int eqParameter , int eqIndex){
+    boolean updateEqParameter(int eqParameter , int eqIndex){
         this.eqParameters[eqIndex] = eqParameter;
         BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
+        BASS.BASS_FXGetParameters(eqIndexs[eqIndex],eq);
         eq.fGain = eqParameter;
-        BASS.BASS_FXSetParameters(eqIndexs[eqIndex],eq);
+        return BASS.BASS_FXSetParameters(eqIndexs[eqIndex],eq);
+    }
+
+    /**
+     * 重置均衡器设置
+     */
+    void resetEqualizer(){
+
+        this.eqParameters = new int[]{0,0,0,0,0,0,0,0,0,0};
+        for (int i = 0; i < 10; i++) {
+            BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
+            BASS.BASS_FXGetParameters(eqIndexs[i],eq);
+            eq.fGain = 0;
+            BASS.BASS_FXSetParameters(eqIndexs[i],eq);
+        }
+
     }
 
     /**

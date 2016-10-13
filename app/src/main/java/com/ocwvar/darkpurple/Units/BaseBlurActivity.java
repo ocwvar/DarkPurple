@@ -63,7 +63,7 @@ public abstract class BaseBlurActivity extends BaseActivity {
         blurBGContainer.clear();
         //启动目标Activity
         Intent intent = new Intent(fromActivity, toActivity);
-        intent.putExtras(bundle);
+        if (bundle != null) intent.putExtras(bundle);
         fromActivity.startActivity(intent);
         //获取发起请求的Activity的整个View
         View activityView = fromActivity.getWindow().getDecorView();

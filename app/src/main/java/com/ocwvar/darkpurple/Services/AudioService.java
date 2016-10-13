@@ -479,9 +479,17 @@ public class AudioService extends Service {
      *
      * @param eqParameter    均衡器参数 -10 ~ 10
      * @param eqIndex   调节位置
+     * @return 执行结果
      */
-    public void updateEqParameter(int eqParameter , int eqIndex){
-        core.updateEqParameter(eqParameter, eqIndex);
+    public boolean updateEqParameter(int eqParameter , int eqIndex){
+        return core.updateEqParameter(eqParameter, eqIndex);
+    }
+
+    /**
+     * 重置均衡器设置
+     */
+    public void resetEqualizer(){
+        core.resetEqualizer();
     }
 
     /**

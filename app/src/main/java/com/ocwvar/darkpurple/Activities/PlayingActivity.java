@@ -74,8 +74,7 @@ public class PlayingActivity
         extends AppCompatActivity
         implements ViewPager.OnPageChangeListener,
         View.OnClickListener,
-        SlidingListAdapter.OnSlidingMenuClickCallback,
-        CompoundButton.OnCheckedChangeListener {
+        SlidingListAdapter.OnSlidingMenuClickCallback{
 
     //音频服务
     AudioService audioService;
@@ -99,8 +98,10 @@ public class PlayingActivity
     ImageButton mainButton;
     //歌曲进度条
     SeekBar musicSeekBar;
-    //动画切换器
-    SwitchCompat switchCompat;
+    //频谱开关
+    ImageButton spectrumSwitch;
+    //均衡器设置
+    ImageButton equalizerPage;
     //侧滑快捷切歌列表
     RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
@@ -155,7 +156,8 @@ public class PlayingActivity
 
         surfaceViewBG = findViewById(R.id.surfaceViewBG);
         backGround = findViewById(R.id.contener);
-        switchCompat = (SwitchCompat) findViewById(R.id.switcher);
+        spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
+        equalizerPage = (ImageButton) findViewById(R.id.equalizer);
         surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
@@ -168,8 +170,11 @@ public class PlayingActivity
         mainButton = (ImageButton) findViewById(R.id.shower_mainButton);
         musicSeekBar = (SeekBar) findViewById(R.id.seekBar);
 
+        //设置均衡器界面
+        equalizerPage.setOnClickListener(this);
+
         //设置频谱的控制器
-        switchCompat.setOnCheckedChangeListener(this);
+        spectrumSwitch.setOnClickListener(this);
         surfaceView.getHolder().addCallback(surfaceViewControler);
 
         //Toolbar属性设置
@@ -242,6 +247,14 @@ public class PlayingActivity
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
     }
 
+    /**
+     * Activity 被暂停的时候
+     *
+     * 停止接收音频变化广播
+     * 停止更新音频时间变化
+     * 停止显示频谱动画
+     *
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -250,11 +263,16 @@ public class PlayingActivity
             updatingTimerThread.interrupt();
             updatingTimerThread = null;
         }
-        if (switchCompat.isChecked()) {
-            switchCompat.toggle();
+
+        if (spectrumSwitch.getTag().toString().equals("on")) {
+            switchSpectrumEffect();
         }
+
     }
 
+    /**
+     * Activity 被销毁的时候手动置空部分资源
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -272,7 +290,8 @@ public class PlayingActivity
         slidingListAdapter.setCallback(null);
         slidingListAdapter = null;
         updatingTimerThread = null;
-        switchCompat = null;
+        spectrumSwitch = null;
+        equalizerPage = null;
         title = null;
         album = null;
         artist = null;
@@ -452,6 +471,12 @@ public class PlayingActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.spectrum:
+                switchSpectrumEffect();
+                break;
+            case R.id.equalizer:
+                EqualizerActivity.startBlurActivity(10,Color.argb(50,0,0,0),false,PlayingActivity.this,EqualizerActivity.class,null);
+                break;
             case R.id.shower_mainButton:
                 //主按钮点击事件
                 if (audioService != null) {
@@ -554,18 +579,16 @@ public class PlayingActivity
     }
 
     /**
-     * 切换是否显示频谱效果
-     *
-     * @param isSwitchOn 当前是否被打开了
+     * 切换频谱效果开关
      */
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean isSwitchOn) {
+    private void switchSpectrumEffect(){
+
         //先让控件不可用
-        switchCompat.setEnabled(false);
-        switchCompat.setAlpha(0.5f);
+        spectrumSwitch.setEnabled(false);
+        spectrumSwitch.setAlpha(0.5f);
 
         //判断用户是要显示还是隐藏动画
-        if (isSwitchOn) {
+        if (spectrumSwitch.getTag().toString().equals("off")){
             //显示频谱动画的时候 , 先执行背景淡入动画 , 动画结束后显示SurfaceView , 然后开始绘制频谱动画
             final Animation anim = new AlphaAnimation(0f, 1f);
             anim.setDuration(500);
@@ -577,9 +600,13 @@ public class PlayingActivity
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    //当动画演示完成
-                    switchCompat.setEnabled(true);
-                    switchCompat.setAlpha(1f);
+                    //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
+                    spectrumSwitch.setEnabled(true);
+                    spectrumSwitch.setAlpha(1f);
+                    spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
+                    //设置状态到TAG中
+                    spectrumSwitch.setTag("on");
+
                     surfaceView.setVisibility(View.VISIBLE);
                     if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
                         //如果当前是正在播放 , 才执行动画
@@ -594,7 +621,7 @@ public class PlayingActivity
             });
             surfaceViewBG.startAnimation(anim);
             surfaceViewBG.setVisibility(View.VISIBLE);
-        } else {
+        }else {
             //不显示频谱动画的时候 , 隐藏SurfaceView 和 SurfaceView BG , 然后停止动画刷新
             final Animation anim = new AlphaAnimation(1f, 0f);
             anim.setDuration(500);
@@ -606,9 +633,12 @@ public class PlayingActivity
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    //当动画演示完成
-                    switchCompat.setEnabled(true);
-                    switchCompat.setAlpha(1f);
+                    //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
+                    spectrumSwitch.setEnabled(true);
+                    spectrumSwitch.setAlpha(1f);
+                    spectrumSwitch.setImageResource(R.drawable.ic_action_sp_off);
+                    //设置状态到TAG中
+                    spectrumSwitch.setTag("off");
                 }
 
                 @Override
@@ -621,6 +651,7 @@ public class PlayingActivity
             surfaceViewBG.startAnimation(anim);
             surfaceViewBG.setVisibility(View.GONE);
         }
+
     }
 
     /**

@@ -161,7 +161,20 @@
     <string name="main_default_text">--</string>
 
     <!--均衡器设置界面-->
+    <string name="eq_reset">恢复设置</string>
     <string name="eq_service_setup_error">初始化参数失败,请重试</string>
+    <string name="eq_reset_successful">重置均衡器成功</string>
+    <string name="eq_reset_failed">重置均衡器失败,请重试</string>
+    <string name="band1">31.25</string>
+    <string name="band2">62.5</string>
+    <string name="band3">125</string>
+    <string name="band4">250</string>
+    <string name="band5">0.5k</string>
+    <string name="band6">1k</string>
+    <string name="band7">2k</string>
+    <string name="band8">4k</string>
+    <string name="band9">8k</string>
+    <string name="band10">16k</string>
 
     <!--Notification相关-->
     <string name="notification_ticker">DarkPurple后台运行中</string>

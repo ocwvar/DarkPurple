@@ -86,8 +86,7 @@ public class FXTest extends Activity {
 						// first free the current one (try both MOD and stream - it must be one of them)
 						BASS.BASS_MusicFree(chan);
 						BASS.BASS_StreamFree(chan);
-						if ((chan=BASS.BASS_StreamCreateFile(file, 0, 0, BASS.BASS_SAMPLE_LOOP))==0
-							&& (chan=BASS.BASS_MusicLoad(file, 0, 0, BASS.BASS_SAMPLE_LOOP|BASS.BASS_MUSIC_RAMP, 1))==0) {
+						if ((chan=BASS.BASS_StreamCreateFile(file, 0, 0, BASS.BASS_SAMPLE_LOOP))==0 && (chan=BASS.BASS_MusicLoad(file, 0, 0, BASS.BASS_SAMPLE_LOOP|BASS.BASS_MUSIC_RAMP, 1))==0) {
 							// whatever it is, it ain't playable
 							((Button)findViewById(R.id.open)).setText("press here to open a file");
 							Error("Can't play the file");
