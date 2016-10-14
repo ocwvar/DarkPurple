@@ -25,28 +25,40 @@ public class AppConfigs {
 
     //封面下载目录
     public static final String DownloadCoversFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/DownloadCovers/";
+
     //图片缓存目录
     public static final String ImageCacheFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/ImageCache/";
+
     //系统保留播放列表名字 , 用于缓存上一次的搜索记录
     public final static String CACHE_NAME = ".cached";
+
     //通过封面轮播切换歌曲等待时间
     public static final long switchPending = 600;
+
     //Json数据储存位置
     public static String JsonFilePath = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/JSONData/";
+
     //未知文字占位资源
     public static String UNKNOWN = "未知";
+
     //应用是否为第一次启动
     public static boolean IsFirstBoot = true;
+
     //设置扫描的路径数组集合 如果存在数据不为NULL , 则会扫描指定目录  否则扫描数据库
     public static String[] MusicFolders = null;
+
     //歌曲封面默认混合颜色
     public static int DefaultPaletteColor = Color.argb(108, 146, 51, 180);
+
     //全局唯一 ApplicationContext 对象
     public static Context ApplicationContext = null;
+
     //歌曲长度限制 , 小于限制的不当作歌曲添加
     public static long LengthLimited = 30000;
+
     //歌曲列表排序类型
     public static MediaScanner.SortType SortType = MediaScanner.SortType.ByName;
+
     //一次性信息储存文件名称
     public static String SP_ONCE = "ONCE";
 
@@ -68,6 +80,7 @@ public class AppConfigs {
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
     public static int StatusBarHeight = -1;
+
     //导航栏高度
     public static int NevBarHeight = -1;
 

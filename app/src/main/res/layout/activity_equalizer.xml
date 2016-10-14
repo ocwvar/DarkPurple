@@ -21,6 +21,14 @@
         android:layout_height="260dp"
         >
 
+        <TextView
+            android:text="@string/eq"
+            android:textColor="#c9ffffff"
+            android:textSize="30sp"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
         <com.ocwvar.darkpurple.widgets.BezierView
             android:id="@+id/bezierView"
             android:layout_gravity="center"
@@ -349,5 +357,12 @@
             android:gravity="center"/>
 
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="10dp"
+        android:background="#59000000"
+        android:id="@+id/recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

@@ -1,17 +1,28 @@
 package com.ocwvar.darkpurple.Activities;
 
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.ocwvar.darkpurple.Adapters.EqualizerSavedAdapter;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
+import com.ocwvar.darkpurple.Units.EqualizerUnits;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.widgets.BezierView;
 import com.ocwvar.darkpurple.widgets.VerticalSeekBar;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Project DarkPurple
@@ -21,17 +32,26 @@ import com.ocwvar.darkpurple.widgets.VerticalSeekBar;
  * 均衡器设置界面
  */
 
-public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchListener {
+public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchListener, EqualizerUnits.OnEqualizerListChangedCallback, EqualizerSavedAdapter.OnEqualizerItemClickCallback {
 
     final String TAG = "均衡器";
 
     VerticalSeekBar equ1, equ2, equ3, equ4, equ5, equ6, equ7, equ8, equ9, equ10;
     AudioService service;
     BezierView bezierView;
+    EqualizerSavedAdapter adapter;
+    RecyclerView recyclerView;
     int[] eqParameters = null;
+
+    WeakReference<AlertDialog> saveDialogTemp = new WeakReference<>(null);
 
     @Override
     protected boolean onPreSetup() {
+
+        if (Build.VERSION.SDK_INT >= 21){
+            getWindow().setNavigationBarColor(Color.argb(90,0,0,0));
+        }
+
         //先从音频服务获取当前的均衡器参数
         service = ServiceHolder.getInstance().getService();
         eqParameters = service.getEqParameters();
@@ -50,12 +70,22 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
 
     @Override
     protected void onSetupViews() {
-        //复位键
+
+        //重置按钮
         (findViewById(R.id.eq_reset)).setOnClickListener(this);
 
         //背景曲线
         bezierView = (BezierView)findViewById(R.id.bezierView);
         bezierView.setCurrentLevels(eqParameters);
+
+        //显示已保存的下拉列表
+        recyclerView = (RecyclerView) findViewById(R.id.recycleView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(EqualizerActivity.this,LinearLayoutManager.VERTICAL,false));
+        recyclerView.setHasFixedSize(true);
+        adapter = new EqualizerSavedAdapter(EqualizerActivity.this);
+        adapter.putNames(EqualizerUnits.getInstance().getHashMap());
+        recyclerView.setAdapter(adapter);
+
 
         equ1 = (VerticalSeekBar) findViewById(R.id.equ1);
         equ1.setOnTouchListener(EqualizerActivity.this);
@@ -156,6 +186,128 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
         }else {
             Snackbar.make(findViewById(android.R.id.content),R.string.eq_reset_failed,Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 显示储存对话框
+     */
+    private void showSaveDialog(){
+        AlertDialog alertDialog = saveDialogTemp.get();
+        if (alertDialog == null){
+
+            final EditText editText = new EditText(EqualizerActivity.this);
+            editText.setHint(R.string.eq_dialog_info);
+            editText.setMaxLines(1);
+            editText.setBackgroundColor(Color.argb(120, 0, 0, 0));
+            editText.setTextSize(15f);
+            editText.setHintTextColor(Color.argb(120,255,255,255));
+            editText.setTextColor(Color.WHITE);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(EqualizerActivity.this,R.style.FullScreen_TransparentBG);
+            builder.setView(editText);
+            builder.setTitle(R.string.eq_dialog_title);
+            builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    EqualizerUnits.getInstance().saveEqualizer(editText.getText().toString(),eqParameters.clone(),EqualizerActivity.this);
+                    editText.getText().clear();
+                    dialog.dismiss();
+                }
+            });
+
+            alertDialog = builder.create();
+            saveDialogTemp = new WeakReference<>(alertDialog);
+        }
+
+        alertDialog.show();
+    }
+
+    /**
+     * 应用已有的均衡器配置
+     * @param values    配置数组
+     */
+    private void useEqualizerSetting(int[] values){
+
+        equ1.setProgress(values[0]+10);
+        bezierView.setLevel(0,equ1.getProgress());
+        service.updateEqParameter(values[0],0);
+
+        equ2.setProgress(values[1]+10);
+        bezierView.setLevel(1,equ2.getProgress());
+        service.updateEqParameter(values[1],1);
+
+        equ3.setProgress(values[2]+10);
+        bezierView.setLevel(2,equ3.getProgress());
+        service.updateEqParameter(values[2],2);
+
+        equ4.setProgress(values[3]+10);
+        bezierView.setLevel(3,equ4.getProgress());
+        service.updateEqParameter(values[3],3);
+
+        equ5.setProgress(values[4]+10);
+        bezierView.setLevel(4,equ5.getProgress());
+        service.updateEqParameter(values[4],4);
+
+        equ6.setProgress(values[5]+10);
+        bezierView.setLevel(5,equ6.getProgress());
+        service.updateEqParameter(values[5],5);
+
+        equ7.setProgress(values[6]+10);
+        bezierView.setLevel(6,equ7.getProgress());
+        service.updateEqParameter(values[6],6);
+
+        equ8.setProgress(values[7]+10);
+        bezierView.setLevel(7,equ8.getProgress());
+        service.updateEqParameter(values[7],7);
+
+        equ9.setProgress(values[8]+10);
+        bezierView.setLevel(8,equ9.getProgress());
+        service.updateEqParameter(values[8],8);
+
+        equ10.setProgress(values[9]+10);
+        bezierView.setLevel(9,equ10.getProgress());
+        service.updateEqParameter(values[9],9);
+
+    }
+
+    @Override
+    public void onSaveCompleted(String name) {
+        Snackbar.make(findViewById(android.R.id.content),R.string.eq_save_completed,Snackbar.LENGTH_SHORT).show();
+        adapter.putName(name);
+    }
+
+    @Override
+    public void onSaveFailed(String name) {
+        Snackbar.make(findViewById(android.R.id.content),R.string.eq_save_failed,Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRemoveCompleted(String name,int restCount) {
+        Snackbar.make(findViewById(android.R.id.content),R.string.eq_remove_completed,Snackbar.LENGTH_SHORT).show();
+        adapter.remove(name);
+    }
+
+    @Override
+    public void onRemoveFailed(String name,int restCount) {
+        Snackbar.make(findViewById(android.R.id.content),R.string.eq_remove_failed,Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onAddItemClick() {
+        showSaveDialog();
+    }
+
+    @Override
+    public void onItemClick(String name) {
+        final int[] values = EqualizerUnits.getInstance().getEqualizerValues(name);
+        if (values != null){
+            useEqualizerSetting(values);
+        }
+    }
+
+    @Override
+    public void onItemRemoveClick(String name) {
+        EqualizerUnits.getInstance().removeEqualizerValue(name,EqualizerActivity.this);
     }
 
 }

@@ -380,7 +380,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     public void onOptionClick() {
         if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && AppConfigs.ApplicationContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             //如果当前系统不是Android6.0或者已经授予文件读写权限 , 才打开歌曲文件夹设置
-            startActivityForResult(new Intent(getActivity(), FolderSelectorActivity.class), 9);
+            FolderSelectorActivity.startBlurActivityForResult(5,Color.argb(100,0,0,0),false,getActivity(),FolderSelectorActivity.class,null,9);
         } else {
             //如果权限不正常 , 则提示错误
             Snackbar.make(fragmentView, R.string.error_noPermission, Snackbar.LENGTH_SHORT).show();

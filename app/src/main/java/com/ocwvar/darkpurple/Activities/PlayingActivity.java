@@ -24,7 +24,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -36,7 +35,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -661,7 +659,7 @@ public class PlayingActivity
 
         private SongItem songItem;
 
-        public BlurCoverThread(SongItem songItem) {
+        BlurCoverThread(SongItem songItem) {
             this.songItem = songItem;
         }
 
@@ -822,7 +820,7 @@ public class PlayingActivity
      */
     class SeekBarControler implements View.OnTouchListener, SeekBar.OnSeekBarChangeListener {
 
-        public boolean isUserTorching = false;
+        boolean isUserTorching = false;
 
         /**
          * 当用户按下的时候将标记设为TRUE , 抬起触摸的时候表为FALSE

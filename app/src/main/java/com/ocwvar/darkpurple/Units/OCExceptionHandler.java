@@ -104,6 +104,7 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
         //初始化各项保存的设置
         AppConfigs.initDefaultValue(getApplicationContext());
         PlaylistUnits.getInstance().initSPData();
+        EqualizerUnits.getInstance().init(getApplicationContext());
 
         //如果有物理键的返回和菜单键 , 则代表没有虚拟导航栏
         boolean hasMenuKey = ViewConfiguration.get(getApplicationContext()).hasPermanentMenuKey();

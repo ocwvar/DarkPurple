@@ -67,6 +67,12 @@
         <item name="buttonTint">#fff</item>
     </style>
 
+    <style name="SpinnerTheme" parent="Widget.AppCompat.Spinner">
+
+        <item name="android:popupBackground">@drawable/bgcolor_drawable</item>
+
+    </style>
+
     <style name="AlertDialog.AppCompat.ProgressDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:textColor">#fff</item>

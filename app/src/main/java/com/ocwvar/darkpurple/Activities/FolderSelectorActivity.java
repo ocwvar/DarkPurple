@@ -17,6 +17,7 @@ import com.ocwvar.darkpurple.Adapters.MusicFolderAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.BaseActivity;
+import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.Logger;
 
 import java.io.File;
@@ -28,7 +29,7 @@ import java.io.File;
  * Project: DarkPurple
  * 歌曲扫描目录设置
  */
-public class FolderSelectorActivity extends BaseActivity implements MusicFolderAdapter.OnPathChangedCallback {
+public class FolderSelectorActivity extends BaseBlurActivity implements MusicFolderAdapter.OnPathChangedCallback {
 
     public static final int DATA_CHANGED = 1;
     public static final int DATA_UNCHANGED = 0;

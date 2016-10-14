@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.Bean.SongItem;
+import com.ocwvar.darkpurple.Units.EqualizerUnits;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.un4seen.bass.BASS;
 
@@ -34,6 +35,7 @@ public class AudioCore {
 
     AudioCore(Context applicationContext) {
         this.applicationContext = applicationContext;
+        this.eqParameters = EqualizerUnits.getInstance().loadLastTimeEqualizer();
         BASS.BASS_Init(-1, 44100, BASS.BASS_DEVICE_LATENCY);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_DEV_BUFFER, 0);
     }
@@ -137,6 +139,9 @@ public class AudioCore {
         BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
         BASS.BASS_FXGetParameters(eqIndexs[eqIndex],eq);
         eq.fGain = eqParameter;
+
+        EqualizerUnits.getInstance().saveLastTimeEqualizer(this.eqParameters);
+
         return BASS.BASS_FXSetParameters(eqIndexs[eqIndex],eq);
     }
 
