@@ -1,8 +1,7 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png) 
-# *DarkPurple Music player*
+## *DarkPurple Music player*
 
-#### 深紫 音乐播放器
-###### (Android 4.2.2 ~ Android 7.0)
+###### (Android 4.2.2 ~ Android 7.0) 暂不支持Android 7.0分屏功能
 
 ##### 功能介绍  Features introduce
 
@@ -21,7 +20,10 @@
 
 #####关于封面获取功能
 封面数据源自:coverbox.sinaapp.com , DarkPurple 的封面获取功能就是解析自此网站
+
 CoverBox 的作者为 Henry Hu
+
+封面获取功频繁使用的时候可能会出现无法获取到封面资源的情况,这是因为网址可能左右流量访问限制问题,等待一段时间后即可
 
 ---
 ##### 预览效果 动画与截图 Preview (2016/10/17)
