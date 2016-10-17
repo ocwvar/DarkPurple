@@ -15,8 +15,13 @@
 - 可根据歌曲名字或歌曲添加时间进行排序
 - UI 设计采用 Material Design
 - 音频处理使用un4seen的 BASS 音频引擎  详情: www.un4seen.com
-- 可在线搜索设置封面数据  数据来源解析自: coverbox.sinaapp.com
-- 可切换简易模式和频谱动画模式 (频谱效果下附)
+- 可在线搜索设置封面数据 (请阅读下方说明)
+- 有两种频谱动画 (下方有预览图)
+- 可自定义并储存您喜欢的均衡器效果
+
+#####关于封面获取功能
+封面数据源自:coverbox.sinaapp.com , DarkPurple 的封面获取功能就是解析自此网站
+CoverBox 的作者为 Henry Hu
 
 ---
 ##### 预览效果 动画与截图 Preview (2016/10/17)
@@ -29,6 +34,9 @@
 ###播放列表功能
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/playlist.gif)
+
+###封面获取功能
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/dc.gif)
 
 ###播放界面与均衡器设置
 
@@ -44,7 +52,7 @@
 
 ---
 
-###通知栏显示效果
+###通知栏显示效果 (机型: Nexus 6 Android 7.0)
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/bignp.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/smallnp.png)
 
