@@ -41,6 +41,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     final public static String TAG = "PlaylistPageBackGround";
 
     View fragmentView;
+    View noPlaylistView;
     RecyclerView recyclerView;
     PlaylistItemAdapter adapter;
     ProgressDialog loadingDialog;
@@ -69,6 +70,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         if (fragmentView != null) {
             adapter = new PlaylistItemAdapter();
             adapter.setOnButtonClickCallback(this);
+            noPlaylistView = fragmentView.findViewById(R.id.noPlaylist);
             recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recycleView);
             recyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext(), LinearLayoutManager.VERTICAL, false));
             recyclerView.setHasFixedSize(true);
@@ -77,6 +79,15 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             loadingDialog = new ProgressDialog(fragmentView.getContext(), R.style.AlertDialog_AppCompat_ProgressDialog);
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
+
+            if (adapter.getItemCount() == 0){
+                recyclerView.setVisibility(View.GONE);
+                noPlaylistView.setVisibility(View.VISIBLE);
+            }else {
+                recyclerView.setVisibility(View.VISIBLE);
+                noPlaylistView.setVisibility(View.GONE);
+            }
+
         }
     }
 
@@ -86,6 +97,13 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     protected void refreshData() {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
+            if (adapter.getItemCount() == 0){
+                recyclerView.setVisibility(View.GONE);
+                noPlaylistView.setVisibility(View.VISIBLE);
+            }else {
+                recyclerView.setVisibility(View.VISIBLE);
+                noPlaylistView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -175,6 +193,15 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         if (adapter != null) {
             Logger.warnning(TAG, "收到播放列表变更信息 , 更新适配器");
             adapter.notifyDataSetChanged();
+
+            if (adapter.getItemCount() == 0){
+                recyclerView.setVisibility(View.GONE);
+                noPlaylistView.setVisibility(View.VISIBLE);
+            }else {
+                recyclerView.setVisibility(View.VISIBLE);
+                noPlaylistView.setVisibility(View.GONE);
+            }
+
         }
     }
 

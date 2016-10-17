@@ -35,6 +35,7 @@
     <string name="title_dialog_error">新名字与当前名字相同</string>
     <string name="title_dialog_error2">新名字与其他播放列表名字相同</string>
     <string name="info_playlist">长按项目进行拖动排序 , 滑动项目进行删除.</string>
+    <string name="empty_playlist">哎呀! 您还没有添加播放列表噢 ~</string>
 
     <!--播放列表项目文字信息-->
     <string name="text_playlist_name">播放列表名称</string>

@@ -215,6 +215,12 @@ public class PlayingActivity
 
         }
 
+        if (slidingListAdapter.getItemCount() == 0){
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
+
         if (AppConfigs.NevBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //设置底部间距高度
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_NEV);
@@ -517,7 +523,7 @@ public class PlayingActivity
                 //Logo点击事件 , 打开和关闭侧滑菜单
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
-                } else {
+                } else if (slidingListAdapter.getItemCount() > 0){
                     drawerLayout.openDrawer(GravityCompat.START);
                 }
                 break;
