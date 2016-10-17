@@ -211,7 +211,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                         if (selectedSongitem != null) {
                             Bundle bundle = new Bundle();
                             bundle.putParcelable("item", selectedSongitem);
-                            DownloadCoverActivity.startBlurActivityForResult(10, Color.argb(100, 0, 0, 0), false, getActivity(), DownloadCoverActivity.class, bundle, 10);
+                            DownloadCoverActivity.startBlurActivityForResultByFragment(10, Color.argb(100, 0, 0, 0), false, AllMusicBackGround.this, DownloadCoverActivity.class, bundle, 10);
                         }
                     }
                 });

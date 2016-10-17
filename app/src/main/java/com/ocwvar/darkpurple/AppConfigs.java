@@ -72,7 +72,7 @@ public class AppConfigs {
     public static boolean isUseSecondStyleSpectrum = false;
 
     //频谱柱状图颜色设置
-    public static int spectrumColor = Color.argb(108, 146, 51, 180);
+    public static int spectrumColor = Color.argb(255, 146, 51, 180);
 
     //频谱柱状宽度
     public static float spectrumWidth = 15.0f;
