@@ -80,14 +80,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
 
-            if (adapter.getItemCount() == 0){
-                recyclerView.setVisibility(View.GONE);
-                noPlaylistView.setVisibility(View.VISIBLE);
-            }else {
-                recyclerView.setVisibility(View.VISIBLE);
-                noPlaylistView.setVisibility(View.GONE);
-            }
-
+            shouldShowNoPlaylistMessage();
         }
     }
 
@@ -97,13 +90,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     protected void refreshData() {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
-            if (adapter.getItemCount() == 0){
-                recyclerView.setVisibility(View.GONE);
-                noPlaylistView.setVisibility(View.VISIBLE);
-            }else {
-                recyclerView.setVisibility(View.VISIBLE);
-                noPlaylistView.setVisibility(View.GONE);
-            }
+            shouldShowNoPlaylistMessage();
         }
     }
 
@@ -121,6 +108,21 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         moreDialog = new WeakReference<>(null);
         selectedPlaylistItem = null;
         selectedPosition = -1;
+    }
+
+    /**
+     * 是否显示  当前无播放列表  消息
+     */
+    private void shouldShowNoPlaylistMessage(){
+        if (adapter != null){
+            if (adapter.getItemCount() == 0){
+                recyclerView.setVisibility(View.GONE);
+                noPlaylistView.setVisibility(View.VISIBLE);
+            }else {
+                recyclerView.setVisibility(View.VISIBLE);
+                noPlaylistView.setVisibility(View.GONE);
+            }
+        }
     }
 
     /**
@@ -193,15 +195,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
         if (adapter != null) {
             Logger.warnning(TAG, "收到播放列表变更信息 , 更新适配器");
             adapter.notifyDataSetChanged();
-
-            if (adapter.getItemCount() == 0){
-                recyclerView.setVisibility(View.GONE);
-                noPlaylistView.setVisibility(View.VISIBLE);
-            }else {
-                recyclerView.setVisibility(View.VISIBLE);
-                noPlaylistView.setVisibility(View.GONE);
-            }
-
+            shouldShowNoPlaylistMessage();
         }
     }
 
@@ -231,13 +225,10 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                                 if (loadingDialog != null) {
                                     loadingDialog.dismiss();
                                 }
-                                //Intent intent = new Intent(getActivity(), PlaylistDetailActivity.class);
-                                //intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                                //startActivityForResult(intent, 9);
 
                                 Bundle bundle = new Bundle();
                                 bundle.putInt("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                                PlaylistDetailActivity.startBlurActivityForResult(10, Color.argb(50, 0, 0, 0), false, getActivity(), PlaylistDetailActivity.class, bundle, 9);
+                                PlaylistDetailActivity.startBlurActivityForResultByFragment(10, Color.argb(50, 0, 0, 0), false, PlaylistPageBackGround.this, PlaylistDetailActivity.class, bundle, 9);
 
                             } else {
                                 //如果获取得到的数据为空 , 则说明这个播放列表无效 , 自动进行移除操作
@@ -262,13 +253,10 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                     }, selectedPlaylistItem);
                 } else {
                     //启动播放列表详情界面
-                    //Intent intent = new Intent(getActivity(),PlaylistDetailActivity.class);
-                    //intent.putExtra("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                    //startActivityForResult(intent,9);
 
                     Bundle bundle = new Bundle();
                     bundle.putInt("position", PlaylistUnits.getInstance().indexOfPlaylistItem(selectedPlaylistItem));
-                    PlaylistDetailActivity.startBlurActivityForResult(10, Color.argb(50, 0, 0, 0), false, getActivity(), PlaylistDetailActivity.class, bundle, 9);
+                    PlaylistDetailActivity.startBlurActivityForResultByFragment(10, Color.argb(50, 0, 0, 0), false, PlaylistPageBackGround.this, PlaylistDetailActivity.class, bundle, 9);
 
                 }
                 moreDialog.get().dismiss();

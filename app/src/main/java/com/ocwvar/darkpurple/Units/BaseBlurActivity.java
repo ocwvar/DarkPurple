@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.View;
 
 import java.lang.ref.WeakReference;
@@ -105,6 +106,41 @@ public abstract class BaseBlurActivity extends BaseActivity {
         if (bundle != null) intent.putExtras(bundle);
         fromActivity.startActivityForResult(intent, requestCode);
     }
+
+    /**
+     * 切换Activity之前,调用这个方法进行模糊效果处理
+     *
+     * @param blurLevel     模糊程度 5 ~ 30
+     * @param overDrawColor 模糊后遮罩颜色    Color.TRANSPARENT:不进行遮罩绘制   默认Color.argb(150,0,0,0)
+     * @param colorless     去除模糊后图像的颜色
+     * @param fromFragment  发起启动请求的Fragment
+     * @param toActivity    要启动的Activity
+     */
+    public static void startBlurActivityForResultByFragment(int blurLevel, int overDrawColor, boolean colorless, final Fragment fromFragment, final Class<? extends Activity> toActivity, Bundle bundle, int requestCode) {
+
+        if (blurLevel < 5) blurLevel = 5;
+        else if (blurLevel > 30) blurLevel = 30;
+
+        BG_BLUR_LEVEL = blurLevel;
+        COLOR_OVERDRAW = overDrawColor;
+        COLORLESS = colorless;
+
+        //清空缓存的图像
+        blurBGContainer.clear();
+        blurBGContainer = new WeakReference<>(null);
+
+        //获取发起请求的Activity的整个View
+        View activityView = fromFragment.getActivity().getWindow().getDecorView();
+
+        //开始绘制模糊背景
+        setupBlur(activityView);
+
+        //启动目标Activity
+        Intent intent = new Intent(fromFragment.getActivity(), toActivity);
+        if (bundle != null) intent.putExtras(bundle);
+        fromFragment.startActivityForResult(intent,requestCode);
+    }
+
 
     /**
      * 开始处理模糊效果

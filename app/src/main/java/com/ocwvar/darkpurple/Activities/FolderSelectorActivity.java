@@ -39,7 +39,6 @@ public class FolderSelectorActivity extends BaseBlurActivity implements MusicFol
     ImageButton addPath;
     EditText editText;
 
-
     @Override
     protected boolean onPreSetup() {
         return true;
