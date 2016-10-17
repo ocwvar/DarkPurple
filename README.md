@@ -19,13 +19,41 @@
 - 可切换简易模式和频谱动画模式 (频谱效果下附)
 
 ---
-##### 预览效果 Preview (2016/8/31)
-##### *因GIF图像体积过大 , 如果无法进行流畅的预览 , 请直接访问图像资源地址进行下载*
-https://github.com/ocwvar/DarkPurple/blob/master/preview.gif
-https://github.com/ocwvar/DarkPurple/blob/master/Spectrum%20Preview.gif
+##### 预览效果 动画与截图 Preview (2016/10/17)
+##### *如果无法进行流畅的预览 , 请直接访问图像资源地址进行下载*
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/preview.gif)
+###音频目录选择
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/Spectrum%20Preview.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/musicfolder.gif)
 
+###播放列表功能
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/playlist.gif)
+
+###播放界面与均衡器设置
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/playing.gif)
+
+###频谱动画 (风格1)
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/sp1.gif)
+
+###频谱动画 (风格2)
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/gifs/sp2.gif)
+
+---
+
+###通知栏显示效果
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/bignp.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/smallnp.png)
+
+###常规设置界面
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/normalsetting.png)
+
+###频谱动画设置界面
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/spsetting.png)
+
+###带导航栏播放界面 (机型: Nexus 6 Android 7.0)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/full.png)
 
