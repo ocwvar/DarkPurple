@@ -23,15 +23,15 @@ import java.util.Set;
  * 播放列表操作类
  */
 public class PlaylistUnits {
-    public static PlaylistUnits playlistUnits;
-    final String playlistSPName = "playlists";
+    private static PlaylistUnits playlistUnits;
+    private final String playlistSPName = "playlists";
     private final String TAG = "PlaylistUnits";
-    public PlaylistLoadingCallbacks loadingCallbacks;
-    public PlaylistChangedCallbacks changedCallbacks;
+    private PlaylistLoadingCallbacks loadingCallbacks;
+    private PlaylistChangedCallbacks changedCallbacks;
     private ArrayList<PlaylistItem> playlists;
     private GetPlaylistAudioesThread audioesThread = null;
 
-    public PlaylistUnits() {
+    private PlaylistUnits() {
         this.playlists = new ArrayList<>();
     }
 
@@ -63,7 +63,7 @@ public class PlaylistUnits {
     /**
      * 从 SharedPreferences 读取播放列表的基本信息
      */
-    public void initSPData() {
+    void initSPData() {
         Logger.warnning(TAG, "正在获取已储存的播放列表基本数据");
         SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
         //先获取所有播放列表的名称
@@ -359,12 +359,12 @@ public class PlaylistUnits {
 
     }
 
-    final class GetPlaylistAudioesThread extends AsyncTask<Integer, Void, ArrayList<SongItem>> {
+    private final class GetPlaylistAudioesThread extends AsyncTask<Integer, Void, ArrayList<SongItem>> {
 
         private PlaylistItem playlistItem;
         private PlaylistLoadingCallbacks callbacks;
 
-        public GetPlaylistAudioesThread(PlaylistItem playlistItem, PlaylistLoadingCallbacks callbacks) {
+        GetPlaylistAudioesThread(PlaylistItem playlistItem, PlaylistLoadingCallbacks callbacks) {
             this.playlistItem = playlistItem;
             this.callbacks = callbacks;
         }

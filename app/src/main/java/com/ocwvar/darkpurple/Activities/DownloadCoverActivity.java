@@ -154,7 +154,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
-                        AppConfigs.ApplicationContext.getSharedPreferences(AppConfigs.SP_ONCE, 0).edit().putBoolean("show_cover_info_dialog", false).commit();
+                        AppConfigs.ApplicationContext.getSharedPreferences(AppConfigs.SP_ONCE, 0).edit().putBoolean("show_cover_info_dialog", false).apply();
                     }
                 });
                 dialog = builder.create();

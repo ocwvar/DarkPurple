@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.LayoutInflater;
@@ -36,7 +37,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
         private LayoutInflater mInflater;
 
-        public HeaderAdapter(Context context, List<Header> objects) {
+        HeaderAdapter(Context context, List<Header> objects) {
             super(context, 0, objects);
             mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }

@@ -34,7 +34,6 @@ public abstract class BaseBlurActivity extends BaseActivity {
     private final static int BG_BLUR_SCALE = 30;
     //背景默认颜色,显示于模糊处理失败或等待模糊处理过程中的Activity背景
     private final static int BG_DEFAULT_COLOR = Color.argb(255, 36, 44, 53);
-    private static final Object locker = new Object();
     //图像模糊程度
     private static int BG_BLUR_LEVEL = 5;
     //绘制的遮罩颜色, Color.TRANSPARENT 则代表不绘制 , 默认 Color.argb(150,0,0,0)

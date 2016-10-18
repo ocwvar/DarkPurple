@@ -99,7 +99,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
         }
     }
 
