@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.ocwvar.darkpurple.Adapters.MusicFolderAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.BaseActivity;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.Logger;
 

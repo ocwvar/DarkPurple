@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -126,7 +125,7 @@ public class AppConfigs {
 
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 
-            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width","15.0"));
+            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width", "15.0"));
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
@@ -170,7 +169,7 @@ public class AppConfigs {
 
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 
-            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width","15.0"));
+            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width", "15.0"));
 
             String value = preferences.getString("scanner_sort_type", "0");
 

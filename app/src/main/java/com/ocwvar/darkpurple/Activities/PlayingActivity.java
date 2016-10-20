@@ -72,7 +72,7 @@ public class PlayingActivity
         extends AppCompatActivity
         implements ViewPager.OnPageChangeListener,
         View.OnClickListener,
-        SlidingListAdapter.OnSlidingMenuClickCallback{
+        SlidingListAdapter.OnSlidingMenuClickCallback {
 
     //音频服务
     AudioService audioService;
@@ -215,9 +215,9 @@ public class PlayingActivity
 
         }
 
-        if (slidingListAdapter.getItemCount() == 0){
+        if (slidingListAdapter.getItemCount() == 0) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }else {
+        } else {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
 
@@ -253,11 +253,10 @@ public class PlayingActivity
 
     /**
      * Activity 被暂停的时候
-     *
+     * <p>
      * 停止接收音频变化广播
      * 停止更新音频时间变化
      * 停止显示频谱动画
-     *
      */
     @Override
     protected void onPause() {
@@ -360,7 +359,7 @@ public class PlayingActivity
                         break;
                 }
                 //执行封面模糊风格处理
-                if (!AppConfigs.isUseSimplePlayingScreen){
+                if (!AppConfigs.isUseSimplePlayingScreen) {
                     generateBlurBackGround();
                 }
                 //如果歌曲播放了 , 就开始更新界面, 更新之前中断旧的更新线程
@@ -481,7 +480,7 @@ public class PlayingActivity
                 switchSpectrumEffect();
                 break;
             case R.id.equalizer:
-                EqualizerActivity.startBlurActivity(5,Color.argb(50,0,0,0),false,PlayingActivity.this,EqualizerActivity.class,null);
+                EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
                 break;
             case R.id.shower_mainButton:
                 //主按钮点击事件
@@ -525,7 +524,7 @@ public class PlayingActivity
                 //Logo点击事件 , 打开和关闭侧滑菜单
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
-                } else if (slidingListAdapter.getItemCount() > 0){
+                } else if (slidingListAdapter.getItemCount() > 0) {
                     drawerLayout.openDrawer(GravityCompat.START);
                 }
                 break;
@@ -587,14 +586,14 @@ public class PlayingActivity
     /**
      * 切换频谱效果开关
      */
-    private void switchSpectrumEffect(){
+    private void switchSpectrumEffect() {
 
         //先让控件不可用
         spectrumSwitch.setEnabled(false);
         spectrumSwitch.setAlpha(0.5f);
 
         //判断用户是要显示还是隐藏动画
-        if (spectrumSwitch.getTag().toString().equals("off")){
+        if (spectrumSwitch.getTag().toString().equals("off")) {
             //显示频谱动画的时候 , 先执行背景淡入动画 , 动画结束后显示SurfaceView , 然后开始绘制频谱动画
             final Animation anim = new AlphaAnimation(0f, 1f);
             anim.setDuration(500);
@@ -627,7 +626,7 @@ public class PlayingActivity
             });
             surfaceViewBG.startAnimation(anim);
             surfaceViewBG.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             //不显示频谱动画的时候 , 隐藏SurfaceView 和 SurfaceView BG , 然后停止动画刷新
             final Animation anim = new AlphaAnimation(1f, 0f);
             anim.setDuration(500);

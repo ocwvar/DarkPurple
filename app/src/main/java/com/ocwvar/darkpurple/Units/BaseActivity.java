@@ -1,14 +1,9 @@
 package com.ocwvar.darkpurple.Units;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Project BlurBGActivityTest
@@ -18,8 +13,6 @@ import java.lang.ref.WeakReference;
  */
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
-
-    private WeakReference<AlertDialog> simpleDialogContainer = new WeakReference<>(null);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,26 +64,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @param holdedView 被点击的控件
      */
     protected abstract boolean onViewLongClick(View holdedView);
-
-    /**
-     * 显示一个简易的对话框
-     *
-     * @param title   对话框标题
-     * @param message 对话框信息
-     */
-    public void showMessageDialog(@NonNull Context activityContext, @NonNull String title, @NonNull String message) {
-        AlertDialog dialog = simpleDialogContainer.get();
-        if (dialog == null || activityContext == dialog.getContext()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-            dialog = builder.create();
-
-            simpleDialogContainer.clear();
-            simpleDialogContainer = new WeakReference<>(dialog);
-        }
-        dialog.setTitle(title);
-        dialog.setMessage(message);
-        dialog.show();
-    }
 
     @Override
     public void onClick(View v) {

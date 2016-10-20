@@ -34,7 +34,7 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void addFragmentPage(Fragment fragment, int index) {
+    private void addFragmentPage(Fragment fragment, int index) {
         if (fragment != null && (fragmentPages.size() == 0 && index >= 0) || (fragmentPages.size() > 0 && index >= 0 && index < fragmentPages.size())) {
             fragmentPages.add(index, fragment);
             notifyDataSetChanged();

@@ -58,11 +58,11 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
     }
 
-    class SlideMusicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class SlideMusicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView title;
 
-        public SlideMusicViewHolder(View itemView) {
+        SlideMusicViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.textView);
 

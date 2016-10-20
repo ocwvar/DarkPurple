@@ -6,10 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.design.widget.Snackbar;
 
 import com.ocwvar.darkpurple.AppConfigs;
-import com.ocwvar.darkpurple.R;
 
 /**
  * Project DarkPurple
@@ -31,7 +29,7 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
         if (AppConfigs.isListenMediaButton && audioService != null) {
             //如果用户允许监听耳机多媒体按钮  同时  音频服务还存活 , 则响应操作
             audioService.onMediaButtonPress(intent);
-        }else if (AppConfigs.isListenMediaButton && audioService == null){
+        } else if (AppConfigs.isListenMediaButton && audioService == null) {
             //如果用户允许监听耳机多媒体按钮  但音频服务已经死亡 , 则重新创建音频对象
             ServiceConnection serviceConnection = new ServiceConnection() {
                 @Override
@@ -57,8 +55,8 @@ public class HeadsetButtonReceiver extends BroadcastReceiver {
                     audioService = null;
                 }
             };
-            AppConfigs.ApplicationContext.startService(new Intent(AppConfigs.ApplicationContext,AudioService.class));
-            AppConfigs.ApplicationContext.bindService(new Intent(AppConfigs.ApplicationContext,AudioService.class),serviceConnection,Context.BIND_AUTO_CREATE);
+            AppConfigs.ApplicationContext.startService(new Intent(AppConfigs.ApplicationContext, AudioService.class));
+            AppConfigs.ApplicationContext.bindService(new Intent(AppConfigs.ApplicationContext, AudioService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
             audioService.onMediaButtonPress(intent);
         }

@@ -96,13 +96,13 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          *
          * @param surfaceHolder 用以更新UI的SurfaceHolder
          */
-        public SPShowerThread(SurfaceHolder surfaceHolder) {
+        SPShowerThread(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
             this.service = ServiceHolder.getInstance().getService();
 
-            if (strokeWidth <= 0){
+            if (strokeWidth <= 0) {
                 strokeWidth = 1.0f;
-            }else if (strokeWidth >= 30.0f){
+            } else if (strokeWidth >= 30.0f) {
                 strokeWidth = 30.0f;
             }
 
@@ -144,9 +144,9 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
             final int pointsCount = points.size();
 
-            int singleAreaCount = -1 , nextOffset = 0 ;
+            int singleAreaCount = -1, nextOffset = 0;
 
-            if (AppConfigs.isUseSecondStyleSpectrum){
+            if (AppConfigs.isUseSecondStyleSpectrum) {
                 singleAreaCount = computeEachArea(points);
             }
 
@@ -164,28 +164,28 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     canvas.drawColor(Color.rgb(36, 44, 54));
 
-                    for (int i = 0,j=0; i < points.size(); i++,j++) {
+                    for (int i = 0, j = 0; i < points.size(); i++, j++) {
 
                         final Point point;
 
                         float fftData;
-                        if (!AppConfigs.isUseSecondStyleSpectrum){
+                        if (!AppConfigs.isUseSecondStyleSpectrum) {
                             //如果当前使用第一种风格 , 则不进行旋转 , 否则进行旋转动画
                             point = points.get(i);
-                        }else if ( i+nextOffset < pointsCount ){
-                            point = points.get(i+nextOffset);
-                        }else {
-                            point = points.get((i+nextOffset) - pointsCount);
+                        } else if (i + nextOffset < pointsCount) {
+                            point = points.get(i + nextOffset);
+                        } else {
+                            point = points.get((i + nextOffset) - pointsCount);
                         }
 
                         try {
-                            if (AppConfigs.isUseSecondStyleSpectrum){
+                            if (AppConfigs.isUseSecondStyleSpectrum) {
                                 //第二种绘制风格
                                 fftData = fftDatas[j];
-                                if (j >= singleAreaCount){
+                                if (j >= singleAreaCount) {
                                     j = 0;
                                 }
-                            }else {
+                            } else {
                                 fftData = fftDatas[i];
                             }
                         } catch (IndexOutOfBoundsException e) {
@@ -203,12 +203,12 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
                     }
 
-                    if (AppConfigs.isUseSecondStyleSpectrum){
+                    if (AppConfigs.isUseSecondStyleSpectrum) {
                         //下一个偏移量增一
-                        if (nextOffset+1 < pointsCount){
+                        if (nextOffset + 1 < pointsCount) {
                             //只在点的数量范围内转一圈偏移度
                             nextOffset += 1;
-                        }else {
+                        } else {
                             //超过了则从头开始偏移
                             nextOffset = 0;
                         }
@@ -236,11 +236,12 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
         /**
          * 计算每个区域的柱状图数量
-         *
+         * <p>
          * 仅用于 显示第二种频谱样式 的状态下
-         * @param points        频谱圆圈切割后的点集合
+         *
+         * @param points 频谱圆圈切割后的点集合
          */
-        private int computeEachArea(ArrayList<Point> points){
+        private int computeEachArea(ArrayList<Point> points) {
 
             //分割区域块数
             final int areaCount = 6;
@@ -363,76 +364,76 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
      */
     final private class Point {
 
-        public float x;
-        public float y;
-        public float angelTemp;
-        public int area;
-        public float angel;
-        public int r;
-        public int centerX, centerY;
+        float x;
+        float y;
+        float angelTemp;
+        int area;
+        float angel;
+        int r;
+        int centerX, centerY;
 
-        public Point(float x, float y) {
+        Point(float x, float y) {
             this.x = x;
             this.y = y;
         }
 
-        public float getX() {
+        float getX() {
             return x;
         }
 
-        public void setX(float x) {
+        void setX(float x) {
             this.x = x;
         }
 
-        public float getY() {
+        float getY() {
             return y;
         }
 
-        public void setY(float y) {
+        void setY(float y) {
             this.y = y;
         }
 
-        public int getArea() {
+        int getArea() {
             return area;
         }
 
-        public void setArea(int area) {
+        void setArea(int area) {
             this.area = area;
         }
 
-        public float getAngel() {
+        float getAngel() {
             return angel;
         }
 
-        public void setAngel(float angel) {
+        void setAngel(float angel) {
             this.angel = angel;
         }
 
-        public int getCenterX() {
+        int getCenterX() {
             return centerX;
         }
 
-        public void setCenterX(int centerX) {
+        void setCenterX(int centerX) {
             this.centerX = centerX;
         }
 
-        public int getCenterY() {
+        int getCenterY() {
             return centerY;
         }
 
-        public void setCenterY(int centerY) {
+        void setCenterY(int centerY) {
             this.centerY = centerY;
         }
 
-        public int getR() {
+        int getR() {
             return r;
         }
 
-        public void setR(int r) {
+        void setR(int r) {
             this.r = r;
         }
 
-        public void setAngelTemp() {
+        void setAngelTemp() {
             switch (area) {
                 case 1:
                     //第一象限
@@ -460,7 +461,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          * @param expansionRate 延伸变量的倍数
          * @return 延伸后的点的 X 轴坐标
          */
-        public float getExpansion_X(float fft, int expansionRate) {
+        float getExpansion_X(float fft, int expansionRate) {
             switch (area) {
                 case 1:
                     //第一象限
@@ -494,7 +495,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          * @param expansionRate 延伸变量的倍数
          * @return 延伸后的点的 Y 轴坐标
          */
-        public float getExpansion_Y(float fft, int expansionRate) {
+        float getExpansion_Y(float fft, int expansionRate) {
             switch (area) {
                 case 1:
                     //第一象限

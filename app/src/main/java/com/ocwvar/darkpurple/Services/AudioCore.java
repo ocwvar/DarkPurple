@@ -30,8 +30,8 @@ public class AudioCore {
     private ArrayList<SongItem> songList;
     private int playingIndex = -1;
 
-    private int[] eqIndexs =     new int[]{0,0,0,0,0,0,0,0,0,0};
-    private int[] eqParameters = new int[]{0,0,0,0,0,0,0,0,0,0};
+    private int[] eqIndexs = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private int[] eqParameters = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     AudioCore(Context applicationContext) {
         this.applicationContext = applicationContext;
@@ -64,48 +64,48 @@ public class AudioCore {
             initCallback(playingChannel);
 
             //设置音频 10个频段的参数
-            eqIndexs[0]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[1]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[2]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[3]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[4]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[5]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[6]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[7]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[8]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
-            eqIndexs[9]=BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[0] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[1] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[2] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[3] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[4] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[5] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[6] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[7] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[8] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
+            eqIndexs[9] = BASS.BASS_ChannelSetFX(playingChannel, BASS.BASS_FX_DX8_PARAMEQ, 0);
 
-            BASS.BASS_DX8_PARAMEQ p=new BASS.BASS_DX8_PARAMEQ();
-            p.fBandwidth=18;
-            p.fCenter=31.25f;
-            p.fGain=eqParameters[0];
+            BASS.BASS_DX8_PARAMEQ p = new BASS.BASS_DX8_PARAMEQ();
+            p.fBandwidth = 18;
+            p.fCenter = 31.25f;
+            p.fGain = eqParameters[0];
             BASS.BASS_FXSetParameters(eqIndexs[0], p);
-            p.fCenter=62.5f;
-            p.fGain=eqParameters[1];
+            p.fCenter = 62.5f;
+            p.fGain = eqParameters[1];
             BASS.BASS_FXSetParameters(eqIndexs[1], p);
-            p.fCenter=125;
-            p.fGain=eqParameters[2];
+            p.fCenter = 125;
+            p.fGain = eqParameters[2];
             BASS.BASS_FXSetParameters(eqIndexs[2], p);
-            p.fCenter=250;
-            p.fGain=eqParameters[3];
+            p.fCenter = 250;
+            p.fGain = eqParameters[3];
             BASS.BASS_FXSetParameters(eqIndexs[3], p);
-            p.fCenter=500;
-            p.fGain=eqParameters[4];
+            p.fCenter = 500;
+            p.fGain = eqParameters[4];
             BASS.BASS_FXSetParameters(eqIndexs[4], p);
-            p.fCenter=1000;
-            p.fGain=eqParameters[5];
+            p.fCenter = 1000;
+            p.fGain = eqParameters[5];
             BASS.BASS_FXSetParameters(eqIndexs[5], p);
-            p.fCenter=2000;
-            p.fGain=eqParameters[6];
+            p.fCenter = 2000;
+            p.fGain = eqParameters[6];
             BASS.BASS_FXSetParameters(eqIndexs[6], p);
-            p.fCenter=4000;
-            p.fGain=eqParameters[7];
+            p.fCenter = 4000;
+            p.fGain = eqParameters[7];
             BASS.BASS_FXSetParameters(eqIndexs[7], p);
-            p.fCenter=8000;
-            p.fGain=eqParameters[8];
+            p.fCenter = 8000;
+            p.fGain = eqParameters[8];
             BASS.BASS_FXSetParameters(eqIndexs[8], p);
-            p.fCenter=16000;
-            p.fGain=eqParameters[9];
+            p.fCenter = 16000;
+            p.fGain = eqParameters[9];
             BASS.BASS_FXSetParameters(eqIndexs[9], p);
             Logger.warnning(TAG, "音频资源已加载");
             if (onlyInit) {
@@ -121,41 +121,41 @@ public class AudioCore {
     /**
      * 获取均衡器频段设置
      *
-     * @return  频段参数
+     * @return 频段参数
      */
-    int[] getEqParameters(){
+    int[] getEqParameters() {
         return this.eqParameters;
     }
 
     /**
      * 更改均衡器频段参数
      *
-     * @param eqParameter    均衡器参数 -10 ~ 10
-     * @param eqIndex   调节位置
+     * @param eqParameter 均衡器参数 -10 ~ 10
+     * @param eqIndex     调节位置
      * @return 执行结果
      */
-    boolean updateEqParameter(int eqParameter , int eqIndex){
+    boolean updateEqParameter(int eqParameter, int eqIndex) {
         this.eqParameters[eqIndex] = eqParameter;
         BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
-        BASS.BASS_FXGetParameters(eqIndexs[eqIndex],eq);
+        BASS.BASS_FXGetParameters(eqIndexs[eqIndex], eq);
         eq.fGain = eqParameter;
 
         EqualizerUnits.getInstance().saveLastTimeEqualizer(this.eqParameters);
 
-        return BASS.BASS_FXSetParameters(eqIndexs[eqIndex],eq);
+        return BASS.BASS_FXSetParameters(eqIndexs[eqIndex], eq);
     }
 
     /**
      * 重置均衡器设置
      */
-    void resetEqualizer(){
+    void resetEqualizer() {
 
-        this.eqParameters = new int[]{0,0,0,0,0,0,0,0,0,0};
+        this.eqParameters = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i < 10; i++) {
             BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
-            BASS.BASS_FXGetParameters(eqIndexs[i],eq);
+            BASS.BASS_FXGetParameters(eqIndexs[i], eq);
             eq.fGain = 0;
-            BASS.BASS_FXSetParameters(eqIndexs[i],eq);
+            BASS.BASS_FXSetParameters(eqIndexs[i], eq);
         }
 
     }

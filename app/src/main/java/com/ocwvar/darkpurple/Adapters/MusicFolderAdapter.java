@@ -96,11 +96,11 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
         void onAddedFailed();
     }
 
-    class PathViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    private class PathViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
         TextView textView;
 
-        public PathViewHolder(View itemView) {
+        PathViewHolder(View itemView) {
             super(itemView);
             itemView.setOnLongClickListener(this);
             textView = (TextView) itemView.findViewById(R.id.textView);

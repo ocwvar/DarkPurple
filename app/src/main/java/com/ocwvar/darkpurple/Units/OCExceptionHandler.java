@@ -139,6 +139,7 @@ public class OCExceptionHandler extends Application implements Thread.UncaughtEx
      * @param throwable 异常
      * @return 执行结果
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private boolean createLogs(Throwable throwable) {
         if (throwable == null || !SAVE_LOGS) {
             return false;

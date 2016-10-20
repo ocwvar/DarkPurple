@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
         android:src="@drawable/ic_action_favorite"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/card_backgroundColor_Dark"

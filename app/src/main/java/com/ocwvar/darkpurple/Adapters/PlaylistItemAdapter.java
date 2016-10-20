@@ -80,14 +80,14 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
 
     }
 
-    class PlaylistItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class PlaylistItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         View backGround;
         SquareHightImageView cover;
         ImageButton more, play;
         TextView title, count;
 
-        public PlaylistItemViewHolder(View itemView) {
+        PlaylistItemViewHolder(View itemView) {
             super(itemView);
             backGround = itemView.findViewById(R.id.bg);
             cover = (SquareHightImageView) itemView.findViewById(R.id.imageView_cover);

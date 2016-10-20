@@ -27,11 +27,12 @@ import java.util.ArrayList;
  */
 public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
-    final ArrayList<CoverPreviewBean> list;
-    final Drawable loadingRes;
+    private final ArrayList<CoverPreviewBean> list;
+    private final Drawable loadingRes;
 
     private OnPreviewClickCallback callback;
 
+    @SuppressWarnings("deprecation")
     public CoverPreviewAdapter() {
         list = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= 21) {
@@ -96,9 +97,9 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
 
     }
 
-    class CoverReCoverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class CoverReCoverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public CoverReCoverViewHolder(View itemView) {
+        CoverReCoverViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
         }
@@ -111,12 +112,12 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    class CoverPreviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class CoverPreviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView cover;
         TextView album;
 
-        public CoverPreviewViewHolder(View itemView) {
+        CoverPreviewViewHolder(View itemView) {
             super(itemView);
             cover = (ImageView) itemView.findViewById(R.id.textView_cover_preview_image);
             album = (TextView) itemView.findViewById(R.id.textView_cover_preview_name);

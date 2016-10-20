@@ -193,7 +193,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
             //播放音频
             ServiceHolder.getInstance().getService().play(this.selectPlaylistItem.getPlaylist(), position);
             //转跳到播放界面
-            if (AppConfigs.isAutoSwitchPlaying){
+            if (AppConfigs.isAutoSwitchPlaying) {
                 startActivity(new Intent(PlaylistDetailActivity.this, PlayingActivity.class));
                 finish();
             }

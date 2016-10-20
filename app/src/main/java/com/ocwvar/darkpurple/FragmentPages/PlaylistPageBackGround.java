@@ -113,12 +113,12 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     /**
      * 是否显示  当前无播放列表  消息
      */
-    private void shouldShowNoPlaylistMessage(){
-        if (adapter != null){
-            if (adapter.getItemCount() == 0){
+    private void shouldShowNoPlaylistMessage() {
+        if (adapter != null) {
+            if (adapter.getItemCount() == 0) {
                 recyclerView.setVisibility(View.GONE);
                 noPlaylistView.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 noPlaylistView.setVisibility(View.GONE);
             }
@@ -178,7 +178,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             }, playlistItem);
         } else {
             ServiceHolder.getInstance().getService().play(playlistItem.getPlaylist(), 0);
-            if (AppConfigs.isAutoSwitchPlaying){
+            if (AppConfigs.isAutoSwitchPlaying) {
                 startActivity(new Intent(getActivity(), PlayingActivity.class));
             }
         }

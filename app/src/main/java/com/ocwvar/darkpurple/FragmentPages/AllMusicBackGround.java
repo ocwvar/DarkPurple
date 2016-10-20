@@ -1,6 +1,7 @@
 package com.ocwvar.darkpurple.FragmentPages;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -185,6 +186,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * <p>
      * 包括其中的点击事件处理
      */
+    @SuppressLint("InflateParams")
     private void showMoreDialog() {
         if (moreDialog == null || moreDialog.get() == null) {
             View itemView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_allmusic_more, null);
@@ -348,7 +350,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             if (ServiceHolder.getInstance().getService().play(songList, position)) {
                 //如果播放成功 , 则发送广播和跳转界面
                 getActivity().sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                if (AppConfigs.isAutoSwitchPlaying){
+                if (AppConfigs.isAutoSwitchPlaying) {
                     getActivity().startActivity(new Intent(getActivity(), PlayingActivity.class));
                 }
             } else {
@@ -382,7 +384,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     public void onOptionClick() {
         if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && AppConfigs.ApplicationContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             //如果当前系统不是Android6.0或者已经授予文件读写权限 , 才打开歌曲文件夹设置
-            FolderSelectorActivity.startBlurActivityForResultByFragment(5,Color.argb(100,0,0,0),false,AllMusicBackGround.this,FolderSelectorActivity.class,null,9);
+            FolderSelectorActivity.startBlurActivityForResultByFragment(5, Color.argb(100, 0, 0, 0), false, AllMusicBackGround.this, FolderSelectorActivity.class, null, 9);
         } else {
             //如果权限不正常 , 则提示错误
             Snackbar.make(fragmentView, R.string.error_noPermission, Snackbar.LENGTH_SHORT).show();
@@ -477,6 +479,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         ArrayAdapter<String> stringArrayAdapter;
         WeakReference<AlertDialog> addToDialog = new WeakReference<>(null);
 
+        @SuppressLint("InflateParams")
         private void createItemView() {
             if (this.itemView == null) {
                 this.itemView = LayoutInflater.from(fragmentView.getContext()).inflate(R.layout.dialog_addto_playlist, null);

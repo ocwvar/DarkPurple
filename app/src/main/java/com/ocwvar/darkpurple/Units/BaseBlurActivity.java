@@ -137,7 +137,7 @@ public abstract class BaseBlurActivity extends BaseActivity {
         //启动目标Activity
         Intent intent = new Intent(fromFragment.getActivity(), toActivity);
         if (bundle != null) intent.putExtras(bundle);
-        fromFragment.startActivityForResult(intent,requestCode);
+        fromFragment.startActivityForResult(intent, requestCode);
     }
 
 
@@ -146,6 +146,7 @@ public abstract class BaseBlurActivity extends BaseActivity {
      *
      * @param sourceView 提供模糊图像的源View
      */
+    @SuppressWarnings("deprecation")
     private static void setupBlur(View sourceView) {
 
         sourceView.setDrawingCacheEnabled(true);
@@ -436,7 +437,7 @@ public abstract class BaseBlurActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        if (Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             //设置窗体标题栏透明
             getWindow().setStatusBarColor(Color.TRANSPARENT);
             getWindow().setNavigationBarColor(Color.TRANSPARENT);

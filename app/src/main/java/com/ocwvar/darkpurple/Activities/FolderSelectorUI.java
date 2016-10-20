@@ -235,7 +235,7 @@ public class FolderSelectorUI extends BaseBlurActivity implements FolderSelector
         private File folder;
         private OnCompletedCallback callback;
 
-        public FetchFolderTask(@NonNull File folder, OnCompletedCallback callback) {
+        FetchFolderTask(@NonNull File folder, OnCompletedCallback callback) {
             this.callback = callback;
             this.folder = folder;
             this.fileFilter = new FileFilter() {

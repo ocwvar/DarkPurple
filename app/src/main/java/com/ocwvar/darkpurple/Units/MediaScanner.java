@@ -50,7 +50,7 @@ public class MediaScanner {
     //数据是否更新标识
     private boolean isUpdated = false;
 
-    public MediaScanner() {
+    private MediaScanner() {
         threadExecutor = new OCThreadExecutor(1, "Scanner");
         handler = new Handler(Looper.getMainLooper());
         cachedList = new ArrayList<>();

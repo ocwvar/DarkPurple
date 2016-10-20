@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 public class AllMusicAdapter extends RecyclerView.Adapter {
 
-    boolean isMuiltSelecting = false;
+    private boolean isMuiltSelecting = false;
     private ArrayList<SongItem> checkedItems;
     private ArrayList<SongItem> arrayList;
     private Drawable defaultCover;
@@ -204,14 +204,14 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         void onOptionClick();
     }
 
-    class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    private class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         SquareWidthImageView cover;
         ImageView marker;
         TextView title;
         TextView artist;
 
-        public MusicItemViewHolder(View itemView) {
+        MusicItemViewHolder(View itemView) {
             super(itemView);
             cover = (SquareWidthImageView) itemView.findViewById(R.id.item_cover);
             marker = (ImageView) itemView.findViewById(R.id.item_selector_marker);
@@ -254,9 +254,9 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
     }
 
-    class OptionItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class OptionItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public OptionItemViewHolder(View itemView) {
+        OptionItemViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
         }

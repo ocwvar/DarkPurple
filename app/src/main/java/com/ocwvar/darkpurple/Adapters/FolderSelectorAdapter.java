@@ -84,11 +84,11 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
 
     }
 
-    class FolderItemViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
+    private class FolderItemViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
 
         TextView name;
 
-        public FolderItemViewHolder(View itemView) {
+        FolderItemViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.textView);
             itemView.setOnClickListener(this);

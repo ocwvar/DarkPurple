@@ -99,6 +99,7 @@ public class AudioService extends Service {
      * <p>
      * 创建音频引擎对象 和 状态栏广播接收器对象 注册耳机拔出监听
      */
+    @SuppressWarnings("deprecation")
     @Override
     public void onCreate() {
         super.onCreate();
@@ -137,6 +138,7 @@ public class AudioService extends Service {
      * 结束服务常驻后台
      * 反注册状态栏操作监听器
      */
+    @SuppressWarnings("deprecation")
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -305,6 +307,7 @@ public class AudioService extends Service {
     /**
      * 开始创建 Notification
      */
+    @SuppressWarnings("deprecation")
     private void initNotification() {
         //获取提示管理器
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -468,27 +471,27 @@ public class AudioService extends Service {
     /**
      * 获取均衡器频段设置
      *
-     * @return  频段参数
+     * @return 频段参数
      */
-    public int[] getEqParameters(){
+    public int[] getEqParameters() {
         return core.getEqParameters();
     }
 
     /**
      * 更改均衡器频段参数
      *
-     * @param eqParameter    均衡器参数 -10 ~ 10
-     * @param eqIndex   调节位置
+     * @param eqParameter 均衡器参数 -10 ~ 10
+     * @param eqIndex     调节位置
      * @return 执行结果
      */
-    public boolean updateEqParameter(int eqParameter , int eqIndex){
+    public boolean updateEqParameter(int eqParameter, int eqIndex) {
         return core.updateEqParameter(eqParameter, eqIndex);
     }
 
     /**
      * 重置均衡器设置
      */
-    public void resetEqualizer(){
+    public void resetEqualizer() {
         core.resetEqualizer();
     }
 

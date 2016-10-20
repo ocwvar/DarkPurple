@@ -5,13 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
-
-import java.util.Collections;
 
 /**
  * Project DarkPurple
@@ -26,7 +23,7 @@ public final class BezierView extends View {
     final int totalLevel = 20;
     final int totalEQCounts = 10;
     int[] currentLevels = new int[totalEQCounts];
-    float[] pointYArray = new float[totalLevel+1];
+    float[] pointYArray = new float[totalLevel + 1];
     float[] pointXArray = new float[totalEQCounts];
 
     Paint paint;
@@ -56,7 +53,7 @@ public final class BezierView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(widthMeasureSpec,heightMeasureSpec);
+        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
 
         final float viewHeight = getMeasuredHeight();
         final float viewWidth = getMeasuredWidth();
@@ -64,22 +61,22 @@ public final class BezierView extends View {
         final float eachHeight = viewHeight / totalLevel;
         final float eachWidth = viewWidth / totalEQCounts;
 
-        for (int i = 0; i < totalLevel+1; i++) {
+        for (int i = 0; i < totalLevel + 1; i++) {
             pointYArray[i] = getMeasuredHeight() - eachHeight * i;
         }
 
-        for (int i = 0; i < totalEQCounts-1; i++) {
+        for (int i = 0; i < totalEQCounts - 1; i++) {
             pointXArray[i] = eachWidth * i;
         }
 
-        pointXArray[totalEQCounts-1] = getMeasuredWidth();
+        pointXArray[totalEQCounts - 1] = getMeasuredWidth();
 
     }
 
     /**
      * 预设置
      */
-    private void preSetup(){
+    private void preSetup() {
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
@@ -92,19 +89,21 @@ public final class BezierView extends View {
 
     /**
      * 设置均衡器等级
-     * @param eqIndex   均衡器位置
-     * @param level 均衡器参数等级
+     *
+     * @param eqIndex 均衡器位置
+     * @param level   均衡器参数等级
      */
-    public void setLevel(int eqIndex,int level){
+    public void setLevel(int eqIndex, int level) {
         currentLevels[eqIndex] = level;
         invalidate();
     }
 
     /**
      * 一次性设置所有均衡器等级
+     *
      * @param levels 所有均衡器参数等级
      */
-    public void setCurrentLevels(int[] levels){
+    public void setCurrentLevels(int[] levels) {
         for (int i = 0; i < levels.length; i++) {
             this.currentLevels[i] = levels[i] + 10;
         }
@@ -114,7 +113,7 @@ public final class BezierView extends View {
     /**
      * 重置均衡器曲线
      */
-    public void resetLevel(){
+    public void resetLevel() {
         for (int i = 0; i < totalEQCounts; i++) {
             this.currentLevels[i] = 10;
         }
@@ -132,36 +131,36 @@ public final class BezierView extends View {
         int currentLevel = currentLevels[0];
         float nextStartPointYTemp = pointYArray[currentLevel];
 
-        for (int i = 0; i < totalEQCounts-1; i+=3) {
+        for (int i = 0; i < totalEQCounts - 1; i += 3) {
 
             final float startX = pointXArray[i];
 
-            path.moveTo(startX,nextStartPointYTemp);
+            path.moveTo(startX, nextStartPointYTemp);
 
-            final float pointX1 = pointXArray[i+1];
-            currentLevel = currentLevels[i+1];
+            final float pointX1 = pointXArray[i + 1];
+            currentLevel = currentLevels[i + 1];
             final float pointY1 = pointYArray[currentLevel];
 
-            final float pointX2 = pointXArray[i+2];
-            currentLevel = currentLevels[i+2];
+            final float pointX2 = pointXArray[i + 2];
+            currentLevel = currentLevels[i + 2];
             final float pointY2 = pointYArray[currentLevel];
 
-            final float pointX3 = pointXArray[i+3];;
+            final float pointX3 = pointXArray[i + 3];
+            ;
             final float pointY3;
 
-            if (i+3 != 9){
-                pointY3 = ((pointYArray[currentLevels[i+2]])+(pointYArray[currentLevels[i+3]])+(pointYArray[currentLevels[i+4]]))/3;
-            }else {
-                currentLevel = currentLevels[i+3];
+            if (i + 3 != 9) {
+                pointY3 = ((pointYArray[currentLevels[i + 2]]) + (pointYArray[currentLevels[i + 3]]) + (pointYArray[currentLevels[i + 4]])) / 3;
+            } else {
+                currentLevel = currentLevels[i + 3];
                 pointY3 = pointYArray[currentLevel];
             }
 
             nextStartPointYTemp = pointY3;
 
-            path.cubicTo(pointX1,pointY1,pointX2,pointY2,pointX3,pointY3);
-            canvas.drawPath(path,paint);
+            path.cubicTo(pointX1, pointY1, pointX2, pointY2, pointX3, pointY3);
+            canvas.drawPath(path, paint);
         }
-
 
 
     }

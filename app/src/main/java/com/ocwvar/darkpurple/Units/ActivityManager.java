@@ -17,7 +17,7 @@ public class ActivityManager {
     private static ActivityManager manager;
     private List<Activity> activityList;
 
-    public ActivityManager() {
+    private ActivityManager() {
         this.activityList = new ArrayList<>();
     }
 

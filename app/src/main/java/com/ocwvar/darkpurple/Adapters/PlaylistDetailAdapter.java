@@ -97,9 +97,9 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
         @Override
         public void onClick(View view) {
             if (clickCallback != null) {
-                if (playButton.getTag().equals("Available")){
+                if (playButton.getTag().equals("Available")) {
                     clickCallback.onPlayButtonClick(getAdapterPosition());
-                }else {
+                } else {
                     clickCallback.onPlayButtonClick(-1);
                 }
             }

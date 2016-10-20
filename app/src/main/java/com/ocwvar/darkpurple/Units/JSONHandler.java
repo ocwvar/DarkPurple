@@ -30,7 +30,7 @@ import java.util.ArrayList;
 public class JSONHandler {
 
     //数据储存位置
-    public final static String folderPath = AppConfigs.JsonFilePath + "Playlist/";
+    final static String folderPath = AppConfigs.JsonFilePath + "Playlist/";
 
     /**
      * 以Json方式储存播放列表数据
@@ -40,7 +40,7 @@ public class JSONHandler {
      * @return 执行结果
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static boolean savePlaylist(String name, ArrayList<SongItem> playlist) {
+    static boolean savePlaylist(String name, ArrayList<SongItem> playlist) {
         final String TAG = "JSON播放列表  储存";
         if (TextUtils.isEmpty(name) || playlist == null || playlist.size() == 0) {
             //如果是无效数据 , 则执行失败

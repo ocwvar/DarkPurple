@@ -104,11 +104,7 @@ public class AllMusicFragment extends Fragment {
     }
 
     public boolean onActivityKeyDown(int keyCode, KeyEvent event) {
-        if (workFragment == null) {
-            return false;
-        } else {
-            return workFragment.onActivityKeyDown(keyCode, event);
-        }
+        return workFragment != null && workFragment.onActivityKeyDown(keyCode, event);
     }
 
 }

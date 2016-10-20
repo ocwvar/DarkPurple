@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
 public class CoverImage2File {
 
     private static final String TAG = "CoverImage2File";
-    public static CoverImage2File imageCacher;
+    private static CoverImage2File imageCacher;
 
     public static CoverImage2File getInstance() {
         if (imageCacher == null) {
@@ -33,11 +33,12 @@ public class CoverImage2File {
      * @param audioPath 音频的路径 , 用作唯一标识
      * @return 缓存结果
      */
-    public boolean makeImage2File(Bitmap bitmap, String audioPath) {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    boolean makeImage2File(Bitmap bitmap, String audioPath) {
         if (bitmap == null) {
             Logger.error(TAG, "图像文件无效");
             return false;
-        }else if (!new File(AppConfigs.ImageCacheFolder).exists()){
+        } else if (!new File(AppConfigs.ImageCacheFolder).exists()) {
             //如果缓存文件夹不存在 , 则重新创建
             new File(AppConfigs.ImageCacheFolder).mkdirs();
         }
@@ -66,7 +67,7 @@ public class CoverImage2File {
             }
             fileOutputStream = new FileOutputStream(imageFile, false);
         } catch (Exception e) {
-            Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败. 原因: "+e.getCause());
+            Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败. 原因: " + e.getCause());
             imageFile = null;
             return false;
         }
@@ -140,6 +141,7 @@ public class CoverImage2File {
      * @param audioPath 音频路径
      * @return 是否缓存
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean isAlreadyCached(String audioPath) {
         File imageFile = new File(getNormalCachePath(audioPath));
         if (imageFile.exists() && imageFile.length() <= 0) {

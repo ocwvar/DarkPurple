@@ -1,12 +1,9 @@
 package com.ocwvar.darkpurple.Adapters;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +18,6 @@ import java.util.List;
  * Created by 区成伟
  * On 2016/10/14 14:46
  * File Location com.ocwvar.darkpurple.Adapters
- *
  */
 
 public final class EqualizerSavedAdapter extends RecyclerView.Adapter {
@@ -41,17 +37,17 @@ public final class EqualizerSavedAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == 0){
-            return new ItemOptionViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_equalizer_option,parent,false));
-        }else {
-            return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_equalizer_saved,parent,false));
+        if (viewType == 0) {
+            return new ItemOptionViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_equalizer_option, parent, false));
+        } else {
+            return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_equalizer_saved, parent, false));
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position > 0 ){
-            final String name = names.get(position-1);
+        if (position > 0) {
+            final String name = names.get(position - 1);
             ItemViewHolder viewHolder = (ItemViewHolder) holder;
             viewHolder.title.setText(name);
         }
@@ -59,39 +55,49 @@ public final class EqualizerSavedAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return names.size()+1;
+        return names.size() + 1;
     }
 
-    public void putNames(HashMap<String,int[]> hashMap){
+    public void putNames(HashMap<String, int[]> hashMap) {
         for (String s : hashMap.keySet()) {
             names.add(s);
         }
         notifyDataSetChanged();
     }
 
-    public void putName(String name){
-        names.add(0,name);
+    public void putName(String name) {
+        names.add(0, name);
         notifyItemInserted(0);
     }
 
-    public void remove(String name){
+    public void remove(String name) {
         final int position = names.indexOf(name);
-        if (position >= 0){
+        if (position >= 0) {
             names.remove(position);
             notifyItemRemoved(position);
         }
     }
 
-    private final class ItemOptionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public interface OnEqualizerItemClickCallback {
 
-        public ItemOptionViewHolder(View itemView) {
+        void onAddItemClick();
+
+        void onItemClick(String name);
+
+        void onItemRemoveClick(String name);
+
+    }
+
+    private final class ItemOptionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        ItemOptionViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            if (callback != null){
+            if (callback != null) {
                 callback.onAddItemClick();
             }
         }
@@ -105,35 +111,25 @@ public final class EqualizerSavedAdapter extends RecyclerView.Adapter {
 
         ItemViewHolder(View itemView) {
             super(itemView);
-            title = (TextView)itemView.findViewById(R.id.item_equalizer_saved);
-            delete = (ImageView)itemView.findViewById(R.id.item_equalizer_remove);
+            title = (TextView) itemView.findViewById(R.id.item_equalizer_saved);
+            delete = (ImageView) itemView.findViewById(R.id.item_equalizer_remove);
             delete.setOnClickListener(this);
             title.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            if (callback != null){
-                switch (v.getId()){
+            if (callback != null) {
+                switch (v.getId()) {
                     case R.id.item_equalizer_saved:
-                        callback.onItemClick(names.get(getAdapterPosition()-1));
+                        callback.onItemClick(names.get(getAdapterPosition() - 1));
                         break;
                     case R.id.item_equalizer_remove:
-                        callback.onItemRemoveClick(names.get(getAdapterPosition()-1));
+                        callback.onItemRemoveClick(names.get(getAdapterPosition() - 1));
                         break;
                 }
             }
         }
-
-    }
-
-    public interface OnEqualizerItemClickCallback{
-
-        void onAddItemClick();
-
-        void onItemClick(String name);
-
-        void onItemRemoveClick(String name);
 
     }
 

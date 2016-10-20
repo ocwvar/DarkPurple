@@ -5,12 +5,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,50 +24,8 @@ import java.util.List;
  */
 public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
-    private AppCompatDelegate mDelegate;
-
     List<Header> mCopyHeaders;
-
-    private static class HeaderAdapter extends ArrayAdapter<Header> {
-        private static class HeaderViewHolder {
-            TextView title;
-        }
-
-        private LayoutInflater mInflater;
-
-        HeaderAdapter(Context context, List<Header> objects) {
-            super(context, 0, objects);
-            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            HeaderViewHolder holder;
-            View view;
-
-            if (convertView == null) {
-                view = mInflater.inflate(R.layout.preference_header_layout,
-                        parent, false);
-                /*
-                view = mInflater.inflate(R.layout.preference_header_item,
-                        parent, false);
-                */
-
-                holder = new HeaderViewHolder();
-                holder.title = (TextView) view.findViewById(R.id.cus_preference_header_title);
-                view.setTag(holder);
-            } else {
-                view = convertView;
-                holder = (HeaderViewHolder) view.getTag();
-            }
-
-            // All view fields must be updated every time, because the view may be recycled
-            Header header = getItem(position);
-            holder.title.setText(header.getTitle(getContext().getResources()));
-
-            return view;
-        }
-    }
+    private AppCompatDelegate mDelegate;
 
     @Override
     public void loadHeadersFromResource(int resid, List<Header> target) {
@@ -161,5 +117,46 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
             mDelegate = AppCompatDelegate.create(this, null);
         }
         return mDelegate;
+    }
+
+    private static class HeaderAdapter extends ArrayAdapter<Header> {
+        private LayoutInflater mInflater;
+
+        HeaderAdapter(Context context, List<Header> objects) {
+            super(context, 0, objects);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            HeaderViewHolder holder;
+            View view;
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.preference_header_layout,
+                        parent, false);
+                /*
+                view = mInflater.inflate(R.layout.preference_header_item,
+                        parent, false);
+                */
+
+                holder = new HeaderViewHolder();
+                holder.title = (TextView) view.findViewById(R.id.cus_preference_header_title);
+                view.setTag(holder);
+            } else {
+                view = convertView;
+                holder = (HeaderViewHolder) view.getTag();
+            }
+
+            // All view fields must be updated every time, because the view may be recycled
+            Header header = getItem(position);
+            holder.title.setText(header.getTitle(getContext().getResources()));
+
+            return view;
+        }
+
+        private static class HeaderViewHolder {
+            TextView title;
+        }
     }
 }

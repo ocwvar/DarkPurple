@@ -145,6 +145,7 @@ public class PlaylistUnits {
      *
      * @param playlistItem 播放列表对象
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CommitPrefEdits")
     public void removePlaylist(@NonNull PlaylistItem playlistItem) {
         SharedPreferences sharedPreferences = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
