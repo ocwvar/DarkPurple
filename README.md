@@ -26,7 +26,7 @@ CoverBox 的作者为 Henry Hu
 封面获取功频繁使用的时候可能会出现无法获取到封面资源的情况,这是因为网址可能左右流量访问限制问题,等待一段时间后即可
 
 ---
-##### 预览效果 动画与截图 Preview (2016/10/17)
+##### 预览效果 动画与截图 Preview (2016/10/20)
 ##### *如果无法进行流畅的预览 , 请直接访问图像资源地址进行下载*
 
 ###音频目录选择
@@ -59,7 +59,8 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/smallnp.png)
 
 ###常规设置界面
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/normalsetting.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/normalsetting1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/normalsetting2.png)
 
 ###频谱动画设置界面
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/spsetting.png)
