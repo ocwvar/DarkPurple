@@ -71,6 +71,12 @@ public class AppConfigs {
     //是否使用第二种风格的频谱
     public static boolean isUseSecondStyleSpectrum = false;
 
+    //是否使用简易模式的播放界面
+    public static boolean isUseSimplePlayingScreen = false;
+
+    //是否自动跳转到播放界面
+    public static boolean isAutoSwitchPlaying = true;
+
     //频谱柱状图颜色设置
     public static int spectrumColor = Color.argb(255, 146, 51, 180);
 
@@ -114,6 +120,10 @@ public class AppConfigs {
 
             isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
 
+            isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
+
+            isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
+
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 
             spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width","15.0"));
@@ -132,10 +142,6 @@ public class AppConfigs {
                     SortType = MediaScanner.SortType.ByName;
                     break;
             }
-
-            System.out.println(new File(ImageCacheFolder).mkdirs());
-            System.out.println(new File(JsonFilePath).mkdirs());
-            System.out.println(new File(DownloadCoversFolder).mkdirs());
 
         } else {
             Logger.error("初始化全局变量", "ApplicationContext 为空,无法读取数据");
@@ -157,6 +163,10 @@ public class AppConfigs {
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
 
             isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
+
+            isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
+
+            isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
             spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
 

@@ -348,7 +348,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             if (ServiceHolder.getInstance().getService().play(songList, position)) {
                 //如果播放成功 , 则发送广播和跳转界面
                 getActivity().sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                getActivity().startActivity(new Intent(getActivity(), PlayingActivity.class));
+                if (AppConfigs.isAutoSwitchPlaying){
+                    getActivity().startActivity(new Intent(getActivity(), PlayingActivity.class));
+                }
             } else {
                 //如果播放失败 , 则说明这个音频不合法 , 从列表中移除
                 allMusicAdapter.removeItem(position);

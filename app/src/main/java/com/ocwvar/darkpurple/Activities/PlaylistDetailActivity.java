@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.ocwvar.darkpurple.Adapters.PlaylistDetailAdapter;
+import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
@@ -192,8 +193,10 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
             //播放音频
             ServiceHolder.getInstance().getService().play(this.selectPlaylistItem.getPlaylist(), position);
             //转跳到播放界面
-            startActivity(new Intent(PlaylistDetailActivity.this, PlayingActivity.class));
-            finish();
+            if (AppConfigs.isAutoSwitchPlaying){
+                startActivity(new Intent(PlaylistDetailActivity.this, PlayingActivity.class));
+                finish();
+            }
         }
     }
 

@@ -162,7 +162,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
                     //清屏
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                    canvas.drawColor(Color.rgb(26, 44, 54));
+                    canvas.drawColor(Color.rgb(36, 44, 54));
 
                     for (int i = 0,j=0; i < points.size(); i++,j++) {
 

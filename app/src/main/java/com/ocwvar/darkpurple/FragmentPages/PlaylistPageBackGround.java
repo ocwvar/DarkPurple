@@ -178,7 +178,9 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             }, playlistItem);
         } else {
             ServiceHolder.getInstance().getService().play(playlistItem.getPlaylist(), 0);
-            startActivity(new Intent(getActivity(), PlayingActivity.class));
+            if (AppConfigs.isAutoSwitchPlaying){
+                startActivity(new Intent(getActivity(), PlayingActivity.class));
+            }
         }
     }
 

@@ -132,6 +132,7 @@
     <string name="setting_header_general">基本设置</string>
     <string name="setting_header_spectrum">频谱动画设置</string>
 
+    <string name="setting_header_scan">扫描器选项</string>
     <string name="setting_title_scanAll">扫描所有音频</string>
     <string name="setting_about_scanAll">开启后,将会从系统数据库中扫描所有音频,而不是仅仅扫描设定的目录.</string>
 
@@ -143,6 +144,7 @@
     <string name="setting_info_lengthLimit">当扫描的歌曲长度小于设置的长度时将不识别进行跳过</string>
     <string name="setting_defaultValue_lengthLimit">20</string>
 
+    <string name="setting_header_media">音频控制选项</string>
     <string name="setting_title_isListenMediaButton">监听耳机按钮</string>
     <string name="setting_info_isListenMediaButton">响应耳机按钮对应的操作: \n1次-暂停/播放 2次-下一首  3次-上一首</string>
 
@@ -156,6 +158,13 @@
     <string name="setting_info_spectrumColor">设置频谱柱状图颜色</string>
 
     <string name="setting_title_spectrum_width">设置频谱柱状图宽度</string>
+
+    <string name="setting_header_playing">播放界面选项</string>
+    <string name="setting_title_simplePlaying">简易播放界面</string>
+    <string name="setting_info_simplePlaying">播放界面不显示歌曲封面的模糊效果</string>
+
+    <string name="setting_title_autoOpenPlayingActivity">自动打开播放界面</string>
+    <string name="setting_info_autoOpenPlayingActivity">点击播放的时候自动跳转到播放界面</string>
 
     <!--播放界面文字-->
     <string name="main_default_title">当前没有播放数据</string>

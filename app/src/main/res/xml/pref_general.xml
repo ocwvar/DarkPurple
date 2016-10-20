@@ -1,36 +1,66 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
-        android:capitalize="words"
-        android:defaultValue="@string/setting_defaultValue_lengthLimit"
-        android:inputType="number"
-        android:key="length_limit"
-        android:maxLines="1"
-        android:maxLength="2"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/setting_title_lengthLimit" />
+    <PreferenceCategory
+        android:title="@string/setting_header_scan"
+        >
 
-    <ListPreference
-        android:key="scanner_sort_type"
-        android:title="@string/title_sorttype"
-        android:entries="@array/sort_types_name"
-        android:entryValues="@array/sort_types_value"
-        android:defaultValue="0"
-        />
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="@string/setting_defaultValue_lengthLimit"
+            android:inputType="number"
+            android:key="length_limit"
+            android:maxLines="1"
+            android:maxLength="2"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/setting_title_lengthLimit" />
 
-    <CheckBoxPreference
-        android:key="isResumeAudioWhenPlugin"
-        android:title="@string/setting_title_isResumeAudioWhenPlugin"
-        android:summary="@string/setting_info_isResumeAudioWhenPlugin"
-        android:defaultValue="true"
-        />
+        <ListPreference
+            android:key="scanner_sort_type"
+            android:title="@string/title_sorttype"
+            android:entries="@array/sort_types_name"
+            android:entryValues="@array/sort_types_value"
+            android:defaultValue="0"
+            />
 
-    <CheckBoxPreference
-        android:key="isListenMediaButton"
-        android:title="@string/setting_title_isListenMediaButton"
-        android:summary="@string/setting_info_isListenMediaButton"
-        android:defaultValue="true"
-        />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/setting_header_media">
+
+        <CheckBoxPreference
+            android:key="isResumeAudioWhenPlugin"
+            android:title="@string/setting_title_isResumeAudioWhenPlugin"
+            android:summary="@string/setting_info_isResumeAudioWhenPlugin"
+            android:defaultValue="true"
+            />
+
+        <CheckBoxPreference
+            android:key="isListenMediaButton"
+            android:title="@string/setting_title_isListenMediaButton"
+            android:summary="@string/setting_info_isListenMediaButton"
+            android:defaultValue="true"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/setting_header_playing">
+
+        <CheckBoxPreference
+            android:key="isUseSimplePlaying"
+            android:title="@string/setting_title_simplePlaying"
+            android:summary="@string/setting_info_simplePlaying"
+            android:defaultValue="false"
+            />
+
+        <CheckBoxPreference
+            android:key="autoSwitchPlaying"
+            android:title="@string/setting_title_autoOpenPlayingActivity"
+            android:summary="@string/setting_info_autoOpenPlayingActivity"
+            android:defaultValue="true"
+            />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

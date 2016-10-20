@@ -43,7 +43,7 @@
 
     <style name="SettingsTheme" parent="AppTheme">
         <item name="android:textColorPrimary">@color/Text_LightGray</item>
-        <item name="android:textColorSecondary">@color/colorPrimary</item>
+        <item name="android:textColorSecondary">#636363</item>
         <item name="android:alertDialogTheme">@style/Setting_AlertTheme</item>
         <item name="android:dialogTheme">@style/Setting_AlertTheme</item>
         <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>

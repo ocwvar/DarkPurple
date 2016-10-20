@@ -360,7 +360,9 @@ public class PlayingActivity
                         break;
                 }
                 //执行封面模糊风格处理
-                generateBlurBackGround();
+                if (!AppConfigs.isUseSimplePlayingScreen){
+                    generateBlurBackGround();
+                }
                 //如果歌曲播放了 , 就开始更新界面, 更新之前中断旧的更新线程
                 if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
                     if (updatingTimerThread != null) {
