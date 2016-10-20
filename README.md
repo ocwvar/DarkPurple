@@ -1,5 +1,4 @@
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png) 
-## *DarkPurple Music player*
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/logo-nv.png) 
 
 ###### (Android 4.2.2 ~ Android 7.0) 暂不支持Android 7.0分屏功能
 
