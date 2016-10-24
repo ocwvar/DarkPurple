@@ -125,9 +125,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             itemView.getLayoutParams().height = imageSize;
             return new OptionItemViewHolder(itemView);
         } else {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_card, parent, false);
-            itemView.getLayoutParams().width = imageSize;
-            itemView.getLayoutParams().height = imageSize;
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song_card_v2, parent, false);
             return new MusicItemViewHolder(itemView);
         }
     }

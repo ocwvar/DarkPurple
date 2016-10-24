@@ -47,7 +47,7 @@ public class AppConfigs {
     public static String[] MusicFolders = null;
 
     //歌曲封面默认混合颜色
-    public static int DefaultPaletteColor = Color.argb(108, 146, 51, 180);
+    public static int DefaultPaletteColor = Color.argb(108, 106, 27, 154);
 
     //全局唯一 ApplicationContext 对象
     public static Context ApplicationContext = null;
@@ -77,7 +77,7 @@ public class AppConfigs {
     public static boolean isAutoSwitchPlaying = true;
 
     //频谱柱状图颜色设置
-    public static int spectrumColor = Color.argb(255, 146, 51, 180);
+    public static int spectrumColor = Color.argb(255, 106, 27, 154);
 
     //频谱柱状宽度
     public static float spectrumWidth = 15.0f;

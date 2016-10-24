@@ -7,11 +7,19 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycleView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycleView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/floatMenu_createList"

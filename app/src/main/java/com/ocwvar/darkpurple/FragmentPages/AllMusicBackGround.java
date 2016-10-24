@@ -7,12 +7,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,15 +60,15 @@ import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
  * Project: DarkPurple
  * 所有歌曲后台Fragment
  */
-public class AllMusicBackGround extends Fragment implements MediaScannerCallback, AllMusicAdapter.OnClick, View.OnTouchListener, View.OnClickListener {
+public class AllMusicBackGround extends Fragment implements MediaScannerCallback, AllMusicAdapter.OnClick, View.OnTouchListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = "AllMusicBackGround";
 
-    View loadingPanel;
     View fragmentView;
     RecyclerView recyclerView;
-    AllMusicAdapter allMusicAdapter;
-    AlphaInAnimationAdapter animationAdapter;
+    final AllMusicAdapter allMusicAdapter;
+    final AlphaInAnimationAdapter animationAdapter;
+    SwipeRefreshLayout swipeRefreshLayout;
     FloatingActionButton floatingActionButton;
     WeakReference<AlertDialog> moreDialog = new WeakReference<>(null);
     SelectPlaylistDialogHolder addToPLDialogHolder;
@@ -73,8 +76,11 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     ProgressDialog loadingDialog;
     EditText getPlaylistTitle;
 
+
     SongItem selectedSongitem;
     int selectedPosition = -1;
+
+    Snackbar requestPermission;
 
     public AllMusicBackGround() {
         setRetainInstance(true);
@@ -120,8 +126,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             }
         }
 
-        if (loadingPanel != null) {
-            loadingPanel.setVisibility(View.GONE);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
         }
 
     }
@@ -232,8 +238,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * 获取上一次 的搜索记录
      */
     public void getLastTimeData() {
-        if (loadingPanel != null) {
-            loadingPanel.setVisibility(View.VISIBLE);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(true);
         }
         MediaScanner.getInstance().setCallback(this);
         MediaScanner.getInstance().getLastTimeCachedData();
@@ -243,8 +249,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * 刷新数据
      */
     public void refreshData() {
-        if (loadingPanel != null) {
-            loadingPanel.setVisibility(View.VISIBLE);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(true);
         }
         MediaScanner.getInstance().setCallback(this);
 
@@ -253,8 +259,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             MediaScanner.getInstance().start();
         } else {
             //否则提示对应的消息
-            Snackbar.make(fragmentView, R.string.error_noPermission, Snackbar.LENGTH_SHORT).show();
-            loadingPanel.setVisibility(View.GONE);
+            requestPermission.show();
+            swipeRefreshLayout.setRefreshing(false);
         }
 
     }
@@ -266,7 +272,25 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         fragmentView = getTargetFragment().getView();
 
         if (fragmentView != null) {
-            loadingPanel = fragmentView.findViewById(R.id.loadingPanel);
+
+            requestPermission = Snackbar.make(fragmentView,R.string.error_noPermission,Snackbar.LENGTH_LONG)
+                    .setActionTextColor(AppConfigs.ApplicationContext.getResources().getColor(R.color.colorSecond))
+                    .setAction(R.string.request_permission_button, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                                //如果应用还可以请求权限,则弹出请求对话框
+                                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},9);
+                            }else {
+                                //如果用户选择了不再提醒,则不弹出请求对话框,直接跳转到设置界面
+                                Uri packageURI = Uri.parse("package:" + AppConfigs.ApplicationContext.getPackageName());
+                                Intent intent =  new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,packageURI);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+
+            swipeRefreshLayout = (SwipeRefreshLayout) fragmentView.findViewById(R.id.swipeRefreshLayout);
             floatingActionButton = (FloatingActionButton) fragmentView.findViewById(R.id.floatMenu_createList);
             recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recycleView);
 
@@ -281,6 +305,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             loadingDialog = new ProgressDialog(fragmentView.getContext());
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
+
+            swipeRefreshLayout.setColorSchemeColors(AppConfigs.DefaultPaletteColor);
+            swipeRefreshLayout.setOnRefreshListener(this);
 
             if (MediaScanner.getInstance().isUpdated()) {
                 allMusicAdapter.setDatas(MediaScanner.getInstance().getCachedDatas());
@@ -303,7 +330,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             recyclerView.setOnTouchListener(null);
             allMusicAdapter.setOnClick(null);
             recyclerView = null;
-            loadingPanel = null;
+            swipeRefreshLayout = null;
             fragmentView = null;
             floatingActionButton = null;
             getPlaylistTitle = null;
@@ -467,6 +494,14 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 }
                 break;
         }
+    }
+
+    /**
+     * 用户下拉刷新的回调
+     */
+    @Override
+    public void onRefresh() {
+        refreshData();
     }
 
     /**

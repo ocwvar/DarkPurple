@@ -36,33 +36,6 @@ public class AllMusicFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_all_music, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_allmusic_refresh:
-                if (workFragment != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
-                        if (getView() == null) {
-                            Toast.makeText(getContext(), R.string.musicFolder_noPermission, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Snackbar.make(getView(), R.string.musicFolder_noPermission, Snackbar.LENGTH_SHORT).show();
-                        }
-                        break;
-                    }
-                    workFragment.refreshData();
-                }
-                break;
-        }
-        return true;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
