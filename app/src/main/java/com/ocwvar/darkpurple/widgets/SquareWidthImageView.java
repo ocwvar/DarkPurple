@@ -37,5 +37,4 @@ public class SquareWidthImageView extends ImageView {
         setMeasuredDimension(widthMeasureSpec, widthMeasureSpec);
     }
 
-
 }

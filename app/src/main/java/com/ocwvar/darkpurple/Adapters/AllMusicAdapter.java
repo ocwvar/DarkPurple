@@ -1,6 +1,8 @@
 package com.ocwvar.darkpurple.Adapters;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 扫描歌曲的适配器
  */
-public class AllMusicAdapter extends RecyclerView.Adapter {
+public class AllMusicAdapter extends RecyclerView.Adapter implements RecyclerView.OnScrollChangeListener{
 
     private boolean isMuiltSelecting = false;
     private ArrayList<SongItem> checkedItems;
@@ -158,36 +160,44 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
+                    .config(Bitmap.Config.RGB_565)
+                    .tag(songItem)
                     .error(R.drawable.ic_cd)
                     .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
-            viewHolder.title.setBackgroundColor(songItem.getCustomPaletteColor());
-            viewHolder.artist.setBackgroundColor(songItem.getCustomPaletteColor());
+            viewHolder.cardView.setCardBackgroundColor(songItem.getCustomPaletteColor());
         } else if (songItem.isHaveCover()) {
             //没有下载的封面,则使用读取到的封面文件和混合颜色
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                    .config(Bitmap.Config.RGB_565)
+                    .tag(songItem)
                     .error(R.drawable.ic_cd)
                     .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
-            viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
-            viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
+            viewHolder.cardView.setCardBackgroundColor(songItem.getPaletteColor());
         } else {
             if (defaultCover == null) {
                 defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
             }
-            viewHolder.title.setBackgroundColor(songItem.getPaletteColor());
-            viewHolder.artist.setBackgroundColor(songItem.getPaletteColor());
+            viewHolder.cardView.setCardBackgroundColor(songItem.getPaletteColor());
             viewHolder.cover.setImageDrawable(defaultCover);
         }
 
     }
 
+
+
     @Override
     public int getItemCount() {
         //多出一个文字用于放置首个选项按钮
         return arrayList.size() + 1;
+    }
+
+    @Override
+    public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+
     }
 
     /**
@@ -205,12 +215,14 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     private class MusicItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         SquareWidthImageView cover;
+        CardView cardView;
         ImageView marker;
         TextView title;
         TextView artist;
 
         MusicItemViewHolder(View itemView) {
             super(itemView);
+            cardView = (CardView) itemView.findViewById(R.id.cardView_BG);
             cover = (SquareWidthImageView) itemView.findViewById(R.id.item_cover);
             marker = (ImageView) itemView.findViewById(R.id.item_selector_marker);
             title = (TextView) itemView.findViewById(R.id.item_title);
