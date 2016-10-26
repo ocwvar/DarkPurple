@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Activities;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.LayoutRes;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.R;
 
 import java.util.List;
@@ -35,6 +37,9 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= 21){
+            getWindow().setNavigationBarColor(AppConfigs.Color.NavBar_Color);
+        }
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);

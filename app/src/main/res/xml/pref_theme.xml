@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <Preference
+        android:title="@string/setting_title_theme_reset"
+        android:icon="@drawable/ic_action_reset"/>
+
+    <PreferenceCategory
+        android:title="@string/setting_info_color_warnning"/>
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_StatusBar"
+        android:summary="@string/setting_info_color_StatusBar"
+        android:key="StatusBar_Color"
+        android:defaultValue="0xFF6A1B9A"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_NevBar"
+        android:summary="@string/setting_info_color_NevBar"
+        android:key="NavBar_Color"
+        android:defaultValue="0xFF242c36"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_TabLayout"
+        android:key="TabLayout_color"
+        android:defaultValue="0xFF6a1b9a"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_Toolbar"
+        android:key="ToolBar_color"
+        android:defaultValue="0xFF6a1b9a"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_ToolbarText"
+        android:key="ToolBar_title_color"
+        android:defaultValue="0xFFefefef"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_ToolbarSubtitleText"
+        android:key="ToolBar_subtitle_color"
+        android:defaultValue="0xFFa9a9a9"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_TabLayoutText"
+        android:key="TabLayout_title_color"
+        android:defaultValue="0xFFa9a9a9"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_TabLayoutText_selected"
+        android:key="TabLayout_title_color_selected"
+        android:defaultValue="0xFFa9a9a9"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_TabLayout_Indicator"
+        android:key="TabLayout_Indicator_color"
+        android:defaultValue="0xFFefefef"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_DefaultCoverColor"
+        android:key="DefaultCoverColor"
+        android:defaultValue="0xFF6e2189"
+        app:colorpicker_showAlpha="false"
+        />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:title="@string/setting_title_color_window_bg"
+        android:key="backgroundColor_Dark"
+        android:defaultValue="0xFF242c36"
+        app:colorpicker_showAlpha="false"
+        />
+
+</PreferenceScreen>

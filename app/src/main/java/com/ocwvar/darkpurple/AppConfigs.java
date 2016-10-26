@@ -1,8 +1,9 @@
 package com.ocwvar.darkpurple;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -46,9 +47,6 @@ public class AppConfigs {
     //设置扫描的路径数组集合 如果存在数据不为NULL , 则会扫描指定目录  否则扫描数据库
     public static String[] MusicFolders = null;
 
-    //歌曲封面默认混合颜色
-    public static int DefaultPaletteColor = Color.argb(108, 106, 27, 154);
-
     //全局唯一 ApplicationContext 对象
     public static Context ApplicationContext = null;
 
@@ -75,9 +73,6 @@ public class AppConfigs {
 
     //是否自动跳转到播放界面
     public static boolean isAutoSwitchPlaying = true;
-
-    //频谱柱状图颜色设置
-    public static int spectrumColor = Color.argb(255, 106, 27, 154);
 
     //频谱柱状宽度
     public static float spectrumWidth = 15.0f;
@@ -123,11 +118,11 @@ public class AppConfigs {
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
-            spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
-
             spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width", "15.0"));
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
+
+            Color.loadColors();
 
             String value = preferences.getString("scanner_sort_type", "0");
             switch (value) {
@@ -167,9 +162,9 @@ public class AppConfigs {
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
-            spectrumColor = preferences.getInt("spectrum_color", Color.argb(108, 146, 51, 180));
-
             spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width", "15.0"));
+
+            Color.loadColors();
 
             String value = preferences.getString("scanner_sort_type", "0");
 
@@ -252,5 +247,153 @@ public class AppConfigs {
     }
 
     public enum LayoutDataType {StatusBarHeight, NevBarHeight}
+
+    /**
+     * APP 颜色资源
+     */
+    public static class Color {
+
+        /**
+         * 状态栏颜色
+         */
+        public static int StatusBar_color;
+
+        /**
+         * 导航栏颜色
+         */
+        public static int NavBar_Color;
+
+        /**
+         * ToolBar颜色
+         */
+        public static int ToolBar_color;
+
+        /**
+         * ToolBar副标题文字颜色
+         */
+        public static int ToolBar_subtitle_color;
+
+        /**
+         * ToolBar标题文字颜色
+         */
+        public static int ToolBar_title_color;
+
+        /**
+         * TabLayout颜色
+         */
+        public static int TabLayout_color;
+
+        /**
+         * TabLayout标题文字颜色  未选中状态
+         */
+        public static int TabLayout_title_color;
+
+        /**
+         * TabLayout标题文字颜色  选中状态
+         */
+        public static int TabLayout_title_color_selected;
+
+        /**
+         * TabLayout游标颜色
+         */
+        public static int TabLayout_Indicator_color;
+
+        /**
+         * 默认封面混合颜色
+         */
+        public static int DefaultCoverColor;
+
+        /**
+         * 频谱颜色
+         */
+        public static int Spectrum_Color;
+
+        /**
+         * 主界面背景颜色
+         */
+        public static int WindowBackground_Color;
+
+        /**
+         * 加载颜色资源
+         * <p>
+         * 优先从用户配置文件加载颜色资源 , 否则从资源文件加载
+         */
+        @SuppressWarnings("deprecation")
+        static void loadColors() {
+
+            final Context context = ApplicationContext;
+
+            if (context == null){
+                //context为空 , 不能加载
+                return;
+            }
+
+            final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            if (Build.VERSION.SDK_INT >= 23) {
+                StatusBar_color = sharedPreferences.getInt("StatusBar_Color", context.getColor(R.color.StatusBar_Color));
+                NavBar_Color = sharedPreferences.getInt("NavBar_Color", context.getColor(R.color.NavBar_Color));
+                ToolBar_color = sharedPreferences.getInt("ToolBar_color", context.getColor(R.color.ToolBar_color));
+                ToolBar_title_color = sharedPreferences.getInt("ToolBar_title_color", context.getColor(R.color.ToolBar_title_color));
+                ToolBar_subtitle_color = sharedPreferences.getInt("ToolBar_subtitle_color", context.getColor(R.color.ToolBar_subtitle_color));
+                TabLayout_color = sharedPreferences.getInt("TabLayout_color", context.getColor(R.color.TabLayout_color));
+                TabLayout_title_color = sharedPreferences.getInt("TabLayout_title_color", context.getColor(R.color.TabLayout_title_color));
+                TabLayout_title_color_selected = sharedPreferences.getInt("TabLayout_title_color_selected", context.getColor(R.color.TabLayout_title_color_selected));
+                TabLayout_Indicator_color = sharedPreferences.getInt("TabLayout_Indicator_color", context.getColor(R.color.TabLayout_Indicator_color));
+                DefaultCoverColor = sharedPreferences.getInt("DefaultCoverColor", context.getColor(R.color.DefaultCoverColor));
+                Spectrum_Color = sharedPreferences.getInt("Spectrum_Color", context.getColor(R.color.Spectrum_Color));
+                WindowBackground_Color = sharedPreferences.getInt("backgroundColor_Dark", context.getColor(R.color.backgroundColor_Dark));
+            } else {
+                StatusBar_color = sharedPreferences.getInt("StatusBar_Color", context.getResources().getColor(R.color.StatusBar_Color));
+                NavBar_Color = sharedPreferences.getInt("NavBar_Color", context.getResources().getColor(R.color.NavBar_Color));
+                ToolBar_color = sharedPreferences.getInt("ToolBar_color", context.getResources().getColor(R.color.ToolBar_color));
+                ToolBar_title_color = sharedPreferences.getInt("ToolBar_title_color", context.getResources().getColor(R.color.ToolBar_title_color));
+                ToolBar_subtitle_color = sharedPreferences.getInt("ToolBar_subtitle_color", context.getResources().getColor(R.color.ToolBar_subtitle_color));
+                TabLayout_color = sharedPreferences.getInt("TabLayout_color", context.getResources().getColor(R.color.TabLayout_color));
+                TabLayout_title_color = sharedPreferences.getInt("TabLayout_title_color", context.getResources().getColor(R.color.TabLayout_title_color));
+                TabLayout_title_color_selected = sharedPreferences.getInt("TabLayout_title_color_selected", context.getResources().getColor(R.color.TabLayout_title_color_selected));
+                TabLayout_Indicator_color = sharedPreferences.getInt("TabLayout_Indicator_color", context.getResources().getColor(R.color.TabLayout_Indicator_color));
+                DefaultCoverColor = sharedPreferences.getInt("DefaultCoverColor", context.getResources().getColor(R.color.DefaultCoverColor));
+                Spectrum_Color = sharedPreferences.getInt("Spectrum_Color", context.getResources().getColor(R.color.Spectrum_Color));
+                WindowBackground_Color = sharedPreferences.getInt("backgroundColor_Dark", context.getResources().getColor(R.color.backgroundColor_Dark));
+            }
+
+
+        }
+
+        /**
+         * 重置用户颜色配置文件
+         */
+        @SuppressLint("CommitPrefEdits")
+        public static void resetColor(){
+
+            final Context context = ApplicationContext;
+
+            if (context == null){
+                return;
+            }
+
+            final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+
+            editor.remove("StatusBar_Color");
+            editor.remove("NavBar_Color");
+            editor.remove("ToolBar_color");
+            editor.remove("ToolBar_title_color");
+            editor.remove("ToolBar_subtitle_color");
+            editor.remove("TabLayout_color");
+            editor.remove("TabLayout_title_color");
+            editor.remove("TabLayout_title_color_selected");
+            editor.remove("TabLayout_Indicator_color");
+            editor.remove("DefaultCoverColor");
+            editor.remove("Spectrum_Color");
+            editor.remove("backgroundColor_Dark");
+
+            editor.commit();
+
+            //在清空配置文件之后重新加载默认数据
+            loadColors();
+        }
+
+    }
 
 }

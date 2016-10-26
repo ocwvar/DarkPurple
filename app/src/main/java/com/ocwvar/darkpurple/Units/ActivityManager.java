@@ -1,9 +1,15 @@
 package com.ocwvar.darkpurple.Units;
 
 import android.app.Activity;
+import android.content.Intent;
+
+import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
+import com.ocwvar.darkpurple.AppConfigs;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * Project DarkPurple
@@ -42,6 +48,13 @@ public class ActivityManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void restartMainActivity(){
+        release();
+        Intent intent = new Intent(AppConfigs.ApplicationContext, SelectMusicActivity.class);
+        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        AppConfigs.ApplicationContext.startActivity(intent);
     }
 
     public void release() {

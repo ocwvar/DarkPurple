@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -78,10 +77,14 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
     }
 
     @Override
+    protected int onSetToolBar() {
+        return R.id.toolbar;
+    }
+
+    @Override
     @SuppressWarnings("ConstantConditions")
     protected void onSetupViews() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         setTitle(this.selectPlaylistItem.getName() + " " + getApplicationContext().getString(R.string.title_detail));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         adapter = new PlaylistDetailAdapter(this.selectPlaylistItem.getPlaylist(), this);

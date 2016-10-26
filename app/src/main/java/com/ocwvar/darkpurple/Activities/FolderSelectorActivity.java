@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,12 +48,16 @@ public class FolderSelectorActivity extends BaseBlurActivity implements MusicFol
     }
 
     @Override
+    protected int onSetToolBar() {
+        return R.id.toolbar;
+    }
+
+    @Override
     @SuppressWarnings("ConstantConditions")
     protected void onSetupViews() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         openUI = (TextView) findViewById(R.id.openUI);
         addPath = (ImageButton) findViewById(R.id.imageButton_addPath);
-        setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         adapter = new MusicFolderAdapter(this);
@@ -67,6 +70,12 @@ public class FolderSelectorActivity extends BaseBlurActivity implements MusicFol
 
         openUI.setOnClickListener(this);
         addPath.setOnClickListener(this);
+
+        openUI.setBackgroundColor(AppConfigs.Color.ToolBar_color);
+        openUI.setTextColor(AppConfigs.Color.ToolBar_title_color);
+        editText.setTextColor(AppConfigs.Color.ToolBar_title_color);
+        editText.setHintTextColor(AppConfigs.Color.ToolBar_subtitle_color);
+        findViewById(R.id.second_lay).setBackgroundColor(AppConfigs.Color.ToolBar_color);
 
         setResult(DATA_UNCHANGED);
     }

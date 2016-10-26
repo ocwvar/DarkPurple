@@ -383,30 +383,30 @@ public class MediaScanner {
                 palette = new Palette.Builder(coverImage).generate();
             } catch (Exception e) {
                 //如果图像解析失败 或 图像为Null 则使用默认颜色
-                return AppConfigs.DefaultPaletteColor;
+                return AppConfigs.Color.DefaultCoverColor;
             }
 
-            int color = AppConfigs.DefaultPaletteColor, item = 0;
+            int color = AppConfigs.Color.DefaultCoverColor, item = 0;
             //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-            while (color == AppConfigs.DefaultPaletteColor && item < 7) {
+            while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
                 switch (item) {
                     case 0:
-                        color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getDarkMutedColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 1:
-                        color = palette.getDarkVibrantColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getDarkVibrantColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 3:
-                        color = palette.getMutedColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 4:
-                        color = palette.getLightMutedColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getLightMutedColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 5:
-                        color = palette.getLightVibrantColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getLightVibrantColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     default:
-                        color = AppConfigs.DefaultPaletteColor;
+                        color = AppConfigs.Color.DefaultCoverColor;
                         break;
                 }
                 item += 1;
@@ -430,7 +430,7 @@ public class MediaScanner {
         //文件夹路径集合
         private String[] paths;
 
-        public ScanByFolder(String[] paths) {
+        ScanByFolder(String[] paths) {
             this.paths = paths;
         }
 
@@ -677,30 +677,30 @@ public class MediaScanner {
                 palette = new Palette.Builder(coverImage).generate();
             } catch (Exception e) {
                 //如果图像解析失败 或 图像为Null 则使用默认颜色
-                return AppConfigs.DefaultPaletteColor;
+                return AppConfigs.Color.DefaultCoverColor;
             }
 
-            int color = AppConfigs.DefaultPaletteColor, item = 0;
+            int color = AppConfigs.Color.DefaultCoverColor, item = 0;
             //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-            while (color == AppConfigs.DefaultPaletteColor && item < 7) {
+            while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
                 switch (item) {
                     case 0:
-                        color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getDarkMutedColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 1:
-                        color = palette.getDarkVibrantColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getDarkVibrantColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 3:
-                        color = palette.getMutedColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 4:
-                        color = palette.getLightMutedColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getLightMutedColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     case 5:
-                        color = palette.getLightVibrantColor(AppConfigs.DefaultPaletteColor);
+                        color = palette.getLightVibrantColor(AppConfigs.Color.DefaultCoverColor);
                         break;
                     default:
-                        color = AppConfigs.DefaultPaletteColor;
+                        color = AppConfigs.Color.DefaultCoverColor;
                         break;
                 }
                 item += 1;
@@ -759,7 +759,7 @@ public class MediaScanner {
      */
     final private class ComparatorByData implements Comparator<SongItem> {
 
-        public ComparatorByData() {
+        ComparatorByData() {
             Logger.warnning("ComparatorByData", "正在按照日期排序");
         }
 

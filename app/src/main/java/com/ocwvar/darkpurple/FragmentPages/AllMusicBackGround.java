@@ -103,6 +103,14 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         setTargetFragment(null, 0);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (allMusicAdapter.isMuiltSelecting()){
+            cancelMulitMode();
+        }
+    }
+
     /**
      * 歌曲数据刷新回调
      *
@@ -137,7 +145,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * <p>
      * 包括其中的点击事件处理
      */
-    private void showAlertDialog() {
+    private void showCreatePlaylistDialog() {
         if (newPlaylistDialog == null) {
             //创建输入框对象
             getPlaylistTitle = new EditText(fragmentView.getContext());
@@ -171,6 +179,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     allMusicAdapter.startMuiltMode();
                     floatingActionButton.setImageResource(R.drawable.ic_action_done);
                     Snackbar.make(fragmentView, R.string.startSelectPlaylist, Snackbar.LENGTH_LONG).show();
+
+                    //禁用下拉刷新
+                    swipeRefreshLayout.setEnabled(false);
                     dialogInterface.dismiss();
                 }
             });
@@ -299,6 +310,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             recyclerView.setHasFixedSize(true);
             recyclerView.setOnTouchListener(this);
 
+            allMusicAdapter.setOnRecycleViewScrollController(recyclerView);
+
+            floatingActionButton.setColorNormal(AppConfigs.Color.ToolBar_color);
             floatingActionButton.setPadding(0, 0, 0, AppConfigs.NevBarHeight);
             floatingActionButton.setOnClickListener(this);
 
@@ -306,7 +320,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
 
-            swipeRefreshLayout.setColorSchemeColors(AppConfigs.DefaultPaletteColor);
+            swipeRefreshLayout.setColorSchemeColors(AppConfigs.Color.ToolBar_color);
             swipeRefreshLayout.setOnRefreshListener(this);
 
             if (MediaScanner.getInstance().isUpdated()) {
@@ -345,6 +359,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      */
     private void cancelMulitMode() {
         if (allMusicAdapter.isMuiltSelecting()) {
+            swipeRefreshLayout.setEnabled(true);
             allMusicAdapter.stopMuiltMode();
             getPlaylistTitle.getText().clear();
             floatingActionButton.setImageResource(R.drawable.ic_action_favorite);
@@ -466,19 +481,34 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         return false;
     }
 
+    /**
+     * 浮动按钮 (创建新播放列表)
+     * <p></p>
+     * 插入播放列表按钮 (将歌曲加入已存在的播放列表)
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+
+            //歌曲的更多选项中的添加到已存在播放列表按钮
             case R.id.fb_add:
+
+                //这里不需要检测是否 NULL , 因为这时候对话框正在显示
                 moreDialog.get().dismiss();
                 if (addToPLDialogHolder == null) {
                     addToPLDialogHolder = new SelectPlaylistDialogHolder();
                 }
                 addToPLDialogHolder.showDialog();
                 break;
+
+            //浮动按钮 , 用于创建播放列表
             case R.id.floatMenu_createList:
                 if (allMusicAdapter.isMuiltSelecting()) {
-                    //如果已经是选择模式 , 则关闭并且开始记录数据
+                    //如果已经是选择模式 , 则代表执行的是开始创建播放列表. 关闭多选模式并且开始记录数据
+
+                    //启用下拉刷新
+                    swipeRefreshLayout.setEnabled(true);
+
                     if (PlaylistUnits.getInstance().savePlaylist(getPlaylistTitle.getText().toString(), allMusicAdapter.stopMuiltMode())) {
                         //储存成功
                         Snackbar.make(fragmentView, R.string.playliseSaved, Snackbar.LENGTH_SHORT).show();
@@ -490,7 +520,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     animationAdapter.notifyDataSetChanged();
                     getPlaylistTitle.getText().clear();
                 } else {
-                    showAlertDialog();
+                    showCreatePlaylistDialog();
                 }
                 break;
         }

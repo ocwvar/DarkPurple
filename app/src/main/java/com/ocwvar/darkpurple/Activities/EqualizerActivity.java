@@ -50,6 +50,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
 
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setNavigationBarColor(Color.argb(90, 0, 0, 0));
+            getWindow().setStatusBarColor(Color.argb(0, 0, 0, 0));
         }
 
         //先从音频服务获取当前的均衡器参数
@@ -66,6 +67,11 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
     @Override
     protected int setActivityView() {
         return R.layout.activity_equalizer;
+    }
+
+    @Override
+    protected int onSetToolBar() {
+        return 0;
     }
 
     @Override

@@ -28,15 +28,16 @@
         android:textColor="@drawable/textview_selector"/>
 
     <RelativeLayout
+        android:id="@+id/second_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:background="@color/StatusBar_Color">
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|center_vertical"
+            android:layout_gravity="start|center_vertical"
             android:layout_toLeftOf="@+id/imageButton_addPath"
             android:layout_toStartOf="@+id/imageButton_addPath"
             android:background="@null"
@@ -54,7 +55,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_gravity="right|center_vertical"
+            android:layout_gravity="end|center_vertical"
             android:background="@null"
             android:src="@drawable/fab_add"/>
     </RelativeLayout>

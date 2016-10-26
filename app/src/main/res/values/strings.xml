@@ -196,6 +196,26 @@
     <string name="band9">8k</string>
     <string name="band10">16k</string>
 
+    <!--主题颜色设置部分-->
+    <string name="setting_info_color_warnning">请不要使用接近或完全纯白的颜色,以免在部分界面无法得到满意的效果</string>
+    <string name="setting_title_theme_reset">恢复默认主题配置</string>
+    <string name="setting_action_restart">应用设置</string>
+    <string name="setting_title_color">主题设置</string>
+    <string name="setting_info_color">部分设置需要重启应用才能生效</string>
+    <string name="setting_title_color_StatusBar">状态栏 颜色</string>
+    <string name="setting_info_color_StatusBar">需要Android 5.0+系统支持</string>
+    <string name="setting_title_color_NevBar">导航栏 颜色</string>
+    <string name="setting_info_color_NevBar">需要Android 5.0+系统支持</string>
+    <string name="setting_title_color_TabLayout">主界面标签栏 颜色</string>
+    <string name="setting_title_color_TabLayoutText">主界面标签栏文字 未选中状态 颜色</string>
+    <string name="setting_title_color_TabLayoutText_selected">主界面标签栏文字 选中状态 颜色</string>
+    <string name="setting_title_color_TabLayout_Indicator">主界面标签栏游标 颜色</string>
+    <string name="setting_title_color_Toolbar">ToolBar 颜色</string>
+    <string name="setting_title_color_ToolbarText">ToolBar 标题文字颜色</string>
+    <string name="setting_title_color_ToolbarSubtitleText">ToolBar 副标题文字颜色</string>
+    <string name="setting_title_color_DefaultCoverColor">默认封面混合颜色</string>
+    <string name="setting_title_color_window_bg">主界面背景颜色</string>
+
     <!--Notification相关-->
     <string name="notification_ticker">DarkPurple后台运行中</string>
     <string name="notification_title">歌曲名</string>

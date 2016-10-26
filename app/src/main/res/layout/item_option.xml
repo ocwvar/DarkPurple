@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_big_settings"/>
+    android:id="@+id/cardView_BG"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="1dp"
+    app:cardMaxElevation="3dp"
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="#70000000">
 
     <TextView
-        android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="center"
         android:shadowColor="@color/colorPrimary"
         android:shadowRadius="20"
+        android:drawableTop="@drawable/ic_big_settings"
         android:text="@string/textview_option"
         android:textColor="#fff"/>
 
-</LinearLayout>
+</android.support.v7.widget.CardView>
+

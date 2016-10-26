@@ -15,7 +15,6 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -92,6 +91,11 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     }
 
     @Override
+    protected int onSetToolBar() {
+        return R.id.toolbar;
+    }
+
+    @Override
     protected int setActivityView() {
         return R.layout.activity_download_cover;
     }
@@ -99,7 +103,6 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     @Override
     @SuppressWarnings("ConstantConditions")
     protected void onSetupViews() {
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(headResult + "0");
 
@@ -217,7 +220,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
             //清空自定义数据 和 Picasso的缓存
             Picasso.with(DownloadCoverActivity.this).invalidate(songItem.getCustomCoverPath());
             songItem.setCustomCoverPath("");
-            songItem.setCustomPaletteColor(AppConfigs.DefaultPaletteColor);
+            songItem.setCustomPaletteColor(AppConfigs.Color.DefaultCoverColor);
 
             Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful, Toast.LENGTH_SHORT).show();
 
@@ -245,30 +248,30 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
             palette = new Palette.Builder(coverImage).generate();
         } catch (Exception e) {
             //如果图像解析失败 或 图像为Null 则使用默认颜色
-            return AppConfigs.DefaultPaletteColor;
+            return AppConfigs.Color.DefaultCoverColor;
         }
 
-        int color = AppConfigs.DefaultPaletteColor, item = 0;
+        int color = AppConfigs.Color.DefaultCoverColor, item = 0;
         //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-        while (color == AppConfigs.DefaultPaletteColor && item < 7) {
+        while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
             switch (item) {
                 case 0:
-                    color = palette.getDarkMutedColor(AppConfigs.DefaultPaletteColor);
+                    color = palette.getDarkMutedColor(AppConfigs.Color.DefaultCoverColor);
                     break;
                 case 1:
-                    color = palette.getDarkVibrantColor(AppConfigs.DefaultPaletteColor);
+                    color = palette.getDarkVibrantColor(AppConfigs.Color.DefaultCoverColor);
                     break;
                 case 3:
-                    color = palette.getMutedColor(AppConfigs.DefaultPaletteColor);
+                    color = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
                     break;
                 case 4:
-                    color = palette.getLightMutedColor(AppConfigs.DefaultPaletteColor);
+                    color = palette.getLightMutedColor(AppConfigs.Color.DefaultCoverColor);
                     break;
                 case 5:
-                    color = palette.getLightVibrantColor(AppConfigs.DefaultPaletteColor);
+                    color = palette.getLightVibrantColor(AppConfigs.Color.DefaultCoverColor);
                     break;
                 default:
-                    color = AppConfigs.DefaultPaletteColor;
+                    color = AppConfigs.Color.DefaultCoverColor;
                     break;
             }
             item += 1;

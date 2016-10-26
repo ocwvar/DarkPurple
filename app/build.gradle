@@ -60,6 +60,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
+    compile 'com.rarepebble:colorpicker:2.0.0'
     compile 'org.jsoup:jsoup:1.9.2'
     compile files('libs/bugrpt.jar')
 }

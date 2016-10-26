@@ -4,7 +4,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:statusBarColor">@color/ToolBar_color</item>
+        <item name="android:navigationBarColor">@color/NavBar_Color</item>
     </style>
 
 </resources>

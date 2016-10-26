@@ -108,7 +108,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
 
             //画笔1 ：用于第一层频谱
             this.c1 = new Paint();
-            c1.setColor(AppConfigs.spectrumColor);
+            c1.setColor(AppConfigs.Color.Spectrum_Color);
             c1.setAntiAlias(true);
             c1.setStrokeWidth(strokeWidth);
 

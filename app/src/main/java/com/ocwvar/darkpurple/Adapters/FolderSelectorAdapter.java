@@ -65,7 +65,7 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
         viewHolder.name.setText(folder.getName());
 
         if (selectedFolder.contains(folder)) {
-            viewHolder.itemView.setBackgroundColor(AppConfigs.DefaultPaletteColor);
+            viewHolder.itemView.setBackgroundColor(AppConfigs.Color.ToolBar_color);
         } else {
             viewHolder.itemView.setBackground(null);
         }

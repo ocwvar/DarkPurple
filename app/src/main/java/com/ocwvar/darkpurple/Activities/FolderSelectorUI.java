@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,12 +60,14 @@ public class FolderSelectorUI extends BaseBlurActivity implements FolderSelector
         return R.layout.activity_folder_ui;
     }
 
+    @Override
+    protected int onSetToolBar() {
+        return R.id.toolbar;
+    }
 
     @Override
     @SuppressWarnings("ConstantConditions")
     protected void onSetupViews() {
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-
         setTitle(R.string.title_select_folder_ui);
         setResult(RESULT_CODE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

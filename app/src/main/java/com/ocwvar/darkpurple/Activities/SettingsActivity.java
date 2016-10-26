@@ -5,16 +5,24 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.support.v7.app.ActionBar;
+import android.text.Html;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.R;
+import com.ocwvar.darkpurple.Units.ActivityManager;
 
 import java.util.List;
 
@@ -122,7 +130,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || SpectrumPreferenceFragment.class.getName().equals(fragmentName);
+                || SpectrumPreferenceFragment.class.getName().equals(fragmentName)
+                || ThemePreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
@@ -136,19 +145,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
             bindPreferenceSummaryToValue(findPreference("length_limit"));
             bindPreferenceSummaryToValue(findPreference("scanner_sort_type"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
         }
 
     }
@@ -159,21 +157,49 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_spectrum);
-            setHasOptionsMenu(true);
             bindPreferenceSummaryToValue(findPreference("spectrum_line_width"));
+        }
+
+    }
+
+    public static class ThemePreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_theme);
+            setHasOptionsMenu(true);
         }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
+            switch (item.getItemId()){
+                case R.id.menu_action_theme_apply:
+                    AppConfigs.reInitOptionValues();
+                    ActivityManager.getInstance().restartMainActivity();
+                    break;
             }
-            return super.onOptionsItemSelected(item);
+            return true;
         }
 
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            super.onCreateOptionsMenu(menu, inflater);
+            inflater.inflate(R.menu.menu_theme,menu);
+        }
 
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            //通过文字资源ID来确定点击的是哪个选项
+            switch (preference.getTitleRes()){
+                case R.string.setting_title_theme_reset:
+                    //重置颜色配置
+                    AppConfigs.Color.resetColor();
+                    ActivityManager.getInstance().restartMainActivity();
+                    break;
+            }
+            return true;
+        }
     }
 
 }

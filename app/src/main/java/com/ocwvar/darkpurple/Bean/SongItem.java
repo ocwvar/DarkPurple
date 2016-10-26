@@ -47,13 +47,13 @@ public class SongItem implements Parcelable {
     //歌曲文件路径
     private String path;
     //歌曲封面混合颜色
-    private int paletteColor = AppConfigs.DefaultPaletteColor;
+    private int paletteColor = AppConfigs.Color.DefaultCoverColor;
     //是否预先缓存了封面图像
     private boolean haveCover = false;
     //自定义封面
     private String customCoverPath = "";
     //自定义封面混合颜色
-    private int customPaletteColor = AppConfigs.DefaultPaletteColor;
+    private int customPaletteColor = AppConfigs.Color.DefaultCoverColor;
 
     public SongItem() {
     }

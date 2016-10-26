@@ -5,12 +5,13 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +37,13 @@ public class SelectMusicActivity extends BaseActivity {
 
     @Override
     protected boolean onPreSetup() {
+        getWindow().setBackgroundDrawable(new ColorDrawable(AppConfigs.Color.WindowBackground_Color));
         return true;
+    }
+
+    @Override
+    protected int onSetToolBar() {
+        return R.id.toolbar;
     }
 
     @Override
@@ -46,10 +53,11 @@ public class SelectMusicActivity extends BaseActivity {
 
     @Override
     protected void onSetupViews() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle("");
-        toolbar.setLogo(R.drawable.ic_logo_title);
+
+        if (isToolBarLoaded()){
+            getToolBar().setLogo(R.drawable.ic_logo_title);
+            setTitle("");
+        }
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.Main_TabLayout);
         viewPager = (ViewPager) findViewById(R.id.Main_ViewPager);
@@ -66,6 +74,10 @@ public class SelectMusicActivity extends BaseActivity {
         playlistPageFragment = new PlaylistPageFragment();
         viewPagerAdapter.addFragmentPageToEnd(allMusicFragment);
         viewPagerAdapter.addFragmentPageToEnd(playlistPageFragment);
+
+        tabLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
+        tabLayout.setTabTextColors(AppConfigs.Color.TabLayout_title_color,AppConfigs.Color.TabLayout_title_color_selected);
+        tabLayout.setSelectedTabIndicatorColor(AppConfigs.Color.TabLayout_Indicator_color);
 
         onSetupService();
 

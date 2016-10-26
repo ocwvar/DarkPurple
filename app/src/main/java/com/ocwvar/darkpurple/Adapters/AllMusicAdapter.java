@@ -28,22 +28,31 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 扫描歌曲的适配器
  */
-public class AllMusicAdapter extends RecyclerView.Adapter implements RecyclerView.OnScrollChangeListener{
+public class AllMusicAdapter extends RecyclerView.Adapter{
 
+    private final Object TAGOBJECT = new Object();
     private boolean isMuiltSelecting = false;
-    private ArrayList<SongItem> checkedItems;
-    private ArrayList<SongItem> arrayList;
+    private final ArrayList<SongItem> checkedItems;
+    private final ArrayList<SongItem> arrayList;
     private Drawable defaultCover;
     private OnClick onClick;
+    private final RecycleViewScrollController scrollController;
     private int imageSize;
 
     public AllMusicAdapter() {
+        scrollController = new RecycleViewScrollController();
         checkedItems = new ArrayList<>();
         arrayList = new ArrayList<>();
     }
 
     public void setOnClick(OnClick onClick) {
         this.onClick = onClick;
+    }
+
+    public void setOnRecycleViewScrollController(RecyclerView recyclerView){
+        if (recyclerView != null){
+            recyclerView.addOnScrollListener(scrollController);
+        }
     }
 
     /**
@@ -161,7 +170,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter implements RecyclerVie
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
                     .config(Bitmap.Config.RGB_565)
-                    .tag(songItem)
+                    .tag(TAGOBJECT)
                     .error(R.drawable.ic_cd)
                     .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
@@ -172,7 +181,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter implements RecyclerVie
                     .with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                     .config(Bitmap.Config.RGB_565)
-                    .tag(songItem)
+                    .tag(TAGOBJECT)
                     .error(R.drawable.ic_cd)
                     .resize(imageSize, imageSize)
                     .into(viewHolder.cover);
@@ -193,11 +202,6 @@ public class AllMusicAdapter extends RecyclerView.Adapter implements RecyclerVie
     public int getItemCount() {
         //多出一个文字用于放置首个选项按钮
         return arrayList.size() + 1;
-    }
-
-    @Override
-    public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-
     }
 
     /**
@@ -275,6 +279,23 @@ public class AllMusicAdapter extends RecyclerView.Adapter implements RecyclerVie
         public void onClick(View view) {
             if (onClick != null && !isMuiltSelecting) {
                 onClick.onOptionClick();
+            }
+        }
+
+    }
+
+    /**
+     * 监听RecycleView的滚动情况 , 来控制图像的加载
+     */
+    private class RecycleViewScrollController extends RecyclerView.OnScrollListener{
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                Picasso.with(recyclerView.getContext()).resumeTag(TAGOBJECT);
+            }else {
+                Picasso.with(recyclerView.getContext()).pauseTag(TAGOBJECT);
             }
         }
 
