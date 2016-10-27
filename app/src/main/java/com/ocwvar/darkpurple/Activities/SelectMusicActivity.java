@@ -6,16 +6,19 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.transition.Slide;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
@@ -55,7 +58,9 @@ public class SelectMusicActivity extends BaseActivity {
     protected void onSetupViews() {
 
         if (isToolBarLoaded()){
-            getToolBar().setLogo(R.drawable.ic_logo_title);
+            //getToolBar().setLogo(R.drawable.ic_logo_title);
+            Typeface typeface = Typeface.createFromAsset(getAssets(),"fonts/cuyabra.ttf");
+            ((TextView)findViewById(R.id.logo_title)).setTypeface(typeface);
             setTitle("");
         }
 

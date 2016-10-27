@@ -128,17 +128,20 @@ public class PlayingActivity
 
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window window = getWindow();
+        Window window = getWindow();
+
+        if (!AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //只有在不使用兼容模式 同时 系统版本大于 Android 5.0 才能使用透明样式
+
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.argb(160, 0, 0, 0));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(Color.TRANSPARENT);
-                window.setNavigationBarColor(Color.argb(160, 0, 0, 0));
-            }
-
+        }else if (AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            window.setStatusBarColor(Color.DKGRAY);
+            window.setNavigationBarColor(Color.DKGRAY);
         }
 
         setContentView(R.layout.activity_playing);
@@ -221,7 +224,7 @@ public class PlayingActivity
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
 
-        if (AppConfigs.NevBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (!AppConfigs.useCompatMode && AppConfigs.NevBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //设置底部间距高度
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_NEV);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, AppConfigs.NevBarHeight);
@@ -230,7 +233,7 @@ public class PlayingActivity
             linearLayout.addView(emptyView);
         }
 
-        if (AppConfigs.StatusBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (!AppConfigs.useCompatMode && AppConfigs.StatusBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //设置顶部间距高度
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_STATUSBAR);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, AppConfigs.StatusBarHeight);

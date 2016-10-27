@@ -65,10 +65,12 @@
             android:layout_alignParentStart="true"
             android:background="#a0000000"
             android:padding="5dp"
+            android:layoutAnimation="@anim/layout_anim_equalizer"
             >
 
             <TextView
                 android:id="@+id/shower_title"
+                android:transitionName="title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/shower_mainButton"
@@ -79,6 +81,7 @@
 
             <TextView
                 android:id="@+id/shower_artist"
+                android:transitionName="artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/shower_title"

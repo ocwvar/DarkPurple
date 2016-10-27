@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.FragmentPages;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +15,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.BundleCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -51,8 +55,6 @@ import com.ocwvar.darkpurple.Units.PlaylistUnits;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
-
 /**
  * Created by 区成伟
  * Package: com.ocwvar.darkpurple.FragmentPages
@@ -67,7 +69,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     View fragmentView;
     RecyclerView recyclerView;
     final AllMusicAdapter allMusicAdapter;
-    final AlphaInAnimationAdapter animationAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
     FloatingActionButton floatingActionButton;
     WeakReference<AlertDialog> moreDialog = new WeakReference<>(null);
@@ -84,11 +85,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
     public AllMusicBackGround() {
         setRetainInstance(true);
-        allMusicAdapter = new AllMusicAdapter();
+        allMusicAdapter = new AllMusicAdapter(AppConfigs.layoutStyle);
         allMusicAdapter.setOnClick(this);
-        animationAdapter = new AlphaInAnimationAdapter(allMusicAdapter);
-        animationAdapter.setInterpolator(new OvershootInterpolator());
-        animationAdapter.setDuration(300);
     }
 
     @Nullable
@@ -126,7 +124,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             }
         } else {
             allMusicAdapter.setDatas(songItems);
-            animationAdapter.notifyDataSetChanged();
+            allMusicAdapter.notifyDataSetChanged();
             if (fragmentView == null) {
                 Toast.makeText(getActivity(), R.string.gotMusicDone, Toast.LENGTH_SHORT).show();
             } else {
@@ -216,7 +214,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                         if (selectedPosition != -1) {
                             allMusicAdapter.removeItem(selectedPosition);
                             allMusicAdapter.notifyItemRemoved(selectedPosition + 1);
-                            animationAdapter.notifyItemRemoved(selectedPosition + 1);
                         }
                     }
                 });
@@ -305,14 +302,18 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             floatingActionButton = (FloatingActionButton) fragmentView.findViewById(R.id.floatMenu_createList);
             recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recycleView);
 
-            recyclerView.setAdapter(animationAdapter);
-            recyclerView.setLayoutManager(new GridLayoutManager(fragmentView.getContext(), 2, GridLayoutManager.VERTICAL, false));
+            recyclerView.setAdapter(allMusicAdapter);
+            if (allMusicAdapter.getLayoutStyle() == AllMusicAdapter.LayoutStyle.Grid){
+                recyclerView.setLayoutManager(new GridLayoutManager(fragmentView.getContext(), 2, GridLayoutManager.VERTICAL, false));
+            }else {
+                recyclerView.setLayoutManager(new GridLayoutManager(fragmentView.getContext(), 1, GridLayoutManager.VERTICAL, false));
+            }
             recyclerView.setHasFixedSize(true);
             recyclerView.setOnTouchListener(this);
 
             allMusicAdapter.setOnRecycleViewScrollController(recyclerView);
 
-            floatingActionButton.setColorNormal(AppConfigs.Color.ToolBar_color);
+            floatingActionButton.setColorNormal(AppConfigs.Color.FloatingButton_Color);
             floatingActionButton.setPadding(0, 0, 0, AppConfigs.NevBarHeight);
             floatingActionButton.setOnClickListener(this);
 
@@ -326,7 +327,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             if (MediaScanner.getInstance().isUpdated()) {
                 allMusicAdapter.setDatas(MediaScanner.getInstance().getCachedDatas());
                 allMusicAdapter.notifyDataSetChanged();
-                animationAdapter.notifyDataSetChanged();
             }
 
         }
@@ -363,7 +363,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             allMusicAdapter.stopMuiltMode();
             getPlaylistTitle.getText().clear();
             floatingActionButton.setImageResource(R.drawable.ic_action_favorite);
-            animationAdapter.notifyDataSetChanged();
             Snackbar.make(fragmentView, R.string.playliseSaveCanceled, Snackbar.LENGTH_SHORT).show();
         }
     }
@@ -386,20 +385,24 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * @param position 在歌曲列表中的位置
      */
     @Override
-    public void onListClick(ArrayList<SongItem> songList, int position) {
+    public void onListClick(ArrayList<SongItem> songList, int position, View itemView) {
         if (ServiceHolder.getInstance().getService() != null) {
 
             if (ServiceHolder.getInstance().getService().play(songList, position)) {
                 //如果播放成功 , 则发送广播刷新状态栏通知和跳转界面
                 getActivity().sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 if (AppConfigs.isAutoSwitchPlaying) {
-                    getActivity().startActivity(new Intent(getActivity(), PlayingActivity.class));
+                    Intent intent = new Intent(getActivity(), PlayingActivity.class);
+                    if (Build.VERSION.SDK_INT >= 21){
+                        getActivity().startActivity(intent,ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),new Pair<>(itemView.findViewById(R.id.item_title),"title"),new Pair<>(itemView.findViewById(R.id.item_artist), "artist")).toBundle());
+                    }else {
+                        getActivity().startActivity(intent);
+                    }
                 }
             } else {
                 //如果播放失败 , 则说明这个音频不合法 , 从列表中移除
                 allMusicAdapter.removeItem(position);
                 allMusicAdapter.notifyItemRemoved(position + 1);
-                animationAdapter.notifyItemRemoved(position + 1);
                 Snackbar.make(fragmentView, R.string.music_failed, Snackbar.LENGTH_LONG).show();
             }
 
@@ -453,7 +456,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     SongItem resultItem = data.getParcelableExtra("item");
                     allMusicAdapter.replaceSongItem(resultItem);
                     allMusicAdapter.notifyDataSetChanged();
-                    animationAdapter.notifyDataSetChanged();
                     WeakReference<AsyncUpadteCachedList> task = new WeakReference<>(new AsyncUpadteCachedList(allMusicAdapter.getSongList()));
                     task.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                 }
@@ -499,10 +501,12 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     addToPLDialogHolder = new SelectPlaylistDialogHolder();
                 }
                 addToPLDialogHolder.showDialog();
+
                 break;
 
             //浮动按钮 , 用于创建播放列表
             case R.id.floatMenu_createList:
+
                 if (allMusicAdapter.isMuiltSelecting()) {
                     //如果已经是选择模式 , 则代表执行的是开始创建播放列表. 关闭多选模式并且开始记录数据
 
@@ -517,7 +521,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                         Snackbar.make(fragmentView, R.string.playliseSaveFailed, Snackbar.LENGTH_SHORT).show();
                     }
                     floatingActionButton.setImageResource(R.drawable.ic_action_favorite);
-                    animationAdapter.notifyDataSetChanged();
+                    allMusicAdapter.notifyDataSetChanged();
                     getPlaylistTitle.getText().clear();
                 } else {
                     showCreatePlaylistDialog();

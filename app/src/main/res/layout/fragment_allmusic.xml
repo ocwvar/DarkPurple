@@ -32,31 +32,4 @@
         app:fab_colorPressed="@color/card_backgroundColor_Dark"
         />
 
-    <LinearLayout
-        android:id="@+id/loadingPanel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#83000000"
-        android:clickable="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="@string/textview_loading"
-            android:textColor="#fff"
-            android:textSize="16sp"/>
-
-    </LinearLayout>
-
 </FrameLayout>

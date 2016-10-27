@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layoutAnimation
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:animation="@anim/slide_in_up"
-    android:delay="0.8"
+    android:animation="@anim/simple_alpha"
+    android:delay="0.3"
     android:animationOrder="normal"
-    android:interpolator="@android:interpolator/anticipate_overshoot"/>
+    />

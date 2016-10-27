@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#6a1b9a</color>
-    <color name="colorPrimaryDark">#929233b4</color>
+    <color name="colorPrimary">#390e52</color>
+    <color name="colorPrimaryDark">#240935</color>
     <color name="colorAccent">@color/colorPrimary</color>
 
-    <color name="colorSecond">#4ec7ec</color>
+    <color name="colorSecond">#277ee1</color>
 
     <!--Card默认背景颜色-->
     <color name="card_backgroundColor_Dark">#424242</color>
@@ -20,16 +20,16 @@
     <!--            可自定义部分          -->
 
     <!--频谱默认颜色-->
-    <color name="Spectrum_Color">#b300ff</color>
+    <color name="Spectrum_Color">#390e52</color>
 
     <!--状态栏颜色-->
-    <color name="StatusBar_Color">#6a1b9a</color>
+    <color name="StatusBar_Color">#390e52</color>
 
     <!--导航栏颜色-->
     <color name="NavBar_Color">#242c36</color>
 
     <!--TabLayout颜色-->
-    <color name="TabLayout_color">#6a1b9a</color>
+    <color name="TabLayout_color">#390e52</color>
 
     <!--TabLayout标题文字颜色  未选中状态-->
     <color name="TabLayout_title_color">#a9a9a9</color>
@@ -41,7 +41,7 @@
     <color name="TabLayout_Indicator_color">#efefef</color>
 
     <!--ToolBar颜色-->
-    <color name="ToolBar_color">#6a1b9a</color>
+    <color name="ToolBar_color">#390e52</color>
 
     <!--ToolBar标题文字颜色-->
     <color name="ToolBar_title_color">#efefef</color>
@@ -53,6 +53,18 @@
     <color name="backgroundColor_Dark">#242c36</color>
 
     <!--默认封面混合颜色-->
-    <color name="DefaultCoverColor">#6e2189</color>
+    <color name="DefaultCoverColor">#240935</color>
+
+    <!--主界面浮动按钮颜色-->
+    <color name="FloatingButton_Color">#f4a11a</color>
+
+    <!--列表样式  歌曲标题颜色-->
+    <color name="Linear_Title_Color">#ffffff</color>
+
+    <!--列表样式  作曲家文字颜色-->
+    <color name="Linear_Artist_Color">#c7c7c7</color>
+
+    <!--列表样式  时间长度文字颜色-->
+    <color name="Linear_Time_Color">#f4a11a</color>
 
 </resources>

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
+import com.ocwvar.darkpurple.Adapters.AllMusicAdapter;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 
@@ -84,6 +85,12 @@ public class AppConfigs {
     //导航栏高度
     public static int NevBarHeight = -1;
 
+    //主界面列表样式
+    public static AllMusicAdapter.LayoutStyle layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
+
+    //播放界面是否使用兼容模式
+    public static boolean useCompatMode = false;
+
     /**
      * 初始化各项变量
      *
@@ -122,6 +129,8 @@ public class AppConfigs {
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
+            useCompatMode = preferences.getBoolean("useCompatMode",false);
+
             Color.loadColors();
 
             String value = preferences.getString("scanner_sort_type", "0");
@@ -134,6 +143,19 @@ public class AppConfigs {
                     break;
                 default:
                     SortType = MediaScanner.SortType.ByName;
+                    break;
+            }
+
+            value = preferences.getString("MainList_Style", "0");
+            switch (value) {
+                case "0":
+                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
+                    break;
+                case "1":
+                    layoutStyle = AllMusicAdapter.LayoutStyle.Linear;
+                    break;
+                default:
+                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
                     break;
             }
 
@@ -168,6 +190,8 @@ public class AppConfigs {
 
             String value = preferences.getString("scanner_sort_type", "0");
 
+            useCompatMode = preferences.getBoolean("useCompatMode",false);
+
             switch (value) {
                 case "0":
                     SortType = MediaScanner.SortType.ByName;
@@ -177,6 +201,19 @@ public class AppConfigs {
                     break;
                 default:
                     SortType = MediaScanner.SortType.ByName;
+                    break;
+            }
+
+            value = preferences.getString("MainList_Style", "0");
+            switch (value) {
+                case "0":
+                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
+                    break;
+                case "1":
+                    layoutStyle = AllMusicAdapter.LayoutStyle.Linear;
+                    break;
+                default:
+                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
                     break;
             }
 
@@ -314,6 +351,26 @@ public class AppConfigs {
         public static int WindowBackground_Color;
 
         /**
+         * 浮动按钮颜色
+         */
+        public static int FloatingButton_Color;
+
+        /**
+         * 列表状态 歌曲名称文字颜色
+         */
+        public static int Linear_Title_Color;
+
+        /**
+         * 列表状态 作曲家文字颜色
+         */
+        public static int Linear_Artist_Color;
+
+        /**
+         * 列表状态 时间长度文字颜色
+         */
+        public static int Linear_Time_Color;
+
+        /**
          * 加载颜色资源
          * <p>
          * 优先从用户配置文件加载颜色资源 , 否则从资源文件加载
@@ -343,6 +400,10 @@ public class AppConfigs {
                 DefaultCoverColor = sharedPreferences.getInt("DefaultCoverColor", context.getColor(R.color.DefaultCoverColor));
                 Spectrum_Color = sharedPreferences.getInt("Spectrum_Color", context.getColor(R.color.Spectrum_Color));
                 WindowBackground_Color = sharedPreferences.getInt("backgroundColor_Dark", context.getColor(R.color.backgroundColor_Dark));
+                FloatingButton_Color = sharedPreferences.getInt("FloatingButton_Color", context.getColor(R.color.FloatingButton_Color));
+                Linear_Title_Color = sharedPreferences.getInt("Linear_Title_Color", context.getColor(R.color.Linear_Title_Color));
+                Linear_Artist_Color = sharedPreferences.getInt("Linear_Artist_Color", context.getColor(R.color.Linear_Artist_Color));
+                Linear_Time_Color = sharedPreferences.getInt("Linear_Time_Color", context.getColor(R.color.Linear_Time_Color));
             } else {
                 StatusBar_color = sharedPreferences.getInt("StatusBar_Color", context.getResources().getColor(R.color.StatusBar_Color));
                 NavBar_Color = sharedPreferences.getInt("NavBar_Color", context.getResources().getColor(R.color.NavBar_Color));
@@ -356,8 +417,11 @@ public class AppConfigs {
                 DefaultCoverColor = sharedPreferences.getInt("DefaultCoverColor", context.getResources().getColor(R.color.DefaultCoverColor));
                 Spectrum_Color = sharedPreferences.getInt("Spectrum_Color", context.getResources().getColor(R.color.Spectrum_Color));
                 WindowBackground_Color = sharedPreferences.getInt("backgroundColor_Dark", context.getResources().getColor(R.color.backgroundColor_Dark));
+                FloatingButton_Color = sharedPreferences.getInt("FloatingButton_Color", context.getResources().getColor(R.color.FloatingButton_Color));
+                Linear_Title_Color = sharedPreferences.getInt("Linear_Title_Color", context.getResources().getColor(R.color.Linear_Title_Color));
+                Linear_Artist_Color = sharedPreferences.getInt("Linear_Artist_Color", context.getResources().getColor(R.color.Linear_Artist_Color));
+                Linear_Time_Color = sharedPreferences.getInt("Linear_Time_Color", context.getResources().getColor(R.color.Linear_Time_Color));
             }
-
 
         }
 

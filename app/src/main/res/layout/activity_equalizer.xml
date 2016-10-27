@@ -19,6 +19,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="260dp"
+        android:layoutAnimation="@anim/layout_anim_equalizer"
         >
 
         <TextView
@@ -42,7 +43,8 @@
             android:weightSum="10"
             android:baselineAligned="false"
             android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            android:layoutAnimation="@anim/layout_anim_equalizer">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -264,7 +266,9 @@
         android:orientation="horizontal"
         android:weightSum="10"
         android:paddingRight="10dp"
-        android:paddingLeft="10dp">
+        android:paddingLeft="10dp"
+        android:layoutAnimation="@anim/layout_anim_equalizer"
+        >
 
         <TextView
             android:textSize="12sp"
