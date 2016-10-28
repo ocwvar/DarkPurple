@@ -12,8 +12,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:padding="10dp"
         android:maxLength="50"
+        android:padding="10dp"
         android:singleLine="true"
         android:text="New Text"
         android:textColor="#fff"/>
@@ -25,9 +25,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/notification_title"
+        android:maxLength="50"
         android:paddingLeft="10dp"
         android:singleLine="true"
-        android:maxLength="50"
         android:text="New Text"
         android:textColor="@color/colorSecond"/>
 
@@ -35,39 +35,39 @@
         android:id="@+id/notification_next"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="#00000000"
-        android:src="@drawable/ic_action_next"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"/>
+        android:background="#00000000"
+        android:src="@drawable/ic_action_next"/>
 
     <ImageButton
         android:id="@+id/notification_back"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="#00000000"
-        android:src="@drawable/ic_action_back"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/notification_mainButton"/>
+        android:layout_toStartOf="@+id/notification_mainButton"
+        android:background="#00000000"
+        android:src="@drawable/ic_action_back"/>
 
     <ImageButton
         android:id="@+id/notification_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
-        android:src="@drawable/ic_action_cancel"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/notification_back"/>
+        android:layout_toStartOf="@+id/notification_back"
+        android:background="@null"
+        android:src="@drawable/ic_action_cancel"/>
 
     <ImageButton
         android:id="@+id/notification_mainButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:src="@drawable/ic_action_play"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/notification_next"
         android:layout_centerHorizontal="true"
+        android:layout_centerInParent="false"
         android:layout_centerVertical="true"
-        android:layout_centerInParent="false"/>
+        android:layout_toStartOf="@+id/notification_next"
+        android:background="#00000000"
+        android:src="@drawable/ic_action_play"/>
 
 </RelativeLayout>

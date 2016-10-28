@@ -14,16 +14,16 @@
 
     <TextView
         android:id="@+id/noPlaylist"
-        android:drawableTop="@drawable/ic_empty_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:textColor="#fff"
-        android:text="@string/empty_playlist"
+        android:drawablePadding="10dp"
+        android:drawableTop="@drawable/ic_empty_icon"
         android:gravity="center"
         android:shadowColor="@color/colorPrimary"
         android:shadowRadius="20"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawablePadding="10dp"/>
+        android:text="@string/empty_playlist"
+        android:textColor="#fff"/>
 
 </FrameLayout>

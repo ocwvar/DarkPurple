@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#78000000"
+    android:orientation="horizontal"
     android:padding="5dp">
 
     <TextView
-        android:padding="3dp"
-        android:text="@string/textview_option"
-        android:shadowColor="@color/colorPrimary"
-        android:shadowRadius="20"
-        android:textColor="#fff"
-        android:drawableStart="@drawable/ic_action_setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"/>
+        android:drawableStart="@drawable/ic_action_setting"
+        android:gravity="center_vertical"
+        android:padding="3dp"
+        android:shadowColor="@color/colorPrimary"
+        android:shadowRadius="20"
+        android:text="@string/textview_option"
+        android:textColor="#fff"/>
 
 </LinearLayout>

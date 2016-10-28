@@ -4,7 +4,7 @@
     android:id="@+android:id/title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="@color/colorSecond"
-    android:padding="10dp"
     android:background="#30000000"
-    android:gravity="center_vertical"/>
+    android:gravity="center_vertical"
+    android:padding="10dp"
+    android:textColor="@color/colorSecond"/>

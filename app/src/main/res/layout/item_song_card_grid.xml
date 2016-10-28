@@ -2,19 +2,19 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView_BG"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cardView_BG"
+    app:cardBackgroundColor="@color/backgroundColor_Dark"
     app:cardCornerRadius="3dp"
     app:cardElevation="1dp"
     app:cardMaxElevation="3dp"
-    app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="@color/backgroundColor_Dark">
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <com.ocwvar.darkpurple.widgets.SquareWidthImageView
             android:id="@+id/item_cover"
@@ -26,8 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:singleLine="true"
             android:padding="5dp"
+            android:singleLine="true"
             android:textColor="#fff"
             android:textSize="14sp"/>
 
@@ -36,8 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:singleLine="true"
             android:padding="5dp"
+            android:singleLine="true"
             android:textColor="#fff"
             android:textSize="14sp"/>
 
@@ -48,8 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#6a000000"
-        android:src="@drawable/ic_action_marker"
         android:scaleType="center"
+        android:src="@drawable/ic_action_marker"
         android:visibility="gone"/>
 
 </android.support.v7.widget.CardView>

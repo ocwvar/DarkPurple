@@ -2,22 +2,22 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView_BG"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cardView_BG"
+    app:cardBackgroundColor="#70000000"
     app:cardCornerRadius="3dp"
     app:cardElevation="1dp"
     app:cardMaxElevation="3dp"
-    app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="#70000000">
+    app:cardUseCompatPadding="true">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:drawableTop="@drawable/ic_big_settings"
         android:shadowColor="@color/colorPrimary"
         android:shadowRadius="20"
-        android:drawableTop="@drawable/ic_big_settings"
         android:text="@string/textview_option"
         android:textColor="#fff"/>
 

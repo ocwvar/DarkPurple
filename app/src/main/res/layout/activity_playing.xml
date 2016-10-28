@@ -64,24 +64,23 @@
             android:layout_above="@+id/pendingLayout_NEV"
             android:layout_alignParentStart="true"
             android:background="#a0000000"
-            android:padding="5dp"
             android:layoutAnimation="@anim/layout_anim_equalizer"
+            android:padding="5dp"
             >
 
             <TextView
                 android:id="@+id/shower_title"
-                android:transitionName="title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/shower_mainButton"
                 android:singleLine="true"
                 android:textColor="@color/Text_LightGray"
                 android:textSize="18sp"
+                android:transitionName="title"
                 />
 
             <TextView
                 android:id="@+id/shower_artist"
-                android:transitionName="artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/shower_title"
@@ -89,6 +88,7 @@
                 android:singleLine="true"
                 android:textColor="@color/Text_LightGray"
                 android:textSize="15sp"
+                android:transitionName="artist"
                 />
 
             <TextView
@@ -163,22 +163,22 @@
                 android:id="@+id/equalizer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:background="@null"
-                android:src="@drawable/ic_action_equalizer"
-                android:paddingRight="10dp"
                 android:paddingEnd="10dp"
-                android:layout_gravity="end"/>
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_action_equalizer"/>
 
             <ImageButton
                 android:id="@+id/spectrum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:background="@null"
-                android:src="@drawable/ic_action_sp_off"
-                android:tag="off"
-                android:paddingRight="10dp"
                 android:paddingEnd="10dp"
-                android:layout_gravity="end"/>
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_action_sp_off"
+                android:tag="off"/>
 
         </android.support.v7.widget.Toolbar>
 

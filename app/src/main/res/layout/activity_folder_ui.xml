@@ -49,8 +49,8 @@
         android:layout_above="@+id/frameLayout"
         android:layout_alignParentStart="true"
         android:layout_gravity="start|top"
-        android:padding="5dp"
         android:background="#79000000"
+        android:padding="5dp"
         android:text="@string/info_folder_ui"
         android:textColor="#fff"/>
 
@@ -58,10 +58,10 @@
         android:id="@+id/recycleView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="3dp"
-        android:layout_alignParentStart="true"
         android:layout_above="@+id/textView2"
-        android:layout_below="@+id/toolbar"/>
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar"
+        android:padding="3dp"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

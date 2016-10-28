@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <TextView
-        android:drawableStart="@drawable/ic_action_eq_reset"
-        android:text="@string/eq_reset"
-        android:padding="5dp"
-        android:textColor="#fff"
-        android:layout_gravity="end"
-        android:gravity="center"
+        android:id="@+id/eq_reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/eq_reset"/>
+        android:layout_gravity="end"
+        android:drawableStart="@drawable/ic_action_eq_reset"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/eq_reset"
+        android:textColor="#fff"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -23,236 +23,236 @@
         >
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
             android:text="@string/eq"
             android:textColor="#c9ffffff"
-            android:textSize="30sp"
-            android:padding="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:textSize="30sp"/>
 
         <com.ocwvar.darkpurple.widgets.BezierView
             android:id="@+id/bezierView"
-            android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="center"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="10"
-            android:baselineAligned="false"
-            android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            android:layoutAnimation="@anim/layout_anim_equalizer">
+            android:layout_marginRight="10dp"
+            android:baselineAligned="false"
+            android:layoutAnimation="@anim/layout_anim_equalizer"
+            android:orientation="horizontal"
+            android:weightSum="10">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="0"
-                    android:layout_gravity="center"
                     android:id="@+id/equ1"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="0"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="1"
-                    android:layout_gravity="center"
                     android:id="@+id/equ2"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="1"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="2"
-                    android:layout_gravity="center"
                     android:id="@+id/equ3"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="2"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="3"
-                    android:layout_gravity="center"
                     android:id="@+id/equ4"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="3"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="4"
-                    android:layout_gravity="center"
                     android:id="@+id/equ5"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="4"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="5"
-                    android:layout_gravity="center"
                     android:id="@+id/equ6"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="5"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="6"
-                    android:layout_gravity="center"
                     android:id="@+id/equ7"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="6"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="7"
-                    android:layout_gravity="center"
                     android:id="@+id/equ8"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="7"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="8"
-                    android:layout_gravity="center"
                     android:id="@+id/equ9"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="8"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <com.ocwvar.darkpurple.widgets.VerticalSeekBar
-                    android:tag="9"
-                    android:layout_gravity="center"
                     android:id="@+id/equ10"
                     android:layout_width="10dp"
                     android:layout_height="match_parent"
-                    android:progressDrawable="@drawable/seekbar_bg"
-                    android:thumb="@null"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
                     android:max="20"
                     android:progress="10"
-                    tools:max="20"
-                    android:alpha="0.5"/>
+                    android:progressDrawable="@drawable/seekbar_bg"
+                    android:tag="9"
+                    android:thumb="@null"
+                    tools:max="20"/>
 
             </LinearLayout>
 
@@ -263,110 +263,110 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
         android:layoutAnimation="@anim/layout_anim_equalizer"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:weightSum="10"
         >
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band1"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band2"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band3"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band4"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band5"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band6"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band7"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band8"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/band9"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
         <TextView
-            android:textSize="12sp"
-            android:textColor="#fff"
-            android:text="@string/band10"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/band10"
+            android:textColor="#fff"
+            android:textSize="12sp"/>
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_marginTop="10dp"
-        android:background="#59000000"
         android:id="@+id/recycleView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="#59000000"/>
 
 </LinearLayout>
