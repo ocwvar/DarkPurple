@@ -38,7 +38,7 @@ import java.util.Date;
  * 未处理异常接收器
  * <p/>
  * 在重新启动Activity时会传递数据包 Bundle
- * 也可直接使用  OCExceptionHandler.handleIncomingBundle()  方法进行处理
+ * 也可直接使用  DPApplication.handleIncomingBundle()  方法进行处理
  * <p/>
  * 数据:
  * IsRecover   .布尔类型.                          区别这个数据是否为崩溃重启的数据 永远为  true
@@ -53,7 +53,7 @@ import java.util.Date;
  * LOG_SAVE_FOLDER                          日志保存目录
  * SAVE_LOGS                                    是否生成日志
  */
-public class OCExceptionHandler extends Application implements Thread.UncaughtExceptionHandler, Application.ActivityLifecycleCallbacks {
+public class DPApplication extends Application implements Thread.UncaughtExceptionHandler, Application.ActivityLifecycleCallbacks {
 
     public final static String THROWABLE_OBJECT = "Throwable";
     public final static String IS_RECOVERY = "IsRecover";

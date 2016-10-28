@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -13,7 +12,6 @@ import android.os.IBinder;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.transition.Slide;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,10 +55,10 @@ public class SelectMusicActivity extends BaseActivity {
     @Override
     protected void onSetupViews() {
 
-        if (isToolBarLoaded()){
+        if (isToolBarLoaded()) {
             //getToolBar().setLogo(R.drawable.ic_logo_title);
-            Typeface typeface = Typeface.createFromAsset(getAssets(),"fonts/cuyabra.ttf");
-            ((TextView)findViewById(R.id.logo_title)).setTypeface(typeface);
+            Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/cuyabra.ttf");
+            ((TextView) findViewById(R.id.logo_title)).setTypeface(typeface);
             setTitle("");
         }
 
@@ -81,7 +79,7 @@ public class SelectMusicActivity extends BaseActivity {
         viewPagerAdapter.addFragmentPageToEnd(playlistPageFragment);
 
         tabLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
-        tabLayout.setTabTextColors(AppConfigs.Color.TabLayout_title_color,AppConfigs.Color.TabLayout_title_color_selected);
+        tabLayout.setTabTextColors(AppConfigs.Color.TabLayout_title_color, AppConfigs.Color.TabLayout_title_color_selected);
         tabLayout.setSelectedTabIndicatorColor(AppConfigs.Color.TabLayout_Indicator_color);
 
         onSetupService();

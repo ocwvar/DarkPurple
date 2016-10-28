@@ -13,6 +13,6 @@ import java.util.ArrayList;
  */
 public interface MediaScannerCallback {
 
-    void onScanCompleted(ArrayList<SongItem> songItems);
+    void onScanCompleted(ArrayList<SongItem> songItems, boolean isFromLastSaved);
 
 }

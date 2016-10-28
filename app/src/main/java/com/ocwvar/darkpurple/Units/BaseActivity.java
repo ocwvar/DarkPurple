@@ -23,7 +23,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setStatusBarColor(AppConfigs.Color.StatusBar_color);
             getWindow().setNavigationBarColor(AppConfigs.Color.NavBar_Color);
         }
@@ -77,9 +77,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     /**
      * 设置默认ToolBar属性
      */
-    private void settingToolBar(int resID){
-        Toolbar toolbar = (Toolbar)findViewById(resID);
-        if (toolbar != null){
+    private void settingToolBar(int resID) {
+        Toolbar toolbar = (Toolbar) findViewById(resID);
+        if (toolbar != null) {
             this.toolbar = toolbar;
             setSupportActionBar(toolbar);
             toolbar.setBackgroundColor(AppConfigs.Color.ToolBar_color);
@@ -90,16 +90,19 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     /**
      * 返回ToolBar对象
-     * @return  ToolBar对象 , 如果没有在 onSetToolBar() 中返回资源ID , 则会返回NULL
+     *
+     * @return ToolBar对象 , 如果没有在 onSetToolBar() 中返回资源ID , 则会返回NULL
      */
-    protected @Nullable Toolbar getToolBar(){
+    protected
+    @Nullable
+    Toolbar getToolBar() {
         return this.toolbar;
     }
 
     /**
-     * @return  ToolBar是否已经加载成功
+     * @return ToolBar是否已经加载成功
      */
-    protected boolean isToolBarLoaded(){
+    protected boolean isToolBarLoaded() {
         return toolbar != null;
     }
 

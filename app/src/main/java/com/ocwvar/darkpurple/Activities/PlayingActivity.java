@@ -139,7 +139,7 @@ public class PlayingActivity
             window.setStatusBarColor(Color.TRANSPARENT);
             window.setNavigationBarColor(Color.argb(160, 0, 0, 0));
 
-        }else if (AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        } else if (AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(Color.DKGRAY);
             window.setNavigationBarColor(Color.DKGRAY);
         }

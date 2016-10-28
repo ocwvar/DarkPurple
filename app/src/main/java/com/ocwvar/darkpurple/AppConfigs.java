@@ -129,7 +129,7 @@ public class AppConfigs {
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
-            useCompatMode = preferences.getBoolean("useCompatMode",false);
+            useCompatMode = preferences.getBoolean("useCompatMode", false);
 
             Color.loadColors();
 
@@ -190,7 +190,7 @@ public class AppConfigs {
 
             String value = preferences.getString("scanner_sort_type", "0");
 
-            useCompatMode = preferences.getBoolean("useCompatMode",false);
+            useCompatMode = preferences.getBoolean("useCompatMode", false);
 
             switch (value) {
                 case "0":
@@ -380,7 +380,7 @@ public class AppConfigs {
 
             final Context context = ApplicationContext;
 
-            if (context == null){
+            if (context == null) {
                 //context为空 , 不能加载
                 return;
             }
@@ -429,11 +429,11 @@ public class AppConfigs {
          * 重置用户颜色配置文件
          */
         @SuppressLint("CommitPrefEdits")
-        public static void resetColor(){
+        public static void resetColor() {
 
             final Context context = ApplicationContext;
 
-            if (context == null){
+            if (context == null) {
                 return;
             }
 
@@ -451,6 +451,10 @@ public class AppConfigs {
             editor.remove("DefaultCoverColor");
             editor.remove("Spectrum_Color");
             editor.remove("backgroundColor_Dark");
+            editor.remove("FloatingButton_Color");
+            editor.remove("Linear_Title_Color");
+            editor.remove("Linear_Artist_Color");
+            editor.remove("Linear_Time_Color");
 
             editor.commit();
 

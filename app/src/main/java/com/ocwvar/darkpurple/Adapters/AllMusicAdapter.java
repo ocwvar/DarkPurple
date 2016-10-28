@@ -40,15 +40,14 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
     private final ArrayList<SongItem> checkedItems;
     private final ArrayList<SongItem> arrayList;
     private final RecycleViewScrollController scrollController;
+    //用于时间转换的类
+    private SimpleDateFormat dateFormat;
+    private Date date;
     private LayoutStyle layoutStyle = LayoutStyle.Grid;
     private boolean isMuiltSelecting = false;
     private Drawable defaultCover;
     private OnClick onClick;
     private int imageSize;
-
-    //用于时间转换的类
-    SimpleDateFormat dateFormat;
-    Date date;
 
     public AllMusicAdapter(@Nullable LayoutStyle layoutStyle) {
         scrollController = new RecycleViewScrollController();
@@ -186,7 +185,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         SongItem songItem = arrayList.get(position - 1);
 
-        switch (layoutStyle){
+        switch (layoutStyle) {
             case Grid:
                 MusicItemViewHolder viewHolder = (MusicItemViewHolder) holder;
 
@@ -253,13 +252,13 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                     }
                 }
                 if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-                    viewHolderLinear.icon.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getCustomPaletteColor(),100));
+                    viewHolderLinear.icon.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getCustomPaletteColor(), 100));
                     viewHolderLinear.colorBar.setBackgroundColor(songItem.getCustomPaletteColor());
                 } else if (songItem.isHaveCover()) {
-                    viewHolderLinear.icon.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getPaletteColor(),100));
+                    viewHolderLinear.icon.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getPaletteColor(), 100));
                     viewHolderLinear.colorBar.setBackgroundColor(songItem.getPaletteColor());
                 } else {
-                    viewHolderLinear.icon.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getPaletteColor(),100));
+                    viewHolderLinear.icon.setBackgroundColor(ColorUtils.setAlphaComponent(songItem.getPaletteColor(), 100));
                     viewHolderLinear.colorBar.setBackgroundColor(songItem.getPaletteColor());
                 }
                 break;
@@ -283,9 +282,8 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         if (time < 0d) {
             return "00:00";
         } else {
-            long timeL = time;
-            date.setTime(timeL);
-            if (timeL >= 3600000) {
+            date.setTime(time);
+            if (time >= 3600000) {
                 dateFormat.applyPattern("hh:mm:ss");
             } else {
                 dateFormat.applyPattern("mm:ss");
@@ -369,10 +367,10 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
         MusicItemLinearViewHolder(View itemView) {
             super(itemView);
             colorBar = itemView.findViewById(R.id.item_cover_color_bar);
-            title = (TextView)itemView.findViewById(R.id.item_title);
-            artist = (TextView)itemView.findViewById(R.id.item_artist);
-            time = (TextView)itemView.findViewById(R.id.item_time);
-            icon = (ImageView)itemView.findViewById(R.id.item_icon);
+            title = (TextView) itemView.findViewById(R.id.item_title);
+            artist = (TextView) itemView.findViewById(R.id.item_artist);
+            time = (TextView) itemView.findViewById(R.id.item_time);
+            icon = (ImageView) itemView.findViewById(R.id.item_icon);
             itemView.setOnTouchListener(this);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -410,7 +408,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()){
+            switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     title.setAlpha(0.5f);
                     break;

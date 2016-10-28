@@ -28,6 +28,14 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColorSecondary">#fff</item>
+        <item name="android:actionModeBackground">@android:color/transparent</item>
+        <item name="android:actionModeStyle">@style/CustomActionMode</item>
+    </style>
+
+    <style name="CustomActionMode" parent="@style/Widget.AppCompat.ActionMode">
+
+        <item name="android:background">@color/colorPrimary</item>
+
     </style>
 
     <style name="FullScreen.TransparentBG" parent="Theme.AppCompat.Dialog.Alert">

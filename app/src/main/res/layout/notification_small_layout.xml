@@ -29,7 +29,7 @@
         android:singleLine="true"
         android:maxLength="50"
         android:text="New Text"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/colorSecond"/>
 
     <ImageButton
         android:id="@+id/notification_next"

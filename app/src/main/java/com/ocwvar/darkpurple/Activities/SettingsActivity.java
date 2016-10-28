@@ -3,10 +3,7 @@ package com.ocwvar.darkpurple.Activities;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -15,7 +12,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.ActionBar;
-import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -174,7 +170,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.menu_action_theme_apply:
                     AppConfigs.reInitOptionValues();
                     ActivityManager.getInstance().restartMainActivity();
@@ -186,13 +182,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
             super.onCreateOptionsMenu(menu, inflater);
-            inflater.inflate(R.menu.menu_theme,menu);
+            inflater.inflate(R.menu.menu_theme, menu);
         }
 
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             //通过文字资源ID来确定点击的是哪个选项
-            switch (preference.getTitleRes()){
+            switch (preference.getTitleRes()) {
                 case R.string.setting_title_theme_reset:
                     //重置颜色配置
                     AppConfigs.Color.resetColor();

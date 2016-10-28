@@ -50,7 +50,7 @@ public class ActivityManager {
         }
     }
 
-    public void restartMainActivity(){
+    public void restartMainActivity() {
         release();
         Intent intent = new Intent(AppConfigs.ApplicationContext, SelectMusicActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);

@@ -99,16 +99,16 @@
         app:colorpicker_showAlpha="false"
         />
 
-    <PreferenceCategory
-        android:title="@string/setting_info_linear_only"
-        android:layout="@layout/preference_category_textview"
-        />
-
     <com.rarepebble.colorpicker.ColorPreference
         android:title="@string/setting_title_color_fb"
         android:key="FloatingButton_Color"
         android:defaultValue="0xFFf4a11a"
         app:colorpicker_showAlpha="false"
+        />
+
+    <PreferenceCategory
+        android:title="@string/setting_info_linear_only"
+        android:layout="@layout/preference_category_textview"
         />
 
     <com.rarepebble.colorpicker.ColorPreference

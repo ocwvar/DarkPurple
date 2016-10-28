@@ -2,7 +2,6 @@ package com.ocwvar.darkpurple.FragmentPages;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,9 +14,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.BundleCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -65,10 +62,9 @@ import java.util.ArrayList;
 public class AllMusicBackGround extends Fragment implements MediaScannerCallback, AllMusicAdapter.OnClick, View.OnTouchListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = "AllMusicBackGround";
-
+    final AllMusicAdapter allMusicAdapter;
     View fragmentView;
     RecyclerView recyclerView;
-    final AllMusicAdapter allMusicAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
     FloatingActionButton floatingActionButton;
     WeakReference<AlertDialog> moreDialog = new WeakReference<>(null);
@@ -104,7 +100,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (allMusicAdapter.isMuiltSelecting()){
+        if (allMusicAdapter.isMuiltSelecting()) {
             cancelMulitMode();
         }
     }
@@ -112,10 +108,11 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     /**
      * 歌曲数据刷新回调
      *
-     * @param songItems 得到的数据
+     * @param songItems       得到的数据
+     * @param isFromLastSaved 这次的数据是否来自最后一次的储存
      */
     @Override
-    public void onScanCompleted(ArrayList<SongItem> songItems) {
+    public void onScanCompleted(ArrayList<SongItem> songItems, boolean isFromLastSaved) {
         if (songItems == null) {
             if (fragmentView == null) {
                 Toast.makeText(getActivity(), R.string.noMusic, Toast.LENGTH_SHORT).show();
@@ -130,6 +127,14 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             } else {
                 Snackbar.make(fragmentView, R.string.gotMusicDone, Snackbar.LENGTH_SHORT).show();
             }
+
+            /*if (isFromLastSaved) {
+                final AudioService service = ServiceHolder.getInstance().getService();
+                if (service != null) {
+                    service.initAudio(songItems, 0);
+                }
+            }*/
+
         }
 
         if (swipeRefreshLayout != null) {
@@ -281,18 +286,18 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
         if (fragmentView != null) {
 
-            requestPermission = Snackbar.make(fragmentView,R.string.error_noPermission,Snackbar.LENGTH_LONG)
+            requestPermission = Snackbar.make(fragmentView, R.string.error_noPermission, Snackbar.LENGTH_LONG)
                     .setActionTextColor(AppConfigs.ApplicationContext.getResources().getColor(R.color.colorSecond))
                     .setAction(R.string.request_permission_button, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                                 //如果应用还可以请求权限,则弹出请求对话框
-                                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},9);
-                            }else {
+                                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 9);
+                            } else {
                                 //如果用户选择了不再提醒,则不弹出请求对话框,直接跳转到设置界面
                                 Uri packageURI = Uri.parse("package:" + AppConfigs.ApplicationContext.getPackageName());
-                                Intent intent =  new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,packageURI);
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
                                 startActivity(intent);
                             }
                         }
@@ -303,9 +308,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             recyclerView = (RecyclerView) fragmentView.findViewById(R.id.recycleView);
 
             recyclerView.setAdapter(allMusicAdapter);
-            if (allMusicAdapter.getLayoutStyle() == AllMusicAdapter.LayoutStyle.Grid){
+            if (allMusicAdapter.getLayoutStyle() == AllMusicAdapter.LayoutStyle.Grid) {
                 recyclerView.setLayoutManager(new GridLayoutManager(fragmentView.getContext(), 2, GridLayoutManager.VERTICAL, false));
-            }else {
+            } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(fragmentView.getContext(), 1, GridLayoutManager.VERTICAL, false));
             }
             recyclerView.setHasFixedSize(true);
@@ -393,9 +398,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 getActivity().sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 if (AppConfigs.isAutoSwitchPlaying) {
                     Intent intent = new Intent(getActivity(), PlayingActivity.class);
-                    if (Build.VERSION.SDK_INT >= 21){
-                        getActivity().startActivity(intent,ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),new Pair<>(itemView.findViewById(R.id.item_title),"title"),new Pair<>(itemView.findViewById(R.id.item_artist), "artist")).toBundle());
-                    }else {
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        getActivity().startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), new Pair<>(itemView.findViewById(R.id.item_title), "title"), new Pair<>(itemView.findViewById(R.id.item_artist), "artist")).toBundle());
+                    } else {
                         getActivity().startActivity(intent);
                     }
                 }
@@ -432,7 +437,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             FolderSelectorActivity.startBlurActivityForResultByFragment(5, Color.argb(100, 0, 0, 0), false, AllMusicBackGround.this, FolderSelectorActivity.class, null, 9);
         } else {
             //如果权限不正常 , 则提示错误
-            Snackbar.make(fragmentView, R.string.error_noPermission, Snackbar.LENGTH_SHORT).show();
+            requestPermission.show();
         }
     }
 

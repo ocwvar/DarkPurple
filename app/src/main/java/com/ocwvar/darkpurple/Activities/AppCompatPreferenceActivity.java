@@ -37,7 +37,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setNavigationBarColor(AppConfigs.Color.NavBar_Color);
         }
         getDelegate().installViewFactory();

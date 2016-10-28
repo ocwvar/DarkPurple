@@ -120,7 +120,7 @@ public class MediaScanner {
      */
     public void start() {
         if (isUpdated && callback != null) {
-            callback.onScanCompleted(cachedList);
+            callback.onScanCompleted(cachedList, false);
         } else {
             if (AppConfigs.MusicFolders == null) {
                 //如果没有设置音乐文件夹 , 则从媒体数据库中获取
@@ -198,7 +198,7 @@ public class MediaScanner {
             runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onScanCompleted(arrayList);
+                    callback.onScanCompleted(arrayList, false);
                 }
             });
         }
@@ -465,7 +465,7 @@ public class MediaScanner {
             runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onScanCompleted(arrayList);
+                    callback.onScanCompleted(arrayList, false);
                 }
             });
         }
@@ -747,7 +747,7 @@ public class MediaScanner {
             runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onScanCompleted(arrayList);
+                    callback.onScanCompleted(arrayList, true);
                 }
             });
         }
@@ -781,7 +781,7 @@ public class MediaScanner {
      */
     final private class ComparatorByName implements Comparator<SongItem> {
 
-        public ComparatorByName() {
+        ComparatorByName() {
             Logger.warnning("ComparatorByName", "正在按照名称排序");
         }
 
