@@ -1,14 +1,17 @@
 package com.ocwvar.darkpurple.Activities;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -16,10 +19,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
+import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.FragmentPages.AllMusicFragment;
 import com.ocwvar.darkpurple.FragmentPages.PlaylistPageFragment;
 import com.ocwvar.darkpurple.R;
@@ -32,13 +37,16 @@ public class SelectMusicActivity extends BaseActivity {
     ViewPager viewPager;
     MainViewPagerAdapter viewPagerAdapter;
     ServiceConnection serviceConnection;
+    TextView nowPlayingTV;
 
     AllMusicFragment allMusicFragment;
     PlaylistPageFragment playlistPageFragment;
+    UpdateHeaderPlayingText headerTextUpdater;
 
     @Override
     protected boolean onPreSetup() {
         getWindow().setBackgroundDrawable(new ColorDrawable(AppConfigs.Color.WindowBackground_Color));
+        headerTextUpdater = new UpdateHeaderPlayingText();
         return true;
     }
 
@@ -56,12 +64,12 @@ public class SelectMusicActivity extends BaseActivity {
     protected void onSetupViews() {
 
         if (isToolBarLoaded()) {
-            //getToolBar().setLogo(R.drawable.ic_logo_title);
-            Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/cuyabra.ttf");
-            ((TextView) findViewById(R.id.logo_title)).setTypeface(typeface);
-            setTitle("");
+            getToolBar().setBackground(null);
+            setTitle(null);
+            ((ImageView) findViewById(R.id.header_image_shadow)).setColorFilter(AppConfigs.Color.TabLayout_color);
         }
 
+        nowPlayingTV = (TextView) findViewById(R.id.header_nowPlaying);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.Main_TabLayout);
         viewPager = (ViewPager) findViewById(R.id.Main_ViewPager);
         viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
@@ -171,6 +179,31 @@ public class SelectMusicActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 当界面恢复的时候 , 重新注册广播接收器
+     * 并重新拉取一次播放歌曲名字
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (headerTextUpdater == null) {
+            this.headerTextUpdater = new UpdateHeaderPlayingText();
+        }
+        registerReceiver(headerTextUpdater,headerTextUpdater.intentFilter);
+        updateNowPlaying();
+    }
+
+    /**
+     * 当界面被暂停的时候 , 注销广播接收器
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (headerTextUpdater != null) {
+            unregisterReceiver(headerTextUpdater);
+        }
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (viewPager.getCurrentItem()) {
@@ -184,4 +217,38 @@ public class SelectMusicActivity extends BaseActivity {
                 return super.onKeyDown(keyCode, event);
         }
     }
+
+    /**
+     * 更新正在播放的歌曲文字
+     */
+    private void updateNowPlaying(){
+        final AudioService service = ServiceHolder.getInstance().getService();
+        if (service != null && service.getPlayingSong() != null){
+            final SongItem songItem = service.getPlayingSong();
+            nowPlayingTV.setText(songItem.getTitle()+"\n"+songItem.getArtist());
+        }else {
+            nowPlayingTV.setText(R.string.header_noMusic);
+        }
+    }
+
+    class UpdateHeaderPlayingText extends BroadcastReceiver {
+
+        private IntentFilter intentFilter;
+
+        public UpdateHeaderPlayingText() {
+            this.intentFilter = new IntentFilter();
+            this.intentFilter.addAction(AudioService.AUDIO_PLAY);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case AudioService.AUDIO_PLAY:
+                    updateNowPlaying();
+                    break;
+            }
+        }
+
+    }
+
 }

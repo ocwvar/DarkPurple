@@ -78,6 +78,10 @@
     <string name="title_newplaylist_dialog">请输入新建播放列表的名称</string>
     <string name="title_addPL_dialog">选择需要添加到的播放列表</string>
     <string name="error_noPermission">请先授予APP文件读写权限</string>
+    <string name="header_welcome">DarkPurple Music Player</string>
+    <string name="header_nowPlaying">正在播放:</string>
+    <string name="header_noMusic">无正在播放曲目</string>
+    <string name="header_result">扫描结果</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_select_folder_ui">选择要扫描的音乐文件夹</string>

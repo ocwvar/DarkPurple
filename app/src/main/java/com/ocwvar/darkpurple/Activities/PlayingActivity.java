@@ -491,7 +491,7 @@ public class PlayingActivity
                     switch (audioService.getAudioStatus()) {
                         case Playing:
                             //当前是播放状态 , 则执行暂停操作
-                            audioService.pause();
+                            audioService.pause(false);
                             mainButton.setImageResource(R.drawable.ic_action_play);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新
@@ -503,7 +503,7 @@ public class PlayingActivity
                         case Stopped:
                         case Paused:
                             //当前是暂停/停止状态 , 则执行继续播放操作
-                            audioService.resume();
+                            audioService.resume(false);
                             mainButton.setImageResource(R.drawable.ic_action_pause);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则开始
@@ -579,7 +579,7 @@ public class PlayingActivity
      */
     @Override
     public void onSlidingMenuClick(SongItem songItem, int position) {
-        audioService.play(playingList, position);
+        audioService.play(playingList, position, false);
         updateInfomation(false);
         if (!surfaceViewControler.isDrawing()) {
             surfaceViewControler.start();
@@ -776,7 +776,7 @@ public class PlayingActivity
 
             //如果当前是正在播放状态 , 则直接播放
             if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
-                audioService.play(playingList, coverShower.getCurrentItem());
+                audioService.play(playingList, coverShower.getCurrentItem(), false);
             } else {
                 //否则仅仅加载音频数据 , 同时通知状态栏数据更新
                 audioService.initAudio(playingList, coverShower.getCurrentItem());

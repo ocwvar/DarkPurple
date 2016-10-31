@@ -92,7 +92,7 @@ public class AudioService extends Service {
     //耳机插入广播接收器
     private HeadsetPlugInReceiver headsetPlugInReceiver;
     private boolean isMediaButtonHandling = false;
-    private boolean isRunningFreground = false;
+    private boolean isRunningForeground = false;
 
     /**
      * 当音频服务创建的时候
@@ -168,7 +168,7 @@ public class AudioService extends Service {
      * @param keyIntent 广播得到的 Intent
      */
     public synchronized void onMediaButtonPress(Intent keyIntent) {
-        if (isRunningFreground && !isMediaButtonHandling) {
+        if (isRunningForeground && !isMediaButtonHandling) {
             //如果当前没有正在处理上一次的媒体按钮事件 , 即可开始响应接下来的事件
             switch (keyIntent.getAction()) {
                 case Intent.ACTION_MEDIA_BUTTON:
@@ -203,9 +203,9 @@ public class AudioService extends Service {
             //如果Notification 为空 或 NotificationManager为空 , 则重新创建对象
             initNotification();
         }
-        if (!isRunningFreground) {
+        if (!isRunningForeground) {
             startForeground(notificationID, notification);
-            isRunningFreground = true;
+            isRunningForeground = true;
         }
         Logger.warnning(TAG, "音频服务正在后台运行");
     }
@@ -215,8 +215,12 @@ public class AudioService extends Service {
      */
     public void updateNotification() {
         SongItem songItem = core.getPlayingSong();
-        System.out.println("updateNotification");
-        if (isRunningFreground && smallRemoteView != null && remoteView != null && songItem != null) {
+
+        if (!isRunningForeground){
+            showNotification();
+        }
+
+        if (isRunningForeground && smallRemoteView != null && remoteView != null && songItem != null) {
             Logger.warnning(TAG, "已更新状态栏布局. 歌曲:" + songItem.getTitle());
             //如果有歌曲信息
             //更新标题
@@ -274,7 +278,7 @@ public class AudioService extends Service {
                     break;
 
             }
-        } else if (isRunningFreground && smallRemoteView != null && remoteView != null) {
+        } else if (isRunningForeground && smallRemoteView != null && remoteView != null) {
             Logger.warnning(TAG, "更新状态栏失败 , 使用默认文字资源. 原因:当前没有歌曲加载");
             //更新标题
             remoteView.setTextViewText(R.id.notification_title, getResources().getText(R.string.notification_string_empty));
@@ -300,7 +304,7 @@ public class AudioService extends Service {
      */
     private void hideNotification() {
         stopForeground(true);
-        isRunningFreground = false;
+        isRunningForeground = false;
         Logger.warnning(TAG, "音频服务已停止后台运行");
     }
 
@@ -397,10 +401,12 @@ public class AudioService extends Service {
     private void closeApp() {
         //结束掉所有Activity页面
         ActivityManager.getInstance().release();
+
+        //暂停当前的播放
+        pause(true);
+
         //不显示当前的状态栏
         hideNotification();
-        //暂停当前的播放
-        pause();
     }
 
     /**
@@ -408,13 +414,14 @@ public class AudioService extends Service {
      *
      * @param songList  要播放的音频列表
      * @param playIndex 要播放的音频位置
+     * @param notUpdateNotification 仅执行,不刷新通知栏
      * @return 执行结果
      */
-    public boolean play(ArrayList<SongItem> songList, int playIndex) {
-        if (!isRunningFreground) {
+    public boolean play(ArrayList<SongItem> songList, int playIndex, boolean notUpdateNotification) {
+        if (!isRunningForeground) {
             showNotification();
         }
-        boolean result = core.play(songList, playIndex);
+        boolean result = core.play(songList, playIndex,notUpdateNotification);
         if (remoteView != null) {
             updateNotification();
         }
@@ -436,27 +443,30 @@ public class AudioService extends Service {
      * 继续播放音频 , 如果音频是被暂停则继续播放  如果音频是被停止则从头播放
      *
      * @return 执行结果
+     * @param notUpdateNotification 仅执行,不刷新通知栏
      */
-    public boolean resume() {
-        return core.resumeAudio();
+    public boolean resume(boolean notUpdateNotification) {
+        return core.resumeAudio(notUpdateNotification);
     }
 
     /**
      * 暂停播放音频
      *
      * @return 执行结果
+     * @param notUpdateNotification 仅执行,不刷新通知栏
      */
-    public boolean pause() {
-        return core.pauseAudio();
+    public boolean pause(boolean notUpdateNotification) {
+        return core.pauseAudio(notUpdateNotification);
     }
 
     /**
      * 停止播放音频
      *
      * @return 执行结果
+     * @param notUpdateNotification 仅执行,不刷新通知栏
      */
-    public boolean stop() {
-        return core.stopAudio();
+    public boolean stop(boolean notUpdateNotification) {
+        return core.stopAudio(notUpdateNotification);
     }
 
     /**
@@ -523,7 +533,7 @@ public class AudioService extends Service {
      *
      * @return 有则返回歌曲集合 , 没有则返回 NULL
      */
-    public SongItem getPlayingSong() {
+    public @Nullable SongItem getPlayingSong() {
         return core.getPlayingSong();
     }
 
@@ -627,10 +637,10 @@ public class AudioService extends Service {
                 case NOTIFICATION_MAIN:
                     if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing) {
                         //如果当前是播放状态 , 则执行暂停操作 , 图片变为播放
-                        result = core.pauseAudio();
+                        result = core.pauseAudio(false);
                     } else if (core.getCurrectStatus() == AudioCore.AudioStatus.Paused) {
                         //如果当前是暂停状态 , 则执行播放操作 , 图片变为暂停
-                        result = core.resumeAudio();
+                        result = core.resumeAudio(false);
                     }
                     break;
                 case NOTIFICATION_REFRESH:
@@ -670,19 +680,19 @@ public class AudioService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (isRunningFreground) {
+            if (isRunningForeground) {
                 //当前是正在运行的时候才能通过媒体按键来操作音频
                 switch (intent.getAction()) {
                     case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
                         if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioCore.AudioStatus.Playing) {
                             //蓝牙耳机断开连接 同时当前音乐正在播放
-                            core.pauseAudio();
+                            core.pauseAudio(false);
                         }
                         break;
                     case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
                         if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing) {
                             //有线耳机断开连接 同时当前音乐正在播放
-                            core.pauseAudio();
+                            core.pauseAudio(false);
                         }
                         break;
                 }
@@ -717,7 +727,7 @@ public class AudioService extends Service {
                     if (getAudioStatus() == AudioCore.AudioStatus.Paused) {
                         //如果插入耳机的时候 , 当前有暂停的音频 , 则会继续播放 , 同时显示状态栏数据
                         showNotification();
-                        resume();
+                        resume(false);
                     }
 
                 }

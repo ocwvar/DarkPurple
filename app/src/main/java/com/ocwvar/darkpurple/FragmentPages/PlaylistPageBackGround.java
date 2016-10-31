@@ -164,7 +164,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                     if (loadingDialog != null) {
                         loadingDialog.dismiss();
                     }
-                    ServiceHolder.getInstance().getService().play(data, 0);
+                    ServiceHolder.getInstance().getService().play(data, 0, false);
                     startActivity(new Intent(getActivity(), PlayingActivity.class));
                 }
 
@@ -177,7 +177,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                 }
             }, playlistItem);
         } else {
-            ServiceHolder.getInstance().getService().play(playlistItem.getPlaylist(), 0);
+            ServiceHolder.getInstance().getService().play(playlistItem.getPlaylist(), 0,false);
             if (AppConfigs.isAutoSwitchPlaying) {
                 startActivity(new Intent(getActivity(), PlayingActivity.class));
             }
