@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.IBinder;
@@ -15,6 +16,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +33,8 @@ import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseActivity;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.squareup.picasso.Picasso;
 
 public class SelectMusicActivity extends BaseActivity {
 
@@ -38,6 +42,7 @@ public class SelectMusicActivity extends BaseActivity {
     MainViewPagerAdapter viewPagerAdapter;
     ServiceConnection serviceConnection;
     TextView nowPlayingTV;
+    ImageView headerCover;
 
     AllMusicFragment allMusicFragment;
     PlaylistPageFragment playlistPageFragment;
@@ -70,6 +75,7 @@ public class SelectMusicActivity extends BaseActivity {
         }
 
         nowPlayingTV = (TextView) findViewById(R.id.header_nowPlaying);
+        headerCover = (ImageView) findViewById(R.id.header_small_cover);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.Main_TabLayout);
         viewPager = (ViewPager) findViewById(R.id.Main_ViewPager);
         viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
@@ -226,6 +232,27 @@ public class SelectMusicActivity extends BaseActivity {
         if (service != null && service.getPlayingSong() != null){
             final SongItem songItem = service.getPlayingSong();
             nowPlayingTV.setText(songItem.getTitle()+"\n"+songItem.getArtist());
+            if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
+                //如果有用户自定义的封面和混合颜色,则优先使用
+                Picasso
+                        .with(AppConfigs.ApplicationContext)
+                        .load(songItem.getCustomCoverPath())
+                        .config(Bitmap.Config.RGB_565)
+                        .error(R.drawable.ic_cd)
+                        .resize(120,120)
+                        .into(headerCover);
+            } else if (songItem.isHaveCover()) {
+                //没有下载的封面,则使用读取到的封面文件和混合颜色
+                Picasso
+                        .with(AppConfigs.ApplicationContext)
+                        .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
+                        .config(Bitmap.Config.RGB_565)
+                        .error(R.drawable.ic_cd)
+                        .resize(120,120)
+                        .into(headerCover);
+            } else {
+                headerCover.setImageResource(R.drawable.ic_cd);
+            }
         }else {
             nowPlayingTV.setText(R.string.header_noMusic);
         }
