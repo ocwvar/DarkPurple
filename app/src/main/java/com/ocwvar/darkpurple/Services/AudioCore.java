@@ -110,6 +110,7 @@ public class AudioCore {
             BASS.BASS_FXSetParameters(eqIndexs[9], p);
             Logger.warnning(TAG, "音频资源已加载");
             if (onlyInit) {
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
                 return true;
             } else {
                 return BASS.BASS_ChannelPlay(playingChannel, true);
@@ -250,7 +251,8 @@ public class AudioCore {
      *
      * @return 有则返回歌曲集合 , 没有则返回 NULL
      */
-    @Nullable SongItem getPlayingSong() {
+    @Nullable
+    SongItem getPlayingSong() {
         if (songList != null && playingIndex != -1) {
             return songList.get(playingIndex);
         } else {
@@ -263,18 +265,15 @@ public class AudioCore {
      *
      * @param songList  要播放的音频列表
      * @param playIndex 要播放的音频位置
-     * @param notUpdateNotification 仅执行,不刷新通知栏
      * @return 执行结果
      */
-    boolean play(ArrayList<SongItem> songList, int playIndex, boolean notUpdateNotification) {
+    boolean play(ArrayList<SongItem> songList, int playIndex) {
         if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()) {
             //如果音频列表和播放位置合法 , 则开始读取
             if (playAudio(songList.get(playIndex), false)) {
                 //如果播放成功 , 则记录当前数据和列表 , 同时发送开始播放的广播
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
-                if (!notUpdateNotification){
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                }
+
                 this.playingIndex = playIndex;
                 if (this.songList == null || !this.songList.equals(songList)) {
                     Logger.warnning(TAG, "播放列表已更新!");
@@ -324,18 +323,14 @@ public class AudioCore {
     /**
      * 停止播放音频
      *
-     * @param notUpdateNotification 仅执行,不刷新通知栏
      * @return 执行结果
      */
-    boolean stopAudio(boolean notUpdateNotification) {
+    boolean stopAudio() {
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
             //如果当前加载了频道数据 , 同时当前状态不是停止播放状态
             boolean result = BASS.BASS_ChannelStop(playingChannel);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PAUSED));
-                if (!notUpdateNotification){
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                }
             }
             return result;
         } else {
@@ -346,18 +341,14 @@ public class AudioCore {
     /**
      * 暂停播放音频
      *
-     * @param notUpdateNotification 仅执行,不刷新通知栏
      * @return 执行结果
      */
-    boolean pauseAudio(boolean notUpdateNotification) {
+    boolean pauseAudio() {
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PLAYING) {
             //如果当前加载了频道数据 , 同时当前状态为正在播放
             boolean result = BASS.BASS_ChannelPause(playingChannel);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PAUSED));
-                if (!notUpdateNotification){
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                }
             }
             return result;
         } else {
@@ -368,10 +359,9 @@ public class AudioCore {
     /**
      * 继续播放音频 , 如果音频是被暂停则继续播放  如果音频是被停止则从头播放 , 如果操作成功 , 则会发送广播
      *
-     * @param notUpdateNotification 仅执行,不刷新通知栏
      * @return 执行结果
      */
-    boolean resumeAudio(boolean notUpdateNotification) {
+    boolean resumeAudio() {
         boolean result;
 
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PAUSED) {
@@ -379,9 +369,6 @@ public class AudioCore {
             result = BASS.BASS_ChannelPlay(playingChannel, false);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_RESUMED));
-                if (!notUpdateNotification){
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                }
             }
             return result;
         } else if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_STOPPED) {
@@ -389,9 +376,6 @@ public class AudioCore {
             result = BASS.BASS_ChannelPlay(playingChannel, true);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_RESUMED));
-                if (!notUpdateNotification){
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
-                }
             }
             return result;
         } else {
@@ -413,9 +397,10 @@ public class AudioCore {
                 //否则就继续向前一个位置读取数据
                 playingIndex -= 1;
             }
-            boolean result = play(songList, playingIndex,false);
+            boolean result = play(songList, playingIndex);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
             }
             return result;
         } else {
@@ -437,9 +422,10 @@ public class AudioCore {
                 //否则就继续向下一个位置读取数据
                 playingIndex += 1;
             }
-            boolean result = play(songList, playingIndex,false);
+            boolean result = play(songList, playingIndex);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
             }
             return result;
         } else {
@@ -463,7 +449,6 @@ public class AudioCore {
             playingIndex = 0;
             songList = null;
             playingChannel = 0;
-            applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             return result;
         } else {
             return false;

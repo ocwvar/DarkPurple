@@ -332,7 +332,6 @@ public class MediaScanner {
                 //开始从后缀名判断是否为音频文件
                 switch (temp[temp.length - 1]) {
                     case "mp3":
-                    case "wav":
                         return true;
                     default:
                         return false;
@@ -518,7 +517,6 @@ public class MediaScanner {
                     //开始从后缀名判断是否为音频文件
                     switch (temp[temp.length - 1]) {
                         case "mp3":
-                        case "wav":
                             return true;
                         default:
                             return false;

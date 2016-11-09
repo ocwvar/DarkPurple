@@ -176,6 +176,7 @@
     <!--播放界面文字-->
     <string name="main_default_title">当前没有播放数据</string>
     <string name="main_default_text">--</string>
+    <string name="close_in_4.3">此功能不能在 Android 4.3 下使用</string>
 
     <!--均衡器设置界面-->
     <string name="eq">均衡器</string>

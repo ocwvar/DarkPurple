@@ -18,6 +18,7 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -480,7 +481,11 @@ public class PlayingActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.spectrum:
-                switchSpectrumEffect();
+                if (Build.VERSION.SDK_INT != 18) {
+                    switchSpectrumEffect();
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), R.string.close_in_4_3, Snackbar.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.equalizer:
                 EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
@@ -491,7 +496,7 @@ public class PlayingActivity
                     switch (audioService.getAudioStatus()) {
                         case Playing:
                             //当前是播放状态 , 则执行暂停操作
-                            audioService.pause(false);
+                            audioService.pause();
                             mainButton.setImageResource(R.drawable.ic_action_play);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新
@@ -503,7 +508,7 @@ public class PlayingActivity
                         case Stopped:
                         case Paused:
                             //当前是暂停/停止状态 , 则执行继续播放操作
-                            audioService.resume(false);
+                            audioService.resume();
                             mainButton.setImageResource(R.drawable.ic_action_pause);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则开始
@@ -513,8 +518,6 @@ public class PlayingActivity
                             }
                             break;
                     }
-                    //更新播放按钮状态
-                    sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 }
                 break;
         }
@@ -579,7 +582,7 @@ public class PlayingActivity
      */
     @Override
     public void onSlidingMenuClick(SongItem songItem, int position) {
-        audioService.play(playingList, position, false);
+        audioService.play(playingList, position);
         updateInfomation(false);
         if (!surfaceViewControler.isDrawing()) {
             surfaceViewControler.start();
@@ -776,11 +779,10 @@ public class PlayingActivity
 
             //如果当前是正在播放状态 , 则直接播放
             if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
-                audioService.play(playingList, coverShower.getCurrentItem(), false);
+                audioService.play(playingList, coverShower.getCurrentItem());
             } else {
                 //否则仅仅加载音频数据 , 同时通知状态栏数据更新
                 audioService.initAudio(playingList, coverShower.getCurrentItem());
-                sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
             }
 
             updateInfomation(false);

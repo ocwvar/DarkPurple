@@ -9,10 +9,10 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,7 +51,14 @@ public class SelectMusicActivity extends BaseActivity {
 
     @Override
     protected boolean onPreSetup() {
-        getWindow().setBackgroundDrawable(new ColorDrawable(AppConfigs.Color.WindowBackground_Color));
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(AppConfigs.Color.WindowBackground_Color));
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            getWindow().setNavigationBarColor(Color.argb(160, 0, 0, 0));
+        }
         headerTextUpdater = new UpdateHeaderPlayingText();
         return true;
     }
@@ -195,7 +203,7 @@ public class SelectMusicActivity extends BaseActivity {
         if (headerTextUpdater == null) {
             this.headerTextUpdater = new UpdateHeaderPlayingText();
         }
-        registerReceiver(headerTextUpdater,headerTextUpdater.intentFilter);
+        registerReceiver(headerTextUpdater, headerTextUpdater.intentFilter);
         updateNowPlaying();
     }
 
@@ -227,11 +235,11 @@ public class SelectMusicActivity extends BaseActivity {
     /**
      * 更新正在播放的歌曲文字
      */
-    private void updateNowPlaying(){
+    private void updateNowPlaying() {
         final AudioService service = ServiceHolder.getInstance().getService();
-        if (service != null && service.getPlayingSong() != null){
+        if (service != null && service.getPlayingSong() != null) {
             final SongItem songItem = service.getPlayingSong();
-            nowPlayingTV.setText(songItem.getTitle()+"\n"+songItem.getArtist());
+            nowPlayingTV.setText(songItem.getTitle() + "\n" + songItem.getArtist());
             if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
                 //如果有用户自定义的封面和混合颜色,则优先使用
                 Picasso
@@ -239,7 +247,7 @@ public class SelectMusicActivity extends BaseActivity {
                         .load(songItem.getCustomCoverPath())
                         .config(Bitmap.Config.RGB_565)
                         .error(R.drawable.ic_cd)
-                        .resize(120,120)
+                        .resize(120, 120)
                         .into(headerCover);
             } else if (songItem.isHaveCover()) {
                 //没有下载的封面,则使用读取到的封面文件和混合颜色
@@ -248,12 +256,12 @@ public class SelectMusicActivity extends BaseActivity {
                         .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                         .config(Bitmap.Config.RGB_565)
                         .error(R.drawable.ic_cd)
-                        .resize(120,120)
+                        .resize(120, 120)
                         .into(headerCover);
             } else {
                 headerCover.setImageResource(R.drawable.ic_cd);
             }
-        }else {
+        } else {
             nowPlayingTV.setText(R.string.header_noMusic);
         }
     }

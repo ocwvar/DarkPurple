@@ -43,7 +43,6 @@ import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.MediaScanner;
@@ -392,9 +391,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     public void onListClick(ArrayList<SongItem> songList, int position, View itemView) {
         if (ServiceHolder.getInstance().getService() != null) {
 
-            if (ServiceHolder.getInstance().getService().play(songList, position, false)) {
+            if (ServiceHolder.getInstance().getService().play(songList, position)) {
                 //如果播放成功 , 则发送广播刷新状态栏通知和跳转界面
-                getActivity().sendBroadcast(new Intent(AudioService.NOTIFICATION_REFRESH));
                 if (AppConfigs.isAutoSwitchPlaying) {
                     Intent intent = new Intent(getActivity(), PlayingActivity.class);
                     if (Build.VERSION.SDK_INT >= 21) {
