@@ -290,9 +290,6 @@ public class AudioService extends Service {
      */
     public boolean pause() {
         //如果当前有通话事件,则不执行
-        if (isPhoneCalling) {
-            return false;
-        }
 
         final boolean result = core.pauseAudio();
         if (result) {
