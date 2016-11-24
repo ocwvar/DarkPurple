@@ -1,7 +1,6 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/logo-nv.png) 
 
 ###### (Android 4.2.2 ~ Android 7.0) 暂不支持Android 7.0分屏功能
-![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=master)
 
 ##### 功能介绍  Features introduce
 
