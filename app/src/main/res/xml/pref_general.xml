@@ -1,77 +1,77 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/setting_header_scan"
-        android:layout="@layout/preference_category_textview">
+        android:layout="@layout/preference_category_textview"
+        android:title="@string/setting_header_scan">
 
         <EditTextPreference
             android:capitalize="words"
             android:defaultValue="@string/setting_defaultValue_lengthLimit"
             android:inputType="number"
             android:key="length_limit"
-            android:maxLines="1"
             android:maxLength="2"
+            android:maxLines="1"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/setting_title_lengthLimit" />
 
         <ListPreference
-            android:key="scanner_sort_type"
-            android:title="@string/title_sorttype"
+            android:defaultValue="0"
             android:entries="@array/sort_types_name"
             android:entryValues="@array/sort_types_value"
-            android:defaultValue="0"
+            android:key="scanner_sort_type"
+            android:title="@string/title_sorttype"
             />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/setting_header_media"
-        android:layout="@layout/preference_category_textview">
+        android:layout="@layout/preference_category_textview"
+        android:title="@string/setting_header_media">
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="isResumeAudioWhenPlugin"
-            android:title="@string/setting_title_isResumeAudioWhenPlugin"
             android:summary="@string/setting_info_isResumeAudioWhenPlugin"
-            android:defaultValue="true"
+            android:title="@string/setting_title_isResumeAudioWhenPlugin"
             android:widgetLayout="@layout/preference_checkbox"
             />
 
         <CheckBoxPreference
-            android:key="isListenMediaButton"
-            android:title="@string/setting_title_isListenMediaButton"
-            android:summary="@string/setting_info_isListenMediaButton"
             android:defaultValue="true"
+            android:key="isListenMediaButton"
+            android:summary="@string/setting_info_isListenMediaButton"
+            android:title="@string/setting_title_isListenMediaButton"
             android:widgetLayout="@layout/preference_checkbox"
             />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/setting_header_playing"
-        android:layout="@layout/preference_category_textview">
+        android:layout="@layout/preference_category_textview"
+        android:title="@string/setting_header_playing">
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="isUseSimplePlaying"
-            android:title="@string/setting_title_simplePlaying"
             android:summary="@string/setting_info_simplePlaying"
-            android:defaultValue="false"
+            android:title="@string/setting_title_simplePlaying"
             android:widgetLayout="@layout/preference_checkbox"
             />
 
         <CheckBoxPreference
-            android:key="autoSwitchPlaying"
-            android:title="@string/setting_title_autoOpenPlayingActivity"
-            android:summary="@string/setting_info_autoOpenPlayingActivity"
             android:defaultValue="true"
+            android:key="autoSwitchPlaying"
+            android:summary="@string/setting_info_autoOpenPlayingActivity"
+            android:title="@string/setting_title_autoOpenPlayingActivity"
             android:widgetLayout="@layout/preference_checkbox"
             />
 
         <CheckBoxPreference
-            android:key="useCompatMode"
-            android:title="@string/setting_title_useCompatMode"
-            android:summary="@string/setting_info_useCompatMode"
             android:defaultValue="false"
+            android:key="useCompatMode"
+            android:summary="@string/setting_info_useCompatMode"
+            android:title="@string/setting_title_useCompatMode"
             android:widgetLayout="@layout/preference_checkbox"
             />
 

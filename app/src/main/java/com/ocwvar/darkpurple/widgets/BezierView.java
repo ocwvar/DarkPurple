@@ -146,7 +146,6 @@ public final class BezierView extends View {
             final float pointY2 = pointYArray[currentLevel];
 
             final float pointX3 = pointXArray[i + 3];
-            ;
             final float pointY3;
 
             if (i + 3 != 9) {

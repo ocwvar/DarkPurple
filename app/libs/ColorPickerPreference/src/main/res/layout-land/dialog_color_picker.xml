@@ -41,9 +41,9 @@
             android:layout_height="wrap_content"
             android:hint="HEX"
             android:imeOptions="actionDone"
+            android:inputType="textCapCharacters"
             android:maxLength="7"
             android:singleLine="true"
-            android:inputType="textCapCharacters"
             android:visibility="gone"></EditText>
 
         <TextView

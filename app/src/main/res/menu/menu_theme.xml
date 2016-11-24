@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/setting_action_restart"
         android:id="@+id/menu_action_theme_apply"
+        android:title="@string/setting_action_restart"
         app:showAsAction="withText|always"
         />
 

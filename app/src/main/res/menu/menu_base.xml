@@ -6,15 +6,15 @@
 
     <item
         android:id="@+id/menu_base_setting"
-        android:title="@string/setting_base_setting"
         android:icon="@drawable/ic_action_setting"
+        android:title="@string/setting_base_setting"
         app:showAsAction="always"
         />
 
     <item
         android:id="@+id/menu_base_playing"
-        android:title="@string/setting_base_playing"
         android:icon="@drawable/ic_action_playing"
+        android:title="@string/setting_base_playing"
         app:showAsAction="always"
         />
 

@@ -5,130 +5,130 @@
     >
 
     <ListPreference
-        android:title="@string/setting_title_listStyle"
-        android:entryValues="@array/main_list_style_value"
-        android:entries="@array/main_list_style_name"
         android:defaultValue="0"
+        android:entries="@array/main_list_style_name"
+        android:entryValues="@array/main_list_style_value"
         android:key="MainList_Style"
+        android:title="@string/setting_title_listStyle"
         />
 
     <PreferenceCategory
-        android:title="@string/setting_info_color_warnning"
-        android:layout="@layout/preference_category_textview_warnning"/>
+        android:layout="@layout/preference_category_textview_warnning"
+        android:title="@string/setting_info_color_warnning" />
 
     <Preference
-        android:title="@string/setting_title_theme_reset"
-        android:icon="@drawable/ic_action_reset"/>
+        android:icon="@drawable/ic_action_reset"
+        android:title="@string/setting_title_theme_reset" />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_StatusBar"
-        android:summary="@string/setting_info_color_StatusBar"
+        android:defaultValue="0xFF390e52"
         android:key="StatusBar_Color"
-        android:defaultValue="0xFF390e52"
+        android:summary="@string/setting_info_color_StatusBar"
+        android:title="@string/setting_title_color_StatusBar"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_NevBar"
-        android:summary="@string/setting_info_color_NevBar"
+        android:defaultValue="0xFF242c36"
         android:key="NavBar_Color"
-        android:defaultValue="0xFF242c36"
+        android:summary="@string/setting_info_color_NevBar"
+        android:title="@string/setting_title_color_NevBar"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_TabLayout"
+        android:defaultValue="0xFF390e52"
         android:key="TabLayout_color"
-        android:defaultValue="0xFF390e52"
+        android:title="@string/setting_title_color_TabLayout"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_Toolbar"
+        android:defaultValue="0xFF390e52"
         android:key="ToolBar_color"
-        android:defaultValue="0xFF390e52"
+        android:title="@string/setting_title_color_Toolbar"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_ToolbarText"
+        android:defaultValue="0xFFefefef"
         android:key="ToolBar_title_color"
-        android:defaultValue="0xFFefefef"
+        android:title="@string/setting_title_color_ToolbarText"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_ToolbarSubtitleText"
+        android:defaultValue="0xFFa9a9a9"
         android:key="ToolBar_subtitle_color"
-        android:defaultValue="0xFFa9a9a9"
+        android:title="@string/setting_title_color_ToolbarSubtitleText"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_TabLayoutText"
+        android:defaultValue="0xFFa9a9a9"
         android:key="TabLayout_title_color"
-        android:defaultValue="0xFFa9a9a9"
+        android:title="@string/setting_title_color_TabLayoutText"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_TabLayoutText_selected"
+        android:defaultValue="0xFFefefef"
         android:key="TabLayout_title_color_selected"
-        android:defaultValue="0xFFefefef"
+        android:title="@string/setting_title_color_TabLayoutText_selected"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_TabLayout_Indicator"
+        android:defaultValue="0xFFefefef"
         android:key="TabLayout_Indicator_color"
-        android:defaultValue="0xFFefefef"
+        android:title="@string/setting_title_color_TabLayout_Indicator"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_DefaultCoverColor"
-        android:key="DefaultCoverColor"
         android:defaultValue="0xFF240935"
+        android:key="DefaultCoverColor"
+        android:title="@string/setting_title_color_DefaultCoverColor"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_window_bg"
-        android:key="backgroundColor_Dark"
         android:defaultValue="0xFF242c36"
+        android:key="backgroundColor_Dark"
+        android:title="@string/setting_title_color_window_bg"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_fb"
-        android:key="FloatingButton_Color"
         android:defaultValue="0xFFf4a11a"
+        android:key="FloatingButton_Color"
+        android:title="@string/setting_title_color_fb"
         app:colorpicker_showAlpha="false"
         />
 
     <PreferenceCategory
-        android:title="@string/setting_info_linear_only"
         android:layout="@layout/preference_category_textview"
+        android:title="@string/setting_info_linear_only"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_linear_title"
-        android:key="Linear_Title_Color"
         android:defaultValue="0xFFffffff"
+        android:key="Linear_Title_Color"
+        android:title="@string/setting_title_color_linear_title"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_linear_artist"
-        android:key="Linear_Artist_Color"
         android:defaultValue="0xFFc7c7c7"
+        android:key="Linear_Artist_Color"
+        android:title="@string/setting_title_color_linear_artist"
         app:colorpicker_showAlpha="false"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_color_linear_time"
-        android:key="Linear_Time_Color"
         android:defaultValue="0xFFf4a11a"
+        android:key="Linear_Time_Color"
+        android:title="@string/setting_title_color_linear_time"
         app:colorpicker_showAlpha="false"
         />
 

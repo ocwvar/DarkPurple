@@ -3,26 +3,26 @@
                   xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
-        android:key="isUseSecondStyleVe"
-        android:title="@string/setting_title_isUseSecondStyleSpectrum"
-        android:summary="@string/setting_info_isUseSecondStyleSpectrum"
         android:defaultValue="false"
+        android:key="isUseSecondStyleVe"
+        android:summary="@string/setting_info_isUseSecondStyleSpectrum"
+        android:title="@string/setting_title_isUseSecondStyleSpectrum"
         android:widgetLayout="@layout/preference_checkbox"
         />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:title="@string/setting_title_spectrumColor"
-        android:summary="@string/setting_info_spectrumColor"
-        android:key="Spectrum_Color"
         android:defaultValue="0xFF9233B4"
+        android:key="Spectrum_Color"
+        android:summary="@string/setting_info_spectrumColor"
+        android:title="@string/setting_title_spectrumColor"
         app:colorpicker_showAlpha="false"
         />
 
     <EditTextPreference
+        android:defaultValue="15.0"
+        android:inputType="numberDecimal"
         android:key="spectrum_line_width"
         android:title="@string/setting_title_spectrum_width"
-        android:inputType="numberDecimal"
-        android:defaultValue="15.0"
         />
 
 </PreferenceScreen>
