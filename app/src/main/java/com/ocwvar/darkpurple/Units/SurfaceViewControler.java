@@ -81,12 +81,11 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
      */
     private final class SPShowerThread extends Thread {
 
-        final private AudioService service;                       //音频服务
-        final private Paint c1;                             //条纹部分的画笔
+        private final AudioService service;                       //音频服务
+        private final Paint outlinePainter, linePaint, nodePaint;                             //线条，柱条，node点 的画笔
+        private final int spectrumCount;                //绘制的条目数量
         private SurfaceHolder surfaceHolder;           //绘制的SurfaceHolder
         private Rect drawArea;                                //总绘制区域  (自动计算)
-        private int spectrumCount = 100;                //每一份频谱条所占的角度
-        private float strokeWidth = AppConfigs.spectrumWidth;                    //频谱条的厚度
         private int r;                                                //频谱圆圈半径   (自动计算)
         private int centerX = sfWidth / 2;                  //绘制区域中心点  X 轴坐标
         private int centerY = sfHeight / 2;                 //绘制区域中心点  Y 轴坐标
@@ -100,17 +99,35 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
             this.surfaceHolder = surfaceHolder;
             this.service = ServiceHolder.getInstance().getService();
 
-            if (strokeWidth <= 0) {
-                strokeWidth = 1.0f;
-            } else if (strokeWidth >= 30.0f) {
-                strokeWidth = 30.0f;
+            spectrumCount = (AppConfigs.spectrumCounts < 4) ? 4 : AppConfigs.spectrumCounts;
+
+            //Node画笔
+            if (AppConfigs.isSpectrumShowNode) {
+                nodePaint = new Paint();
+                nodePaint.setColor(AppConfigs.Color.Spectrum_Node_Color);
+            } else {
+                nodePaint = null;
             }
 
-            //画笔1 ：用于第一层频谱
-            this.c1 = new Paint();
-            c1.setColor(AppConfigs.Color.Spectrum_Color);
-            c1.setAntiAlias(true);
-            c1.setStrokeWidth(strokeWidth);
+            //外部线条画笔
+            if (AppConfigs.isSpectrumShowOutLine) {
+                outlinePainter = new Paint();
+                outlinePainter.setAntiAlias(true);
+                outlinePainter.setColor(AppConfigs.Color.Spectrum_OutLine_Color);
+                outlinePainter.setStrokeWidth(AppConfigs.spectrumOutlineWidth);
+            } else {
+                outlinePainter = null;
+            }
+
+            //柱状画笔
+            if (AppConfigs.isSpectrumShowLine) {
+                linePaint = new Paint();
+                linePaint.setAntiAlias(true);
+                linePaint.setColor(AppConfigs.Color.Spectrum_Line_Color);
+                linePaint.setStrokeWidth(AppConfigs.spectrumLineWidth);
+            } else {
+                linePaint = null;
+            }
 
         }
 
@@ -164,9 +181,13 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     canvas.drawColor(Color.rgb(36, 44, 54));
 
+                    float lastX = -1, lastY = -1;
+                    float firstX = -1, firstY = -1;
+
                     for (int i = 0, j = 0; i < points.size(); i++, j++) {
 
                         final Point point;
+
 
                         float fftData;
                         if (!AppConfigs.isUseSecondStyleSpectrum) {
@@ -192,14 +213,38 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                             fftData = 0f;
                         }
 
-                        //频谱条纹
-                        canvas.drawLine(
-                                point.x,
-                                point.y,
-                                point.getExpansion_X(fftData, 250),
-                                point.getExpansion_Y(fftData, 250),
-                                c1
-                        );
+                        final float expX = point.getExpansion_X(fftData, 250);
+                        final float expY = point.getExpansion_Y(fftData, 250);
+
+                        //绘制Node点
+                        if (AppConfigs.isSpectrumShowNode) {
+                            canvas.drawCircle(expX, expY, AppConfigs.spectrumNodeWidth, nodePaint);
+                        }
+
+                        //绘制柱状条
+                        if (AppConfigs.isSpectrumShowLine) {
+                            canvas.drawLine(point.x, point.y, expX, expY, linePaint);
+                        }
+
+                        //绘制外部线条
+                        if (AppConfigs.isSpectrumShowOutLine) {
+                            if (i == points.size() - 1) {
+                                //最后一个点的位置
+                                canvas.drawLine(lastX, lastY, expX, expY, outlinePainter);
+                                canvas.drawLine(expX, expY, firstX, firstY, outlinePainter);
+                            } else if (lastX >= 0 && lastY >= 0) {
+                                //首个～末尾  中间的位置
+                                canvas.drawLine(expX, expY, lastX, lastY, outlinePainter);
+                            } else if (i == 0) {
+                                //首个的位置
+                                firstX = expX;
+                                firstY = expY;
+                            }
+                            lastX = expX;
+                            lastY = expY;
+                        }
+
+
 
                     }
 
@@ -464,27 +509,23 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
         float getExpansion_X(float fft, int expansionRate) {
             switch (area) {
                 case 1:
-                    //第一象限
-                    return centerX + (r + (fft * expansionRate)) * angelTemp;
                 case 2:
+                    //第一象限
                     //第二象限
                     return centerX + (r + (fft * expansionRate)) * angelTemp;
                 case 3:
-                    //第三象限
-                    return centerX - (r + (fft * expansionRate)) * angelTemp;
                 case 4:
+                    //第三象限
                     //第四象限
                     return centerX - (r + (fft * expansionRate)) * angelTemp;
                 case 5:
+                case 7:
+                default:
                     return x;
                 case 6:
                     return x + fft * expansionRate;
-                case 7:
-                    return x;
                 case 8:
                     return x - fft * expansionRate;
-                default:
-                    return x;
             }
         }
 
@@ -512,13 +553,11 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                 case 5:
                     return y - fft * expansionRate;
                 case 6:
+                case 8:
+                default:
                     return y;
                 case 7:
                     return y + fft * expansionRate;
-                case 8:
-                    return y;
-                default:
-                    return y;
             }
         }
 

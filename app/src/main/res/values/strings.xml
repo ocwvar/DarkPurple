@@ -158,8 +158,19 @@
     <string name="setting_title_isUseSecondStyleSpectrum">使用第二种频谱动画</string>
     <string name="setting_info_isUseSecondStyleSpectrum">频谱将循环显示头部音频数据</string>
 
-    <string name="setting_title_spectrumColor">自定义频谱显示颜色</string>
-    <string name="setting_info_spectrumColor">设置频谱柱状图颜色</string>
+    <string name="setting_info_color_warnning">请勿使用接近或是完全的白色，以免在部分节目无法得到满意的效果</string>
+
+    <string name="setting_title_lineColor">定义柱状线颜色</string>
+    <string name="setting_title_outlineColor">定义外边轮廓颜色</string>
+    <string name="setting_title_nodeColor">定义Node颜色</string>
+
+    <string name="setting_title_lineShow">是否显示柱状线</string>
+    <string name="setting_title_outlineShow">是否显示外边轮廓</string>
+    <string name="setting_title_nodeShow">是否显示Node</string>
+
+    <string name="setting_title_lineWidth">定义柱状线宽度</string>
+    <string name="setting_title_outlineWidth">定义外边轮廓宽度</string>
+    <string name="setting_title_nodeWidth">定义Node半径</string>
 
     <string name="setting_title_spectrum_width">设置频谱柱状图宽度</string>
 
@@ -204,7 +215,9 @@
     <string name="band10">16k</string>
 
     <!--主题设置部分-->
-    <string name="setting_info_color_warnning">请不要使用接近或完全纯白的颜色,以免在部分界面无法得到满意的效果</string>
+    <string name="setting_info_line">频谱柱状线设置</string>
+    <string name="setting_info_outline">频谱外边轮廓设置</string>
+    <string name="setting_info_node">频谱Node设置</string>
     <string name="setting_title_theme_reset">恢复默认主题配置</string>
     <string name="setting_action_restart">应用设置</string>
     <string name="setting_title_listStyle">主界面列表样式</string>

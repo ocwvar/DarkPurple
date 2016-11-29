@@ -154,6 +154,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_spectrum);
             bindPreferenceSummaryToValue(findPreference("spectrum_line_width"));
+            bindPreferenceSummaryToValue(findPreference("spectrumNodeWidth"));
+            bindPreferenceSummaryToValue(findPreference("spectrumOutlineWidth"));
         }
 
     }

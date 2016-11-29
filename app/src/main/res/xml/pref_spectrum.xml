@@ -10,19 +10,72 @@
         android:widgetLayout="@layout/preference_checkbox"
         />
 
+    <PreferenceCategory
+        android:layout="@layout/preference_sp_outline_category_textview_warnning"
+        android:title="@string/setting_info_outline" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isSpectrumShowOutLine"
+        android:title="@string/setting_title_outlineShow"
+        android:widgetLayout="@layout/preference_checkbox" />
+
     <com.rarepebble.colorpicker.ColorPreference
         android:defaultValue="0xFF9233B4"
-        android:key="Spectrum_Color"
-        android:summary="@string/setting_info_spectrumColor"
-        android:title="@string/setting_title_spectrumColor"
+        android:key="Spectrum_OutLine_Color"
+        android:title="@string/setting_title_outlineColor"
         app:colorpicker_showAlpha="false"
         />
 
     <EditTextPreference
-        android:defaultValue="15.0"
+        android:defaultValue="10.0"
+        android:inputType="numberDecimal"
+        android:key="spectrumOutlineWidth"
+        android:title="@string/setting_title_outlineWidth" />
+
+    <PreferenceCategory
+        android:layout="@layout/preference_sp_node_category_textview_warnning"
+        android:title="@string/setting_info_node" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isSpectrumShowNode"
+        android:title="@string/setting_title_nodeShow"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:defaultValue="0xFF9233B4"
+        android:key="Spectrum_Node_Color"
+        android:title="@string/setting_title_nodeColor"
+        app:colorpicker_showAlpha="false" />
+
+    <EditTextPreference
+        android:defaultValue="5.0"
+        android:inputType="numberDecimal"
+        android:key="spectrumNodeWidth"
+        android:title="@string/setting_title_nodeWidth" />
+
+    <PreferenceCategory
+        android:layout="@layout/preference_sp_line_category_textview_warnning"
+        android:title="@string/setting_info_line" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isSpectrumShowLine"
+        android:title="@string/setting_title_lineShow"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+    <com.rarepebble.colorpicker.ColorPreference
+        android:defaultValue="0xFF9233B4"
+        android:key="Spectrum_Line_Color"
+        android:title="@string/setting_title_lineColor"
+        app:colorpicker_showAlpha="false" />
+
+    <EditTextPreference
+        android:defaultValue="10.0"
         android:inputType="numberDecimal"
         android:key="spectrum_line_width"
-        android:title="@string/setting_title_spectrum_width"
+        android:title="@string/setting_title_lineWidth"
         />
 
 </PreferenceScreen>

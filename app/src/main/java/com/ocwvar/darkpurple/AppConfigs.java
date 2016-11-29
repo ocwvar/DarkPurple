@@ -75,8 +75,26 @@ public class AppConfigs {
     //是否自动跳转到播放界面
     public static boolean isAutoSwitchPlaying = true;
 
+    //频谱项 - 是否显示Node
+    public static boolean isSpectrumShowNode = true;
+
+    //频谱项 - 是否显示外边线条
+    public static boolean isSpectrumShowOutLine = true;
+
+    //频谱项 - 是否显示柱状线
+    public static boolean isSpectrumShowLine = true;
+
+    //频谱Node宽度
+    public static float spectrumNodeWidth = 5.0f;
+
+    //频谱外边宽度
+    public static float spectrumOutlineWidth = 8.0f;
+
     //频谱柱状宽度
-    public static float spectrumWidth = 15.0f;
+    public static float spectrumLineWidth = 10.0f;
+
+    //频谱数量
+    public static int spectrumCounts = 100;
 
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
@@ -125,7 +143,19 @@ public class AppConfigs {
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
-            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width", "15.0"));
+            isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", true);
+
+            isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", true);
+
+            isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
+
+            spectrumNodeWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "5.0"));
+
+            spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
+
+            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "10.0"));
+
+            spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "100"));
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
@@ -184,7 +214,19 @@ public class AppConfigs {
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
-            spectrumWidth = Float.valueOf(preferences.getString("spectrum_line_width", "15.0"));
+            isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", true);
+
+            isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", true);
+
+            isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
+
+            spectrumNodeWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "5.0"));
+
+            spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
+
+            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "10.0"));
+
+            spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "100"));
 
             Color.loadColors();
 
@@ -216,7 +258,6 @@ public class AppConfigs {
                     layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
                     break;
             }
-
         }
     }
 
@@ -341,9 +382,19 @@ public class AppConfigs {
         public static int DefaultCoverColor;
 
         /**
-         * 频谱颜色
+         * 频谱-外边颜色
          */
-        public static int Spectrum_Color;
+        public static int Spectrum_OutLine_Color;
+
+        /**
+         * 频谱-Node颜色
+         */
+        public static int Spectrum_Node_Color;
+
+        /**
+         * 频谱-柱状条颜色
+         */
+        public static int Spectrum_Line_Color;
 
         /**
          * 主界面背景颜色
@@ -398,7 +449,9 @@ public class AppConfigs {
                 TabLayout_title_color_selected = sharedPreferences.getInt("TabLayout_title_color_selected", context.getColor(R.color.TabLayout_title_color_selected));
                 TabLayout_Indicator_color = sharedPreferences.getInt("TabLayout_Indicator_color", context.getColor(R.color.TabLayout_Indicator_color));
                 DefaultCoverColor = sharedPreferences.getInt("DefaultCoverColor", context.getColor(R.color.DefaultCoverColor));
-                Spectrum_Color = sharedPreferences.getInt("Spectrum_Color", context.getColor(R.color.Spectrum_Color));
+                Spectrum_OutLine_Color = sharedPreferences.getInt("Spectrum_OutLine_Color", context.getColor(R.color.Spectrum_OutLine_Color));
+                Spectrum_Node_Color = sharedPreferences.getInt("Spectrum_Node_Color", context.getColor(R.color.Spectrum_Node_Color));
+                Spectrum_Line_Color = sharedPreferences.getInt("Spectrum_Line_Color", context.getColor(R.color.Spectrum_Line_Color));
                 WindowBackground_Color = sharedPreferences.getInt("backgroundColor_Dark", context.getColor(R.color.backgroundColor_Dark));
                 FloatingButton_Color = sharedPreferences.getInt("FloatingButton_Color", context.getColor(R.color.FloatingButton_Color));
                 Linear_Title_Color = sharedPreferences.getInt("Linear_Title_Color", context.getColor(R.color.Linear_Title_Color));
@@ -415,7 +468,9 @@ public class AppConfigs {
                 TabLayout_title_color_selected = sharedPreferences.getInt("TabLayout_title_color_selected", context.getResources().getColor(R.color.TabLayout_title_color_selected));
                 TabLayout_Indicator_color = sharedPreferences.getInt("TabLayout_Indicator_color", context.getResources().getColor(R.color.TabLayout_Indicator_color));
                 DefaultCoverColor = sharedPreferences.getInt("DefaultCoverColor", context.getResources().getColor(R.color.DefaultCoverColor));
-                Spectrum_Color = sharedPreferences.getInt("Spectrum_Color", context.getResources().getColor(R.color.Spectrum_Color));
+                Spectrum_OutLine_Color = sharedPreferences.getInt("Spectrum_OutLine_Color", context.getResources().getColor(R.color.Spectrum_OutLine_Color));
+                Spectrum_Node_Color = sharedPreferences.getInt("Spectrum_Node_Color", context.getResources().getColor(R.color.Spectrum_Node_Color));
+                Spectrum_Line_Color = sharedPreferences.getInt("Spectrum_Line_Color", context.getResources().getColor(R.color.Spectrum_Line_Color));
                 WindowBackground_Color = sharedPreferences.getInt("backgroundColor_Dark", context.getResources().getColor(R.color.backgroundColor_Dark));
                 FloatingButton_Color = sharedPreferences.getInt("FloatingButton_Color", context.getResources().getColor(R.color.FloatingButton_Color));
                 Linear_Title_Color = sharedPreferences.getInt("Linear_Title_Color", context.getResources().getColor(R.color.Linear_Title_Color));
@@ -455,6 +510,9 @@ public class AppConfigs {
             editor.remove("Linear_Title_Color");
             editor.remove("Linear_Artist_Color");
             editor.remove("Linear_Time_Color");
+            editor.remove("Spectrum_OutLine_Color");
+            editor.remove("Spectrum_Node_Color");
+            editor.remove("Spectrum_Line_Color");
 
             editor.commit();
 
