@@ -24,8 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
         android:background="@null"
-        android:padding="10dp"
-        android:src="@drawable/ic_action_playing"/>
+        android:padding="10dp" />
 
     <TextView
         android:id="@+id/textView_artist"

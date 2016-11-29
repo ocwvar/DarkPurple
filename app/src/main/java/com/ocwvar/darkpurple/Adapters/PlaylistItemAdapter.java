@@ -62,7 +62,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
 
         Picasso.with(AppConfigs.ApplicationContext)
                 .load(CoverImage2File.getInstance().getAbsoluteCachePath(playlistItem.getFirstAudioPath()))
-                .error(R.drawable.ic_cd)
+                .error(R.drawable.ic_music_mid)
                 .into(itemViewHolder.cover);
 
     }

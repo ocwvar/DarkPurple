@@ -245,7 +245,7 @@ public class SelectMusicActivity extends BaseActivity {
                         .with(AppConfigs.ApplicationContext)
                         .load(songItem.getCustomCoverPath())
                         .config(Bitmap.Config.RGB_565)
-                        .error(R.drawable.ic_cd)
+                        .error(R.drawable.ic_music_mid)
                         .resize(120, 120)
                         .into(headerCover);
             } else if (songItem.isHaveCover()) {
@@ -254,11 +254,11 @@ public class SelectMusicActivity extends BaseActivity {
                         .with(AppConfigs.ApplicationContext)
                         .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                         .config(Bitmap.Config.RGB_565)
-                        .error(R.drawable.ic_cd)
+                        .error(R.drawable.ic_music_mid)
                         .resize(120, 120)
                         .into(headerCover);
             } else {
-                headerCover.setImageResource(R.drawable.ic_cd);
+                headerCover.setImageResource(R.drawable.ic_music_mid);
             }
         } else {
             nowPlayingTV.setText(R.string.header_noMusic);

@@ -210,7 +210,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                             .load(songItem.getCustomCoverPath())
                             .config(Bitmap.Config.RGB_565)
                             .tag(TAGOBJECT)
-                            .error(R.drawable.ic_cd)
+                            .error(R.drawable.ic_music_big)
                             .resize(imageSize, imageSize)
                             .into(viewHolder.cover);
                     viewHolder.cardView.setCardBackgroundColor(songItem.getCustomPaletteColor());
@@ -221,13 +221,13 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                             .load(CoverImage2File.getInstance().getCacheFile(songItem.getPath()))
                             .config(Bitmap.Config.RGB_565)
                             .tag(TAGOBJECT)
-                            .error(R.drawable.ic_cd)
+                            .error(R.drawable.ic_music_big)
                             .resize(imageSize, imageSize)
                             .into(viewHolder.cover);
                     viewHolder.cardView.setCardBackgroundColor(songItem.getPaletteColor());
                 } else {
                     if (defaultCover == null) {
-                        defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
+                        defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_music_big);
                     }
                     viewHolder.cardView.setCardBackgroundColor(songItem.getPaletteColor());
                     viewHolder.cover.setImageDrawable(defaultCover);
@@ -239,7 +239,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                 viewHolderLinear.title.setTextColor(AppConfigs.Color.Linear_Title_Color);
                 viewHolderLinear.artist.setText(songItem.getArtist());
                 viewHolderLinear.artist.setTextColor(AppConfigs.Color.Linear_Artist_Color);
-                viewHolderLinear.icon.setImageResource(R.drawable.ic_action_music_small);
+                viewHolderLinear.icon.setImageResource(R.drawable.ic_music_mid);
                 viewHolderLinear.time.setText(time2String(songItem.getLength()));
                 viewHolderLinear.time.setTextColor(AppConfigs.Color.Linear_Time_Color);
                 if (isMuiltSelecting) {
@@ -248,7 +248,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                         //如果已经被选择了
                         viewHolderLinear.icon.setImageResource(R.drawable.ic_action_marker_small);
                     } else {
-                        viewHolderLinear.icon.setImageResource(R.drawable.ic_action_music_small);
+                        viewHolderLinear.icon.setImageResource(R.drawable.ic_music_mid);
                     }
                 }
                 if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
@@ -384,7 +384,7 @@ public class AllMusicAdapter extends RecyclerView.Adapter {
                     if (checkedItems.contains(songItem)) {
                         //如果点击的时候 , 这个项目已经是被选中了 , 则应该执行取消选中动作
                         checkedItems.remove(songItem);
-                        icon.setImageResource(R.drawable.ic_action_music_small);
+                        icon.setImageResource(R.drawable.ic_music_mid);
                     } else {
                         //如果是没选中状态 , 则应该被标记上
                         checkedItems.add(songItem);

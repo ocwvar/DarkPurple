@@ -206,9 +206,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      */
     public void updateNotification() {
 
-        SongItem songItem = core.getPlayingSong();
+        final SongItem songItem = core.getPlayingSong();
 
-        Notification notification = mediaNotification.updateNotification(songItem, getAudioStatus());
+        final Notification notification = mediaNotification.updateNotification(songItem, getAudioStatus());
 
         //更新状态
         isRunningForeground = true;

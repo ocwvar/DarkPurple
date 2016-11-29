@@ -46,7 +46,7 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
         if (new File((songItem.getPath())).exists()) {
             //如果文件的确存在 , 则显示播放按钮
             viewHolder.playButton.setTag("Available");
-            viewHolder.playButton.setImageResource(R.drawable.ic_action_playing);
+            viewHolder.playButton.setImageResource(R.drawable.ic_action_playlist_inner_play);
         } else {
             viewHolder.playButton.setTag("NotAvailable");
             viewHolder.playButton.setImageResource(R.drawable.ic_action_notava);

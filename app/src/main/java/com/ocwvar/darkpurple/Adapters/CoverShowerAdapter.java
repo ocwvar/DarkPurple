@@ -33,9 +33,9 @@ public class CoverShowerAdapter extends PagerAdapter {
     public CoverShowerAdapter(ArrayList<SongItem> playingList) {
         this.playingList = playingList;
         if (Build.VERSION.SDK_INT >= 21) {
-            this.defaultCover = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_cd);
+            this.defaultCover = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_music_big);
         } else {
-            this.defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_cd);
+            this.defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_music_big);
         }
     }
 
@@ -71,7 +71,7 @@ public class CoverShowerAdapter extends PagerAdapter {
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
-                    .error(R.drawable.ic_cd)
+                    .error(R.drawable.ic_music_big)
                     .resize(coverWidth, coverWidth)
                     .into(imageView);
 
@@ -80,7 +80,7 @@ public class CoverShowerAdapter extends PagerAdapter {
             imageView = new CImageView(container.getContext(), coverWidth / 2, centerX, centerY, songItem.getPaletteColor());
             Picasso.with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath()))
-                    .error(R.drawable.ic_cd)
+                    .error(R.drawable.ic_music_big)
                     .resize(coverWidth, coverWidth)
                     .into(imageView);
         } else {

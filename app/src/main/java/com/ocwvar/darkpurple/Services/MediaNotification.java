@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -74,11 +73,8 @@ class MediaNotification {
         //不显示时间
         builder.setShowWhen(false);
 
-        ///仅通知一次
+        //仅通知一次
         builder.setOnlyAlertOnce(true);
-
-        //设置当前正在运行
-        builder.setOngoing(true);
 
         //设置点击时不取消
         builder.setAutoCancel(false);
@@ -118,7 +114,12 @@ class MediaNotification {
         }
         builder.addAction(generateAction(R.drawable.ic_media_next, MediaNotificationReceiver.BUTTON_NEXT));
 
-        builder.addAction(generateAction(R.drawable.ic_media_close,MediaNotificationReceiver.BUTTON_CLOSE));
+        //builder.addAction(generateAction(R.drawable.ic_media_close,MediaNotificationReceiver.BUTTON_CLOSE));
+
+        Bitmap cover = loadCoverFromMainThread(songItem);
+        if (cover == null) {
+            cover = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_music_big);
+        }
 
         if (songItem != null) {
             //更新标题
@@ -126,14 +127,14 @@ class MediaNotification {
             //更新作者
             builder.setContentText(songItem.getArtist());
             //更新封面
-            builder.setLargeIcon(loadCoverFromMainThread(songItem));
+            builder.setLargeIcon(cover);
         } else {
             //更新标题
             builder.setContentTitle(context.getString(R.string.notification_string_empty));
             //更新作者
             builder.setContentText(context.getString(R.string.notification_string_empty));
             //封面设置为空
-            builder.setLargeIcon(null);
+            builder.setLargeIcon(cover);
         }
 
         return builder.build();
@@ -172,6 +173,12 @@ class MediaNotification {
         context.unregisterReceiver(notificationReceiver);
     }
 
+    /**
+     * 读取歌曲封面图像
+     *
+     * @param songItem 歌曲数据
+     * @return 封面图像位图
+     */
     private Bitmap loadCoverFromMainThread(@Nullable SongItem songItem) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();

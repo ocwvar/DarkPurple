@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:drawableTop="@drawable/ic_big_settings"
+        android:drawableTop="@drawable/ic_action_musicfolder_option_big"
         android:shadowColor="@color/colorPrimary"
         android:shadowRadius="20"
         android:text="@string/textview_option"
