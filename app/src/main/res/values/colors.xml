@@ -20,7 +20,7 @@
     <!--            可自定义部分          -->
 
     <!--频谱默认颜色-->
-    <color name="Spectrum_Color">#390e52</color>
+    <color name="Spectrum_Color">#6f3ddc</color>
 
     <!--状态栏颜色-->
     <color name="StatusBar_Color">#390e52</color>
@@ -53,7 +53,7 @@
     <color name="backgroundColor_Dark">#242c36</color>
 
     <!--默认封面混合颜色-->
-    <color name="DefaultCoverColor">#240935</color>
+    <color name="DefaultCoverColor">#120921</color>
 
     <!--主界面浮动按钮颜色-->
     <color name="FloatingButton_Color">#f4a11a</color>

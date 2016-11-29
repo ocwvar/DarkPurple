@@ -97,7 +97,14 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecycleSwipeHelper(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        info = Snackbar.make(findViewById(android.R.id.content), R.string.info_playlist, Snackbar.LENGTH_INDEFINITE).setAction(R.string.simple_done, PlaylistDetailActivity.this);
+        info = Snackbar.make(findViewById(android.R.id.content), R.string.info_playlist, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.simple_done, PlaylistDetailActivity.this)
+                .setActionTextColor(AppConfigs.Color.FloatingButton_Color);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         info.show();
     }
 
