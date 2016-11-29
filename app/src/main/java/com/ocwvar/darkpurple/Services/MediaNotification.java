@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
+import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
@@ -66,6 +68,9 @@ class MediaNotification {
         //设置风格
         builder.setStyle(mediaStyle);
 
+        //设置背景颜色
+        builder.setColor(AppConfigs.Color.DefaultCoverColor);
+
         //不显示时间
         builder.setShowWhen(false);
 
@@ -102,16 +107,18 @@ class MediaNotification {
         builder.setContentIntent(pendingIntent);
 
         //根据播放状态不同 , 设置不同主按钮样式
-        builder.addAction(generateAction(android.R.drawable.ic_media_previous, MediaNotificationReceiver.BUTTON_PREV));
+        builder.addAction(generateAction(R.drawable.ic_media_previous, MediaNotificationReceiver.BUTTON_PREV));
         switch (audioStatus) {
             case Paused:
-                builder.addAction(generateAction(android.R.drawable.ic_media_play, MediaNotificationReceiver.BUTTON_PLAY));
+                builder.addAction(generateAction(R.drawable.ic_media_play, MediaNotificationReceiver.BUTTON_PLAY));
                 break;
             case Playing:
-                builder.addAction(generateAction(android.R.drawable.ic_media_pause, MediaNotificationReceiver.BUTTON_PAUSE));
+                builder.addAction(generateAction(R.drawable.ic_media_pause, MediaNotificationReceiver.BUTTON_PAUSE));
                 break;
         }
-        builder.addAction(generateAction(android.R.drawable.ic_media_next, MediaNotificationReceiver.BUTTON_NEXT));
+        builder.addAction(generateAction(R.drawable.ic_media_next, MediaNotificationReceiver.BUTTON_NEXT));
+
+        builder.addAction(generateAction(R.drawable.ic_media_close,MediaNotificationReceiver.BUTTON_CLOSE));
 
         if (songItem != null) {
             //更新标题

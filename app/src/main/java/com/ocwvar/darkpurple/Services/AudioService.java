@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 音频播放服务
  */
-public class AudioService extends Service {
+public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener{
 
     //全局参数变量  -- 状态栏按钮广播Action
     //点击播放
@@ -289,7 +289,6 @@ public class AudioService extends Service {
      * @return 执行结果
      */
     public boolean pause() {
-        //如果当前有通话事件,则不执行
 
         final boolean result = core.pauseAudio();
         if (result) {
@@ -421,6 +420,15 @@ public class AudioService extends Service {
     public boolean playNext() {
         //如果当前有通话事件,则不执行
         return !isPhoneCalling && core.playNext();
+    }
+
+    /**
+     * 音频焦点变化监听
+     * @param focusChange   焦点变化
+     */
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+
     }
 
     /**
