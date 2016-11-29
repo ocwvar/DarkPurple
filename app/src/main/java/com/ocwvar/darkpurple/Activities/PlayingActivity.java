@@ -496,7 +496,7 @@ public class PlayingActivity
                     switch (audioService.getAudioStatus()) {
                         case Playing:
                             //当前是播放状态 , 则执行暂停操作
-                            audioService.pause();
+                            audioService.pause(true);
                             mainButton.setImageResource(R.drawable.ic_action_play);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新

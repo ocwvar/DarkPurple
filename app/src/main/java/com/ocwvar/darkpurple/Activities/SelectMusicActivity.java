@@ -90,7 +90,6 @@ public class SelectMusicActivity extends BaseActivity {
                 new String[]{
                         getText(R.string.ViewPage_Tab_AllMusic).toString(),
                         getText(R.string.ViewPage_Tab_Playlist).toString(),
-                        getText(R.string.ViewPage_Tab_RecentPlayed).toString()
                 });
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -266,6 +265,9 @@ public class SelectMusicActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 主界面上方播放数据更新
+     */
     class UpdateHeaderPlayingText extends BroadcastReceiver {
 
         private IntentFilter intentFilter;
