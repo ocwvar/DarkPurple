@@ -12,7 +12,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -104,6 +106,13 @@ public class SelectMusicActivity extends BaseActivity {
         tabLayout.setSelectedTabIndicatorColor(AppConfigs.Color.TabLayout_Indicator_color);
 
         onSetupService();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                WelcomeActivity.startBlurActivity(5, Color.TRANSPARENT, false, SelectMusicActivity.this, WelcomeActivity.class, null);
+            }
+        }, 3000);
 
     }
 

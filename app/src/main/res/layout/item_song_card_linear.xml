@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#78000000"
+    android:background="@null"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -37,6 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:maxLines="1"
+            android:shadowColor="#000"
+            android:shadowRadius="10"
             android:singleLine="true"
             android:textColor="#fff"
             android:textSize="16sp"/>
@@ -47,6 +49,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:maxLines="1"
+            android:shadowColor="#000"
+            android:shadowRadius="7"
             android:singleLine="true"
             android:textColor="#fff"
             android:textSize="12sp"/>
@@ -57,6 +61,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:maxLines="1"
+            android:shadowColor="#000"
+            android:shadowRadius="5"
             android:singleLine="true"
             android:textSize="12sp"/>
 

@@ -9,6 +9,20 @@
         android:title="@string/setting_title_isUseSecondStyleSpectrum"
         android:widgetLayout="@layout/preference_checkbox" />
 
+    <EditTextPreference
+        android:defaultValue="50"
+        android:inputType="numberDecimal"
+        android:key="spectrumCounts"
+        android:summary="@string/setting_info_count"
+        android:title="@string/setting_title_count" />
+
+    <EditTextPreference
+        android:defaultValue="100.0"
+        android:inputType="numberDecimal"
+        android:key="spectrumRadio"
+        android:summary="@string/setting_info_radio"
+        android:title="@string/setting_title_radio" />
+
     <PreferenceCategory
         android:layout="@layout/preference_sp_outline_category_textview_warnning"
         android:title="@string/setting_info_outline" />

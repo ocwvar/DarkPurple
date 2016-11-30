@@ -17,13 +17,13 @@
     <!--            可自定义部分          -->
 
     <!--频谱外边默认颜色-->
-    <color name="Spectrum_OutLine_Color">#6f3ddc</color>
+    <color name="Spectrum_OutLine_Color">#9308e4</color>
 
     <!--频谱Node默认颜色-->
-    <color name="Spectrum_Node_Color">#6f3ddc</color>
+    <color name="Spectrum_Node_Color">#9308e4</color>
 
     <!--频谱状条默认颜色-->
-    <color name="Spectrum_Line_Color">#6f3ddc</color>
+    <color name="Spectrum_Line_Color">#fff</color>
 
     <!--状态栏颜色-->
     <color name="StatusBar_Color">#390e52</color>

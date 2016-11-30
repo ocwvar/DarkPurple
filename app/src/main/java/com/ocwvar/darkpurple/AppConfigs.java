@@ -84,17 +84,20 @@ public class AppConfigs {
     //频谱项 - 是否显示柱状线
     public static boolean isSpectrumShowLine = true;
 
-    //频谱Node宽度
+    //频谱项 - 频谱扩展值
+    public static float spectrumRadio = 150.0f;
+
+    //频谱项 - 频谱Node宽度
     public static float spectrumNodeWidth = 5.0f;
 
-    //频谱外边宽度
+    //频谱项 - 频谱外边宽度
     public static float spectrumOutlineWidth = 8.0f;
 
-    //频谱柱状宽度
-    public static float spectrumLineWidth = 10.0f;
+    //频谱项 - 频谱柱状宽度
+    public static float spectrumLineWidth = 8.0f;
 
-    //频谱数量
-    public static int spectrumCounts = 100;
+    //频谱项 - 频谱数量
+    public static int spectrumCounts = 80;
 
     //以下为储存界面尺寸数据  -1 为未初始化  0 为不存在数据
     //状态栏高度
@@ -153,9 +156,11 @@ public class AppConfigs {
 
             spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
 
-            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "10.0"));
+            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "8.0"));
 
-            spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "100"));
+            spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "80"));
+
+            spectrumRadio = Float.valueOf(preferences.getString("spectrumRadio", "150"));
 
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
@@ -224,9 +229,11 @@ public class AppConfigs {
 
             spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
 
-            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "10.0"));
+            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "8.0"));
 
-            spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "100"));
+            spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "80"));
+
+            spectrumRadio = Float.valueOf(preferences.getString("spectrumRadio", "150"));
 
             Color.loadColors();
 

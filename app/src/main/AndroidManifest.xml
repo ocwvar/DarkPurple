@@ -81,6 +81,11 @@
             />
 
         <activity
+            android:name=".Activities.WelcomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/WelcomeStyle" />
+
+        <activity
             android:name=".Activities.FolderSelectorUI"
             android:label="@string/title_select_folder_ui"
             android:screenOrientation="portrait"

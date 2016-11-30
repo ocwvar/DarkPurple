@@ -146,6 +146,12 @@
     <string name="setting_title_outlineColor">定义外边轮廓颜色</string>
     <string name="setting_title_nodeColor">定义Node颜色</string>
 
+    <string name="setting_title_radio">频谱扩展程度</string>
+    <string name="setting_info_radio">数值越大，频谱展现越夸张</string>
+
+    <string name="setting_title_count">频谱物件数量</string>
+    <string name="setting_info_count">数量：4～100，数量越多越消耗性能</string>
+
     <string name="setting_title_lineShow">是否显示柱状线</string>
     <string name="setting_title_outlineShow">是否显示外边轮廓</string>
     <string name="setting_title_nodeShow">是否显示Node</string>

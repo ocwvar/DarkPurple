@@ -81,14 +81,15 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
      */
     private final class SPShowerThread extends Thread {
 
-        private final AudioService service;                       //音频服务
-        private final Paint outlinePainter, linePaint, nodePaint;                             //线条，柱条，node点 的画笔
-        private final int spectrumCount;                //绘制的条目数量
-        private SurfaceHolder surfaceHolder;           //绘制的SurfaceHolder
-        private Rect drawArea;                                //总绘制区域  (自动计算)
-        private int r;                                                //频谱圆圈半径   (自动计算)
-        private int centerX = sfWidth / 2;                  //绘制区域中心点  X 轴坐标
-        private int centerY = sfHeight / 2;                 //绘制区域中心点  Y 轴坐标
+        private final AudioService service;                         //音频服务
+        private final Paint outlinePainter, linePaint, nodePaint;   //线条，柱条，node点 的画笔
+        private int spectrumCount;                                  //绘制的条目数量
+        private float spectrumRadio;                                //频谱扩展值
+        private SurfaceHolder surfaceHolder;                        //绘制的SurfaceHolder
+        private Rect drawArea;                                      //总绘制区域  (自动计算)
+        private int r;                                              //频谱圆圈半径   (自动计算)
+        private int centerX = sfWidth / 2;                          //绘制区域中心点  X 轴坐标
+        private int centerY = sfHeight / 2;                         //绘制区域中心点  Y 轴坐标
 
         /**
          * 在构造方法中进行画笔的初始化
@@ -100,6 +101,10 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
             this.service = ServiceHolder.getInstance().getService();
 
             spectrumCount = (AppConfigs.spectrumCounts < 4) ? 4 : AppConfigs.spectrumCounts;
+            spectrumCount = (AppConfigs.spectrumCounts > 100) ? 100 : AppConfigs.spectrumCounts;
+
+            spectrumRadio = (AppConfigs.spectrumRadio < 1) ? 1 : AppConfigs.spectrumRadio;
+            spectrumRadio = (AppConfigs.spectrumRadio > 300) ? 300 : AppConfigs.spectrumRadio;
 
             //Node画笔
             if (AppConfigs.isSpectrumShowNode) {
@@ -213,35 +218,39 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                             fftData = 0f;
                         }
 
-                        final float expX = point.getExpansion_X(fftData, 250);
-                        final float expY = point.getExpansion_Y(fftData, 250);
-
-                        //绘制Node点
-                        if (AppConfigs.isSpectrumShowNode) {
-                            canvas.drawCircle(expX, expY, AppConfigs.spectrumNodeWidth, nodePaint);
-                        }
+                        final float expX = point.getExpansion_X(fftData, spectrumRadio);
+                        final float expY = point.getExpansion_Y(fftData, spectrumRadio);
 
                         //绘制柱状条
                         if (AppConfigs.isSpectrumShowLine) {
                             canvas.drawLine(point.x, point.y, expX, expY, linePaint);
                         }
 
+                        //绘制Node点
+                        if (AppConfigs.isSpectrumShowNode) {
+                            canvas.drawCircle(expX, expY, AppConfigs.spectrumNodeWidth, nodePaint);
+                        }
+
                         //绘制外部线条
                         if (AppConfigs.isSpectrumShowOutLine) {
+
+                            final float expLEX = point.getExpansion_X(fftData, (float) (spectrumRadio * 0.5));
+                            final float expLEY = point.getExpansion_Y(fftData, (float) (spectrumRadio * 0.5));
+
                             if (i == points.size() - 1) {
                                 //最后一个点的位置
-                                canvas.drawLine(lastX, lastY, expX, expY, outlinePainter);
-                                canvas.drawLine(expX, expY, firstX, firstY, outlinePainter);
+                                canvas.drawLine(lastX, lastY, expLEX, expLEY, outlinePainter);
+                                canvas.drawLine(expLEX, expLEY, firstX, firstY, outlinePainter);
                             } else if (lastX >= 0 && lastY >= 0) {
                                 //首个～末尾  中间的位置
-                                canvas.drawLine(expX, expY, lastX, lastY, outlinePainter);
+                                canvas.drawLine(expLEX, expLEY, lastX, lastY, outlinePainter);
                             } else if (i == 0) {
                                 //首个的位置
-                                firstX = expX;
-                                firstY = expY;
+                                firstX = expLEX;
+                                firstY = expLEY;
                             }
-                            lastX = expX;
-                            lastY = expY;
+                            lastX = expLEX;
+                            lastY = expLEY;
                         }
 
 
@@ -505,7 +514,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          * @param expansionRate 延伸变量的倍数
          * @return 延伸后的点的 X 轴坐标
          */
-        float getExpansion_X(float fft, int expansionRate) {
+        float getExpansion_X(float fft, float expansionRate) {
             switch (area) {
                 case 1:
                 case 2:
@@ -535,7 +544,7 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
          * @param expansionRate 延伸变量的倍数
          * @return 延伸后的点的 Y 轴坐标
          */
-        float getExpansion_Y(float fft, int expansionRate) {
+        float getExpansion_Y(float fft, float expansionRate) {
             switch (area) {
                 case 1:
                     //第一象限
