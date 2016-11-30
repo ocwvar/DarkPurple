@@ -347,7 +347,9 @@ public class PlayingActivity
                 album.setText(playingSong.getAlbum());
                 //重置滚动控制条数据
                 musicSeekBar.setProgress(0);
+
                 musicSeekBar.setMax((int) audioService.getAudioLength());
+                System.out.println(musicSeekBar.getMax());
                 //设置当前播放的时间
                 currectTime.setText(time2String(audioService.getPlayingPosition()));
                 //设置当前剩余时间
