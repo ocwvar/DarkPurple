@@ -26,7 +26,7 @@ public class LineSlider extends View implements View.OnTouchListener {
     private CPoint startPoint, midPoint, endPoint, movingPoint;
 
     //线条和控制点的画笔对象
-    private Paint linePaint, pointPaint;
+    private Paint linePaint, lightLinePaint, pointPaint;
 
     //滑动条路径和路径点存放列表容器
     private ArrayList<CPoint> pathPoints = null;
@@ -50,11 +50,17 @@ public class LineSlider extends View implements View.OnTouchListener {
     //进度条颜色属性
     private int COLOR_LINE = Color.WHITE;
 
-    //控制器颜色属性
+    //控制器当前进度颜色属性
     private int COLOR_SLIDER = Color.WHITE;
+
+    //控制器剩余进度颜色属性
+    private int COLOR_SLIDER_REST = Color.argb(50, 255, 255, 255);
 
     //标识 - 当前是否处于滑动控制状态
     private boolean isSliding = false;
+
+    //接口
+    private OnSlidingCallback callback;
 
     public LineSlider(Context context) {
         super(context);
@@ -190,6 +196,15 @@ public class LineSlider extends View implements View.OnTouchListener {
     }
 
     /**
+     * 设置滑动监听回调
+     *
+     * @param callback 回调对象
+     */
+    public void setOnSlidingCallback(OnSlidingCallback callback) {
+        this.callback = callback;
+    }
+
+    /**
      * 通过值来计算路径的分割点
      *
      * @param value 计算的值
@@ -238,6 +253,13 @@ public class LineSlider extends View implements View.OnTouchListener {
         linePaint.setStrokeWidth(lineWidth);
         linePaint.setStyle(Paint.Style.STROKE);
 
+        //剩余进度线条画笔
+        this.lightLinePaint = new Paint();
+        lightLinePaint.setAntiAlias(true);
+        lightLinePaint.setColor(COLOR_SLIDER_REST);
+        lightLinePaint.setStrokeWidth(lineWidth);
+        lightLinePaint.setStyle(Paint.Style.STROKE);
+
         //控制器画笔
         this.pointPaint = new Paint();
         pointPaint.setAntiAlias(true);
@@ -253,10 +275,14 @@ public class LineSlider extends View implements View.OnTouchListener {
 
             //绘制路径线
             float lastPointX = -1, lastPointY = -1;
-            for (int i = 0; i < VALUE_PROGRESS; i++) {
+            for (int i = 0; i < pathPoints.size(); i++) {
                 final CPoint point = pathPoints.get(i);
                 if (lastPointX >= 0 && lastPointY >= 0) {
-                    canvas.drawLine(lastPointX, lastPointY, point.x, point.y, linePaint);
+                    if (i < VALUE_PROGRESS) {
+                        canvas.drawLine(lastPointX, lastPointY, point.x, point.y, linePaint);
+                    } else {
+                        canvas.drawLine(lastPointX, lastPointY, point.x, point.y, lightLinePaint);
+                    }
                 }
 
                 lastPointX = point.x;
@@ -264,7 +290,12 @@ public class LineSlider extends View implements View.OnTouchListener {
             }
 
             //绘制结束点
-            final CPoint finalPoint = pathPoints.get(VALUE_PROGRESS);
+            final CPoint finalPoint;
+            if (VALUE_PROGRESS == pathPoints.size()) {
+                finalPoint = pathPoints.get(VALUE_PROGRESS - 1);
+            } else {
+                finalPoint = pathPoints.get(VALUE_PROGRESS);
+            }
             movingPoint.x = finalPoint.x;
             movingPoint.y = finalPoint.y;
             canvas.drawCircle(movingPoint.x, movingPoint.y, sliderRadio, pointPaint);
@@ -330,11 +361,23 @@ public class LineSlider extends View implements View.OnTouchListener {
                                 setProgress(getProgress() + 1);
                                 break;
                         }
+
+                        //反馈监听对象
+                        if (callback != null) {
+                            callback.onSliding(VALUE_PROGRESS, VALUE_MAX);
+                        }
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 //当触摸点消失的时候，则结束拖动模式
+                if (isSliding) {
+                    //反馈监听对象
+                    if (callback != null) {
+                        callback.onStopSliding(VALUE_PROGRESS, VALUE_MAX);
+                    }
+                }
+
                 isSliding = false;
                 break;
         }
@@ -347,6 +390,29 @@ public class LineSlider extends View implements View.OnTouchListener {
      */
     public enum SlidingWay {
         Right, Left
+    }
+
+    /**
+     * 接口对象
+     */
+    public interface OnSlidingCallback {
+
+        /**
+         * 用户滑动中的回调
+         *
+         * @param progress 滑动时的进度
+         * @param max      本次进度的最大值
+         */
+        void onSliding(int progress, int max);
+
+        /**
+         * 用户停止滑动的回调
+         *
+         * @param progress 停止时的进度
+         * @param max      本次进度的最大值
+         */
+        void onStopSliding(int progress, int max);
+
     }
 
     /**

@@ -171,6 +171,9 @@
     <string name="setting_info_useCompatMode">解决导航栏和状态栏透明带来的问题</string>
 
     <!--播放界面文字-->
+    <string name="main_header_title">歌曲标题:</string>
+    <string name="main_header_artist">作曲家:</string>
+    <string name="main_header_album">专辑:</string>
     <string name="main_default_title">当前没有播放数据</string>
     <string name="main_default_text">--</string>
     <string name="close_in_4.3">此功能不能在 Android 4.3 下使用</string>

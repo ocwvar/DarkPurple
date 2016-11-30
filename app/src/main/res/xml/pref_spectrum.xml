@@ -34,7 +34,7 @@
         android:widgetLayout="@layout/preference_checkbox" />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:defaultValue="0xFF9233B4"
+        android:defaultValue="0xFF9308e4"
         android:key="Spectrum_OutLine_Color"
         android:title="@string/setting_title_outlineColor"
         app:colorpicker_showAlpha="false" />
@@ -56,7 +56,7 @@
         android:widgetLayout="@layout/preference_checkbox" />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:defaultValue="0xFF9233B4"
+        android:defaultValue="0xFF9308e4"
         android:key="Spectrum_Node_Color"
         android:title="@string/setting_title_nodeColor"
         app:colorpicker_showAlpha="false" />
@@ -78,7 +78,7 @@
         android:widgetLayout="@layout/preference_checkbox" />
 
     <com.rarepebble.colorpicker.ColorPreference
-        android:defaultValue="0xFF9233B4"
+        android:defaultValue="0xFFFFFFFF"
         android:key="Spectrum_Line_Color"
         android:title="@string/setting_title_lineColor"
         app:colorpicker_showAlpha="false" />

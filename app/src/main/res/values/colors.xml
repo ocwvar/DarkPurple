@@ -22,7 +22,7 @@
     <!--频谱Node默认颜色-->
     <color name="Spectrum_Node_Color">#9308e4</color>
 
-    <!--频谱状条默认颜色-->
+    <!--频谱柱状条默认颜色-->
     <color name="Spectrum_Line_Color">#fff</color>
 
     <!--状态栏颜色-->

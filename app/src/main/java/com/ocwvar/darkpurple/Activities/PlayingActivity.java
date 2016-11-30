@@ -29,7 +29,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
@@ -38,7 +37,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.CoverShowerAdapter;
@@ -53,6 +51,7 @@ import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.SurfaceViewControler;
+import com.ocwvar.darkpurple.widgets.LineSlider;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -96,7 +95,7 @@ public class PlayingActivity
     //主按钮
     ImageButton mainButton;
     //歌曲进度条
-    SeekBar musicSeekBar;
+    LineSlider musicSeekBar;
     //频谱开关
     ImageButton spectrumSwitch;
     //均衡器设置
@@ -138,7 +137,7 @@ public class PlayingActivity
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
-            window.setNavigationBarColor(Color.argb(160, 0, 0, 0));
+            window.setNavigationBarColor(Color.TRANSPARENT);
 
         } else if (AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(Color.DKGRAY);
@@ -170,7 +169,7 @@ public class PlayingActivity
         currectTime = (TextView) findViewById(R.id.shower_playing_position);
         restTime = (TextView) findViewById(R.id.shower_rest_position);
         mainButton = (ImageButton) findViewById(R.id.shower_mainButton);
-        musicSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        musicSeekBar = (LineSlider) findViewById(R.id.seekBar);
 
         //设置均衡器界面
         equalizerPage.setOnClickListener(this);
@@ -204,8 +203,7 @@ public class PlayingActivity
         mainButton.setOnClickListener(this);
 
         //设置滚动条的相关操作
-        musicSeekBar.setOnTouchListener(seekBarControler);
-        musicSeekBar.setOnSeekBarChangeListener(seekBarControler);
+        musicSeekBar.setOnSlidingCallback(seekBarControler);
 
         //获取服务对象
         audioService = ServiceHolder.getInstance().getService();
@@ -340,11 +338,11 @@ public class PlayingActivity
 
                 SongItem playingSong = playingList.get(audioService.getPlayingIndex());
                 //设置歌曲名称显示
-                title.setText(playingSong.getTitle());
+                title.setText(getString(R.string.main_header_title) + "  " + playingSong.getTitle());
                 //设置歌手名称显示
-                artist.setText(playingSong.getArtist());
+                artist.setText(getString(R.string.main_header_artist) + "  " + playingSong.getArtist());
                 //设置专辑名称显示
-                album.setText(playingSong.getAlbum());
+                album.setText(getString(R.string.main_header_album) + "  " + playingSong.getAlbum());
                 //重置滚动控制条数据
                 musicSeekBar.setProgress(0);
 
@@ -832,43 +830,24 @@ public class PlayingActivity
     /**
      * 滚动条的控制器
      */
-    class SeekBarControler implements View.OnTouchListener, SeekBar.OnSeekBarChangeListener {
-
-        boolean isUserTorching = false;
+    class SeekBarControler implements LineSlider.OnSlidingCallback {
 
         /**
-         * 当用户按下的时候将标记设为TRUE , 抬起触摸的时候表为FALSE
+         * 用户当前是否正在滑动的标志，用于阻止歌曲进度在用户滑动进度条的时候更新，而导致
+         * 滑动条进度异常
          */
+        boolean isUserTorching = false;
+
         @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    this.isUserTorching = true;
-                    break;
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    this.isUserTorching = false;
-                    break;
-            }
-
-            return false;
+        public void onSliding(int progress, int max) {
+            isUserTorching = true;
         }
 
         @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
+        public void onStopSliding(int progress, int max) {
+            isUserTorching = false;
             if (audioService != null) {
-                audioService.seek2Position(seekBar.getProgress());
+                audioService.seek2Position(progress);
             }
         }
 

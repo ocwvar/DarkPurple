@@ -16,6 +16,7 @@
         android:background="@null"
         >
 
+        <!--SurfaceView 的灰色背景-->
         <View
             android:id="@+id/surfaceViewBG"
             android:layout_width="match_parent"
@@ -23,12 +24,14 @@
             android:background="@color/backgroundColor_Dark"
             android:visibility="gone"/>
 
+        <!--状态栏间距容器-->
         <LinearLayout
             android:id="@+id/pendingLayout_STATUSBAR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"/>
 
+        <!--导航栏间距容器-->
         <LinearLayout
             android:id="@+id/pendingLayout_NEV"
             android:layout_width="match_parent"
@@ -57,70 +60,69 @@
             android:layout_alignParentTop="true"
             android:background="@null"/>
 
-        <RelativeLayout
-            android:id="@+id/bottomPanel"
+        <!--三个歌曲信息-->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/pendingLayout_NEV"
-            android:layout_alignParentStart="true"
-            android:background="#a0000000"
+            android:layout_below="@id/toolbar"
             android:layoutAnimation="@anim/layout_anim_equalizer"
-            android:padding="5dp"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/shower_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/shower_mainButton"
-                android:singleLine="true"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="3dp"
+                android:shadowColor="#000"
+                android:shadowRadius="10"
                 android:textColor="@color/Text_LightGray"
                 android:textSize="18sp"
                 android:transitionName="title"
                 />
-
             <TextView
                 android:id="@+id/shower_artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/shower_title"
-                android:layout_toStartOf="@+id/shower_mainButton"
-                android:singleLine="true"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="3dp"
+                android:shadowColor="#000"
+                android:shadowRadius="10"
                 android:textColor="@color/Text_LightGray"
                 android:textSize="15sp"
                 android:transitionName="artist"
                 />
-
             <TextView
                 android:id="@+id/shower_album"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/shower_artist"
-                android:layout_toStartOf="@+id/shower_mainButton"
-                android:singleLine="true"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="3dp"
+                android:shadowColor="#000"
+                android:shadowRadius="10"
                 android:textColor="@color/Text_LightGray"
                 android:textSize="15sp"
                 />
 
-            <ImageButton
-                android:id="@+id/shower_mainButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:background="@null"
-                android:src="@drawable/ic_action_play"
-                />
+        </LinearLayout>
 
-        </RelativeLayout>
+        <!--主控制按钮-->
+        <ImageButton
+            android:id="@+id/shower_mainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/pendingLayout_NEV"
+            android:layout_centerHorizontal="true"
+            android:background="@null"
+            android:src="@drawable/ic_action_play" />
 
-        <SeekBar
+        <com.ocwvar.darkpurple.widgets.LineSlider
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/bottomPanel"
+            android:layout_height="80dp"
+            android:layout_above="@+id/shower_mainButton"
             android:layout_centerHorizontal="true"
-            android:background="#81000000"/>
+            android:layout_marginBottom="30dp" />
 
         <TextView
             android:id="@+id/shower_playing_position"
@@ -128,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/seekBar"
             android:layout_alignParentStart="true"
-            android:padding="5dp"
+            android:layout_marginStart="10dp"
             android:shadowColor="#000"
             android:shadowRadius="10"
             android:text="@string/main_default_text"
@@ -141,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/seekBar"
             android:layout_alignParentEnd="true"
-            android:padding="5dp"
+            android:layout_marginEnd="10dp"
             android:shadowColor="#000"
             android:shadowRadius="10"
             android:text="@string/main_default_text"
