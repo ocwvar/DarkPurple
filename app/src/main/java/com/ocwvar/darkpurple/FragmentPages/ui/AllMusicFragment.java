@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.FragmentPages;
+package com.ocwvar.darkpurple.FragmentPages.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ocwvar.darkpurple.FragmentPages.work.AllMusicBackGround;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 

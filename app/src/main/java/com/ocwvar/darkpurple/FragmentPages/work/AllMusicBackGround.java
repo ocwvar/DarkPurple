@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.FragmentPages;
+package com.ocwvar.darkpurple.FragmentPages.work;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

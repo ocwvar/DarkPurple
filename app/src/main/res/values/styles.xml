@@ -89,7 +89,7 @@
         <item name="android:windowBackground">@color/backgroundColor_Dark</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="ActivityAnimation">
         //进入新界面时

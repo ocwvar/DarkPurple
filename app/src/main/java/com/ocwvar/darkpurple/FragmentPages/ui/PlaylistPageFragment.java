@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.FragmentPages;
+package com.ocwvar.darkpurple.FragmentPages.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ocwvar.darkpurple.FragmentPages.work.PlaylistPageBackGround;
 import com.ocwvar.darkpurple.R;
 
 /**

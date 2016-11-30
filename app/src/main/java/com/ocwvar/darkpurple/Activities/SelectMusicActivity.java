@@ -28,8 +28,8 @@ import android.widget.TextView;
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
-import com.ocwvar.darkpurple.FragmentPages.AllMusicFragment;
-import com.ocwvar.darkpurple.FragmentPages.PlaylistPageFragment;
+import com.ocwvar.darkpurple.FragmentPages.ui.AllMusicFragment;
+import com.ocwvar.darkpurple.FragmentPages.ui.PlaylistPageFragment;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
@@ -182,6 +182,9 @@ public class SelectMusicActivity extends BaseActivity {
         return false;
     }
 
+    /**
+     * 当用户从设置界面返回出来的时候，重新载入所有设置
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

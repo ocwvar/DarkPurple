@@ -14,7 +14,6 @@
     <string name="simple_downloading">正在下载中</string>
     <string name="simple_download_completed">已成功下载文件</string>
     <string name="simple_download_failed">下载文件失败,请检查网络状态</string>
-    <string name="simple_download_existed">已有相同的文件,不需要再次下载</string>
     <string name="simple_loading">正在读取中,请稍候</string>
     <string name="service_error">服务创建失败,将无法使用音频功能</string>
     <string name="service_ok">服务连接成功</string>
@@ -31,7 +30,6 @@
     <!--播放列表详情页面文字数据-->
     <string name="title_detail">列表详情</string>
     <string name="title_menu_rename">修改名字</string>
-    <string name="title_dialog_rename">请输入新的播放列表名字</string>
     <string name="title_dialog_error">新名字与当前名字相同</string>
     <string name="title_dialog_error2">新名字与其他播放列表名字相同</string>
     <string name="info_playlist">长按项目进行拖动排序 , 滑动项目进行删除.</string>
@@ -51,18 +49,14 @@
     <string name="text_playlist_play_Failed">音频文件无法播放,可能已经失效</string>
 
     <!--ViewPager滚动标签栏-->
-    <string name="ViewPage_Tab_Playing">正在播放</string>
     <string name="ViewPage_Tab_AllMusic">音乐库</string>
     <string name="ViewPage_Tab_Playlist">播放列表</string>
-    <string name="ViewPage_Tab_RecentPlayed">最近播放</string>
 
     <!--扫描目录版面信息-->
     <string name="musicFolder_name">设置扫描目录</string>
     <string name="musicFolder_noPermission">应用无权限进行扫描 , 请先授权</string>
-    <string name="info_musicFloder">按右上角按钮进行添加目录 , 长按已添加的条目进行删除. 目录内的子目录并不会被扫描.</string>
 
     <!--All Music 版面信息-->
-    <string name="textview_loading">扫描中,请稍候…</string>
     <string name="textview_option">点此设置设置歌曲文件夹</string>
     <string name="noMusic">无歌曲扫描结果</string>
     <string name="gotMusicDone">扫描结束</string>
@@ -74,14 +68,12 @@
     <string name="playliseSaveCanceled">已取消添加播放列表操作</string>
     <string name="music_failed">歌曲不存在或已损坏</string>
     <string name="title_sorttype">设置歌曲排序类型</string>
-    <string name="title_addFav">创建播放列表</string>
     <string name="title_newplaylist_dialog">请输入新建播放列表的名称</string>
     <string name="title_addPL_dialog">选择需要添加到的播放列表</string>
     <string name="error_noPermission">请先授予APP文件读写权限</string>
     <string name="header_welcome">DarkPurple Music Player</string>
     <string name="header_nowPlaying">正在播放:</string>
     <string name="header_noMusic">无正在播放曲目</string>
-    <string name="header_result">扫描结果</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_select_folder_ui">选择要扫描的音乐文件夹</string>
@@ -113,11 +105,8 @@
     <string name="head_searchText">搜索依据:</string>
     <string name="menu_title_cover_info">数据来源</string>
     <string name="title_selector_dialog">请选择需要下载的封面尺寸</string>
-    <string name="title_update_cache">正在更新本地储存数据…</string>
 
     <!--菜单各类选项-->
-    <string name="menu_allmusic_refresh">刷新歌曲</string>
-    <string name="menu_add_folder">添加目录</string>
     <string name="title_activity_settings">设置</string>
     <string name="title_menu_sort_date">按照歌曲添加日期</string>
     <string name="title_menu_sort_name">按照歌曲标题名字</string>
@@ -137,15 +126,8 @@
     <string name="setting_header_spectrum">频谱动画设置</string>
 
     <string name="setting_header_scan">扫描器选项</string>
-    <string name="setting_title_scanAll">扫描所有音频</string>
-    <string name="setting_about_scanAll">开启后,将会从系统数据库中扫描所有音频,而不是仅仅扫描设定的目录.</string>
-
-    <string name="setting_title_musicFolder">设置歌曲扫描目录</string>
-    <string name="setting_summary_musicFolder">不设置扫描目录将会默认扫描所有歌曲 , 否则仅仅扫描目录内的曲目. (不扫描子目录)</string>
-    <string name="setting_defaultValue_musicFolder"> </string>
 
     <string name="setting_title_lengthLimit">最短歌曲长度(单位:秒)</string>
-    <string name="setting_info_lengthLimit">当扫描的歌曲长度小于设置的长度时将不识别进行跳过</string>
     <string name="setting_defaultValue_lengthLimit">20</string>
 
     <string name="setting_header_media">音频控制选项</string>
@@ -172,8 +154,6 @@
     <string name="setting_title_outlineWidth">定义外边轮廓宽度</string>
     <string name="setting_title_nodeWidth">定义Node半径</string>
 
-    <string name="setting_title_spectrum_width">设置频谱柱状图宽度</string>
-
     <string name="setting_header_playing">播放界面选项</string>
     <string name="setting_title_simplePlaying">简易播放界面</string>
     <string name="setting_info_simplePlaying">播放界面不显示歌曲封面的模糊效果</string>
@@ -193,7 +173,6 @@
     <string name="eq">均衡器</string>
     <string name="eq_reset">恢复默认</string>
     <string name="eq_save">点此保存均衡器配置</string>
-    <string name="eq_remove">清除当前配置</string>
     <string name="eq_save_completed">保存配置成功</string>
     <string name="eq_remove_completed">已清除当前配置</string>
     <string name="eq_save_failed">保存配置失败,请重试</string>
@@ -255,10 +234,6 @@
     </string-array>
 
     <!--Notification相关-->
-    <string name="notification_ticker">DarkPurple后台运行中</string>
-    <string name="notification_title">歌曲名</string>
-    <string name="notification_artist">作者名</string>
-    <string name="notification_album">专辑名</string>
     <string name="notification_string_empty">无歌曲数据</string>
 
 </resources>

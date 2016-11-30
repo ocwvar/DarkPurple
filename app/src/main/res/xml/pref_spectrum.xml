@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="isUseSecondStyleVe"
         android:summary="@string/setting_info_isUseSecondStyleSpectrum"
         android:title="@string/setting_title_isUseSecondStyleSpectrum"
-        android:widgetLayout="@layout/preference_checkbox"
-        />
+        android:widgetLayout="@layout/preference_checkbox" />
 
     <PreferenceCategory
         android:layout="@layout/preference_sp_outline_category_textview_warnning"
@@ -24,8 +23,7 @@
         android:defaultValue="0xFF9233B4"
         android:key="Spectrum_OutLine_Color"
         android:title="@string/setting_title_outlineColor"
-        app:colorpicker_showAlpha="false"
-        />
+        app:colorpicker_showAlpha="false" />
 
     <EditTextPreference
         android:defaultValue="10.0"
@@ -75,7 +73,6 @@
         android:defaultValue="10.0"
         android:inputType="numberDecimal"
         android:key="spectrum_line_width"
-        android:title="@string/setting_title_lineWidth"
-        />
+        android:title="@string/setting_title_lineWidth" />
 
 </PreferenceScreen>

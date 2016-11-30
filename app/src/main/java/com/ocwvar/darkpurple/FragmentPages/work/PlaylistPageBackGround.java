@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.FragmentPages;
+package com.ocwvar.darkpurple.FragmentPages.work;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -65,7 +65,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     /**
      * 初始化数据
      */
-    protected void initData() {
+    public void initData() {
         fragmentView = getTargetFragment().getView();
         if (fragmentView != null) {
             adapter = new PlaylistItemAdapter();
@@ -87,7 +87,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     /**
      * 刷新数据
      */
-    protected void refreshData() {
+    public void refreshData() {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
             shouldShowNoPlaylistMessage();
@@ -97,7 +97,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     /**
      * 释放数据
      */
-    protected void releaseData() {
+    public void releaseData() {
         PlaylistUnits.getInstance().setPlaylistChangedCallbacks(null);
         fragmentView = null;
         recyclerView = null;

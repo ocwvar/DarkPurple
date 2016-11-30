@@ -20,8 +20,7 @@
             android:entries="@array/sort_types_name"
             android:entryValues="@array/sort_types_value"
             android:key="scanner_sort_type"
-            android:title="@string/title_sorttype"
-            />
+            android:title="@string/title_sorttype" />
 
     </PreferenceCategory>
 
@@ -34,16 +33,14 @@
             android:key="isResumeAudioWhenPlugin"
             android:summary="@string/setting_info_isResumeAudioWhenPlugin"
             android:title="@string/setting_title_isResumeAudioWhenPlugin"
-            android:widgetLayout="@layout/preference_checkbox"
-            />
+            android:widgetLayout="@layout/preference_checkbox" />
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="isListenMediaButton"
             android:summary="@string/setting_info_isListenMediaButton"
             android:title="@string/setting_title_isListenMediaButton"
-            android:widgetLayout="@layout/preference_checkbox"
-            />
+            android:widgetLayout="@layout/preference_checkbox" />
 
     </PreferenceCategory>
 
@@ -56,24 +53,21 @@
             android:key="isUseSimplePlaying"
             android:summary="@string/setting_info_simplePlaying"
             android:title="@string/setting_title_simplePlaying"
-            android:widgetLayout="@layout/preference_checkbox"
-            />
+            android:widgetLayout="@layout/preference_checkbox" />
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="autoSwitchPlaying"
             android:summary="@string/setting_info_autoOpenPlayingActivity"
             android:title="@string/setting_title_autoOpenPlayingActivity"
-            android:widgetLayout="@layout/preference_checkbox"
-            />
+            android:widgetLayout="@layout/preference_checkbox" />
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="useCompatMode"
             android:summary="@string/setting_info_useCompatMode"
             android:title="@string/setting_title_useCompatMode"
-            android:widgetLayout="@layout/preference_checkbox"
-            />
+            android:widgetLayout="@layout/preference_checkbox" />
 
     </PreferenceCategory>
 

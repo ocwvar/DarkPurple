@@ -245,7 +245,6 @@ public class SurfaceViewControler implements SurfaceHolder.Callback {
                         }
 
 
-
                     }
 
                     if (AppConfigs.isUseSecondStyleSpectrum) {

@@ -10,9 +10,6 @@
     <!--Card默认背景颜色-->
     <color name="card_backgroundColor_Dark">#424242</color>
 
-    <!--Card信息显示版面背景-->
-    <color name="card_messagePanel_backgroundColor">@color/colorPrimary</color>
-
     <!--文字淡灰色-->
     <color name="Text_LightGray">#d2d2d2</color>
 
