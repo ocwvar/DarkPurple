@@ -245,4 +245,20 @@
     <!--Notification相关-->
     <string name="notification_string_empty">无歌曲数据</string>
 
+    <!--图片选择器文字信息-->
+    <string name="selector_from_Local">从本地图库选择</string>
+    <string name="selector_from_Camera">从照相机获取</string>
+
+    <string name="ERROR_TEXT_COMPRESS_FILED">压缩储存失败,无法返回带压缩请求的位图和文件.</string>
+    <string name="ERROR_TEXT_FILE_FILED">文件操作失败,请检查储存容量和应用权限.</string>
+    <string name="ERROR_TEXT_FILE_SAVE_FAILED">文件储存失败,无法返回结果.</string>
+    <string name="ERROR_TEXT_PIC_INCURRECT">获取到的图像异常,无法进行操作.</string>
+    <string name="ERROR_TEXT_BITMAP_TOOLAGER">Bitmap对象大于 1MB 无法返回.</string>
+
+    <string name="ERROR_TEXT_CAMERA_NO_DATA">照相机无数据返回.</string>
+    <string name="ERROR_TEXT_LOCAL_NO_DATA">图库无数据返回.</string>
+    <string name="ERROR_TEXT_ARG">请求参数异常.</string>
+    <string name="ERROR_TEXT_UNKNOWN">未知的返回数据.</string>
+    <string name="ERROR_TEXT_PERMISSION">请先授予应用相应权限.</string>
+
 </resources>

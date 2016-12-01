@@ -560,7 +560,7 @@ public class PlayingActivity
      * @return 文本
      */
     private String time2String(double time) {
-        if (time < 0d) {
+        if (date == null || time < 0d) {
             return "00:00";
         } else {
             long timeL = (long) time * 1000;
