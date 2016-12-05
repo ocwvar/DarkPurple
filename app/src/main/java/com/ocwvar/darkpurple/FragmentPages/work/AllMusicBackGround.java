@@ -45,6 +45,7 @@ import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.JSONHandler;
+import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
@@ -60,22 +61,47 @@ import java.util.ArrayList;
  */
 public class AllMusicBackGround extends Fragment implements MediaScannerCallback, AllMusicAdapter.OnClick, View.OnTouchListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
+    //调试用的TAG
     public static final String TAG = "AllMusicBackGround";
+
+    //歌曲列表的Adapter
     final AllMusicAdapter allMusicAdapter;
-    View fragmentView;
-    RecyclerView recyclerView;
-    SwipeRefreshLayout swipeRefreshLayout;
-    FloatingActionButton floatingActionButton;
-    WeakReference<AlertDialog> moreDialog = new WeakReference<>(null);
-    SelectPlaylistDialogHolder addToPLDialogHolder;
-    AlertDialog newPlaylistDialog;
-    ProgressDialog loadingDialog;
-    EditText getPlaylistTitle;
 
-    SongItem selectedSongitem;
-    int selectedPosition = -1;
+    //歌曲列表对象
+    private RecyclerView recyclerView;
 
-    Snackbar requestPermission;
+    //UI Fragment 的View对象
+    private View fragmentView;
+
+    //下拉刷新布局
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    //添加播放列表按钮对象
+    private FloatingActionButton floatingActionButton;
+
+    //长按歌曲 - 对话框弱引用容器
+    private WeakReference<AlertDialog> moreDialog = new WeakReference<>(null);
+
+    //创建新播放列表 - 对话框弱引用容器
+    private WeakReference<AlertDialog> newPlaylistDialog = new WeakReference<>(null);
+
+    //添加歌曲对象至现有播放列表的对话框Holder
+    private SelectPlaylistDialogHolder addToPLDialogHolder;
+
+    //读取播放列表等待对话框
+    private ProgressDialog loadingDialog;
+
+    //创建新的播放列表输入框
+    private EditText getPlaylistTitle;
+
+    //长按时选定的歌曲对象
+    private SongItem selectedSongitem;
+
+    //长按时选定的歌曲在列表中的位置
+    private int selectedPosition = -1;
+
+    //请求权限用的Snackbar
+    private Snackbar requestPermission;
 
     public AllMusicBackGround() {
         setRetainInstance(true);
@@ -126,13 +152,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 Snackbar.make(fragmentView, R.string.gotMusicDone, Snackbar.LENGTH_SHORT).show();
             }
 
-            /*if (isFromLastSaved) {
-                final AudioService service = ServiceHolder.getInstance().getService();
-                if (service != null) {
-                    service.initAudio(songItems, 0);
-                }
-            }*/
-
         }
 
         if (swipeRefreshLayout != null) {
@@ -147,7 +166,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * 包括其中的点击事件处理
      */
     private void showCreatePlaylistDialog() {
-        if (newPlaylistDialog == null) {
+        if (newPlaylistDialog == null || newPlaylistDialog.get() == null) {
+            Logger.warnning(TAG, "新建播放列表 对话框对象被弱引用容器为空，重新创建中...");
+
             //创建输入框对象
             getPlaylistTitle = new EditText(fragmentView.getContext());
             getPlaylistTitle.setMaxLines(1);
@@ -194,9 +215,9 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     dialogInterface.dismiss();
                 }
             });
-            newPlaylistDialog = builder.create();
+            newPlaylistDialog = new WeakReference<>(builder.create());
         }
-        newPlaylistDialog.show();
+        newPlaylistDialog.get().show();
     }
 
     /**
