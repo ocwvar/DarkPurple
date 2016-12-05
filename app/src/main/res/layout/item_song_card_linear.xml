@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@null"
@@ -12,8 +11,7 @@
         android:layout_width="3dp"
         android:layout_height="match_parent"
         android:layout_marginBottom="2dp"
-        android:layout_marginTop="2dp"
-        />
+        android:layout_marginTop="2dp" />
 
     <ImageView
         android:id="@+id/item_icon"
@@ -41,7 +39,7 @@
             android:shadowRadius="10"
             android:singleLine="true"
             android:textColor="#fff"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/item_artist"
@@ -53,7 +51,7 @@
             android:shadowRadius="7"
             android:singleLine="true"
             android:textColor="#fff"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/item_time"
@@ -64,7 +62,7 @@
             android:shadowColor="#000"
             android:shadowRadius="5"
             android:singleLine="true"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
     </LinearLayout>
 

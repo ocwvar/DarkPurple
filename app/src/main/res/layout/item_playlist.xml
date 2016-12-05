@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bg"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -20,8 +19,7 @@
             android:layout_marginRight="10dp"
             android:background="@null"
             android:padding="3dp"
-            android:src="@drawable/ic_action_playlist_more"
-            />
+            android:src="@drawable/ic_action_playlist_more" />
 
         <ImageButton
             android:id="@+id/imageButton_play"
@@ -31,8 +29,7 @@
             android:layout_marginRight="10dp"
             android:background="@null"
             android:padding="3dp"
-            android:src="@drawable/ic_action_playlist_play"
-            />
+            android:src="@drawable/ic_action_playlist_play" />
     </LinearLayout>
 
     <LinearLayout
@@ -47,7 +44,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:background="@null"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,7 +62,7 @@
                 android:paddingTop="3dp"
                 android:text="@string/text_playlist_name"
                 android:textColor="#97ffffff"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/textView_title"
@@ -75,14 +72,14 @@
                 android:paddingTop="2dp"
                 android:textColor="#fff"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_playlist_count"
                 android:textColor="#97ffffff"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/textView_count"
@@ -90,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="15dp"
                 android:paddingTop="2dp"
-                android:textColor="#fff"/>
+                android:textColor="#fff" />
 
         </LinearLayout>
     </LinearLayout>

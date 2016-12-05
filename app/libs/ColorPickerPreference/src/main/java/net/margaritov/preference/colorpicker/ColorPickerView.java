@@ -135,10 +135,6 @@ public class ColorPickerView extends View {
 
     private Point mStartTouchPoint = null;
 
-    public interface OnColorChangedListener {
-        public void onColorChanged(int color);
-    }
-
     public ColorPickerView(Context context) {
         this(context, null);
     }
@@ -216,7 +212,6 @@ public class ColorPickerView extends View {
 
         return hue;
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -345,7 +340,6 @@ public class ColorPickerView extends View {
 
     }
 
-
     private Point hueToPoint(float hue) {
 
         final RectF rect = mHueRect;
@@ -451,7 +445,6 @@ public class ColorPickerView extends View {
         return 0xff - (x * 0xff / width);
 
     }
-
 
     @Override
     public boolean onTrackballEvent(MotionEvent event) {
@@ -715,7 +708,6 @@ public class ColorPickerView extends View {
         return height;
     }
 
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -782,7 +774,6 @@ public class ColorPickerView extends View {
 
     }
 
-
     /**
      * Set a OnColorChangedListener to get notified when the color
      * selected by the user has changed.
@@ -794,6 +785,13 @@ public class ColorPickerView extends View {
     }
 
     /**
+     * Get the color of the border surrounding all panels.
+     */
+    public int getBorderColor() {
+        return mBorderColor;
+    }
+
+    /**
      * Set the color of the border surrounding all panels.
      *
      * @param color
@@ -801,13 +799,6 @@ public class ColorPickerView extends View {
     public void setBorderColor(int color) {
         mBorderColor = color;
         invalidate();
-    }
-
-    /**
-     * Get the color of the border surrounding all panels.
-     */
-    public int getBorderColor() {
-        return mBorderColor;
     }
 
     /**
@@ -868,6 +859,10 @@ public class ColorPickerView extends View {
         return mDrawingOffset;
     }
 
+    public boolean getAlphaSliderVisible() {
+        return mShowAlphaPanel;
+    }
+
     /**
      * Set if the user is allowed to adjust the alpha panel. Default is false.
      * If it is set to false no alpha will be set.
@@ -894,8 +889,8 @@ public class ColorPickerView extends View {
 
     }
 
-    public boolean getAlphaSliderVisible() {
-        return mShowAlphaPanel;
+    public int getSliderTrackerColor() {
+        return mSliderTrackerColor;
     }
 
     public void setSliderTrackerColor(int color) {
@@ -904,10 +899,6 @@ public class ColorPickerView extends View {
         mHueTrackerPaint.setColor(mSliderTrackerColor);
 
         invalidate();
-    }
-
-    public int getSliderTrackerColor() {
-        return mSliderTrackerColor;
     }
 
     /**
@@ -922,6 +913,17 @@ public class ColorPickerView extends View {
     }
 
     /**
+     * Get the current value of the text
+     * that will be shown in the alpha
+     * slider.
+     *
+     * @return
+     */
+    public String getAlphaSliderText() {
+        return mAlphaSliderText;
+    }
+
+    /**
      * Set the text that should be shown in the
      * alpha slider. Set to null to disable text.
      *
@@ -932,14 +934,7 @@ public class ColorPickerView extends View {
         invalidate();
     }
 
-    /**
-     * Get the current value of the text
-     * that will be shown in the alpha
-     * slider.
-     *
-     * @return
-     */
-    public String getAlphaSliderText() {
-        return mAlphaSliderText;
+    public interface OnColorChangedListener {
+        public void onColorChanged(int color);
     }
 }

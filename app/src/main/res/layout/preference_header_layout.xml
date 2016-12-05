@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/cus_preference_header_title"
@@ -13,6 +13,6 @@
         android:padding="13dp"
         android:text="Preference Header test"
         android:textColor="@color/Text_LightGray"
-        android:textSize="15sp"/>
+        android:textSize="15sp" />
 
 </LinearLayout>

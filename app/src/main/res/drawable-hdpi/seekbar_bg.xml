@@ -2,8 +2,12 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 背景图 -->
-    <item android:id="@android:id/background" android:drawable="@drawable/ic_seekbar_bg"/>
+    <item
+        android:id="@android:id/background"
+        android:drawable="@drawable/ic_seekbar_bg" />
     <!-- 进度度 -->
-    <item android:id="@android:id/progress" android:drawable="@drawable/ic_progress_fg"/>
+    <item
+        android:id="@android:id/progress"
+        android:drawable="@drawable/ic_progress_fg" />
 
 </layer-list>

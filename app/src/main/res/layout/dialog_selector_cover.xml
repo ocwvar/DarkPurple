@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="#7d000000"
-              android:gravity="center"
-              android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#7d000000"
+    android:gravity="center"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
@@ -16,12 +16,12 @@
         android:text="@string/title_selector_dialog"
         android:textColor="#fff"
         android:textSize="15sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        tools:listitem="@layout/simple_textview"/>
+        tools:listitem="@layout/simple_textview" />
 </LinearLayout>

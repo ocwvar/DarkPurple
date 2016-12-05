@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
     tools:context=".Activities.SelectMusicActivity">
-    
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,21 +20,20 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_collapseMode="parallax"
-                >
+                app:layout_collapseMode="parallax">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scaleType="fitXY"
-                    android:src="@drawable/head_pic"/>
+                    android:src="@drawable/head_pic" />
 
                 <ImageView
                     android:id="@+id/header_image_shadow"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/head_pic_shadow"/>
+                    android:src="@drawable/head_pic_shadow" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -89,7 +87,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_marginEnd="10dp"
-                        android:scaleType="fitXY"/>
+                        android:scaleType="fitXY" />
 
                 </LinearLayout>
 
@@ -103,8 +101,7 @@
                 android:background="@null"
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="snap|scroll|enterAlwaysCollapsed"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                />
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -157,7 +154,6 @@
         android:id="@+id/Main_ViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

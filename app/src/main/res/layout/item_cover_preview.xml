@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:padding="5dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp">
 
     <com.ocwvar.darkpurple.widgets.SquareWidthImageView
         android:id="@+id/textView_cover_preview_image"
@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="#7f000000"
         android:scaleType="center"
-        android:src="@drawable/ic_picture_loading"/>
+        android:src="@drawable/ic_picture_loading" />
 
     <TextView
         android:id="@+id/textView_cover_preview_name"
@@ -21,6 +21,6 @@
         android:maxLines="2"
         android:padding="10dp"
         android:text="暂无数据"
-        android:textColor="#ebebeb"/>
+        android:textColor="#ebebeb" />
 
 </LinearLayout>

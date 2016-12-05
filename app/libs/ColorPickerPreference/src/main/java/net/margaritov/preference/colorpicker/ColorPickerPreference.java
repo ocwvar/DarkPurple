@@ -64,6 +64,82 @@ public class ColorPickerPreference
         init(context, attrs);
     }
 
+    /**
+     * For custom purposes. Not used by ColorPickerPreferrence
+     *
+     * @param color
+     * @author Unknown
+     */
+    public static String convertToARGB(int color) {
+        String alpha = Integer.toHexString(Color.alpha(color));
+        String red = Integer.toHexString(Color.red(color));
+        String green = Integer.toHexString(Color.green(color));
+        String blue = Integer.toHexString(Color.blue(color));
+
+        if (alpha.length() == 1) {
+            alpha = "0" + alpha;
+        }
+
+        if (red.length() == 1) {
+            red = "0" + red;
+        }
+
+        if (green.length() == 1) {
+            green = "0" + green;
+        }
+
+        if (blue.length() == 1) {
+            blue = "0" + blue;
+        }
+
+        return "#" + alpha + red + green + blue;
+    }
+
+    /**
+     * Method currently used by onGetDefaultValue method to
+     * convert hex string provided in android:defaultValue to color integer.
+     *
+     * @param color
+     * @return A string representing the hex value of color,
+     * without the alpha value
+     * @author Charles Rosaaen
+     */
+    public static String convertToRGB(int color) {
+        String red = Integer.toHexString(Color.red(color));
+        String green = Integer.toHexString(Color.green(color));
+        String blue = Integer.toHexString(Color.blue(color));
+
+        if (red.length() == 1) {
+            red = "0" + red;
+        }
+
+        if (green.length() == 1) {
+            green = "0" + green;
+        }
+
+        if (blue.length() == 1) {
+            blue = "0" + blue;
+        }
+
+        return "#" + red + green + blue;
+    }
+
+    /**
+     * For custom purposes. Not used by ColorPickerPreferrence
+     *
+     * @param argb
+     * @throws NumberFormatException
+     * @author Unknown
+     */
+    public static int convertToColorInt(String argb) throws IllegalArgumentException {
+
+        if (!argb.startsWith("#")) {
+            argb = "#" + argb;
+        }
+
+        return Color.parseColor(argb);
+    }
+
     /**Method edited by
      * @author Anna Berkovitch
      * added functionality to accept hex string as defaultValue
@@ -198,82 +274,6 @@ public class ColorPickerPreference
         mHexValueEnabled = enable;
     }
 
-    /**
-     * For custom purposes. Not used by ColorPickerPreferrence
-     *
-     * @param color
-     * @author Unknown
-     */
-    public static String convertToARGB(int color) {
-        String alpha = Integer.toHexString(Color.alpha(color));
-        String red = Integer.toHexString(Color.red(color));
-        String green = Integer.toHexString(Color.green(color));
-        String blue = Integer.toHexString(Color.blue(color));
-
-        if (alpha.length() == 1) {
-            alpha = "0" + alpha;
-        }
-
-        if (red.length() == 1) {
-            red = "0" + red;
-        }
-
-        if (green.length() == 1) {
-            green = "0" + green;
-        }
-
-        if (blue.length() == 1) {
-            blue = "0" + blue;
-        }
-
-        return "#" + alpha + red + green + blue;
-    }
-
-    /**
-     * Method currently used by onGetDefaultValue method to
-     * convert hex string provided in android:defaultValue to color integer.
-     *
-     * @param color
-     * @return A string representing the hex value of color,
-     * without the alpha value
-     * @author Charles Rosaaen
-     */
-    public static String convertToRGB(int color) {
-        String red = Integer.toHexString(Color.red(color));
-        String green = Integer.toHexString(Color.green(color));
-        String blue = Integer.toHexString(Color.blue(color));
-
-        if (red.length() == 1) {
-            red = "0" + red;
-        }
-
-        if (green.length() == 1) {
-            green = "0" + green;
-        }
-
-        if (blue.length() == 1) {
-            blue = "0" + blue;
-        }
-
-        return "#" + red + green + blue;
-    }
-
-    /**
-     * For custom purposes. Not used by ColorPickerPreferrence
-     *
-     * @param argb
-     * @throws NumberFormatException
-     * @author Unknown
-     */
-    public static int convertToColorInt(String argb) throws IllegalArgumentException {
-
-        if (!argb.startsWith("#")) {
-            argb = "#" + argb;
-        }
-
-        return Color.parseColor(argb);
-    }
-
     @Override
     protected Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
@@ -300,23 +300,6 @@ public class ColorPickerPreference
     }
 
     private static class SavedState extends BaseSavedState {
-        Bundle dialogBundle;
-
-        public SavedState(Parcel source) {
-            super(source);
-            dialogBundle = source.readBundle();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeBundle(dialogBundle);
-        }
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
         @SuppressWarnings("unused")
         public static final Parcelable.Creator<SavedState> CREATOR =
                 new Parcelable.Creator<SavedState>() {
@@ -328,5 +311,21 @@ public class ColorPickerPreference
                         return new SavedState[size];
                     }
                 };
+        Bundle dialogBundle;
+
+        public SavedState(Parcel source) {
+            super(source);
+            dialogBundle = source.readBundle();
+        }
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeBundle(dialogBundle);
+        }
     }
 }

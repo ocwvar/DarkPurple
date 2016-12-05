@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:gravity="center_vertical"
-    android:paddingStart="20dp"
-    >
+    android:paddingStart="20dp">
 
     <TextView
         android:id="@+id/item_equalizer_saved"
@@ -20,7 +18,7 @@
         android:shadowRadius="6"
         android:singleLine="true"
         android:textColor="#fff"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/item_equalizer_remove"
@@ -28,8 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|center"
         android:background="@null"
-        android:src="@drawable/ic_action_delete"
-        />
+        android:src="@drawable/ic_action_delete" />
 
 </FrameLayout>
 
