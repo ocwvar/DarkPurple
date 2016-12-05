@@ -74,9 +74,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="3dp"
+                android:maxLines="1"
                 android:shadowColor="#000"
                 android:shadowRadius="10"
-                android:textColor="@color/Text_LightGray"
+                android:singleLine="true"
+                android:textColor="#fff"
                 android:textSize="18sp"
                 android:transitionName="title"
                 />
@@ -86,9 +88,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="3dp"
+                android:maxLines="1"
                 android:shadowColor="#000"
                 android:shadowRadius="10"
-                android:textColor="@color/Text_LightGray"
+                android:singleLine="true"
+                android:textColor="#fff"
                 android:textSize="15sp"
                 android:transitionName="artist"
                 />
@@ -98,9 +102,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="3dp"
+                android:maxLines="1"
                 android:shadowColor="#000"
                 android:shadowRadius="10"
-                android:textColor="@color/Text_LightGray"
+                android:singleLine="true"
+                android:textColor="#fff"
                 android:textSize="15sp"
                 />
 
