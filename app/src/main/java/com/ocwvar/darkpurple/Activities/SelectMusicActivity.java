@@ -28,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Adapters.MainViewPagerAdapter;
@@ -67,7 +68,7 @@ public class SelectMusicActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setBackgroundDrawable(new ColorDrawable(AppConfigs.Color.WindowBackground_Color));
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
             getWindow().setNavigationBarColor(Color.argb(160, 0, 0, 0));
@@ -78,7 +79,7 @@ public class SelectMusicActivity extends BaseActivity {
 
     @Override
     protected int onSetToolBar() {
-        return R.id.toolbar;
+        return 0;
     }
 
     @Override
@@ -89,35 +90,42 @@ public class SelectMusicActivity extends BaseActivity {
     @Override
     protected void onSetupViews() {
 
-        if (isToolBarLoaded()) {
-            getToolBar().setBackground(null);
-            setTitle(null);
-            ((ImageView) findViewById(R.id.header_image_shadow)).setColorFilter(AppConfigs.Color.TabLayout_color);
-        }
+        //设置图片阴影颜色
+        ((ImageView) findViewById(R.id.header_image_shadow)).setColorFilter(AppConfigs.Color.TabLayout_color);
 
+        //设置状态栏间隔 以及 TabLayout的整体颜色
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, AppConfigs.StatusBarHeight);
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_STATUSBAR);
+        linearLayout.addView(new View(SelectMusicActivity.this), 0, params);
+        linearLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
+
+        //播放状态文字和封面
         nowPlayingTV = (TextView) findViewById(R.id.header_nowPlaying);
         headerCover = (ImageView) findViewById(R.id.header_small_cover);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.Main_TabLayout);
-        viewPager = (ViewPager) findViewById(R.id.Main_ViewPager);
-        viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
+
+        //创建ViewPager的页面和标题
+        final MainViewPagerAdapter viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
                 new String[]{
                         getText(R.string.ViewPage_Tab_AllMusic).toString(),
                         getText(R.string.ViewPage_Tab_Playlist).toString(),
                 });
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-
         viewPagerAdapter.addFragmentPageToEnd(new AllMusicFragment());
         viewPagerAdapter.addFragmentPageToEnd(new PlaylistPageFragment());
 
-        tabLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
+        //TabLayout ViewPager ViewPagerAdapter 相互绑定，以及颜色设置
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.Main_TabLayout);
+        viewPager = (ViewPager) findViewById(R.id.Main_ViewPager);
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabTextColors(AppConfigs.Color.TabLayout_title_color, AppConfigs.Color.TabLayout_title_color_selected);
         tabLayout.setSelectedTabIndicatorColor(AppConfigs.Color.TabLayout_Indicator_color);
 
+        //TabLayout上的按钮监听设置
         findViewById(R.id.action_playing).setOnClickListener(this);
         findViewById(R.id.action_setting).setOnClickListener(this);
         findViewById(R.id.action_sort).setOnClickListener(this);
 
+        //初始化音频服务
         onSetupService();
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

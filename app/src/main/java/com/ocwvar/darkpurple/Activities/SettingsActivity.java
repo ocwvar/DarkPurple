@@ -142,7 +142,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             bindPreferenceSummaryToValue(findPreference("length_limit"));
-            bindPreferenceSummaryToValue(findPreference("scanner_sort_type"));
         }
 
     }

@@ -93,58 +93,56 @@
 
             </FrameLayout>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_marginTop="30dp"
-                android:background="@null"
-                app:layout_collapseMode="pin"
-                app:layout_scrollFlags="snap|scroll|enterAlwaysCollapsed"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
-
         </android.support.design.widget.CollapsingToolbarLayout>
 
         <LinearLayout
+            android:id="@+id/pendingLayout_STATUSBAR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/Main_TabLayout"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:background="@null"
-                app:tabIndicatorColor="#fff"
-                app:tabIndicatorHeight="2dp"
-                app:tabMode="fixed"
-                app:tabSelectedTextColor="#fff"
-                app:tabTextColor="#73ffffff" />
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/action_setting"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:src="@drawable/ic_action_setting" />
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/Main_TabLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:background="@null"
+                    app:tabIndicatorColor="#fff"
+                    app:tabIndicatorHeight="2dp"
+                    app:tabMode="fixed"
+                    app:tabSelectedTextColor="#fff"
+                    app:tabTextColor="#73ffffff" />
 
-            <ImageButton
-                android:id="@+id/action_playing"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:src="@drawable/ic_action_playing" />
+                <ImageButton
+                    android:id="@+id/action_setting"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_action_setting" />
 
-            <ImageButton
-                android:id="@+id/action_sort"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:src="@drawable/ic_action_sort" />
+                <ImageButton
+                    android:id="@+id/action_playing"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_action_playing" />
+
+                <ImageButton
+                    android:id="@+id/action_sort"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_action_sort" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
