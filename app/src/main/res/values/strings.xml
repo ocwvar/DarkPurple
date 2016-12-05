@@ -16,7 +16,7 @@
     <string name="simple_download_failed">下载文件失败,请检查网络状态</string>
     <string name="simple_loading">正在读取中,请稍候</string>
     <string name="service_error">服务创建失败,将无法使用音频功能</string>
-    <string name="service_ok">服务连接成功</string>
+    <string name="service_ok">音频服务连接成功</string>
     <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
     <string name="button_dialog_allmusic_delete">删除音频</string>
     <string name="button_dialog_allmusic_add">添加到列表</string>

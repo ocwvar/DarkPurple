@@ -15,13 +15,6 @@
             android:singleLine="true"
             android:title="@string/setting_title_lengthLimit" />
 
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/sort_types_name"
-            android:entryValues="@array/sort_types_value"
-            android:key="scanner_sort_type"
-            android:title="@string/title_sorttype" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

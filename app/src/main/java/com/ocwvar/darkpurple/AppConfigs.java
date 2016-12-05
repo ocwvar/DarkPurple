@@ -237,10 +237,9 @@ public class AppConfigs {
 
             Color.loadColors();
 
-            String value = preferences.getString("scanner_sort_type", "0");
-
             useCompatMode = preferences.getBoolean("useCompatMode", false);
 
+            String value = preferences.getString("scanner_sort_type", "0");
             switch (value) {
                 case "0":
                     SortType = MediaScanner.SortType.ByName;

@@ -1,12 +1,15 @@
 package com.ocwvar.darkpurple.Activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -15,13 +18,13 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -39,24 +42,32 @@ import com.ocwvar.darkpurple.Units.BaseActivity;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.squareup.picasso.Picasso;
 
+/**
+ * Created by 区成伟
+ * Package: com.ocwvar.darkpurple.Activities
+ * Data: 2016/7/5 13:31
+ * Project: DarkPurple
+ * 显示的主界面
+ */
 public class SelectMusicActivity extends BaseActivity {
 
-    ViewPager viewPager;
-    MainViewPagerAdapter viewPagerAdapter;
-    ServiceConnection serviceConnection;
-    TextView nowPlayingTV;
-    ImageView headerCover;
-
-    AllMusicFragment allMusicFragment;
-    PlaylistPageFragment playlistPageFragment;
-    UpdateHeaderPlayingText headerTextUpdater;
+    //ViewPager的Adapter
+    protected MainViewPagerAdapter viewPagerAdapter;
+    //用于显示所有功能板块的ViewPager
+    private ViewPager viewPager;
+    //主界面上方的歌曲文字信息
+    private TextView nowPlayingTV;
+    //主界面上方的歌曲封面信息
+    private ImageView headerCover;
+    //更新主界面当前播放信息的广播接收器
+    private UpdateHeaderPlayingText headerTextUpdater;
 
     @Override
     protected boolean onPreSetup() {
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setBackgroundDrawable(new ColorDrawable(AppConfigs.Color.WindowBackground_Color));
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
             getWindow().setNavigationBarColor(Color.argb(160, 0, 0, 0));
@@ -96,14 +107,16 @@ public class SelectMusicActivity extends BaseActivity {
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        allMusicFragment = new AllMusicFragment();
-        playlistPageFragment = new PlaylistPageFragment();
-        viewPagerAdapter.addFragmentPageToEnd(allMusicFragment);
-        viewPagerAdapter.addFragmentPageToEnd(playlistPageFragment);
+        viewPagerAdapter.addFragmentPageToEnd(new AllMusicFragment());
+        viewPagerAdapter.addFragmentPageToEnd(new PlaylistPageFragment());
 
         tabLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
         tabLayout.setTabTextColors(AppConfigs.Color.TabLayout_title_color, AppConfigs.Color.TabLayout_title_color_selected);
         tabLayout.setSelectedTabIndicatorColor(AppConfigs.Color.TabLayout_Indicator_color);
+
+        findViewById(R.id.action_playing).setOnClickListener(this);
+        findViewById(R.id.action_setting).setOnClickListener(this);
+        findViewById(R.id.action_sort).setOnClickListener(this);
 
         onSetupService();
 
@@ -119,7 +132,7 @@ public class SelectMusicActivity extends BaseActivity {
     private void onSetupService() {
         if (ServiceHolder.getInstance().getService() == null) {
             //如果当前没有获取到服务对象 , 则创建一个保存
-            serviceConnection = new ServiceConnection() {
+            final ServiceConnection serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     //当服务连接上的时候
@@ -164,30 +177,21 @@ public class SelectMusicActivity extends BaseActivity {
 
     @Override
     protected void onViewClick(View clickedView) {
-
+        switch (clickedView.getId()) {
+            case R.id.action_playing:
+                startActivity(new Intent(SelectMusicActivity.this, PlayingActivity.class));
+                break;
+            case R.id.action_setting:
+                startActivityForResult(new Intent(SelectMusicActivity.this, SettingsActivity.class), 1);
+                break;
+            case R.id.action_sort:
+                showMusicSortList();
+                break;
+        }
     }
 
     @Override
     protected boolean onViewLongClick(View holdedView) {
-        return false;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_base, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_base_setting:
-                startActivityForResult(new Intent(SelectMusicActivity.this, SettingsActivity.class), 1);
-                break;
-            case R.id.menu_base_playing:
-                startActivity(new Intent(SelectMusicActivity.this, PlayingActivity.class));
-                break;
-        }
         return false;
     }
 
@@ -229,14 +233,19 @@ public class SelectMusicActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 根据当前ViewPager显示的位置不同，将Activity得到的按键事件传递到对应的Fragment中
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (viewPager.getCurrentItem()) {
             case 0:
-                if (allMusicFragment == null) {
+                //第一个界面的
+                final AllMusicFragment fragment = (AllMusicFragment) viewPagerAdapter.getItem(0);
+                if (fragment == null) {
                     return super.onKeyDown(keyCode, event);
                 } else {
-                    return !allMusicFragment.onActivityKeyDown(keyCode, event) && super.onKeyDown(keyCode, event);
+                    return !fragment.onActivityKeyDown(keyCode, event) && super.onKeyDown(keyCode, event);
                 }
             default:
                 return super.onKeyDown(keyCode, event);
@@ -278,9 +287,49 @@ public class SelectMusicActivity extends BaseActivity {
     }
 
     /**
+     * 显示歌曲排序方式对话框
+     * 这里不能使用弱引用来做缓存处理，因为每次都需要重新读取当前选择的项来确定当前选择的位置
+     */
+    private void showMusicSortList() {
+
+        //从SP中读取当前的排序类型
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext);
+        final int position = Integer.valueOf(preferences.getString("scanner_sort_type", "0"));
+        final AlertDialog.Builder builder = new AlertDialog.Builder(SelectMusicActivity.this, R.style.Setting_AlertTheme);
+
+        builder.setSingleChoiceItems(R.array.sort_types_name, position, new DialogInterface.OnClickListener() {
+            @Override
+            @SuppressLint("CommitPrefEdits")
+            public void onClick(DialogInterface dialog, int which) {
+                //当用户作出了选择之后
+
+                //更新SP文件数据
+                final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit();
+                editor.putString("scanner_sort_type", String.valueOf(which));
+                editor.commit();
+
+                //重新读取所有项目数据
+                AppConfigs.reInitOptionValues();
+
+                //隐藏对话框
+                dialog.dismiss();
+
+                //更新列表，注意数据异常！
+                final AllMusicFragment fragment = (AllMusicFragment) viewPagerAdapter.getItem(0);
+                if (fragment != null) {
+                    fragment.refreshListData();
+                }
+
+            }
+        });
+
+        builder.show();
+    }
+
+    /**
      * 主界面上方播放数据更新
      */
-    class UpdateHeaderPlayingText extends BroadcastReceiver {
+    private class UpdateHeaderPlayingText extends BroadcastReceiver {
 
         private IntentFilter intentFilter;
 

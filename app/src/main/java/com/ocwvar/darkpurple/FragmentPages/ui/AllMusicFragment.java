@@ -63,6 +63,15 @@ public class AllMusicFragment extends Fragment {
 
     }
 
+    /**
+     * 手动更新列表数据
+     */
+    public void refreshListData() {
+        if (workFragment != null) {
+            workFragment.refreshData();
+        }
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
