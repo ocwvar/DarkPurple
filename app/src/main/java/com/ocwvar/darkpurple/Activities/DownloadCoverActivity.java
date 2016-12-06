@@ -80,7 +80,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
         if (getIntent().getExtras() != null) {
             songItem = getIntent().getExtras().getParcelable("item");
         } else {
-            Toast.makeText(DownloadCoverActivity.this, R.string.error_songitem, Toast.LENGTH_SHORT).show();
+            Toast.makeText(DownloadCoverActivity.this, R.string.ERROR_songitem, Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -464,7 +464,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                 if (dialog != null) {
                     dialog.show();
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), R.string.error_oom, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_OOM, Snackbar.LENGTH_LONG).show();
                 }
             }
         }

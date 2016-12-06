@@ -31,6 +31,13 @@
         android:title="@string/setting_title_color_NevBar"
         app:colorpicker_showAlpha="false" />
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isTabColorByImage"
+        android:summary="@string/setting_title_color_picture_color"
+        android:title="@string/setting_info_color_picture_color"
+        android:widgetLayout="@layout/preference_checkbox" />
+
     <com.rarepebble.colorpicker.ColorPreference
         android:defaultValue="0xFF390e52"
         android:key="TabLayout_color"

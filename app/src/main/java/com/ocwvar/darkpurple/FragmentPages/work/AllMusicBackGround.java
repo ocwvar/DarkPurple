@@ -305,7 +305,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
         if (fragmentView != null) {
 
-            requestPermission = Snackbar.make(fragmentView, R.string.error_noPermission, Snackbar.LENGTH_LONG)
+            requestPermission = Snackbar.make(fragmentView, R.string.ERROR_Permission, Snackbar.LENGTH_LONG)
                     .setActionTextColor(AppConfigs.ApplicationContext.getResources().getColor(R.color.colorSecond))
                     .setAction(R.string.request_permission_button, new View.OnClickListener() {
                         @Override
@@ -340,6 +340,20 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             floatingActionButton.setColorNormal(AppConfigs.Color.FloatingButton_Color);
             floatingActionButton.setPadding(0, 0, 0, AppConfigs.NevBarHeight);
             floatingActionButton.setOnClickListener(this);
+            recyclerView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_MOVE:
+                            floatingActionButton.hide(true);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            floatingActionButton.show(true);
+                            break;
+                    }
+                    return false;
+                }
+            });
 
             loadingDialog = new ProgressDialog(fragmentView.getContext());
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));

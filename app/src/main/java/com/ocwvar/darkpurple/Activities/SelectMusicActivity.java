@@ -13,16 +13,20 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -41,7 +45,14 @@ import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseActivity;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by 区成伟
@@ -60,8 +71,14 @@ public class SelectMusicActivity extends BaseActivity {
     private TextView nowPlayingTV;
     //主界面上方的歌曲封面信息
     private ImageView headerCover;
+    //首页图像
+    private ImageView headerImage;
     //更新主界面当前播放信息的广播接收器
     private UpdateHeaderPlayingText headerTextUpdater;
+    //首页图像更新线程
+    private UpdateHeaderImage updateHeaderImage;
+    //首页图像缓存容器
+    private WeakReference<Drawable> headerImageContainer = new WeakReference<>(null);
 
     @Override
     protected boolean onPreSetup() {
@@ -71,7 +88,7 @@ public class SelectMusicActivity extends BaseActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
-            getWindow().setNavigationBarColor(Color.argb(160, 0, 0, 0));
+            getWindow().setNavigationBarColor(AppConfigs.Color.WindowBackground_Color);
         }
         headerTextUpdater = new UpdateHeaderPlayingText();
         return true;
@@ -102,9 +119,10 @@ public class SelectMusicActivity extends BaseActivity {
         //播放状态文字和封面
         nowPlayingTV = (TextView) findViewById(R.id.header_nowPlaying);
         headerCover = (ImageView) findViewById(R.id.header_small_cover);
+        headerImage = (ImageView) findViewById(R.id.header_image);
 
         //创建ViewPager的页面和标题
-        final MainViewPagerAdapter viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
+        viewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager(),
                 new String[]{
                         getText(R.string.ViewPage_Tab_AllMusic).toString(),
                         getText(R.string.ViewPage_Tab_Playlist).toString(),
@@ -121,6 +139,7 @@ public class SelectMusicActivity extends BaseActivity {
         tabLayout.setSelectedTabIndicatorColor(AppConfigs.Color.TabLayout_Indicator_color);
 
         //TabLayout上的按钮监听设置
+        findViewById(R.id.action_changeHBG).setOnClickListener(this);
         findViewById(R.id.action_playing).setOnClickListener(this);
         findViewById(R.id.action_setting).setOnClickListener(this);
         findViewById(R.id.action_sort).setOnClickListener(this);
@@ -128,15 +147,21 @@ public class SelectMusicActivity extends BaseActivity {
         //初始化音频服务
         onSetupService();
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+        //更新头部图像
+        updateHeaderBackGround(false);
+
+        /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 WelcomeActivity.startBlurActivity(5, Color.TRANSPARENT, false, SelectMusicActivity.this, WelcomeActivity.class, null);
             }
-        }, 3000);
+        }, 3000);*/
 
     }
 
+    /**
+     * 启动音频服务
+     */
     private void onSetupService() {
         if (ServiceHolder.getInstance().getService() == null) {
             //如果当前没有获取到服务对象 , 则创建一个保存
@@ -154,7 +179,7 @@ public class SelectMusicActivity extends BaseActivity {
                             Snackbar.make(findViewById(android.R.id.content), R.string.service_ok, Snackbar.LENGTH_LONG).show();
                         } else {
                             //否则提示用户
-                            Snackbar.make(findViewById(android.R.id.content), R.string.service_error, Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_SERVICE_CREATE, Snackbar.LENGTH_LONG).show();
                         }
                         unbindService(this);
                     }
@@ -186,6 +211,13 @@ public class SelectMusicActivity extends BaseActivity {
     @Override
     protected void onViewClick(View clickedView) {
         switch (clickedView.getId()) {
+            case R.id.action_changeHBG:
+                if (Build.VERSION.SDK_INT < 23 || (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+                    startActivityForResult(CropImage.getPickImageChooserIntent(SelectMusicActivity.this), 110);
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 122);
+                }
+                break;
             case R.id.action_playing:
                 startActivity(new Intent(SelectMusicActivity.this, PlayingActivity.class));
                 break;
@@ -211,7 +243,16 @@ public class SelectMusicActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 1:
+                //从设置菜单出来后，重新读取设置到全局变量中
                 AppConfigs.reInitOptionValues();
+                break;
+            case 110:
+                //获取完图像后需要进行剪裁操作
+                cropImage(data);
+                break;
+            case 111:
+                //剪裁完毕图像后，设置上首页HeaderImageView
+                updateHeaderBackGround(true);
                 break;
         }
     }
@@ -258,6 +299,74 @@ public class SelectMusicActivity extends BaseActivity {
             default:
                 return super.onKeyDown(keyCode, event);
         }
+    }
+
+    /**
+     * 剪裁获取到的图像对象
+     *
+     * @param result 返回的结果
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void cropImage(Intent result) {
+        if (result == null || result.getData() == null) {
+            Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_CROP_NODATA, Snackbar.LENGTH_SHORT).show();
+        } else {
+            try {
+                //创建目录
+                new File(AppConfigs.ImageCacheFolder).mkdirs();
+                final Intent intent = CropImage
+                        .activity(result.getData())
+                        .setRequestedSize(800, 450, CropImageView.RequestSizeOptions.RESIZE_FIT)
+                        .setAspectRatio(16, 9)
+                        .setAutoZoomEnabled(false)
+                        .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+                        .setOutputCompressQuality(90)
+                        .setOutputUri(Uri.fromFile(new File(AppConfigs.ImageCacheFolder + "headeR.jpg")))
+                        .getIntent(SelectMusicActivity.this);
+
+                startActivityForResult(intent, 111);
+            } catch (Exception e) {
+                Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_FAILED_CREATE_FILE, Snackbar.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * 更新头部图片
+     *
+     * @param refresh 是否是刷新图像操作
+     */
+    private void updateHeaderBackGround(boolean refresh) {
+
+        //先获取图像文件
+        final File headerImageFile = new File(AppConfigs.ImageCacheFolder + "headeR.jpg");
+
+        if (refresh || (headerImageContainer.get() == null && headerImageFile.exists())) {
+            //当用户切换了图像或缓存容器为空，则重新拉取图像显示
+            if (updateHeaderImage != null) {
+                updateHeaderImage.cancel(true);
+                updateHeaderImage = null;
+            }
+            updateHeaderImage = new UpdateHeaderImage(headerImageFile);
+            updateHeaderImage.execute();
+
+        } else if (headerImageContainer.get() != null) {
+            //如果需要重新显示页面的时候，缓存容器内存在图像，则重新设置上去
+            headerImage.setImageDrawable(headerImageContainer.get());
+
+            //如果存在图像颜色在HeaderImage的TAG中，我们则使用上去
+            final Integer colorRes = (Integer) headerImage.getTag();
+            if (colorRes != null) {
+                ((ImageView) findViewById(R.id.header_image_shadow)).setColorFilter(colorRes);
+                findViewById(R.id.pendingLayout_STATUSBAR).setBackgroundColor(colorRes);
+            }
+
+        } else {
+            //如果没有图像文件，则使用默认图像
+            headerImage.setImageResource(R.drawable.head_pic);
+        }
+
+
     }
 
     /**
@@ -355,6 +464,89 @@ public class SelectMusicActivity extends BaseActivity {
             }
         }
 
+    }
+
+    /**
+     * 更新头部图像线程
+     */
+    private class UpdateHeaderImage extends AsyncTask<Integer, Void, Drawable> {
+
+        final private File imageFile;
+        private int pictureColor;
+
+        UpdateHeaderImage(File imageFile) {
+            this.imageFile = imageFile;
+        }
+
+        @Override
+        protected Drawable doInBackground(Integer... integers) {
+            final Bitmap headerImage;
+            try {
+
+                //从本地读取HeaderImage图像
+                headerImage = Picasso
+                        .with(AppConfigs.ApplicationContext)
+                        .load(Uri.fromFile(imageFile))
+                        .get();
+
+                //如果当前TabLayout的颜色跟图像是关联的，则计算图像颜色
+                if (AppConfigs.isTabColorByImage) {
+                    final Palette palette = new Palette.Builder(headerImage).generate();
+                    pictureColor = palette.getDarkMutedColor(palette.getLightMutedColor(AppConfigs.Color.TabLayout_color));
+                }
+
+                return new BitmapDrawable(AppConfigs.ApplicationContext.getResources(), headerImage);
+
+            } catch (IOException e) {
+                //加载本地文件失败
+                Logger.error("加载首页图像错误", e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        protected void onPostExecute(Drawable result) {
+            super.onPostExecute(result);
+
+            //如果当前TabLayout的颜色跟图像是关联的，则更改颜色
+            if (AppConfigs.isTabColorByImage) {
+
+                //设置图片阴影颜色
+                ((ImageView) findViewById(R.id.header_image_shadow)).setColorFilter(pictureColor);
+
+                //TabLayout的整体颜色
+                findViewById(R.id.pendingLayout_STATUSBAR).setBackgroundColor(pictureColor);
+
+                //将颜色储存至ImageView的TAG中
+                headerImage.setTag(pictureColor);
+            }
+
+            /**
+             * 生成动画切换Drawable
+             * 1.当原本HeaderImage无效的时候，则使用Tablayout的颜色作为代替
+             * 2.当得到的图像 （Result） 为空的时候，则使用默认图像代替
+             */
+            TransitionDrawable transitionDrawable = new TransitionDrawable(
+                    new Drawable[]{
+                            (headerImage.getDrawable() == null) ? new ColorDrawable(AppConfigs.Color.ToolBar_color) : headerImage.getDrawable()
+                            , (result == null) ? getResources().getDrawable(R.drawable.head_pic) : result
+                    }
+            );
+
+            //将结果数据放入容器中缓存
+            headerImageContainer = new WeakReference<>(result);
+
+            //给HeaderImage设置动画Drawable
+            headerImage.setImageDrawable(transitionDrawable);
+
+            //设置交叉淡入淡出
+            transitionDrawable.setCrossFadeEnabled(true);
+
+            //开始执行动画替换效果
+            transitionDrawable.reverseTransition(1000);
+
+        }
     }
 
 }

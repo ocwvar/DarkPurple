@@ -238,7 +238,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
                                 selectedPlaylistItem = null;
                                 selectedPosition = -1;
                                 adapter.notifyDataSetChanged();
-                                Snackbar.make(fragmentView, R.string.error_auto_deletePL, Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(fragmentView, R.string.ERROR_playlist_mistake, Snackbar.LENGTH_LONG).show();
                                 if (loadingDialog != null) {
                                     loadingDialog.dismiss();
                                 }

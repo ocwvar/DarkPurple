@@ -20,6 +20,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.ActivityManager;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -187,10 +188,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         @Override
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             //通过文字资源ID来确定点击的是哪个选项
             switch (preference.getTitleRes()) {
                 case R.string.setting_title_theme_reset:
+                    //删除头部图像文件
+                    new File(AppConfigs.ImageCacheFolder + "headeR.jpg").delete();
                     //重置颜色配置
                     AppConfigs.Color.resetColor();
                     ActivityManager.getInstance().restartMainActivity();

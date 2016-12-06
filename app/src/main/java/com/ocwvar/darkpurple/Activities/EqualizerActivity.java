@@ -57,7 +57,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
         service = ServiceHolder.getInstance().getService();
         eqParameters = service.getEqParameters();
         if (service == null) {
-            Toast.makeText(EqualizerActivity.this, R.string.eq_service_setup_error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(EqualizerActivity.this, R.string.ERROR_EQ_setup, Toast.LENGTH_SHORT).show();
             return false;
         } else {
             return true;

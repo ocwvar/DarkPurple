@@ -130,7 +130,7 @@ public class FolderSelectorActivity extends BaseBlurActivity implements MusicFol
                         }
                     }
                 } catch (Exception e) {
-                    Snackbar.make(findViewById(android.R.id.content), R.string.simple_error, Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_SIMPLE, Snackbar.LENGTH_SHORT).show();
                     Logger.error("音频目录设置界面", e.getMessage());
                 }
             }

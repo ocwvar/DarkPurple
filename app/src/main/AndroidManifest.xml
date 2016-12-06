@@ -8,8 +8,10 @@
     <uses-permission-sdk-23 android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission-sdk-23 android:name="android.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission-sdk-23 android:name="android.permission.INTERNET" />
+    <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
@@ -90,6 +92,11 @@
             android:label="@string/title_select_folder_ui"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat" />
 
         <service android:name=".Services.AudioService" />
 

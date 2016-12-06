@@ -159,11 +159,11 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
                         if (getNewname.getText().toString().equals(selectPlaylistItem.getName())) {
                             //输入的名字跟原本的相同
                             getNewname.getText().clear();
-                            Snackbar.make(findViewById(android.R.id.content), R.string.title_dialog_error, Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_title_exist_song, Snackbar.LENGTH_SHORT).show();
                         } else if (PlaylistUnits.getInstance().isPlaylistExisted(getNewname.getText().toString())) {
                             //输入的名字和其他的播放列表名字相同
                             getNewname.getText().clear();
-                            Snackbar.make(findViewById(android.R.id.content), R.string.title_dialog_error2, Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_title_exist_playlist_name, Snackbar.LENGTH_SHORT).show();
                         } else {
                             //可以开始更改
                             PlaylistUnits.getInstance().renamePlaylist(selectPlaylistItem.getName(), getNewname.getText().toString());

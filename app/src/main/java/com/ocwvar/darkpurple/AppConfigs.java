@@ -75,6 +75,9 @@ public class AppConfigs {
     //是否自动跳转到播放界面
     public static boolean isAutoSwitchPlaying = true;
 
+    //首页图像影响TabLayout颜色
+    public static boolean isTabColorByImage = true;
+
     //频谱项 - 是否显示Node
     public static boolean isSpectrumShowNode = true;
 
@@ -152,6 +155,8 @@ public class AppConfigs {
 
             isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
 
+            isTabColorByImage = preferences.getBoolean("isTabColorByImage", true);
+
             spectrumNodeWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "5.0"));
 
             spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
@@ -220,6 +225,8 @@ public class AppConfigs {
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
             isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", true);
+
+            isTabColorByImage = preferences.getBoolean("isTabColorByImage", true);
 
             isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", true);
 
