@@ -37,16 +37,18 @@
                     android:src="@drawable/head_pic_shadow" />
 
                 <TextView
+                    android:id="@+id/app_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
-                    android:background="#45000000"
+                    android:layout_gravity="start"
                     android:paddingEnd="5dp"
                     android:paddingStart="10dp"
-                    android:text="@string/header_welcome"
+                    android:layout_marginTop="?actionBarSize"
                     android:textColor="#fff"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
+                    android:shadowColor="#000"
+                    android:shadowRadius="12"
+                    android:textStyle="bold"
+                    android:textSize="45sp"/>
 
             </FrameLayout>
 

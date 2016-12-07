@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -115,6 +116,11 @@ public class SelectMusicActivity extends BaseActivity {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_STATUSBAR);
         linearLayout.addView(new View(SelectMusicActivity.this), 0, params);
         linearLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
+
+        final Typeface typeface = Typeface.createFromAsset(getAssets(),"title_font.ttf");
+        final TextView textView = (TextView) findViewById(R.id.app_name);
+        textView.setText("#Dark_Purple");
+        textView.setTypeface(typeface);
 
         //播放状态文字和封面
         nowPlayingTV = (TextView) findViewById(R.id.header_nowPlaying);
