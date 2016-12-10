@@ -218,6 +218,9 @@
     <string name="setting_title_color_picture_color">首页图像与标签栏颜色关联</string>
     <string name="setting_info_color_picture_color">标签栏颜色由首页图像颜色计算产生</string>
 
+    <!--欢迎界面-->
+    <string name="welcome_p1_title">欢迎使用</string>
+
     <string-array name="main_list_style_name">
         <item>@string/setting_title_listStyle_Grid</item>
         <item>@string/setting_title_listStyle_Linear</item>

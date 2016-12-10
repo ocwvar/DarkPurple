@@ -66,7 +66,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     //Notification按钮点击广播监听器
     private NotificationControl notificationControl;
     //MediaStyle的Notification对象
-    private MediaNotification mediaNotification;
+    //private MediaNotification mediaNotification;
+    private MediaNotificationCompact mediaNotification;
     //耳机拔出监听回调
     private HeadsetDisconnectedReceiver headsetDisconnectedReceiver;
     //耳机插入广播接收器
@@ -107,7 +108,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         headsetDisconnectedReceiver = new HeadsetDisconnectedReceiver();
         headsetPlugInReceiver = new HeadsetPlugInReceiver();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mediaNotification = new MediaNotification(getApplicationContext());
+        mediaNotification = new MediaNotificationCompact(getApplicationContext());
 
         //注册广播监听器
         registerReceiver(notificationControl, notificationControl.filter);

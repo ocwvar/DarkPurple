@@ -83,7 +83,7 @@ public class PlayingActivity
     //音频变化广播接收器
     AudioChangeReceiver audioChangeReceiver;
     //滚动条控制器
-    SeekBarControler seekBarControler;
+    SeekBarController seekBarController;
     //侧滑父容器
     DrawerLayout drawerLayout;
     //封面轮播控件
@@ -147,7 +147,7 @@ public class PlayingActivity
         setContentView(R.layout.activity_playing);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-        seekBarControler = new SeekBarControler();
+        seekBarController = new SeekBarController();
         date = new Date();
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
         audioChangeReceiver = new AudioChangeReceiver();
@@ -203,7 +203,7 @@ public class PlayingActivity
         mainButton.setOnClickListener(this);
 
         //设置滚动条的相关操作
-        musicSeekBar.setOnSlidingCallback(seekBarControler);
+        musicSeekBar.setOnSlidingCallback(seekBarController);
 
         //获取服务对象
         audioService = ServiceHolder.getInstance().getService();
@@ -249,7 +249,7 @@ public class PlayingActivity
     @Override
     protected void onResume() {
         super.onResume();
-        updateInfomation(audioService == null);
+        updateInformation(audioService == null);
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
     }
 
@@ -310,7 +310,7 @@ public class PlayingActivity
      * @param onlyShowDefault 强制只显示默认数据
      */
     @SuppressWarnings("deprecation")
-    private void updateInfomation(boolean onlyShowDefault) {
+    private void updateInformation(boolean onlyShowDefault) {
         if (playingList.size() == 0 || onlyShowDefault) {
             //如果当前没有播放数据 , 则显示默认文字
             title.setText(R.string.main_default_title);
@@ -376,7 +376,7 @@ public class PlayingActivity
                     updatingTimerThread.start();
                 }
             } else {
-                updateInfomation(true);
+                updateInformation(true);
             }
         }
     }
@@ -583,7 +583,7 @@ public class PlayingActivity
     @Override
     public void onSlidingMenuClick(SongItem songItem, int position) {
         audioService.play(playingList, position);
-        updateInfomation(false);
+        updateInformation(false);
         if (!surfaceViewControler.isDrawing()) {
             surfaceViewControler.start();
         }
@@ -785,7 +785,7 @@ public class PlayingActivity
                 audioService.initAudio(playingList, coverShower.getCurrentItem());
             }
 
-            updateInfomation(false);
+            updateInformation(false);
         }
     }
 
@@ -808,7 +808,7 @@ public class PlayingActivity
                         currectTime.setText(time2String(audioService.getPlayingPosition()));
                         restTime.setText(time2String(audioService.getAudioLength() - audioService.getPlayingPosition()));
                         //如果当前没有用户在调整进度条 , 则更新
-                        if (!seekBarControler.isUserTorching) {
+                        if (!seekBarController.isUserTorching) {
                             musicSeekBar.setProgress((int) (audioService.getPlayingPosition()));
                         }
                     }
@@ -830,7 +830,7 @@ public class PlayingActivity
     /**
      * 滚动条的控制器
      */
-    class SeekBarControler implements LineSlider.OnSlidingCallback {
+    class SeekBarController implements LineSlider.OnSlidingCallback {
 
         /**
          * 用户当前是否正在滑动的标志，用于阻止歌曲进度在用户滑动进度条的时候更新，而导致
@@ -898,7 +898,7 @@ public class PlayingActivity
                     updatingTimerThread.start();
                     break;
                 case AudioService.AUDIO_SWITCH:
-                    updateInfomation(false);
+                    updateInformation(false);
                     break;
             }
 
