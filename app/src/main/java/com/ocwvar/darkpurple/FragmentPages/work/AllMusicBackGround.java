@@ -424,6 +424,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
      * @param songList 所属歌曲列表
      * @param position 在歌曲列表中的位置
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void onListClick(ArrayList<SongItem> songList, int position, View itemView) {
         if (ServiceHolder.getInstance().getService() != null) {
@@ -445,6 +446,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 Snackbar.make(fragmentView, R.string.music_failed, Snackbar.LENGTH_LONG).show();
             }
 
+        } else {
+            Snackbar.make(fragmentView, R.string.ERROR_SERVICE_NULL, Snackbar.LENGTH_LONG).show();
         }
     }
 

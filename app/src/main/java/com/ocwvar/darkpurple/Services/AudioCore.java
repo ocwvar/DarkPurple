@@ -272,16 +272,15 @@ public class AudioCore {
             //如果音频列表和播放位置合法 , 则开始读取
             if (playAudio(songList.get(playIndex), false)) {
                 //如果播放成功 , 则记录当前数据和列表 , 同时发送开始播放的广播
-                applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
-
                 this.playingIndex = playIndex;
+                applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
                 if (this.songList == null || !this.songList.equals(songList)) {
                     Logger.warnning(TAG, "播放列表已更新!");
                     this.songList = songList;
                 }
                 return true;
             } else if (this.songList != null && this.songList.size() > 1) {
-                //如果读取不成功 , 同时列表还有下一个音频 , 则播放下一个
+                //如果读取不成功 , 同时列表有多个音频，则返回错误信息
                 this.playingIndex = playIndex;
                 playNext();
             } else {
@@ -447,7 +446,7 @@ public class AudioCore {
             }
             final boolean result = BASS.BASS_StreamFree(playingChannel);
             playingIndex = 0;
-            songList = null;
+            //songList = null;
             playingChannel = 0;
             return result;
         } else {

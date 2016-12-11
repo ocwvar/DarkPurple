@@ -246,6 +246,7 @@
     <string name="ERROR_SIMPLE">哎哟! 发生了异常! 请重新再试一次!</string>
     <string name="ERROR_CROP_NODATA">无可用数据返回，请换其他第三方app重试</string>
     <string name="ERROR_FAILED_CREATE_FILE">无法创建目录，操作失败</string>
+    <string name="ERROR_SERVICE_NULL">音频服务异常中断，请重新打开APP重试</string>
 
 
 </resources>

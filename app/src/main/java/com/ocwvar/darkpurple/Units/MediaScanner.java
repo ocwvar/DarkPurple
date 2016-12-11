@@ -222,8 +222,8 @@ public class MediaScanner {
 
                     String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
 
-                    if (isMusicFile(fileName)) {
-                        //如果当前的是支持的歌曲文件格式 , 则开始解析
+                    if (isFileVaild(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))) && isMusicFile(fileName)) {
+                        //判断文件是否有效 同时 是否属于可以播放的音频文件类型，如果都可以则开始解析数据
                         SongItem songItem = new SongItem();
 
                         //文件名
@@ -232,6 +232,11 @@ public class MediaScanner {
                         songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
                         //文件路径
                         songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                        final File file2 = new File(songItem.getPath());
+                        System.out.println(file2.canExecute());
+                        System.out.println(file2.canRead());
+                        System.out.println(file2.canWrite());
+                        System.out.println(file2.length());
                         //歌曲长度
                         final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                         if (length < AppConfigs.LengthLimited) {
@@ -339,6 +344,17 @@ public class MediaScanner {
             } else {
                 return false;
             }
+        }
+
+        /**
+         * 文件是否有效
+         *
+         * @param path 文件路径地址
+         * @return 文件有效性
+         */
+        private boolean isFileVaild(String path) {
+            final File checkFile = new File(path);
+            return checkFile.canRead() && checkFile.canWrite() && checkFile.length() > 0;
         }
 
         /**
