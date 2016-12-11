@@ -312,9 +312,10 @@ public class LineSlider extends View implements View.OnTouchListener {
      * @return 是否在拖动器内部
      */
     private boolean isInsideSlider(float touchX, float touchY) {
-        return (touchX >= movingPoint.x - sliderRadio && touchX <= movingPoint.x + sliderRadio)
+        final int offset = 100;
+        return (touchX >= movingPoint.x - sliderRadio - offset && touchX <= movingPoint.x + sliderRadio + offset)
                 &&
-                (touchY >= movingPoint.y - sliderRadio && touchY <= movingPoint.y + sliderRadio)
+                (touchY >= movingPoint.y - sliderRadio - offset && touchY <= movingPoint.y + sliderRadio + offset)
                 ;
     }
 
@@ -342,10 +343,8 @@ public class LineSlider extends View implements View.OnTouchListener {
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (isInsideSlider(touchX, touchY)) {
-                    //判断按下的坐标位置来确定是否触摸到控制点，如果是，则使“正在拖动”标识为 True
-                    isSliding = true;
-                }
+                //判断按下的坐标位置来确定是否触摸到控制点，如果是，则使“正在拖动”标识为 True
+                isSliding = isInsideSlider(touchX, touchY);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isSliding) {

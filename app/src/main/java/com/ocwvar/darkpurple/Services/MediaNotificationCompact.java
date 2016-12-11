@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Services;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,9 +40,11 @@ class MediaNotificationCompact {
     private final Context context;
     private final MediaNotificationReceiver notificationReceiver;
     private final RemoteViews bigRemoteViews, normalRemoteViews;
+    private final AudioManager audioManager;
 
     MediaNotificationCompact(@NonNull Context context) {
         this.notificationReceiver = new MediaNotificationReceiver();
+        this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         this.context = context;
         this.bigRemoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_mediastyle_big);
         this.normalRemoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_mediastyle_normal);
@@ -140,10 +143,12 @@ class MediaNotificationCompact {
     /**
      * 初始化，设置Notification广播接收器和RemoteViews的点击事件
      */
+    @SuppressWarnings("deprecation")
     private void setup() {
         context.registerReceiver(notificationReceiver, notificationReceiver.filter);
+        //使用旧版耳机按钮监听方法
+        audioManager.registerMediaButtonEventReceiver(new ComponentName(context.getPackageName(), HeadsetButtonReceiver.class.getName()));
 
-        final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
         bigRemoteViews.setOnClickPendingIntent(R.id.notification_previous, PendingIntent.getBroadcast(context, 0, new Intent(MediaNotificationReceiver.BUTTON_PREV), 0));
         bigRemoteViews.setOnClickPendingIntent(R.id.notification_main, PendingIntent.getBroadcast(context, 0, new Intent(MediaNotificationReceiver.BUTTON_MAIN), 0));
