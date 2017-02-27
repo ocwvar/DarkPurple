@@ -5,6 +5,12 @@
     <color name="colorPrimaryDark">#240935</color>
     <color name="colorAccent">@color/colorPrimary</color>
 
+    <!--图像选取器使用的颜色-->
+    <color name="JPG">#2cc78e</color>
+    <color name="BMP">#3681f2</color>
+    <color name="PNG">#ed772d</color>
+    <color name="FOLDER">#535353</color>
+
     <color name="colorSecond">#277ee1</color>
 
     <!--Card默认背景颜色-->

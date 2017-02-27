@@ -47,6 +47,7 @@ import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseActivity;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.ocwvar.picturePicker.PicturePickerUnity;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -117,7 +118,7 @@ public class SelectMusicActivity extends BaseActivity {
         linearLayout.addView(new View(SelectMusicActivity.this), 0, params);
         linearLayout.setBackgroundColor(AppConfigs.Color.TabLayout_color);
 
-        final Typeface typeface = Typeface.createFromAsset(getAssets(),"title_font.ttf");
+        final Typeface typeface = Typeface.createFromAsset(getAssets(), "title_font.ttf");
         final TextView textView = (TextView) findViewById(R.id.app_name);
         textView.setText("#Dark_Purple");
         textView.setTypeface(typeface);
@@ -218,11 +219,18 @@ public class SelectMusicActivity extends BaseActivity {
     protected void onViewClick(View clickedView) {
         switch (clickedView.getId()) {
             case R.id.action_changeHBG:
-                if (Build.VERSION.SDK_INT < 23 || (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+                /*if (Build.VERSION.SDK_INT < 23 || (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                     startActivityForResult(CropImage.getPickImageChooserIntent(SelectMusicActivity.this), 110);
                 } else {
                     requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 122);
-                }
+                }*/
+                new PicturePickerUnity.Builder()
+                        .needCompress(false)
+                        .needCrop(false)
+                        .returnFile(false)
+                        .returnUri(true)
+                        .startPickerNow_ACTIVITY(SelectMusicActivity.this, 110, 1);
+
                 break;
             case R.id.action_playing:
                 startActivity(new Intent(SelectMusicActivity.this, PlayingActivity.class));

@@ -65,11 +65,11 @@
     </style>
 
     <style name="TextAppearance.AppCompat.Playing" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/Text_LightGray</item>
+        <item name="android:textColor">#fff</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:shadowColor">#000</item>
-        <item name="android:shadowRadius">15</item>
+        <item name="android:shadowRadius">8</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

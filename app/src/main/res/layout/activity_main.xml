@@ -41,14 +41,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:layout_marginTop="?actionBarSize"
                     android:paddingEnd="5dp"
                     android:paddingStart="10dp"
-                    android:layout_marginTop="?actionBarSize"
-                    android:textColor="#fff"
                     android:shadowColor="#000"
                     android:shadowRadius="12"
-                    android:textStyle="bold"
-                    android:textSize="45sp"/>
+                    android:textColor="#fff"
+                    android:textSize="45sp"
+                    android:textStyle="bold" />
 
             </FrameLayout>
 

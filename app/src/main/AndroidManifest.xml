@@ -107,6 +107,23 @@
             </intent-filter>
         </receiver>
 
+        <!--图片选择器的页面-->
+        <!--Picture Picker Activity-->
+        <activity android:name="com.ocwvar.picturePicker.PicturePickerUnity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <!--FileProvider 权限申请-->
+        <!--FileProvider Permission request-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
     </application>
 
 </manifest>

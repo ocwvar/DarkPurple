@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -723,6 +724,10 @@ public class PlayingActivity
                     }
                 }
 
+                if (bluredImage != null) {
+                    final Canvas canvas = new Canvas(bluredImage);
+                    canvas.drawColor(Color.argb(60, 0, 0, 0));
+                }
                 return bluredImage;
             } else {
                 return null;

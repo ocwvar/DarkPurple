@@ -73,7 +73,7 @@
                 android:layout_marginTop="3dp"
                 android:maxLines="1"
                 android:shadowColor="#000"
-                android:shadowRadius="10"
+                android:shadowRadius="8"
                 android:singleLine="true"
                 android:textColor="#fff"
                 android:textSize="18sp"
@@ -87,7 +87,7 @@
                 android:layout_marginTop="3dp"
                 android:maxLines="1"
                 android:shadowColor="#000"
-                android:shadowRadius="10"
+                android:shadowRadius="8"
                 android:singleLine="true"
                 android:textColor="#fff"
                 android:textSize="15sp"
@@ -101,7 +101,7 @@
                 android:layout_marginTop="3dp"
                 android:maxLines="1"
                 android:shadowColor="#000"
-                android:shadowRadius="10"
+                android:shadowRadius="8"
                 android:singleLine="true"
                 android:textColor="#fff"
                 android:textSize="15sp" />
@@ -134,9 +134,9 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="10dp"
             android:shadowColor="#000"
-            android:shadowRadius="10"
+            android:shadowRadius="8"
             android:text="@string/main_default_text"
-            android:textColor="@color/Text_LightGray" />
+            android:textColor="#FFF" />
 
         <TextView
             android:id="@+id/shower_rest_position"
@@ -146,9 +146,9 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
             android:shadowColor="#000"
-            android:shadowRadius="10"
+            android:shadowRadius="8"
             android:text="@string/main_default_text"
-            android:textColor="@color/Text_LightGray" />
+            android:textColor="#FFF" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -193,7 +193,6 @@
         android:background="#9e000000"
         android:fitsSystemWindows="true"
         android:paddingTop="15dp" />
-
 
 </android.support.v4.widget.DrawerLayout>
 
