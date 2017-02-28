@@ -106,9 +106,6 @@ public class AppConfigs {
     //状态栏高度
     public static int StatusBarHeight = -1;
 
-    //导航栏高度
-    public static int NevBarHeight = -1;
-
     //主界面列表样式
     public static AllMusicAdapter.LayoutStyle layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
 
@@ -135,7 +132,6 @@ public class AppConfigs {
 
             StatusBarHeight = preferences.getInt("StatusBarHeight", -1);
 
-            NevBarHeight = preferences.getInt("NevBarHeight", -1);
 
             IsFirstBoot = !preferences.contains("isNotFirstRunning");
 
@@ -161,7 +157,7 @@ public class AppConfigs {
 
             spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
 
-            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "8.0"));
+            spectrumLineWidth = Float.valueOf(preferences.getString("spectrum_line_width", "8.0"));
 
             spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "80"));
 
@@ -236,7 +232,7 @@ public class AppConfigs {
 
             spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
 
-            spectrumLineWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "8.0"));
+            spectrumLineWidth = Float.valueOf(preferences.getString("spectrum_line_width", "8.0"));
 
             spectrumCounts = Integer.valueOf(preferences.getString("spectrumCounts", "80"));
 
@@ -308,10 +304,6 @@ public class AppConfigs {
                 case StatusBarHeight:
                     StatusBarHeight = data;
                     editor.putInt("StatusBarHeight", data);
-                    break;
-                case NevBarHeight:
-                    NevBarHeight = data;
-                    editor.putInt("NevBarHeight", data);
                     break;
             }
             editor.apply();

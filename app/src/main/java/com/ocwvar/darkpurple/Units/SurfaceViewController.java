@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * File Location com.ocwvar.darkpurple.Units
  * 显示频谱的SurfaceView控制器
  */
-public class SurfaceViewControler implements SurfaceHolder.Callback {
+public class SurfaceViewController implements SurfaceHolder.Callback {
 
     private SPShowerThread updateThread;
     private SurfaceHolder surfaceHolder;

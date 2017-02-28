@@ -338,7 +338,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             allMusicAdapter.setOnRecycleViewScrollController(recyclerView);
 
             floatingActionButton.setColorNormal(AppConfigs.Color.FloatingButton_Color);
-            floatingActionButton.setPadding(0, 0, 0, AppConfigs.NevBarHeight);
             floatingActionButton.setOnClickListener(this);
             recyclerView.setOnTouchListener(new View.OnTouchListener() {
                 @Override

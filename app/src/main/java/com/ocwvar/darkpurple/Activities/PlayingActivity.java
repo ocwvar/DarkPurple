@@ -51,7 +51,7 @@ import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
 import com.ocwvar.darkpurple.Units.Logger;
-import com.ocwvar.darkpurple.Units.SurfaceViewControler;
+import com.ocwvar.darkpurple.Units.SurfaceViewController;
 import com.ocwvar.darkpurple.widgets.LineSlider;
 import com.squareup.picasso.Picasso;
 
@@ -92,7 +92,7 @@ public class PlayingActivity
     //歌曲信息文字显示
     TextView title, album, artist;
     //当前播放时间
-    TextView currectTime, restTime;
+    TextView currentTime, restTime;
     //主按钮
     ImageButton mainButton;
     //歌曲进度条
@@ -105,7 +105,7 @@ public class PlayingActivity
     RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
     SurfaceView surfaceView;
-    SurfaceViewControler surfaceViewControler;
+    SurfaceViewController surfaceViewController;
     //模糊画面显示位置
     View backGround, surfaceViewBG;
 
@@ -135,7 +135,7 @@ public class PlayingActivity
             //只有在不使用兼容模式 同时 系统版本大于 Android 5.0 才能使用透明样式
 
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
             window.setNavigationBarColor(Color.TRANSPARENT);
@@ -153,7 +153,7 @@ public class PlayingActivity
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
         audioChangeReceiver = new AudioChangeReceiver();
         playingList = new ArrayList<>();
-        surfaceViewControler = new SurfaceViewControler();
+        surfaceViewController = new SurfaceViewController();
         showerAdapter = new CoverShowerAdapter(playingList);
 
         surfaceViewBG = findViewById(R.id.surfaceViewBG);
@@ -167,7 +167,7 @@ public class PlayingActivity
         title = (TextView) findViewById(R.id.shower_title);
         album = (TextView) findViewById(R.id.shower_album);
         artist = (TextView) findViewById(R.id.shower_artist);
-        currectTime = (TextView) findViewById(R.id.shower_playing_position);
+        currentTime = (TextView) findViewById(R.id.shower_playing_position);
         restTime = (TextView) findViewById(R.id.shower_rest_position);
         mainButton = (ImageButton) findViewById(R.id.shower_mainButton);
         musicSeekBar = (LineSlider) findViewById(R.id.seekBar);
@@ -177,7 +177,7 @@ public class PlayingActivity
 
         //设置频谱的控制器
         spectrumSwitch.setOnClickListener(this);
-        surfaceView.getHolder().addCallback(surfaceViewControler);
+        surfaceView.getHolder().addCallback(surfaceViewController);
 
         //Toolbar属性设置
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -222,15 +222,6 @@ public class PlayingActivity
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        }
-
-        if (!AppConfigs.useCompatMode && AppConfigs.NevBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //设置底部间距高度
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_NEV);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, AppConfigs.NevBarHeight);
-            View emptyView = new View(PlayingActivity.this);
-            emptyView.setLayoutParams(layoutParams);
-            linearLayout.addView(emptyView);
         }
 
         if (!AppConfigs.useCompatMode && AppConfigs.StatusBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -301,7 +292,7 @@ public class PlayingActivity
         title = null;
         album = null;
         artist = null;
-        currectTime = null;
+        currentTime = null;
         restTime = null;
     }
 
@@ -350,7 +341,7 @@ public class PlayingActivity
                 musicSeekBar.setMax((int) audioService.getAudioLength());
                 System.out.println(musicSeekBar.getMax());
                 //设置当前播放的时间
-                currectTime.setText(time2String(audioService.getPlayingPosition()));
+                currentTime.setText(time2String(audioService.getPlayingPosition()));
                 //设置当前剩余时间
                 restTime.setText(time2String(audioService.getAudioLength() - audioService.getPlayingPosition()));
                 //设置主按钮的状态
@@ -501,8 +492,8 @@ public class PlayingActivity
                             mainButton.setImageResource(R.drawable.ic_action_play);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新
-                                if (surfaceViewControler.isDrawing()) {
-                                    surfaceViewControler.stop();
+                                if (surfaceViewController.isDrawing()) {
+                                    surfaceViewController.stop();
                                 }
                             }
                             break;
@@ -513,8 +504,8 @@ public class PlayingActivity
                             mainButton.setImageResource(R.drawable.ic_action_pause);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则开始
-                                if (!surfaceViewControler.isDrawing()) {
-                                    surfaceViewControler.start();
+                                if (!surfaceViewController.isDrawing()) {
+                                    surfaceViewController.start();
                                 }
                             }
                             break;
@@ -585,8 +576,8 @@ public class PlayingActivity
     public void onSlidingMenuClick(SongItem songItem, int position) {
         audioService.play(playingList, position);
         updateInformation(false);
-        if (!surfaceViewControler.isDrawing()) {
-            surfaceViewControler.start();
+        if (!surfaceViewController.isDrawing()) {
+            surfaceViewController.start();
         }
     }
 
@@ -622,7 +613,7 @@ public class PlayingActivity
                     surfaceView.setVisibility(View.VISIBLE);
                     if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
                         //如果当前是正在播放 , 才执行动画
-                        surfaceViewControler.start();
+                        surfaceViewController.start();
                     }
                 }
 
@@ -658,7 +649,7 @@ public class PlayingActivity
 
                 }
             });
-            surfaceViewControler.stop();
+            surfaceViewController.stop();
             surfaceView.setVisibility(View.GONE);
             surfaceViewBG.startAnimation(anim);
             surfaceViewBG.setVisibility(View.GONE);
@@ -810,7 +801,7 @@ public class PlayingActivity
                     @Override
                     public void run() {
                         //更新进度文字数据
-                        currectTime.setText(time2String(audioService.getPlayingPosition()));
+                        currentTime.setText(time2String(audioService.getPlayingPosition()));
                         restTime.setText(time2String(audioService.getAudioLength() - audioService.getPlayingPosition()));
                         //如果当前没有用户在调整进度条 , 则更新
                         if (!seekBarController.isUserTorching) {

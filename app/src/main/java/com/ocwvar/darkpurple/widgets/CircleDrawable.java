@@ -19,13 +19,19 @@ import android.support.annotation.NonNull;
  * 圆形Drawable
  */
 
-public class CircleDrawable extends Drawable {
+class CircleDrawable extends Drawable {
 
     private Paint picPaint, circlePaint, borderPaint;
     private Bitmap bitmap;
     private Rect drawArea;
     private float r, x, y;
 
+    /**
+     * @param r           要绘制的半径
+     * @param x           中心点X坐标
+     * @param y           中心点Y坐标
+     * @param borderColor 边界圆圈颜色
+     */
     CircleDrawable(Bitmap bitmap, float r, float x, float y, int borderColor) {
         this.bitmap = bitmap;
         this.drawArea = new Rect();

@@ -15,9 +15,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
-import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import com.netease.nis.bugrpt.CrashHandler;
@@ -105,17 +102,6 @@ public class DPApplication extends Application implements Thread.UncaughtExcepti
         AppConfigs.initDefaultValue(getApplicationContext());
         PlaylistUnits.getInstance().initSPData();
         EqualizerUnits.getInstance().init(getApplicationContext());
-
-        //如果有物理键的返回和菜单键 , 则代表没有虚拟导航栏
-        boolean hasMenuKey = ViewConfiguration.get(getApplicationContext()).hasPermanentMenuKey();
-        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-
-        if (AppConfigs.NevBarHeight == -1 && !hasBackKey && !hasMenuKey) {
-            //数据未初始化  同时拥有不拥有实体按键的设备 , 则记录导航栏间隔高度
-            int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-            int height = getResources().getDimensionPixelSize(resourceId);
-            AppConfigs.updateLayoutData(AppConfigs.LayoutDataType.NevBarHeight, height);
-        }
 
         if (AppConfigs.StatusBarHeight == -1) {
             //如果没有初始化 状态栏数据 , 则记录下来

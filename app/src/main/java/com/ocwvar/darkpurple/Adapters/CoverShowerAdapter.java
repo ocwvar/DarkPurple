@@ -59,34 +59,41 @@ public class CoverShowerAdapter extends PagerAdapter {
     public Object instantiateItem(final ViewGroup container, int position) {
 
         final SongItem songItem = playingList.get(position);
+        //封面绘制中心点  X轴
         final float centerX = container.getMeasuredWidth() / 2;
+        //封面绘制中心点  Y轴
         final float centerY = container.getMeasuredHeight() / 2;
-        final int coverWidth = (int) (container.getMeasuredWidth() / 1.5f);
+        //封面绘制的半径长度
+        final int coverR = (int) (container.getMeasuredWidth() / 3.0f);
 
         final CImageView imageView;
 
         if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
             //如果有用户手动下载的封面,则优先使用
-            imageView = new CImageView(container.getContext(), coverWidth / 2, centerX, centerY, songItem.getCustomPaletteColor());
+
+            //创建圆形ImageView用于显示封面图像
+            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, songItem.getCustomPaletteColor());
             Picasso
                     .with(AppConfigs.ApplicationContext)
                     .load(songItem.getCustomCoverPath())
                     .error(R.drawable.ic_music_big)
-                    .resize(coverWidth, coverWidth)
+                    .placeholder(R.drawable.ic_music_big)
+                    .resize(coverR, coverR)
                     .into(imageView);
 
         } else if (songItem.isHaveCover()) {
             //如果先前缓存有图像 , 则开始读取
-            imageView = new CImageView(container.getContext(), coverWidth / 2, centerX, centerY, songItem.getPaletteColor());
+            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, songItem.getPaletteColor());
             Picasso.with(AppConfigs.ApplicationContext)
                     .load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath()))
                     .error(R.drawable.ic_music_big)
-                    .resize(coverWidth, coverWidth)
+                    .placeholder(R.drawable.ic_music_big)
+                    .resize(coverR, coverR)
                     .into(imageView);
         } else {
-            imageView = new CImageView(container.getContext(), coverWidth / 2, centerX, centerY, songItem.getPaletteColor());
+            //默认图像
+            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, songItem.getPaletteColor());
             imageView.setImageDrawable(defaultCover);
-
         }
 
         container.addView(imageView);

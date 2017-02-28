@@ -80,7 +80,6 @@
     <string name="info_confirm">您当前已有选择的目录 , 确认不保存直接返回吗 ?</string>
 
     <!--封面图像下载界面信息-->
-
     <string name="noResult_Preview">无法搜索到相应的封面</string>
     <string name="noResult_Detail">无法得到封面详情数据,请检查是否网络异常</string>
     <string name="progress_loading">正在获取搜索结果页面信息</string>
@@ -152,7 +151,7 @@
     <string name="setting_info_autoOpenPlayingActivity">点击播放的时候自动跳转到播放界面</string>
 
     <string name="setting_title_useCompatMode">使用兼容样式布局</string>
-    <string name="setting_info_useCompatMode">解决导航栏和状态栏透明带来的问题</string>
+    <string name="setting_info_useCompatMode">解决状态栏透明带来的问题</string>
 
     <!--播放界面文字-->
     <string name="main_header_title">歌曲标题:</string>

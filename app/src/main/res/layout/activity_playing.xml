@@ -29,15 +29,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
-        <!--导航栏间距容器-->
-        <LinearLayout
-            android:id="@+id/pendingLayout_NEV"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:orientation="vertical" />
-
         <SurfaceView
             android:id="@+id/surfaceView"
             android:layout_width="match_parent"
@@ -113,18 +104,18 @@
             android:id="@+id/shower_mainButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/pendingLayout_NEV"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@null"
+            android:padding="5dp"
             android:src="@drawable/ic_action_play" />
 
         <com.ocwvar.darkpurple.widgets.LineSlider
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_above="@+id/shower_mainButton"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp" />
+            android:layout_above="@id/shower_mainButton"
+            android:layout_centerHorizontal="true" />
 
         <TextView
             android:id="@+id/shower_playing_position"
