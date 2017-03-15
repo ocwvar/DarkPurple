@@ -123,6 +123,13 @@
     <string name="setting_title_isUseSecondStyleSpectrum">使用第二种频谱动画</string>
     <string name="setting_info_isUseSecondStyleSpectrum">频谱将循环显示头部音频数据</string>
 
+    <string name="setting_title_spectrum_style">频谱动画样式</string>
+    <string-array name="setting_spectrum_styles">
+        <item>原始样式</item>
+        <item>OSU样式</item>
+        <item>动态圆圈样式</item>
+    </string-array>
+
     <string name="setting_info_color_warnning">请勿使用接近或是完全的白色，以免在部分节目无法得到满意的效果</string>
 
     <string name="setting_title_lineColor">定义柱状线颜色</string>
@@ -226,6 +233,8 @@
     <string-array name="main_list_style_value">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
     <!--Notification相关-->

@@ -2,12 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="isUseSecondStyleVe"
-        android:summary="@string/setting_info_isUseSecondStyleSpectrum"
-        android:title="@string/setting_title_isUseSecondStyleSpectrum"
-        android:widgetLayout="@layout/preference_checkbox" />
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/setting_spectrum_styles"
+        android:entryValues="@array/main_list_style_value"
+        android:key="spectrum_style"
+        android:title="@string/setting_title_spectrum_style" />
 
     <EditTextPreference
         android:defaultValue="50"

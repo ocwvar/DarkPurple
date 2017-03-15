@@ -66,9 +66,6 @@ public class AppConfigs {
     //是否在耳机重新插入/连接之后继续播放
     public static boolean isResumeAudioWhenPlugin = true;
 
-    //是否使用第二种风格的频谱
-    public static boolean isUseSecondStyleSpectrum = false;
-
     //是否使用简易模式的播放界面
     public static boolean isUseSimplePlayingScreen = false;
 
@@ -77,6 +74,9 @@ public class AppConfigs {
 
     //首页图像影响TabLayout颜色
     public static boolean isTabColorByImage = true;
+
+    //频谱项 - 是否显示Node
+    public static SpectrumStyles spectrumStyle = SpectrumStyles.Normal;
 
     //频谱项 - 是否显示Node
     public static boolean isSpectrumShowNode = true;
@@ -132,14 +132,11 @@ public class AppConfigs {
 
             StatusBarHeight = preferences.getInt("StatusBarHeight", -1);
 
-
             IsFirstBoot = !preferences.contains("isNotFirstRunning");
 
             isListenMediaButton = preferences.getBoolean("isListenMediaButton", true);
 
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
-
-            isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
 
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 
@@ -195,6 +192,19 @@ public class AppConfigs {
                     break;
             }
 
+            value = preferences.getString("spectrum_style", "0");
+            switch (value) {
+                case "0":
+                    spectrumStyle = SpectrumStyles.Normal;
+                    break;
+                case "1":
+                    spectrumStyle = SpectrumStyles.OSU;
+                    break;
+                default:
+                    spectrumStyle = SpectrumStyles.Circle;
+                    break;
+            }
+
         } else {
             Logger.error("初始化全局变量", "ApplicationContext 为空,无法读取数据");
         }
@@ -213,8 +223,6 @@ public class AppConfigs {
             isListenMediaButton = preferences.getBoolean("isListenMediaButton", true);
 
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
-
-            isUseSecondStyleSpectrum = preferences.getBoolean("isUseSecondStyleVe", false);
 
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 
@@ -265,6 +273,19 @@ public class AppConfigs {
                     break;
                 default:
                     layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
+                    break;
+            }
+
+            value = preferences.getString("spectrum_style", "0");
+            switch (value) {
+                case "0":
+                    spectrumStyle = SpectrumStyles.Normal;
+                    break;
+                case "1":
+                    spectrumStyle = SpectrumStyles.OSU;
+                    break;
+                default:
+                    spectrumStyle = SpectrumStyles.Circle;
                     break;
             }
         }
@@ -330,6 +351,8 @@ public class AppConfigs {
     }
 
     public enum LayoutDataType {StatusBarHeight, NevBarHeight}
+
+    public enum SpectrumStyles {Normal, OSU, Circle}
 
     /**
      * APP 颜色资源

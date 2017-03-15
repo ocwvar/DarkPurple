@@ -144,147 +144,31 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
 
                 //先自动计算好各类必须的数据
                 computeResourceSize();
-
-                //根据计算得出的 r 半径 与设置的角度等分，计算圆圈上所有点的坐标
-                final ArrayList<Point> points = splitCircle(centerX, centerY, r, spectrumCount);
-
-                //画面更新线程
-                updateThread(surfaceHolder, points);
+                //点集合的变量 声明
+                final ArrayList<Point> points;
+                //不同的动画绘制类型
+                try {
+                    switch (AppConfigs.spectrumStyle) {
+                        case Normal:
+                            //根据计算得出的 r 半径 与设置的角度等分，计算圆圈上所有点的坐标
+                            points = splitCircle(centerX, centerY, r, spectrumCount);
+                            NORMALThread(surfaceHolder, points);
+                            break;
+                        case OSU:
+                            //根据计算得出的 r 半径 与设置的角度等分，计算圆圈上所有点的坐标
+                            points = splitCircle(centerX, centerY, r, spectrumCount);
+                            OSUThread(surfaceHolder, points);
+                            break;
+                        case Circle:
+                            CIRCLEThread(surfaceHolder);
+                            break;
+                    }
+                } catch (Exception ignore) {
+                }
 
                 isDrawing = false;
             }
 
-        }
-
-        /**
-         * 绘制图形线程主方法
-         *
-         * @param surfaceHolder 要绘制图形的 SurfaceHolder
-         * @param points        频谱圆圈切割后的点集合
-         */
-        private void updateThread(SurfaceHolder surfaceHolder, ArrayList<Point> points) {
-
-            final int pointsCount = points.size();
-
-            int singleAreaCount = -1, nextOffset = 0;
-
-            if (AppConfigs.isUseSecondStyleSpectrum) {
-                singleAreaCount = computeEachArea(points);
-            }
-
-            //开始循环绘制部分
-            while (surfaceHolder != null && !isInterrupted()) {
-
-                //获取频谱数据
-                final float[] fftDatas = service.getSpectrum();
-                //获取画布
-                final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
-
-                if (fftDatas != null && canvas != null) {
-
-                    //清屏
-                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                    canvas.drawColor(Color.rgb(36, 44, 54));
-
-                    float lastX = -1, lastY = -1;
-                    float firstX = -1, firstY = -1;
-
-                    for (int i = 0, j = 0; i < points.size(); i++, j++) {
-
-                        final Point point;
-
-
-                        float fftData;
-                        if (!AppConfigs.isUseSecondStyleSpectrum) {
-                            //如果当前使用第一种风格 , 则不进行旋转 , 否则进行旋转动画
-                            point = points.get(i);
-                        } else if (i + nextOffset < pointsCount) {
-                            point = points.get(i + nextOffset);
-                        } else {
-                            point = points.get((i + nextOffset) - pointsCount);
-                        }
-
-                        try {
-                            if (AppConfigs.isUseSecondStyleSpectrum) {
-                                //第二种绘制风格
-                                fftData = fftDatas[j];
-                                if (j >= singleAreaCount) {
-                                    j = 0;
-                                }
-                            } else {
-                                fftData = fftDatas[i];
-                            }
-                        } catch (IndexOutOfBoundsException e) {
-                            fftData = 0f;
-                        }
-
-                        final float expX = point.getExpansion_X(fftData, spectrumRadio);
-                        final float expY = point.getExpansion_Y(fftData, spectrumRadio);
-
-                        //绘制柱状条
-                        if (AppConfigs.isSpectrumShowLine) {
-                            canvas.drawLine(point.x, point.y, expX, expY, linePaint);
-                        }
-
-                        //绘制Node点
-                        if (AppConfigs.isSpectrumShowNode) {
-                            canvas.drawCircle(expX, expY, AppConfigs.spectrumNodeWidth, nodePaint);
-                        }
-
-                        //绘制外部线条
-                        if (AppConfigs.isSpectrumShowOutLine) {
-
-                            final float expLEX = point.getExpansion_X(fftData, (float) (spectrumRadio * 0.5));
-                            final float expLEY = point.getExpansion_Y(fftData, (float) (spectrumRadio * 0.5));
-
-                            if (i == points.size() - 1) {
-                                //最后一个点的位置
-                                canvas.drawLine(lastX, lastY, expLEX, expLEY, outlinePainter);
-                                canvas.drawLine(expLEX, expLEY, firstX, firstY, outlinePainter);
-                            } else if (lastX >= 0 && lastY >= 0) {
-                                //首个～末尾  中间的位置
-                                canvas.drawLine(expLEX, expLEY, lastX, lastY, outlinePainter);
-                            } else if (i == 0) {
-                                //首个的位置
-                                firstX = expLEX;
-                                firstY = expLEY;
-                            }
-                            lastX = expLEX;
-                            lastY = expLEY;
-                        }
-
-
-                    }
-
-                    if (AppConfigs.isUseSecondStyleSpectrum) {
-                        //下一个偏移量增一
-                        if (nextOffset + 1 < pointsCount) {
-                            //只在点的数量范围内转一圈偏移度
-                            nextOffset += 1;
-                        } else {
-                            //超过了则从头开始偏移
-                            nextOffset = 0;
-                        }
-                    }
-
-                    //更新画布
-                    surfaceHolder.unlockCanvasAndPost(canvas);
-
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                } else {
-                    //如果频谱数据为 NULL ， 则休眠 1000 毫秒再请求
-                    surfaceHolder.unlockCanvasAndPost(canvas);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }
         }
 
         /**
@@ -408,6 +292,277 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
 
             }
             return points;
+        }
+
+        /**
+         * 绘制普通动画线程主方法
+         *
+         * @param surfaceHolder 要绘制图形的 SurfaceHolder
+         * @param points        频谱圆圈切割后的点集合
+         */
+        private void NORMALThread(SurfaceHolder surfaceHolder, ArrayList<Point> points) {
+
+            //开始循环绘制部分
+            while (surfaceHolder != null && !isInterrupted()) {
+
+                //获取频谱数据
+                final float[] fftDataSet = service.getSpectrum();
+                //获取画布
+                final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
+
+                if (fftDataSet != null && fftDataSet.length >= 100 && canvas != null) {
+
+                    //清屏
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                    canvas.drawColor(Color.rgb(36, 44, 54));
+
+                    //临时变量数据
+                    float lastX = -1, lastY = -1;
+                    float firstX = -1, firstY = -1;
+
+                    for (int i = 0, j = 0; i < points.size(); i++, j++) {
+                        final Point point = points.get(i);
+                        float fftData;
+                        try {
+                            fftData = fftDataSet[i];
+                        } catch (IndexOutOfBoundsException e) {
+                            fftData = 0.0f;
+                        }
+
+                        final float expX = point.getExpansion_X(fftData, spectrumRadio);
+                        final float expY = point.getExpansion_Y(fftData, spectrumRadio);
+
+                        //绘制柱状条
+                        if (AppConfigs.isSpectrumShowLine) {
+                            canvas.drawLine(point.x, point.y, expX, expY, linePaint);
+                        }
+
+                        //绘制Node点
+                        if (AppConfigs.isSpectrumShowNode) {
+                            canvas.drawCircle(expX, expY, AppConfigs.spectrumNodeWidth, nodePaint);
+                        }
+
+                        //绘制外部线条
+                        if (AppConfigs.isSpectrumShowOutLine) {
+
+                            final float expLEX = point.getExpansion_X(fftData, (float) (spectrumRadio * 0.5));
+                            final float expLEY = point.getExpansion_Y(fftData, (float) (spectrumRadio * 0.5));
+
+                            if (i == points.size() - 1) {
+                                //最后一个点的位置
+                                canvas.drawLine(lastX, lastY, expLEX, expLEY, outlinePainter);
+                                canvas.drawLine(expLEX, expLEY, firstX, firstY, outlinePainter);
+                            } else if (lastX >= 0 && lastY >= 0) {
+                                //首个～末尾  中间的位置
+                                canvas.drawLine(expLEX, expLEY, lastX, lastY, outlinePainter);
+                            } else if (i == 0) {
+                                //首个的位置
+                                firstX = expLEX;
+                                firstY = expLEY;
+                            }
+                            lastX = expLEX;
+                            lastY = expLEY;
+                        }
+                    }
+
+                    //更新画布
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                } else {
+                    //如果频谱数据为 NULL ， 则休眠 1000 毫秒再请求
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+
+            }
+
+        }
+
+        /**
+         * 绘制OSU动画线程主方法
+         *
+         * @param surfaceHolder 要绘制图形的 SurfaceHolder
+         * @param points        频谱圆圈切割后的点集合
+         */
+        private void OSUThread(SurfaceHolder surfaceHolder, ArrayList<Point> points) {
+
+            final int pointsCount = points.size();
+            final int singleAreaCount = computeEachArea(points);
+            int nextOffset = 0;
+
+            //开始循环绘制部分
+            while (surfaceHolder != null && !isInterrupted()) {
+
+                //获取频谱数据
+                final float[] fftDataSet = service.getSpectrum();
+                //获取画布
+                final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
+
+                if (fftDataSet != null && fftDataSet.length >= 100 && canvas != null) {
+                    //清屏
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                    canvas.drawColor(Color.rgb(36, 44, 54));
+
+                    //临时变量数据
+                    float lastX = -1, lastY = -1;
+                    float firstX = -1, firstY = -1;
+
+                    for (int i = 0, j = 0; i < points.size(); i++, j++) {
+                        final Point point;
+                        float fftData;
+
+                        //旋转需要绘制的位置
+                        if (i + nextOffset < pointsCount) {
+                            point = points.get(i + nextOffset);
+                        } else {
+                            point = points.get((i + nextOffset) - pointsCount);
+                        }
+
+                        try {
+                            //获取要绘制的数据
+                            fftData = fftDataSet[j];
+                            if (j >= singleAreaCount) {
+                                j = 0;
+                            }
+                        } catch (IndexOutOfBoundsException e) {
+                            fftData = 0.0f;
+                        }
+
+                        final float expX = point.getExpansion_X(fftData, spectrumRadio);
+                        final float expY = point.getExpansion_Y(fftData, spectrumRadio);
+
+                        //绘制柱状条
+                        if (AppConfigs.isSpectrumShowLine) {
+                            canvas.drawLine(point.x, point.y, expX, expY, linePaint);
+                        }
+
+                        //绘制Node点
+                        if (AppConfigs.isSpectrumShowNode) {
+                            canvas.drawCircle(expX, expY, AppConfigs.spectrumNodeWidth, nodePaint);
+                        }
+
+                        //绘制外部线条
+                        if (AppConfigs.isSpectrumShowOutLine) {
+
+                            final float expLEX = point.getExpansion_X(fftData, (float) (spectrumRadio * 0.5));
+                            final float expLEY = point.getExpansion_Y(fftData, (float) (spectrumRadio * 0.5));
+
+                            if (i == points.size() - 1) {
+                                //最后一个点的位置
+                                canvas.drawLine(lastX, lastY, expLEX, expLEY, outlinePainter);
+                                canvas.drawLine(expLEX, expLEY, firstX, firstY, outlinePainter);
+                            } else if (lastX >= 0 && lastY >= 0) {
+                                //首个～末尾  中间的位置
+                                canvas.drawLine(expLEX, expLEY, lastX, lastY, outlinePainter);
+                            } else if (i == 0) {
+                                //首个的位置
+                                firstX = expLEX;
+                                firstY = expLEY;
+                            }
+                            lastX = expLEX;
+                            lastY = expLEY;
+                        }
+
+                    }
+
+                    //下一个偏移量增一
+                    if (nextOffset + 1 < pointsCount) {
+                        //只在点的数量范围内转一圈偏移度
+                        nextOffset += 1;
+                    } else {
+                        //超过了则从头开始偏移
+                        nextOffset = 0;
+                    }
+
+                    //更新画布
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                } else {
+                    //如果频谱数据为 NULL ， 则休眠 1000 毫秒再请求
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        /**
+         * 绘制动态圆形动画线程主方法
+         *
+         * @param surfaceHolder 要绘制图形的 SurfaceHolder
+         */
+        private void CIRCLEThread(SurfaceHolder surfaceHolder) {
+
+            //画笔颜色
+            final int circleColor = Color.rgb(255, 255, 255);
+            //圆形的画笔
+            final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            circlePaint.setStyle(Paint.Style.FILL);
+            circlePaint.setColor(circleColor);
+            //圆圈半径
+            final float R = drawArea.width() / 3;
+            float targetR;
+            float finalR = R;
+
+            while (surfaceHolder != null && !isInterrupted()) {
+                //获取频谱数据
+                final float[] fftDataSet = service.getSpectrum();
+                //设置最终的长度
+                targetR = R + fftDataSet[3] * spectrumRadio;
+
+                if (targetR <= 0 || targetR == finalR) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                } else if (finalR > targetR) {
+                    //如果长度大于目标长度 , 则要减少长度
+                    for (; finalR > targetR; finalR -= 5.0f) {
+                        final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
+                        if (canvas == null) return;
+
+                        //清屏
+                        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                        canvas.drawColor(Color.rgb(36, 44, 54));
+
+                        canvas.drawCircle(centerX, centerY, finalR, circlePaint);
+                        surfaceHolder.unlockCanvasAndPost(canvas);
+                    }
+                } else if (finalR < targetR) {
+                    //如果长度小于目标长度 , 则要减少长度
+                    for (; finalR < targetR; finalR += 5.0f) {
+                        final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
+                        if (canvas == null) return;
+
+                        //清屏
+                        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                        canvas.drawColor(Color.rgb(36, 44, 54));
+
+                        canvas.drawCircle(centerX, centerY, finalR, circlePaint);
+                        surfaceHolder.unlockCanvasAndPost(canvas);
+                    }
+                }
+            }
+
         }
 
     }
