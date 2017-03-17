@@ -1,6 +1,5 @@
 language: android
 jdk: oraclejdk8
-os: windows
 android:
   components:
     - build-tools-23.0.1
