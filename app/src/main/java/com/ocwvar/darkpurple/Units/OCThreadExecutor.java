@@ -19,11 +19,11 @@ import java.util.concurrent.TimeUnit;
  * Project: 可操作线程池
  */
 
-class OCThreadExecutor extends ThreadPoolExecutor {
+public class OCThreadExecutor extends ThreadPoolExecutor {
 
     private Map<String, FutureTask> runnableMap;
 
-    OCThreadExecutor(int maxRunningThread, String poolName) {
+    public OCThreadExecutor(int maxRunningThread, String poolName) {
         super(maxRunningThread, maxRunningThread, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new OCThreadFactory(poolName));
         runnableMap = new HashMap<>();
     }
@@ -34,7 +34,7 @@ class OCThreadExecutor extends ThreadPoolExecutor {
      * @param task 任务对象
      * @param tag  任务唯一TAG
      */
-    void submit(FutureTask task, String tag) {
+    public void submit(FutureTask task, String tag) {
 
         synchronized (this) {
             //执行线程

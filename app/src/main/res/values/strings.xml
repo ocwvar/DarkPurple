@@ -22,6 +22,24 @@
     <string name="button_dialog_playlist_delete">删除列表</string>
     <string name="button_dialog_playlist_detail">列表详情</string>
 
+    <!--网络基础文字-->
+    <string name="network_simple_unknown_error">应用未知异常</string>
+    <string name="network_simple_server_error">服务器异常</string>
+    <string name="network_simple_timeout_error">请求超时</string>
+
+    <!--登录界面文字-->
+    <string name="login_hint_username">请输入用户名</string>
+    <string name="login_hint_password">请输入密码</string>
+    <string name="login_start_login">登录账户</string>
+    <string name="login_start_register">注册并登录</string>
+    <string name="login_start_offline">暂不注册账户</string>
+    <string name="login_remember">记住账密自动登录</string>
+    <string name="login_failed">登录失败,请检查帐号密码</string>
+    <string name="login_input_empty">输入不能为空</string>
+    <string name="login_input_too_short">输入长度不能小于 6</string>
+    <string name="login_head_login">欢迎回来 </string>
+    <string name="login_head_register">注册成啦 ! 您的用户名为:</string>
+
     <!--播放列表详情页面文字数据-->
     <string name="title_detail">列表详情</string>
     <string name="title_menu_rename">修改名字</string>

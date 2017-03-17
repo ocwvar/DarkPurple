@@ -71,7 +71,6 @@ public class FolderSelectorUI extends BaseBlurActivity implements FolderSelector
         setTitle(R.string.title_select_folder_ui);
         setResult(RESULT_CODE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         pathIndex = new ArrayList<>();
         adapter = new FolderSelectorAdapter();
         progressBar = (ProgressBar) findViewById(R.id.progressBar);

@@ -550,4 +550,20 @@ public class AppConfigs {
 
     }
 
+    /**
+     * 用户数据资源
+     */
+    public static class USER {
+
+        /**
+         * 请求使用的TOKEN
+         */
+        public static String TOKEN;
+
+        /**
+         * 用户名
+         */
+        public static String USERNAME;
+
+    }
 }

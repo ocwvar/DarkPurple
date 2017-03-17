@@ -17,6 +17,13 @@
         <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.LoginActivity">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/login_bg_s</item>
+        <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
+    </style>
+
     <style name="AppTheme.NoActionBar.PlayingActivity">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -37,6 +44,11 @@
 
         <item name="android:background">@color/colorPrimary</item>
 
+    </style>
+
+    <style name="inputStyle" parent="AppTheme">
+        <item name="colorControlNormal">#ffffff</item>
+        <item name="colorControlActivated">@color/colorSecond</item>
     </style>
 
     <style name="FullScreen.TransparentBG" parent="Theme.AppCompat.Dialog.Alert">

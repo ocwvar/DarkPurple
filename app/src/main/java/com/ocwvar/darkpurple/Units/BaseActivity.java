@@ -2,9 +2,12 @@ package com.ocwvar.darkpurple.Units;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.ocwvar.darkpurple.AppConfigs;
@@ -20,6 +23,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
     private Toolbar toolbar;
+    private Snackbar holdingSnackBar = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +89,33 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             toolbar.setBackgroundColor(AppConfigs.Color.ToolBar_color);
             toolbar.setTitleTextColor(AppConfigs.Color.ToolBar_title_color);
             toolbar.setSubtitleTextColor(AppConfigs.Color.ToolBar_subtitle_color);
+        }
+    }
+
+    /**
+     * 显示固定的SnackBar通知条
+     *
+     * @param message 要显示的文字 , 文字为空则不显示
+     */
+    public void showHoldingSnackBar(@NonNull String message) {
+        if (this.holdingSnackBar == null) {
+            holdingSnackBar = Snackbar.make(findViewById(android.R.id.content), "", Snackbar.LENGTH_INDEFINITE);
+        }
+
+        if (!TextUtils.isEmpty(message)) {
+            holdingSnackBar.setDuration(Snackbar.LENGTH_INDEFINITE);
+            holdingSnackBar.setText(message);
+            holdingSnackBar.show();
+        }
+    }
+
+    /**
+     * 取消显示固定的Snackbar
+     */
+    public void dismissHoldingSnackBar() {
+        if (this.holdingSnackBar != null && this.holdingSnackBar.isShown()) {
+            this.holdingSnackBar.setDuration(Snackbar.LENGTH_SHORT);
+            this.holdingSnackBar.dismiss();
         }
     }
 
