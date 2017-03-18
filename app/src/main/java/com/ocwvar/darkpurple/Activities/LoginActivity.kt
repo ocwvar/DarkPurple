@@ -59,6 +59,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         findViewById(R.id.login_start_login).setOnClickListener(this@LoginActivity)
         findViewById(R.id.login_start_register).setOnClickListener(this@LoginActivity)
         findViewById(R.id.login_start_offline).setOnClickListener(this@LoginActivity)
+        findViewById(R.id.login_start_offline).setOnLongClickListener(this@LoginActivity)
 
         rememberButton.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
@@ -90,6 +91,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
     }
 
     override fun onViewLongClick(holdedView: View?): Boolean {
+        throw NullPointerException()
         return true
     }
 

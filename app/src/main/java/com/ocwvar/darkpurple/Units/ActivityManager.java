@@ -1,7 +1,9 @@
 package com.ocwvar.darkpurple.Units;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
 import com.ocwvar.darkpurple.AppConfigs;
@@ -18,7 +20,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
  * File Location com.ocwvar.darkpurple.Units
  * Activity界面管理
  */
-public class ActivityManager {
+public class ActivityManager implements Application.ActivityLifecycleCallbacks {
 
     private static ActivityManager manager;
     private List<Activity> activityList;
@@ -64,6 +66,44 @@ public class ActivityManager {
             }
             activityList.clear();
         }
+    }
+
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+        Logger.warnning(" Activity生命周期监听 ", "发生创建    " + activity.getClass().getSimpleName());
+        add(activity);
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+        Logger.warnning(" Activity生命周期监听 ", "发生销毁    " + activity.getClass().getSimpleName());
+        remove(activity);
     }
 
 }
