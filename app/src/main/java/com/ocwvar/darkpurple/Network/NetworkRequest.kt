@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Network
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.util.Base64
 import com.google.gson.GsonBuilder
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Callbacks.BaseCallback
@@ -116,6 +117,17 @@ object NetworkRequest {
         }
 
         /**
+         * 将字符串转换为Base64
+         *
+         * @param   string  需要转换的字符串
+         * @return  转换后得到的Base64字符串
+         */
+        private fun toBase64(string: String): String {
+            val bytes: ByteArray = string.toByteArray(Charsets.UTF_8)
+            return Base64.encodeToString(bytes, Base64.DEFAULT)
+        }
+
+        /**
          * 登录或注册
          * @param   requestObjects  参数容器
          * @param   baseCallback    回调接口
@@ -203,7 +215,7 @@ object NetworkRequest {
                 //获取token字符串
                 val token: String = requestObjects[Keys.Token] as String
                 //要上传的文件名
-                val musicTitle: String = requestObjects[Keys.MusicTitle] as String
+                val musicTitle: String = toBase64(requestObjects[Keys.MusicTitle] as String)
                 //获取文件路径对象
                 val uploadFile: File = File(requestObjects[Keys.FilePath] as String)
 
@@ -234,7 +246,7 @@ object NetworkRequest {
                     val headers: HashMap<String, String> = HashMap()
                     headers.put(Keys.Token, token)
                     headers.put(Keys.FileType, fileTypes)
-                    headers.put(Keys.MusicTitle, musicTitle)
+                    headers.put(Keys.MusicTitle, musicTitle.substring(0, musicTitle.length - 1))
 
                     //执行网络命令
                     val response: Response<ResultMsg<Any?>> = netWorkResponse.UploadFileCallback(APIs.uploadFile, headers, requestBodys).execute()
