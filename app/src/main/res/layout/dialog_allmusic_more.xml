@@ -2,32 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="10dp"
     android:gravity="center"
+    android:layoutAnimation="@anim/layout_anim_equalizer"
     android:orientation="vertical">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/title_dialog_allmusic_more"
-        android:textColor="#fff"
-        android:textSize="16sp"
-        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_dialog_allmusic_delete"
-            android:textColor="#fff" />
+        android:layout_marginStart="10dp"
+        android:gravity="start|center">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_delete"
@@ -38,6 +24,22 @@
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
             app:fab_size="normal" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/button_dialog_allmusic_delete"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:gravity="start|center"
+        android:orientation="horizontal">
+
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_download_cover"
             android:layout_width="wrap_content"
@@ -46,6 +48,22 @@
             app:fab_colorNormal="#009de6"
             app:fab_colorPressed="@color/card_backgroundColor_Dark"
             app:fab_size="normal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/button_dialog_allmusic_cover"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:gravity="start|center"
+        android:orientation="horizontal">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fb_add"
@@ -59,17 +77,35 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:text="@string/button_dialog_allmusic_add"
             android:textColor="#fff" />
 
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:text="@string/button_dialog_allmusic_cover"
-        android:textColor="#fff" />
+        android:layout_marginStart="10dp"
+        android:gravity="start|center"
+        android:orientation="horizontal">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fb_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_upload"
+            app:fab_colorNormal="#caaa36"
+            app:fab_colorPressed="@color/card_backgroundColor_Dark"
+            app:fab_size="normal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/button_dialog_allmusic_upload"
+            android:textColor="#fff" />
+
+    </LinearLayout>
 
 </LinearLayout>

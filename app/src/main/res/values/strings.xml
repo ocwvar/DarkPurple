@@ -15,8 +15,9 @@
     <string name="service_ok">音频服务连接成功</string>
     <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
     <string name="button_dialog_allmusic_delete">删除音频</string>
-    <string name="button_dialog_allmusic_add">添加到列表</string>
+    <string name="button_dialog_allmusic_add">添加到现有播放列表</string>
     <string name="button_dialog_allmusic_cover">从网络获取封面图像</string>
+    <string name="button_dialog_allmusic_upload">将歌曲上传至我的云</string>
     <string name="title_dialog_playlist_more">对选择的播放列表进行操作</string>
     <string name="request_permission_button">申请</string>
     <string name="button_dialog_playlist_delete">删除列表</string>
@@ -24,6 +25,7 @@
 
     <!--网络基础文字-->
     <string name="network_simple_unknown_error">应用未知异常</string>
+    <string name="network_simple_args_error">不满足必须数据参数</string>
     <string name="network_simple_server_error">服务器异常</string>
     <string name="network_simple_timeout_error">请求超时</string>
 
@@ -82,6 +84,7 @@
     <string name="title_newplaylist_dialog">请输入新建播放列表的名称</string>
     <string name="title_addPL_dialog">选择需要添加到的播放列表</string>
     <string name="header_noMusic">无正在播放曲目</string>
+    <string name="error_need_online">当前为离线模式 , 无法使用此功能</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_select_folder_ui">选择要扫描的音乐文件夹</string>

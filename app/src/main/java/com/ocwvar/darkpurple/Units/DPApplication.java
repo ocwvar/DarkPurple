@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Units;
 
 import android.app.Application;
 
+import com.netease.nis.bugrpt.CrashHandler;
 import com.ocwvar.darkpurple.AppConfigs;
 
 /**
@@ -16,9 +17,9 @@ public class DPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //CrashHandler.init(getApplicationContext());
+        CrashHandler.init(getApplicationContext());
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());
-        Thread.setDefaultUncaughtExceptionHandler(new OCExceptionHandler(this));
+        //Thread.setDefaultUncaughtExceptionHandler(new OCExceptionHandler(this));
 
         //初始化各项保存的设置
         AppConfigs.initDefaultValue(getApplicationContext());

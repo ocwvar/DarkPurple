@@ -42,15 +42,23 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
+import com.ocwvar.darkpurple.Callbacks.OnUploadFileCallback;
+import com.ocwvar.darkpurple.Network.Keys;
+import com.ocwvar.darkpurple.Network.NetworkRequest;
+import com.ocwvar.darkpurple.Network.NetworkRequestTypes;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by 区成伟
@@ -252,6 +260,41 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                             Bundle bundle = new Bundle();
                             bundle.putParcelable("item", selectedSongitem);
                             DownloadCoverActivity.startBlurActivityForResultByFragment(10, Color.argb(100, 0, 0, 0), false, AllMusicBackGround.this, DownloadCoverActivity.class, bundle, 10);
+                        }
+                    }
+                });
+                //上传文件到云端
+                (itemView.findViewById(R.id.fb_upload)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        moreDialog.get().dismiss();
+                        if (TextUtils.isEmpty(AppConfigs.USER.TOKEN)) {
+                            //如果当前没有Token,则认为当前为离线模式
+                            Snackbar.make(fragmentView, R.string.error_need_online, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            //上传音频文件
+                            loadingDialog.show();
+                            final HashMap<String, String> args = new HashMap<>();
+                            args.put(Keys.INSTANCE.getToken(), AppConfigs.USER.TOKEN);
+                            args.put(Keys.INSTANCE.getFilePath(), selectedSongitem.getPath());
+                            args.put(Keys.INSTANCE.getMusicTitle(), selectedSongitem.getTitle());
+                            if (!TextUtils.isEmpty(CoverImage2File.getInstance().getNormalCachePath(selectedSongitem.getPath()))) {
+                                //有封面存在才需要传递
+                                args.put(Keys.INSTANCE.getCoverPath(), CoverImage2File.getInstance().getNormalCachePath(selectedSongitem.getPath()));
+                            }
+                            NetworkRequest.INSTANCE.newRequest(NetworkRequestTypes.上传文件, args, new OnUploadFileCallback() {
+                                @Override
+                                public void OnUploaded(@NotNull String message) {
+                                    loadingDialog.dismiss();
+                                    Snackbar.make(fragmentView, message, Snackbar.LENGTH_LONG).show();
+                                }
+
+                                @Override
+                                public void onError(@NotNull String message) {
+                                    loadingDialog.dismiss();
+                                    Snackbar.make(fragmentView, message, Snackbar.LENGTH_LONG).show();
+                                }
+                            });
                         }
                     }
                 });
@@ -497,7 +540,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                     SongItem resultItem = data.getParcelableExtra("item");
                     allMusicAdapter.replaceSongItem(resultItem);
                     allMusicAdapter.notifyDataSetChanged();
-                    WeakReference<AsyncUpadteCachedList> task = new WeakReference<>(new AsyncUpadteCachedList(allMusicAdapter.getSongList()));
+                    WeakReference<AsyncUpdateCachedList> task = new WeakReference<>(new AsyncUpdateCachedList(allMusicAdapter.getSongList()));
                     task.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                 }
                 break;
@@ -684,11 +727,11 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     /**
      * 异步储存播放列表数据
      */
-    private final class AsyncUpadteCachedList extends AsyncTask<Integer, Void, Boolean> {
+    private final class AsyncUpdateCachedList extends AsyncTask<Integer, Void, Boolean> {
 
         ArrayList<SongItem> list;
 
-        AsyncUpadteCachedList(ArrayList<SongItem> list) {
+        AsyncUpdateCachedList(ArrayList<SongItem> list) {
             this.list = list;
         }
 

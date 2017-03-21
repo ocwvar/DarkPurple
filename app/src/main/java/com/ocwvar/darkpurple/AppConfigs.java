@@ -566,4 +566,5 @@ public class AppConfigs {
         public static String USERNAME;
 
     }
+
 }

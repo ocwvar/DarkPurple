@@ -157,13 +157,6 @@ public class SelectMusicActivity extends BaseActivity {
         //更新头部图像
         updateHeaderBackGround(false);
 
-        /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WelcomeActivity.startBlurActivity(5, Color.TRANSPARENT, false, SelectMusicActivity.this, WelcomeActivity.class, null);
-            }
-        }, 3000);*/
-
     }
 
     /**
@@ -219,11 +212,7 @@ public class SelectMusicActivity extends BaseActivity {
     protected void onViewClick(View clickedView) {
         switch (clickedView.getId()) {
             case R.id.action_changeHBG:
-                /*if (Build.VERSION.SDK_INT < 23 || (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                    startActivityForResult(CropImage.getPickImageChooserIntent(SelectMusicActivity.this), 110);
-                } else {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 122);
-                }*/
+
                 new PicturePickerUnity.Builder()
                         .needCompress(false)
                         .needCrop(false)
