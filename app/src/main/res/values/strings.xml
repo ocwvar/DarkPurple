@@ -12,6 +12,7 @@
     <string name="simple_download_completed">已成功下载文件</string>
     <string name="simple_download_failed">下载文件失败,请检查网络状态</string>
     <string name="simple_loading">正在读取中,请稍候</string>
+    <string name="simple_uploading">正在上传中,请稍候</string>
     <string name="service_ok">音频服务连接成功</string>
     <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
     <string name="button_dialog_allmusic_delete">删除音频</string>
@@ -50,6 +51,9 @@
     <string name="empty_playlist">哎呀! 您还没有添加播放列表噢 ~</string>
 
     <!--播放列表项目文字信息-->
+    <string name="text_cloud_userText_head">当前账户:</string>
+    <string name="text_cloud_no_user">当前为离线模式 , 无法使用此功能</string>
+    <string name="text_cloud_title">我的云储存音乐</string>
     <string name="text_playlist_name">播放列表名称</string>
     <string name="text_playlist_count">包含音频数量</string>
     <string name="text_playlist_countEND">首</string>
@@ -61,6 +65,13 @@
     <string name="text_playlist_addNewSong">成功添加音频</string>
     <string name="text_playlist_addNewSong_Failed">添加音频失败 , 可能存在同名音频</string>
     <string name="text_playlist_play_Failed">音频文件无法播放,可能已经失效</string>
+
+    <!--云音乐页面-->
+    <string name="text_cloudMusic_title">我的云储存音乐</string>
+    <string name="text_cloudMusic_subTitle">云端歌曲数量:</string>
+    <string name="text_cloud_loading">取回本地</string>
+    <string name="text_cloud_download">取回本地</string>
+    <string name="text_cloud_header_owner">所属者:</string>
 
     <!--ViewPager滚动标签栏-->
     <string name="ViewPage_Tab_AllMusic">音乐库</string>

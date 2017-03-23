@@ -88,6 +88,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name=".Activities.CloudMusicActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".Activities.WelcomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/WelcomeStyle" />

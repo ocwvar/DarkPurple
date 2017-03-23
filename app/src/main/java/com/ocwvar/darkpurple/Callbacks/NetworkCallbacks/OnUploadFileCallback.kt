@@ -1,4 +1,6 @@
-package com.ocwvar.darkpurple.Callbacks
+package com.ocwvar.darkpurple.Callbacks.NetworkCallbacks
+
+import com.ocwvar.darkpurple.Callbacks.BaseCallback
 
 /**
  * Project DarkPurple

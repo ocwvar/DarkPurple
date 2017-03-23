@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Network.Callbacks
 
+import com.ocwvar.darkpurple.Network.Beans.RemoteMusic
 import com.ocwvar.darkpurple.Network.Beans.ResultMsg
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -20,5 +21,8 @@ interface NetWorkResponseCallback {
     @POST
     @Multipart
     fun UploadFileCallback(@Url apiURL: String, @HeaderMap headers: HashMap<String, String>, @PartMap filePostBody: HashMap<String, RequestBody>): Call<ResultMsg<Any?>>
+
+    @GET
+    fun GetUploadedFiles(@Url apiURL: String, @Header("token") token: String): Call<ResultMsg<ArrayList<RemoteMusic>>>
 
 }

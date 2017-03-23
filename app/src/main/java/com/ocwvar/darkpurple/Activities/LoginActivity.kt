@@ -13,7 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.ocwvar.darkpurple.AppConfigs
-import com.ocwvar.darkpurple.Callbacks.LoginUI.OnLoginCallbacks
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.LoginUI.OnLoginCallbacks
 import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
@@ -34,6 +34,9 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
     private lateinit var rememberButton: AppCompatCheckBox
 
     override fun onPreSetup(): Boolean {
+        AppConfigs.USER.TOKEN = ""
+        AppConfigs.USER.USERNAME = ""
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE

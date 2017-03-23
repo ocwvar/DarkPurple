@@ -7,8 +7,10 @@ import android.util.Base64
 import com.google.gson.GsonBuilder
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Callbacks.BaseCallback
-import com.ocwvar.darkpurple.Callbacks.LoginUI.OnLoginCallbacks
-import com.ocwvar.darkpurple.Callbacks.OnUploadFileCallback
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.LoginUI.OnLoginCallbacks
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnGetUploadedFilesCallback
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnUploadFileCallback
+import com.ocwvar.darkpurple.Network.Beans.RemoteMusic
 import com.ocwvar.darkpurple.Network.Beans.ResultMsg
 import com.ocwvar.darkpurple.Network.Callbacks.NetWorkResponseCallback
 import com.ocwvar.darkpurple.R
@@ -81,6 +83,10 @@ object NetworkRequest {
 
                     NetworkRequestTypes.上传文件 -> {
                         requests.uploadFile(requestObjects, baseCallback)
+                    }
+
+                    NetworkRequestTypes.获取已上传文件 -> {
+                        requests.getUploadedFiles(requestObjects, baseCallback)
                     }
 
                 }
@@ -165,6 +171,7 @@ object NetworkRequest {
                         if (response.body().isSuccess) {
                             //执行成功 , 将TOKEN存入用户数据中
                             AppConfigs.USER.TOKEN = response.body().inObject as String
+                            AppConfigs.USER.USERNAME = headers[Keys.Username]
 
                             //返回执行结果至回调接口
                             if (requestObjects[Keys.isLoginAction] as Boolean) {
@@ -255,6 +262,53 @@ object NetworkRequest {
                         if (response.body().isSuccess) {
                             handler.post {
                                 callback.OnUploaded(response.body().message)
+                            }
+                        } else {
+                            handler.post {
+                                callback.onError(response.body().message)
+                            }
+                        }
+                    } else {
+                        handler.post {
+                            callback.onError(AppConfigs.ApplicationContext.getString(R.string.network_simple_timeout_error))
+                        }
+                    }
+                } else {
+                    Logger.error(TAG, "请求参数完全 , 但不正确")
+                    handler.post {
+                        callback.onError(AppConfigs.ApplicationContext.getString(R.string.network_simple_args_error))
+                    }
+                }
+            }
+        }
+
+        /**
+         * 获取已上传的文件
+         * @param   requestObjects  参数容器
+         * @param   baseCallback    回调接口
+         */
+        fun getUploadedFiles(requestObjects: HashMap<String, *>, baseCallback: BaseCallback) {
+            val callback: OnGetUploadedFilesCallback = baseCallback as OnGetUploadedFilesCallback
+            val handler: Handler = Handler(Looper.getMainLooper())
+
+            //请求参数检查
+            if (!isHasRequireKeys(arrayOf(Keys.Token), requestObjects)) {
+                Logger.error(TAG, "请求参数不完全")
+                handler.post {
+                    callback.onError(AppConfigs.ApplicationContext.getString(R.string.network_simple_args_error))
+                }
+            } else {
+                //获取token字符串
+                val token: String = requestObjects[Keys.Token] as String
+                if (!TextUtils.isEmpty(token)) {
+
+                    //开始请求
+                    val response: Response<ResultMsg<ArrayList<RemoteMusic>>> = retrofitClient.create(NetWorkResponseCallback::class.java).GetUploadedFiles(APIs.uploadedFiles, token).execute()
+                    //执行完后检查结果
+                    if (response.isSuccessful) {
+                        if (response.body().isSuccess && response.body().inObject != null) {
+                            handler.post {
+                                callback.onGotUploadedFiles(response.body().inObject!!)
                             }
                         } else {
                             handler.post {

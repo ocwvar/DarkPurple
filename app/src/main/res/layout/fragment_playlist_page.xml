@@ -1,26 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycleView"
+    <android.support.v7.widget.CardView
+        android:id="@+id/cloudMusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="3dp"
+        app:cardMaxElevation="5dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_cloud" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_cloud_title"
+                    android:textColor="@color/pureWhite"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/cloudMusic_userName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/Text_LightGray"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="4dp" />
+        android:layout_marginTop="10dp">
 
-    <TextView
-        android:id="@+id/noPlaylist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:drawablePadding="10dp"
-        android:drawableTop="@drawable/ic_empty_icon"
-        android:gravity="center"
-        android:shadowColor="@color/colorPrimary"
-        android:shadowRadius="20"
-        android:text="@string/empty_playlist"
-        android:textColor="#fff" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycleView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="4dp" />
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/noPlaylist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:drawablePadding="10dp"
+            android:drawableTop="@drawable/ic_empty_icon"
+            android:gravity="center"
+            android:shadowColor="@color/colorPrimary"
+            android:shadowRadius="20"
+            android:text="@string/empty_playlist"
+            android:textColor="#fff" />
+
+    </FrameLayout>
+
+</LinearLayout>

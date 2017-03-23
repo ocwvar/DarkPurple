@@ -42,7 +42,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
-import com.ocwvar.darkpurple.Callbacks.OnUploadFileCallback;
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnUploadFileCallback;
 import com.ocwvar.darkpurple.Network.Keys;
 import com.ocwvar.darkpurple.Network.NetworkRequest;
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes;
@@ -93,11 +93,11 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     //创建新播放列表 - 对话框弱引用容器
     private WeakReference<AlertDialog> newPlaylistDialog = new WeakReference<>(null);
 
+    //消息对话框 - 对话框弱引用容器
+    private WeakReference<ProgressDialog> waitingProgress = new WeakReference<>(null);
+
     //添加歌曲对象至现有播放列表的对话框Holder
     private SelectPlaylistDialogHolder addToPLDialogHolder;
-
-    //读取播放列表等待对话框
-    private ProgressDialog loadingDialog;
 
     //创建新的播放列表输入框
     private EditText getPlaylistTitle;
@@ -133,7 +133,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     public void onDestroy() {
         super.onDestroy();
         if (allMusicAdapter.isMuiltSelecting()) {
-            cancelMulitMode();
+            cancelMultiMode();
         }
     }
 
@@ -273,7 +273,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                             Snackbar.make(fragmentView, R.string.error_need_online, Snackbar.LENGTH_LONG).show();
                         } else {
                             //上传音频文件
-                            loadingDialog.show();
+                            showMessageDialog(AppConfigs.ApplicationContext.getString(R.string.simple_uploading), false);
                             final HashMap<String, String> args = new HashMap<>();
                             args.put(Keys.INSTANCE.getToken(), AppConfigs.USER.TOKEN);
                             args.put(Keys.INSTANCE.getFilePath(), selectedSongitem.getPath());
@@ -285,13 +285,13 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                             NetworkRequest.INSTANCE.newRequest(NetworkRequestTypes.上传文件, args, new OnUploadFileCallback() {
                                 @Override
                                 public void OnUploaded(@NotNull String message) {
-                                    loadingDialog.dismiss();
+                                    dismissMessageDialog();
                                     Snackbar.make(fragmentView, message, Snackbar.LENGTH_LONG).show();
                                 }
 
                                 @Override
                                 public void onError(@NotNull String message) {
-                                    loadingDialog.dismiss();
+                                    dismissMessageDialog();
                                     Snackbar.make(fragmentView, message, Snackbar.LENGTH_LONG).show();
                                 }
                             });
@@ -338,6 +338,37 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             swipeRefreshLayout.setRefreshing(false);
         }
 
+    }
+
+    /**
+     * 显示一个消息对话框
+     *
+     * @param message   显示的消息
+     * @param canBeCancel   是否可以取消
+     */
+    private void showMessageDialog(String message, boolean canBeCancel) {
+        if (TextUtils.isEmpty(message) || fragmentView == null) {
+            return;
+        }
+        ProgressDialog waitingProgress = this.waitingProgress.get();
+        if (waitingProgress == null) {
+            waitingProgress = new ProgressDialog(fragmentView.getContext());
+            waitingProgress.setCanceledOnTouchOutside(false);
+            this.waitingProgress = new WeakReference<>(waitingProgress);
+        }
+        waitingProgress.setMessage(message);
+        waitingProgress.setCancelable(canBeCancel);
+        waitingProgress.show();
+    }
+
+    /**
+     * 取消正在显示的消息对话框
+     */
+    private void dismissMessageDialog() {
+        final ProgressDialog progressDialog = waitingProgress.get();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     /**
@@ -397,10 +428,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                 }
             });
 
-            loadingDialog = new ProgressDialog(fragmentView.getContext());
-            loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
-            loadingDialog.setCancelable(false);
-
             swipeRefreshLayout.setColorSchemeColors(AppConfigs.Color.ToolBar_color);
             swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -439,7 +466,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     /**
      * 取消多选模式
      */
-    private void cancelMulitMode() {
+    private void cancelMultiMode() {
         if (allMusicAdapter.isMuiltSelecting()) {
             swipeRefreshLayout.setEnabled(true);
             allMusicAdapter.stopMuiltMode();
@@ -453,7 +480,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (allMusicAdapter.isMuiltSelecting()) {
                 //如果当前正在多选模式 , 按返回键则会取消
-                cancelMulitMode();
+                cancelMultiMode();
                 return true;
             }
         }
@@ -682,16 +709,12 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
                     @Override
                     public void onPreLoad() {
-                        if (loadingDialog != null) {
-                            loadingDialog.show();
-                        }
+                        showMessageDialog(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading), false);
                     }
 
                     @Override
                     public void onLoadCompleted(PlaylistItem playlistItem, ArrayList<SongItem> data) {
-                        if (loadingDialog != null) {
-                            loadingDialog.dismiss();
-                        }
+                        dismissMessageDialog();
                         if (PlaylistUnits.getInstance().addAudio(playlistItem, selectedSongitem)) {
                             Snackbar.make(fragmentView, R.string.text_playlist_addNewSong, Snackbar.LENGTH_SHORT).show();
                         } else {
@@ -701,9 +724,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
 
                     @Override
                     public void onLoadFailed() {
-                        if (loadingDialog != null) {
-                            loadingDialog.dismiss();
-                        }
+                        dismissMessageDialog();
                         Snackbar.make(fragmentView, R.string.text_playlist_loadFailed, Snackbar.LENGTH_SHORT).show();
                     }
 

@@ -11,10 +11,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.ocwvar.darkpurple.Activities.CloudMusicActivity;
 import com.ocwvar.darkpurple.Activities.PlayingActivity;
 import com.ocwvar.darkpurple.Activities.PlaylistDetailActivity;
 import com.ocwvar.darkpurple.Adapters.PlaylistItemAdapter;
@@ -79,6 +82,19 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             loadingDialog = new ProgressDialog(fragmentView.getContext(), R.style.AlertDialog_AppCompat_ProgressDialog);
             loadingDialog.setMessage(AppConfigs.ApplicationContext.getString(R.string.text_playlist_loading));
             loadingDialog.setCancelable(false);
+
+            //显示云音乐的用户名状态 ,如果当前为离线则显示不可用
+            if (TextUtils.isEmpty(AppConfigs.USER.USERNAME)) {
+                ((TextView) fragmentView.findViewById(R.id.cloudMusic_userName)).setText(R.string.text_cloud_no_user);
+            } else {
+                ((TextView) fragmentView.findViewById(R.id.cloudMusic_userName)).setText(String.format("%s%s", AppConfigs.ApplicationContext.getString(R.string.text_cloud_userText_head), AppConfigs.USER.USERNAME));
+                fragmentView.findViewById(R.id.cloudMusic).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CloudMusicActivity.startBlurActivityForResultByFragment(5, Color.argb(100, 0, 0, 0), false, PlaylistPageBackGround.this, CloudMusicActivity.class, null, 0);
+                    }
+                });
+            }
 
             shouldShowNoPlaylistMessage();
         }
