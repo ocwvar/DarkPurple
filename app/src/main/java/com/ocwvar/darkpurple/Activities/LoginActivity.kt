@@ -32,6 +32,9 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
     private lateinit var inputUsername: AppCompatEditText
     private lateinit var inputPassword: AppCompatEditText
     private lateinit var rememberButton: AppCompatCheckBox
+    private lateinit var loginRegist: View
+    private lateinit var loginOffLine: View
+    private lateinit var login: View
 
     override fun onPreSetup(): Boolean {
         AppConfigs.USER.TOKEN = ""
@@ -59,10 +62,14 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         inputUsername = findViewById(R.id.login_input_username) as AppCompatEditText
         inputPassword = findViewById(R.id.login_input_password) as AppCompatEditText
         rememberButton = findViewById(R.id.login_remember) as AppCompatCheckBox
-        findViewById(R.id.login_start_login).setOnClickListener(this@LoginActivity)
-        findViewById(R.id.login_start_register).setOnClickListener(this@LoginActivity)
-        findViewById(R.id.login_start_offline).setOnClickListener(this@LoginActivity)
-        findViewById(R.id.login_start_offline).setOnLongClickListener(this@LoginActivity)
+
+        loginRegist = findViewById(R.id.login_start_register)
+        loginOffLine = findViewById(R.id.login_start_offline)
+        login = findViewById(R.id.login_start_login)
+
+        loginRegist.setOnClickListener(this@LoginActivity)
+        loginOffLine.setOnClickListener(this@LoginActivity)
+        login.setOnClickListener(this@LoginActivity)
 
         rememberButton.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
@@ -89,12 +96,12 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
             R.id.login_start_offline -> {
                 //离线使用 , 则直接进入主界面即可
                 startActivity(Intent(this@LoginActivity, SelectMusicActivity::class.java))
+                finish()
             }
         }
     }
 
     override fun onViewLongClick(holdedView: View?): Boolean {
-        throw NullPointerException()
         return true
     }
 
@@ -135,6 +142,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
      */
     private fun loginAction(isLogin: Boolean) {
         getRequestHeaders()?.let {
+            disableAllViews()
             showHoldingSnackBar(AppConfigs.ApplicationContext.getString(R.string.simple_loading))
             val args = HashMap<String, Any>()
             args.put("args", it)
@@ -178,11 +186,46 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
     }
 
     /**
+     * 禁用所有控件的使用
+     */
+    private fun disableAllViews() {
+        inputPassword.isEnabled = false
+        inputUsername.isEnabled = false
+        login.isEnabled = false
+        loginRegist.isEnabled = false
+        loginOffLine.isEnabled = false
+
+        inputPassword.alpha = 0.5f
+        inputUsername.alpha = 0.5f
+        login.alpha = 0.5f
+        loginRegist.alpha = 0.5f
+        loginOffLine.alpha = 0.5f
+    }
+
+    /**
+     * 启用所有控件
+     */
+    private fun enableAllView() {
+        inputPassword.isEnabled = true
+        inputUsername.isEnabled = true
+        login.isEnabled = true
+        loginRegist.isEnabled = true
+        loginOffLine.isEnabled = true
+
+        inputPassword.alpha = 1.0f
+        inputUsername.alpha = 1.0f
+        login.alpha = 1.0f
+        loginRegist.alpha = 1.0f
+        loginOffLine.alpha = 1.0f
+    }
+
+    /**
      * 登录成功
      * @param   username    用户名
      */
     override fun onLoginSuccess(username: String) {
         dismissHoldingSnackBar()
+        enableAllView()
         if (rememberButton.isChecked) {
             savePW2SP()
         } else {
@@ -191,6 +234,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         }
         Toast.makeText(this@LoginActivity, String.format("%s%s", AppConfigs.ApplicationContext.getText(R.string.login_head_login), username), Toast.LENGTH_SHORT).show()
         startActivity(Intent(this@LoginActivity, SelectMusicActivity::class.java))
+        finish()
     }
 
     /**
@@ -199,6 +243,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
      */
     override fun onRegisterSuccess(username: String) {
         dismissHoldingSnackBar()
+        enableAllView()
         if (rememberButton.isChecked) {
             savePW2SP()
         } else {
@@ -207,6 +252,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         }
         Toast.makeText(this@LoginActivity, String.format("%s%s", AppConfigs.ApplicationContext.getText(R.string.login_head_register), username), Toast.LENGTH_SHORT).show()
         startActivity(Intent(this@LoginActivity, SelectMusicActivity::class.java))
+        finish()
     }
 
     /**
@@ -215,6 +261,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
      */
     override fun onError(message: String) {
         dismissHoldingSnackBar()
+        enableAllView()
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
     }
 

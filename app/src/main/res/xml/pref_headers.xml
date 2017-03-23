@@ -15,4 +15,6 @@
         android:summary="@string/setting_info_color"
         android:title="@string/setting_title_color" />
 
+    <header android:title="@string/logout" />
+
 </preference-headers>

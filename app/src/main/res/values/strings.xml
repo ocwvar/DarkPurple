@@ -127,6 +127,7 @@
     <string name="title_selector_dialog">请选择需要下载的封面尺寸</string>
 
     <!--菜单各类选项-->
+    <string name="logout">重新登陆</string>
     <string name="title_activity_settings">设置</string>
     <string name="title_menu_sort_date">按照歌曲添加日期</string>
     <string name="title_menu_sort_name">按照歌曲标题名字</string>

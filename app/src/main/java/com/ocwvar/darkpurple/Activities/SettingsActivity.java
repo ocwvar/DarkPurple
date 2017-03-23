@@ -131,11 +131,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || ThemePreferenceFragment.class.getName().equals(fragmentName);
     }
 
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void onHeaderClick(Header header, int position) {
+        super.onHeaderClick(header, position);
+        if (header.titleRes == R.string.logout) {
+            ActivityManager.getInstance().restartLoginActivity();
+        }
+    }
+
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
         @Override
