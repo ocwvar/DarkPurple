@@ -30,6 +30,9 @@ public class AppConfigs {
     //图片缓存目录
     public static final String ImageCacheFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/ImageCache/";
 
+    //下载歌曲文件储存目录
+    public static final String DownloadMusicFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/Restore/";
+
     //系统保留播放列表名字 , 用于缓存上一次的搜索记录
     public final static String CACHE_NAME = ".cached";
 

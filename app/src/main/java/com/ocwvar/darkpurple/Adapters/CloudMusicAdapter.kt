@@ -10,6 +10,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Network.Beans.RemoteMusic
 import com.ocwvar.darkpurple.R
 import com.squareup.picasso.Picasso
+import java.io.File
 
 /**
  * Project DarkPurple
@@ -18,9 +19,15 @@ import com.squareup.picasso.Picasso
  * File Location com.ocwvar.darkpurple.Adapters
  * This file use to :   云音乐列表适配器
  */
-class CloudMusicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CloudMusicAdapter(val callback: OnListClickCallback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val sourceList: ArrayList<RemoteMusic> = ArrayList()
+
+    interface OnListClickCallback {
+
+        fun onListItemClick(musicObject: RemoteMusic, position: Int)
+
+    }
 
     fun updateSource(source: ArrayList<RemoteMusic>) {
         sourceList.clear()
@@ -46,6 +53,15 @@ class CloudMusicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             viewHolder.owner.text = String.format("%s%s", AppConfigs.ApplicationContext.getString(R.string.text_cloud_header_owner), item.ownerName)
             viewHolder.title.text = item.name
+
+            if (File(AppConfigs.DownloadMusicFolder + item.fileName).exists()) {
+                viewHolder.downloadButton.setText(R.string.text_cloudMusic_download_button_exist)
+                viewHolder.downloadButton.isEnabled = false
+            } else {
+                viewHolder.downloadButton.setText(R.string.text_cloudMusic_download_button_download)
+                viewHolder.downloadButton.isEnabled = true
+            }
+
             Picasso.with(it.itemView.context).load(item.coverURL).into(viewHolder.cover)
         }
     }
@@ -55,13 +71,14 @@ class CloudMusicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         val title: TextView = itemView.findViewById(R.id.cloudMusic_title) as TextView
         val owner: TextView = itemView.findViewById(R.id.cloudMusic_owner) as TextView
         val cover: ImageView = itemView.findViewById(R.id.cloudMusic_cover) as ImageView
+        val downloadButton: TextView = itemView.findViewById(R.id.cloudMusic_download) as TextView
 
         init {
-            itemView.findViewById(R.id.cloudMusic_download).setOnClickListener(this@CloudMusicViewHolder)
+            downloadButton.setOnClickListener(this@CloudMusicViewHolder)
         }
 
         override fun onClick(v: View) {
-
+            callback.onListItemClick(sourceList[adapterPosition], adapterPosition)
         }
     }
 }

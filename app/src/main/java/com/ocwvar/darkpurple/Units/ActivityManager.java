@@ -63,6 +63,7 @@ public class ActivityManager implements Application.ActivityLifecycleCallbacks {
     public void restartLoginActivity() {
         release();
         Intent intent = new Intent(AppConfigs.ApplicationContext, LoginActivity.class);
+        intent.putExtra("stopAutoLogin", true);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         AppConfigs.ApplicationContext.startActivity(intent);
     }

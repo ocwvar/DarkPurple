@@ -67,6 +67,12 @@
     <string name="text_playlist_play_Failed">音频文件无法播放,可能已经失效</string>
 
     <!--云音乐页面-->
+    <string name="text_cloudMusic_download_status_title">正在下载</string>
+    <string name="text_cloudMusic_download_status_cancel">已取消下载歌曲</string>
+    <string name="text_cloudMusic_download_status_done">下载完成</string>
+    <string name="text_cloudMusic_download_status_failed">下载失败</string>
+    <string name="text_cloudMusic_download_button_download">取回本地</string>
+    <string name="text_cloudMusic_download_button_exist">已下载</string>
     <string name="text_cloudMusic_title">我的云储存音乐</string>
     <string name="text_cloudMusic_subTitle">云端歌曲数量:</string>
     <string name="text_cloud_loading">取回本地</string>

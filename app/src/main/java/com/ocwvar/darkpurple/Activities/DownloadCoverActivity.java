@@ -409,7 +409,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     /**
      * 获取封面详情任务
      */
-    final class LoadSizesTask extends AsyncTask<Integer, Void, ArrayList<String[]>> {
+    private final class LoadSizesTask extends AsyncTask<Integer, Void, ArrayList<String[]>> {
 
         final ProgressDialog progressDialog;
         final CoverPreviewBean coverPreviewBean;
@@ -618,7 +618,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     /**
      * 简易图片下载线程
      */
-    final class DownloadThread extends AsyncTask<Integer, Integer, Boolean> {
+    private final class DownloadThread extends AsyncTask<Integer, Integer, Boolean> {
 
         final String url;
         final String fileName;

@@ -181,7 +181,9 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
             inputUsername.setText(sp.getString(Keys.Username, null))
             inputPassword.setText(sp.getString(Keys.Password, null))
             rememberButton.isChecked = true
-            loginAction(true)
+            if (!intent.hasExtra("stopAutoLogin")) {
+                loginAction(true)
+            }
         }
     }
 
@@ -194,12 +196,14 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         login.isEnabled = false
         loginRegist.isEnabled = false
         loginOffLine.isEnabled = false
+        rememberButton.isEnabled = false
 
         inputPassword.alpha = 0.5f
         inputUsername.alpha = 0.5f
         login.alpha = 0.5f
         loginRegist.alpha = 0.5f
         loginOffLine.alpha = 0.5f
+        rememberButton.alpha = 0.5f
     }
 
     /**
@@ -211,12 +215,14 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         login.isEnabled = true
         loginRegist.isEnabled = true
         loginOffLine.isEnabled = true
+        rememberButton.isEnabled = true
 
         inputPassword.alpha = 1.0f
         inputUsername.alpha = 1.0f
         login.alpha = 1.0f
         loginRegist.alpha = 1.0f
         loginOffLine.alpha = 1.0f
+        rememberButton.alpha = 1.0f
     }
 
     /**

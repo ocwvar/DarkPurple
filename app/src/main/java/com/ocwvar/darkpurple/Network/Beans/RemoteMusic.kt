@@ -7,4 +7,4 @@ package com.ocwvar.darkpurple.Network.Beans
  * File Location com.ocwvar.darkpurple.Network.Beans
  * This file use to : 服务器端返回的音频对象数据
  */
-data class RemoteMusic(val name: String, val ownerName: String, val musicURL: String, val coverURL: String)
+data class RemoteMusic(val name: String, val fileName: String, val ownerName: String, val musicURL: String, val coverURL: String)
