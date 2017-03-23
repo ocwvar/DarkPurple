@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -435,26 +436,37 @@ public class MediaScanner {
      * 文件夹音频扫描器
      */
     final private class ScanByFolder implements Callable<String> {
-        final public static String TAG = "ScanByFolder";
+
+        public final static String TAG = "ScanByFolder";
+
+        //默认扫描的位置  路径结尾不能带"/"
+        private final String[] defaultPaths = new String[]{
+                Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/Restore"
+        };
+        
         private final FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File file) {
                 return isMusicFile(file);
             }
         };
+
         //文件夹路径集合
-        private String[] paths;
+        private ArrayList<String> paths;
 
         ScanByFolder(String[] paths) {
-            this.paths = paths;
+            this.paths = new ArrayList<>();
+            Collections.addAll(this.paths, paths);
         }
 
         @Override
         public String call() throws Exception {
 
-            if (chackFolders(paths)) {
+            if (checkFolders(paths)) {
                 //如果设置的目录都合法的话才进行扫描
 
+                //添加默认路径
+                addDefaultFolders();
                 ArrayList<SongItem> arrayList = null;
 
                 try {
@@ -486,13 +498,25 @@ public class MediaScanner {
         }
 
         /**
+         * 添加默认路径
+         */
+        private void addDefaultFolders() {
+            for (String defaultPath : defaultPaths) {
+                final File file = new File(defaultPath);
+                if (!this.paths.contains(defaultPath) && file.exists() && file.isDirectory() && file.canWrite()) {
+                    this.paths.add(defaultPath);
+                }
+            }
+        }
+        
+        /**
          * 检查目录是否有效
          *
          * @param paths 目录地址
          * @return 目录的有效性
          */
-        private boolean chackFolders(String[] paths) {
-            if (paths == null || paths.length <= 0) {
+        private boolean checkFolders(ArrayList<String> paths) {
+            if (paths == null || paths.size() <= 0) {
                 return false;
             } else {
                 for (String path : paths) {
@@ -547,7 +571,7 @@ public class MediaScanner {
          * 扫描获取设置的目录下的音频文件
          *
          * @return 音频文件列表
-         * @throws Exception
+         * @throws Exception    扫描发生的异常
          */
         private
         @Nullable
