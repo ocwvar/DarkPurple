@@ -9,6 +9,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Callbacks.BaseCallback
 import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.LoginUI.OnLoginCallbacks
 import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnGetUploadedFilesCallback
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnRemoveCloudFileCallback
 import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnUploadFileCallback
 import com.ocwvar.darkpurple.Network.Beans.RemoteMusic
 import com.ocwvar.darkpurple.Network.Beans.ResultMsg
@@ -39,16 +40,16 @@ object NetworkRequest {
 
     private val TAG: String = "网络请求"
     private val requests: Request = Request()
-    private val threadPool: RMThreadPool = RMThreadPool("网络请求", 2, 2)
+    private val threadPool: RMThreadPool = RMThreadPool("网络请求", 1, 1)
     private val retrofitClient: Retrofit
 
     init {
         val gsonConverterFactory = GsonConverterFactory.create(GsonBuilder().setDateFormat("yyyy-MM-dd hh:mm:ss").create())
         val httpClient: OkHttpClient = OkHttpClient()
                 .newBuilder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
                 .build()
         retrofitClient = Retrofit.Builder()
                 .client(httpClient)
@@ -87,6 +88,10 @@ object NetworkRequest {
 
                     NetworkRequestTypes.获取已上传文件 -> {
                         requests.getUploadedFiles(requestObjects, baseCallback)
+                    }
+
+                    NetworkRequestTypes.移除云端歌曲 -> {
+                        requests.removeCloudFile(requestObjects, baseCallback)
                     }
 
                 }
@@ -130,7 +135,8 @@ object NetworkRequest {
          */
         private fun toBase64(string: String): String {
             val bytes: ByteArray = string.toByteArray(Charsets.UTF_8)
-            return Base64.encodeToString(bytes, Base64.DEFAULT)
+            val result: String = Base64.encodeToString(bytes, Base64.DEFAULT)
+            return result.substring(0, result.length - 1)
         }
 
         /**
@@ -253,7 +259,7 @@ object NetworkRequest {
                     val headers: HashMap<String, String> = HashMap()
                     headers.put(Keys.Token, token)
                     headers.put(Keys.FileType, fileTypes)
-                    headers.put(Keys.MusicTitle, musicTitle.substring(0, musicTitle.length - 1))
+                    headers.put(Keys.MusicTitle, musicTitle)
 
                     //执行网络命令
                     val response: Response<ResultMsg<Any?>> = netWorkResponse.UploadFileCallback(APIs.uploadFile, headers, requestBodys).execute()
@@ -309,6 +315,56 @@ object NetworkRequest {
                         if (response.body().isSuccess && response.body().inObject != null) {
                             handler.post {
                                 callback.onGotUploadedFiles(response.body().inObject!!)
+                            }
+                        } else {
+                            handler.post {
+                                callback.onError(response.body().message)
+                            }
+                        }
+                    } else {
+                        handler.post {
+                            callback.onError(AppConfigs.ApplicationContext.getString(R.string.network_simple_timeout_error))
+                        }
+                    }
+                } else {
+                    Logger.error(TAG, "请求参数完全 , 但不正确")
+                    handler.post {
+                        callback.onError(AppConfigs.ApplicationContext.getString(R.string.network_simple_args_error))
+                    }
+                }
+            }
+        }
+
+        /**
+         * 删除已上传的文件
+         * @param   requestObjects  参数容器
+         * @param   baseCallback    回调接口
+         */
+        fun removeCloudFile(requestObjects: HashMap<String, *>, baseCallback: BaseCallback) {
+            val callback: OnRemoveCloudFileCallback = baseCallback as OnRemoveCloudFileCallback
+            val handler: Handler = Handler(Looper.getMainLooper())
+
+            //请求参数检查
+            if (!isHasRequireKeys(arrayOf(Keys.Token, Keys.FileName), requestObjects)) {
+                Logger.error(TAG, "请求参数不完全")
+                handler.post {
+                    callback.onError(AppConfigs.ApplicationContext.getString(R.string.network_simple_args_error))
+                }
+            } else {
+                //获取token字符串
+                val token: String = requestObjects[Keys.Token] as String
+                //获取文件名
+                val fileName: String = toBase64(requestObjects[Keys.FileName] as String)
+
+                if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(fileName)) {
+
+                    //开始请求
+                    val response: Response<ResultMsg<Any?>> = retrofitClient.create(NetWorkResponseCallback::class.java).RemoveUploadedFile(APIs.removeFiles, token, fileName).execute()
+                    //执行完后检查结果
+                    if (response.isSuccessful) {
+                        if (response.body().isSuccess) {
+                            handler.post {
+                                callback.onRemovedCloudFile()
                             }
                         } else {
                             handler.post {

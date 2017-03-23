@@ -59,11 +59,23 @@
 
                 <TextView
                     android:id="@+id/cloudMusic_download"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:drawablePadding="5dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="3dp"
                     android:drawableStart="@drawable/ic_action_download_pic"
                     android:gravity="center"
+                    android:textColor="@color/pureWhite" />
+
+                <TextView
+                    android:id="@+id/cloudMusic_remove"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="3dp"
+                    android:drawableStart="@drawable/ic_action_playlist_delete"
+                    android:gravity="center"
+                    android:text="@string/text_cloudMusic_button_remove"
                     android:textColor="@color/pureWhite" />
 
             </LinearLayout>

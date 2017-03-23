@@ -13,6 +13,7 @@ object Keys {
     val Password: String = "password"
     val Token: String = "token"
     val FilePath: String = "filePath"
+    val FileName: String = "fileName"
     val MusicTitle: String = "musicTitle"
     val FileType: String = "fileType"
     val CoverPath: String = "coverPath"

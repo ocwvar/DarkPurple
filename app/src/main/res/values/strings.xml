@@ -73,10 +73,10 @@
     <string name="text_cloudMusic_download_status_failed">下载失败</string>
     <string name="text_cloudMusic_download_button_download">取回本地</string>
     <string name="text_cloudMusic_download_button_exist">已下载</string>
+    <string name="text_cloudMusic_button_remove">移除歌曲</string>
+    <string name="text_cloudMusic_removing">正在请求删除…</string>
     <string name="text_cloudMusic_title">我的云储存音乐</string>
     <string name="text_cloudMusic_subTitle">云端歌曲数量:</string>
-    <string name="text_cloud_loading">取回本地</string>
-    <string name="text_cloud_download">取回本地</string>
     <string name="text_cloud_header_owner">所属者:</string>
 
     <!--ViewPager滚动标签栏-->

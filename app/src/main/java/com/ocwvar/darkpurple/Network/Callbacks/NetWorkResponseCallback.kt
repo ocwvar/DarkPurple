@@ -25,4 +25,7 @@ interface NetWorkResponseCallback {
     @GET
     fun GetUploadedFiles(@Url apiURL: String, @Header("token") token: String): Call<ResultMsg<ArrayList<RemoteMusic>>>
 
+    @POST
+    fun RemoveUploadedFile(@Url apiURL: String, @Header("token") token: String, @Header("fileName") fileName: String): Call<ResultMsg<Any?>>
+
 }

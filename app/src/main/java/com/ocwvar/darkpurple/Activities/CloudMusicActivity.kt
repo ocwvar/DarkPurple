@@ -3,8 +3,10 @@ package com.ocwvar.darkpurple.Activities
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.AsyncTask
 import android.support.design.widget.Snackbar
+import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
@@ -13,6 +15,7 @@ import android.widget.Toast
 import com.ocwvar.darkpurple.Adapters.CloudMusicAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnGetUploadedFilesCallback
+import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnRemoveCloudFileCallback
 import com.ocwvar.darkpurple.Network.Beans.RemoteMusic
 import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
@@ -34,7 +37,7 @@ import java.io.InputStream
  * File Location com.ocwvar.darkpurple.Activities
  * This file use to :   我的云音乐显示界面
  */
-class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, CloudMusicAdapter.OnListClickCallback {
+class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, CloudMusicAdapter.OnListClickCallback, OnRemoveCloudFileCallback {
 
     var selectedPosition: Int = 0
     val adapter: CloudMusicAdapter = CloudMusicAdapter(this@CloudMusicActivity)
@@ -81,18 +84,55 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onListItemClick(musicObject: RemoteMusic, position: Int) {
+    /**
+     * 下载请求
+     * @param   musicObject 歌曲信息对象
+     * @param   position    发起请求的View位置
+     */
+    override fun onDownloadRequest(musicObject: RemoteMusic, position: Int) {
         selectedPosition = position
         DownloadThread(musicObject, this@CloudMusicActivity).execute()
     }
 
+    /**
+     * 删除请求
+     * @param   musicObject 歌曲信息对象
+     * @param   position    发起请求的View位置
+     */
+    override fun onRemoveRequest(musicObject: RemoteMusic, position: Int) {
+        selectedPosition = position
+        val args: HashMap<String, String> = HashMap()
+        args.put(Keys.Token, AppConfigs.USER.TOKEN)
+        args.put(Keys.FileName, musicObject.fileName)
+        NetworkRequest.newRequest(NetworkRequestTypes.移除云端歌曲, args, this@CloudMusicActivity)
+        showMessageDialog(this@CloudMusicActivity, AppConfigs.ApplicationContext.getString(R.string.text_cloudMusic_removing), false)
+    }
+
+    /**
+     * 成功移除云端音频回调接口
+     */
+    override fun onRemovedCloudFile() {
+        dismissMessageDialog()
+        adapter.removeSourece(selectedPosition)
+    }
+
+    /**
+     * 获取到云端音频列表回调接口
+     * @param   files   文件列表
+     */
     override fun onGotUploadedFiles(files: ArrayList<RemoteMusic>) {
         dismissHoldingSnackBar()
         toolBar?.subtitle = String.format("%s%s", AppConfigs.ApplicationContext.getString(R.string.text_cloudMusic_subTitle), files.size.toString())
         adapter.updateSource(files)
     }
 
+    /**
+     * 错误发生回调接口
+     * @param   message 错误信息
+     */
     override fun onError(message: String) {
+        dismissMessageDialog()
+        dismissHoldingSnackBar()
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
         toolBar?.subtitle = message
     }
@@ -152,6 +192,11 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
                 inStream.close()
                 outStream.flush()
                 outStream.close()
+
+                val intent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                intent.data = FileProvider.getUriForFile(context, AppConfigs.ApplicationContext.packageName + ".provider", downloadFile)
+
+                AppConfigs.ApplicationContext.sendBroadcast(intent)
                 return true
             } else {
                 return false
@@ -183,6 +228,7 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
         override fun onPostExecute(result: Boolean) {
             progressDialog.dismiss()
             if (result) {
+
                 adapter.notifyItemChanged(selectedPosition)
                 Toast.makeText(context, R.string.text_cloudMusic_download_status_done, Toast.LENGTH_SHORT).show()
             } else {

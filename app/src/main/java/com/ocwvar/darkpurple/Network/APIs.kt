@@ -17,5 +17,7 @@ object APIs {
 
     val uploadFile: String = baseURL + "api/Files/Upload"
 
-    val uploadedFiles: String = baseURL + "api/Files/MyFiles";
+    val uploadedFiles: String = baseURL + "api/Files/MyFiles"
+
+    val removeFiles: String = baseURL + "api/Files/RemoveFile"
 }

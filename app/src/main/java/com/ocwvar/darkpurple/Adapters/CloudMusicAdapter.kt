@@ -25,7 +25,9 @@ class CloudMusicAdapter(val callback: OnListClickCallback) : RecyclerView.Adapte
 
     interface OnListClickCallback {
 
-        fun onListItemClick(musicObject: RemoteMusic, position: Int)
+        fun onDownloadRequest(musicObject: RemoteMusic, position: Int)
+
+        fun onRemoveRequest(musicObject: RemoteMusic, position: Int)
 
     }
 
@@ -33,6 +35,11 @@ class CloudMusicAdapter(val callback: OnListClickCallback) : RecyclerView.Adapte
         sourceList.clear()
         sourceList.addAll(source)
         notifyDataSetChanged()
+    }
+
+    fun removeSourece(position: Int) {
+        sourceList.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder? {
@@ -62,7 +69,11 @@ class CloudMusicAdapter(val callback: OnListClickCallback) : RecyclerView.Adapte
                 viewHolder.downloadButton.isEnabled = true
             }
 
-            Picasso.with(it.itemView.context).load(item.coverURL).into(viewHolder.cover)
+            Picasso.with(it.itemView.context)
+                    .load(item.coverURL)
+                    .placeholder(R.drawable.ic_music_big)
+                    .error(R.drawable.ic_music_big)
+                    .into(viewHolder.cover)
         }
     }
 
@@ -72,13 +83,22 @@ class CloudMusicAdapter(val callback: OnListClickCallback) : RecyclerView.Adapte
         val owner: TextView = itemView.findViewById(R.id.cloudMusic_owner) as TextView
         val cover: ImageView = itemView.findViewById(R.id.cloudMusic_cover) as ImageView
         val downloadButton: TextView = itemView.findViewById(R.id.cloudMusic_download) as TextView
+        val removeButton: TextView = itemView.findViewById(R.id.cloudMusic_remove) as TextView
 
         init {
             downloadButton.setOnClickListener(this@CloudMusicViewHolder)
+            removeButton.setOnClickListener(this@CloudMusicViewHolder)
         }
 
         override fun onClick(v: View) {
-            callback.onListItemClick(sourceList[adapterPosition], adapterPosition)
+            when (v.id) {
+                R.id.cloudMusic_download -> {
+                    callback.onDownloadRequest(sourceList[adapterPosition], adapterPosition)
+                }
+                R.id.cloudMusic_remove -> {
+                    callback.onRemoveRequest(sourceList[adapterPosition], adapterPosition)
+                }
+            }
         }
     }
 }

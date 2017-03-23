@@ -11,7 +11,7 @@ enum class NetworkRequestTypes {
     /**
      * 回调接口:OnLoginCallbacks
      *
-     * @param args HashMap请求头. 包含username,password
+     * @param Keys.argsPackage HashMap请求头. 包含username,password
      * @param Keys.isLoginAction Boolean . False则为注册请求
      */
     登录或注册,
@@ -31,6 +31,14 @@ enum class NetworkRequestTypes {
      *
      * @param   Keys.Token  String. 使用请求的token
      */
-    获取已上传文件
+    获取已上传文件,
+
+    /**
+     * 回调接口:OnRemoveCloudFileCallback
+     *
+     * @param   Keys.Token  String. 使用请求的token
+     * @param   Keys.FileName  String. 文件名称(带后缀名)
+     */
+    移除云端歌曲
 
 }

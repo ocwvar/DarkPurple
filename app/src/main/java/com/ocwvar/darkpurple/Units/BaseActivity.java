@@ -1,5 +1,7 @@
 package com.ocwvar.darkpurple.Units;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +13,8 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.ocwvar.darkpurple.AppConfigs;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Project BlurBGActivityTest
@@ -24,6 +28,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     private Toolbar toolbar;
     private Snackbar holdingSnackBar = null;
+
+    //消息对话框 - 对话框弱引用容器
+    private WeakReference<ProgressDialog> waitingProgress = new WeakReference<>(null);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,6 +96,37 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             toolbar.setBackgroundColor(AppConfigs.Color.ToolBar_color);
             toolbar.setTitleTextColor(AppConfigs.Color.ToolBar_title_color);
             toolbar.setSubtitleTextColor(AppConfigs.Color.ToolBar_subtitle_color);
+        }
+    }
+
+    /**
+     * 显示一个消息对话框
+     *
+     * @param message     显示的消息
+     * @param canBeCancel 是否可以取消
+     */
+    public void showMessageDialog(Context context, String message, boolean canBeCancel) {
+        if (TextUtils.isEmpty(message) || context == null) {
+            return;
+        }
+        ProgressDialog waitingProgress = this.waitingProgress.get();
+        if (waitingProgress == null) {
+            waitingProgress = new ProgressDialog(context);
+            waitingProgress.setCanceledOnTouchOutside(false);
+            this.waitingProgress = new WeakReference<>(waitingProgress);
+        }
+        waitingProgress.setMessage(message);
+        waitingProgress.setCancelable(canBeCancel);
+        waitingProgress.show();
+    }
+
+    /**
+     * 取消正在显示的消息对话框
+     */
+    public void dismissMessageDialog() {
+        final ProgressDialog progressDialog = waitingProgress.get();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
     }
 

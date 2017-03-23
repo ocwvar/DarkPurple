@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -441,7 +440,7 @@ public class MediaScanner {
 
         //默认扫描的位置  路径结尾不能带"/"
         private final String[] defaultPaths = new String[]{
-                Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/Restore"
+                AppConfigs.DownloadMusicFolder
         };
         
         private final FileFilter filter = new FileFilter() {
