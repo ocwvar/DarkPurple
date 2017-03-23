@@ -183,6 +183,8 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             getPlaylistTitle.setBackgroundColor(Color.argb(120, 0, 0, 0));
             getPlaylistTitle.setTextSize(15f);
             getPlaylistTitle.setTextColor(Color.WHITE);
+            getPlaylistTitle.setSingleLine(true);
+            getPlaylistTitle.setMaxLines(1);
 
             //创建对话框对象
             AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext(), R.style.FullScreen_TransparentBG);
