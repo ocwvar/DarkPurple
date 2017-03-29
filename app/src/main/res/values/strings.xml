@@ -40,6 +40,7 @@
     <string name="login_failed">登录失败,请检查帐号密码</string>
     <string name="login_input_empty">输入不能为空</string>
     <string name="login_input_too_short">输入长度不能小于 6</string>
+    <string name="login_input_only_word">用户名仅可为字母和数字</string>
     <string name="login_head_login">欢迎回来 </string>
     <string name="login_head_register">注册成啦 ! 您的用户名为:</string>
 

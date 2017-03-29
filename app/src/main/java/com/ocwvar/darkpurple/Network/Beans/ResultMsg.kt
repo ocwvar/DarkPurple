@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
  * File Location com.ocwvar.darkpurple.Network.Beans
  * This file use to :   返回数据基类
  */
-class ResultMsg<T>(isSuccess: Boolean, message: String, innerObject: T?) {
+class ResultMsg<T> {
 
     @SerializedName("isSuccess")
     var isSuccess: Boolean = false

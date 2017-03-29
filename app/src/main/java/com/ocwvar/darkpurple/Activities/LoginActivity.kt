@@ -128,6 +128,9 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
             //密码输入太短
             inputPassword.error = AppConfigs.ApplicationContext.getString(R.string.login_input_too_short)
             return null
+        } else if (username.contains(Regex("[^\\x00-\\xff]"))) {
+            inputUsername.error = AppConfigs.ApplicationContext.getString(R.string.login_input_only_word)
+            return null
         } else {
             val headers: HashMap<String, String> = HashMap()
             headers.put(Keys.Username, username)
