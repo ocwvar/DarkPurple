@@ -129,6 +129,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
             inputPassword.error = AppConfigs.ApplicationContext.getString(R.string.login_input_too_short)
             return null
         } else if (username.contains(Regex("[^\\x00-\\xff]"))) {
+            //如果包含任何双字节文字
             inputUsername.error = AppConfigs.ApplicationContext.getString(R.string.login_input_only_word)
             return null
         } else {
