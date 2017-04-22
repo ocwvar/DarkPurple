@@ -65,8 +65,6 @@ CoverBox 的作者为 Henry Hu
 
 ### 云储存功能<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_list.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_download.jpg)
 
 ### 均衡器设置<p></p>
 
