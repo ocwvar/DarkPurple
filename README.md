@@ -18,7 +18,7 @@
 - 可自定义并储存您喜欢的均衡器效果
 - 可在表格样式和列表样式之间进行切换
 - 可自定义APP的界面颜色配置
-- 可以进行云端音频的上传、下载、删除 WebAPI服务器项目地址：https://github.com/ocwvar/DarkPurpleService
+- **可以进行云端音频的上传、下载、删除 WebAPI服务器项目地址：https://github.com/ocwvar/DarkPurpleService**
 
 #####关于封面获取功能
 封面数据源自:coverbox.sinaapp.com , DarkPurple 的封面获取功能就是解析自此网站
@@ -65,6 +65,8 @@ CoverBox 的作者为 Henry Hu
 
 ### 云储存功能<p></p>
 
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_list.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_download.jpg)
 
 ### 均衡器设置<p></p>
 
