@@ -39,27 +39,28 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_4_list.jpg)
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_submenu.jpg)
 
-###播放界面
+###播放界面<p>
+
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing.jpg)
 
-###播放列表
+###播放列表<p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist.jpg)
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_detail.jpg)
 
-###均衡器设置
+###均衡器设置<p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/eq.jpg)
 
-###主题设置功能
+###主题设置功能<p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_theme.jpg)
 
-###频谱设置
+###频谱设置<p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_sp.jpg)
 
-###基础设置
+###基础设置<p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_normal.jpg)
 
