@@ -86,12 +86,15 @@ CoverBox 的作者为 Henry Hu
 
 ### 频谱动画 (风格1)<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp1.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp.gif)
 
 ### 频谱动画 (风格2)<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp2.gif)
 
+### 频谱动画 (风格3)<p></p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp3.gif)
 ---
 
 ### 通知栏显示效果 (机型: Nexus 6 Android 7.1.1)<p></p>
