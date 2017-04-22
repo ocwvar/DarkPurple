@@ -31,29 +31,37 @@ CoverBox 的作者为 Henry Hu
 ##### 预览效果 动画与截图 Preview (2016/10/28)
 ##### *如果无法进行流畅的预览 , 请直接访问图像资源地址进行下载*
 
-###音频目录选择
+###主界面  可以修改头部图像，可以修改为列表形式
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/music_scanning.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_1.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_2.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_3.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_4_list.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_submenu.jpg)
 
-###播放列表功能
+###播放界面
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing.jpg)
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/playlist.gif)
+###播放列表
 
-###封面获取功能
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/download_cover.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_detail.jpg)
 
-###播放界面与均衡器设置
+###均衡器设置
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/Playing.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/eq.jpg)
 
 ###主题设置功能
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/Theming.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_theme.jpg)
 
-###列表样式模式
+###频谱设置
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/Linear.gif)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/Linear_themed.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_sp.jpg)
+
+###基础设置
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_normal.jpg)
 
 ###频谱动画 (风格1)
 
@@ -65,17 +73,8 @@ CoverBox 的作者为 Henry Hu
 
 ---
 
-###通知栏显示效果 (机型: Nexus 6 Android 7.0)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/bignp.png)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/smallnp.png)
+###通知栏显示效果 (机型: Nexus 6 Android 7.1.1)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/notification_l.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/notification_s.jpg)
 
-###常规设置界面
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/Normal_setting_1.png)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/Normal_setting_2.png)
-
-###频谱动画设置界面
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/Spectrum_setting.png)
-
-###带导航栏播放界面 (机型: Nexus 6 Android 7.0)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/full.png)
 
