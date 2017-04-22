@@ -18,6 +18,7 @@
 - 可自定义并储存您喜欢的均衡器效果
 - 可在表格样式和列表样式之间进行切换
 - 可自定义APP的界面颜色配置
+- 可以进行云端音频的上传、下载、删除 （WebAPI服务器项目地址：https://github.com/ocwvar/DarkPurpleService）
 
 #####关于封面获取功能
 封面数据源自:coverbox.sinaapp.com , DarkPurple 的封面获取功能就是解析自此网站
@@ -28,8 +29,13 @@ CoverBox 的作者为 Henry Hu
 
 ---
 
-##### 预览效果 动画与截图 Preview (2016/10/28)
+##### 预览效果 动画与截图 Preview (2017/4/23 00:10)
+##### *截图无法展示所有应用的细节*
 ##### *如果无法进行流畅的预览 , 请直接访问图像资源地址进行下载*
+
+###登录界面
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/login.jpg)
 
 ###主界面  可以修改头部图像，可以修改为列表形式
 
@@ -43,10 +49,24 @@ CoverBox 的作者为 Henry Hu
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing.jpg)
 
+###扫描目录设置<p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/scan.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/scan_2.jpg)
+
+###封面下载<p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cover.jpg)
+
 ###播放列表<p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist.jpg)
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_detail.jpg)
+
+###云储存功能<p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_list.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_download.jpg)
 
 ###均衡器设置<p>
 
