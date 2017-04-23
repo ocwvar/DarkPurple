@@ -6,19 +6,23 @@ import android.graphics.Color
 import android.os.Build
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.AppCompatEditText
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.Toast
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.LoginUI.OnLoginCallbacks
+import com.ocwvar.darkpurple.Network.APIs
 import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Units.BaseActivity
+import org.jetbrains.annotations.TestOnly
 
 /**
  * Project DarkPurple
@@ -70,6 +74,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         loginRegist.setOnClickListener(this@LoginActivity)
         loginOffLine.setOnClickListener(this@LoginActivity)
         login.setOnClickListener(this@LoginActivity)
+        login.setOnLongClickListener(this@LoginActivity)
 
         rememberButton.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
@@ -101,7 +106,13 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         }
     }
 
-    override fun onViewLongClick(holdedView: View?): Boolean {
+    override fun onViewLongClick(holdedView: View): Boolean {
+        when (holdedView.id) {
+            R.id.login_start_login -> {
+                //重新设置BASE_URL
+                setBaseURL()
+            }
+        }
         return true
     }
 
@@ -227,6 +238,29 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         loginRegist.alpha = 1.0f
         loginOffLine.alpha = 1.0f
         rememberButton.alpha = 1.0f
+    }
+
+    /**
+     * 测试代码：设置BaseURL
+     * 显示一个对话框用于设置BaseURL
+     */
+    @TestOnly
+    private fun setBaseURL() {
+        val input: EditText = EditText(this@LoginActivity)
+        input.setText(APIs.baseURL)
+        val dialog: AlertDialog = AlertDialog.Builder(this@LoginActivity)
+                .setView(input)
+                .setPositiveButton(R.string.simple_done, { dialog, _ ->
+                    val string: String = input.text.toString()
+                    if (!TextUtils.isEmpty(string) && string.last() == '/') {
+                        APIs.baseURL = string
+                        dialog.dismiss()
+                    } else {
+                        input.error = "格式不正确，必须长度大于0，同时以\"/\"结尾"
+                    }
+                })
+                .create()
+        dialog.show()
     }
 
     /**

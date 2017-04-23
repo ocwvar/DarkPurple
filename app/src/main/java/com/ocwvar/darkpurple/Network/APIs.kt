@@ -9,7 +9,7 @@ package com.ocwvar.darkpurple.Network
  */
 object APIs {
 
-    val baseURL: String = "http://192.168.1.101:1008/"
+    var baseURL: String = "http://192.168.1.101:1008/"
 
     val loginURL: String = baseURL + "api/User/Login"
 
