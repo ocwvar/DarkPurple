@@ -256,7 +256,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
                         APIs.baseURL = string
                         dialog.dismiss()
                     } else {
-                        input.error = "格式不正确，必须长度大于0，同时以\"/\"结尾"
+                        Snackbar.make(findViewById(android.R.id.content), "格式不正确，必须长度大于0，同时以\"/\"结尾", Snackbar.LENGTH_LONG).show()
                     }
                 })
                 .create()
