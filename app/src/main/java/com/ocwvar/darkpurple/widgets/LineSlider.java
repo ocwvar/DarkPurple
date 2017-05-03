@@ -312,7 +312,7 @@ public class LineSlider extends View implements View.OnTouchListener {
      * @return 是否在拖动器内部
      */
     private boolean isInsideSlider(float touchX, float touchY) {
-        final int offset = 100;
+        final int offset = 500;
         return (touchX >= movingPoint.x - sliderRadio - offset && touchX <= movingPoint.x + sliderRadio + offset)
                 &&
                 (touchY >= movingPoint.y - sliderRadio - offset && touchY <= movingPoint.y + sliderRadio + offset)
