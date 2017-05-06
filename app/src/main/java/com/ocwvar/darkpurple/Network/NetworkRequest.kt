@@ -163,11 +163,12 @@ object NetworkRequest {
                 val netWorkResponse: NetWorkResponseCallback = retrofitClient.create(NetWorkResponseCallback::class.java)
 
                 //判断是否为登录请求,分别设置不同的URL
+                println(APIs.baseURL)
                 val apiUrl: String
                 if (requestObjects[Keys.isLoginAction] as Boolean) {
-                    apiUrl = APIs.loginURL
+                    apiUrl = APIs.loginURL()
                 } else {
-                    apiUrl = APIs.registerURL
+                    apiUrl = APIs.registerURL()
                 }
 
                 try {
@@ -262,7 +263,7 @@ object NetworkRequest {
                     headers.put(Keys.MusicTitle, musicTitle)
 
                     //执行网络命令
-                    val response: Response<ResultMsg<Any?>> = netWorkResponse.UploadFileCallback(APIs.uploadFile, headers, requestBodys).execute()
+                    val response: Response<ResultMsg<Any?>> = netWorkResponse.UploadFileCallback(APIs.uploadFile(), headers, requestBodys).execute()
                     //执行完后检查结果
                     if (response.isSuccessful) {
                         if (response.body().isSuccess) {
@@ -309,7 +310,7 @@ object NetworkRequest {
                 if (!TextUtils.isEmpty(token)) {
 
                     //开始请求
-                    val response: Response<ResultMsg<ArrayList<RemoteMusic>>> = retrofitClient.create(NetWorkResponseCallback::class.java).GetUploadedFiles(APIs.uploadedFiles, token).execute()
+                    val response: Response<ResultMsg<ArrayList<RemoteMusic>>> = retrofitClient.create(NetWorkResponseCallback::class.java).GetUploadedFiles(APIs.uploadedFiles(), token).execute()
                     //执行完后检查结果
                     if (response.isSuccessful) {
                         if (response.body().isSuccess && response.body().inObject != null) {
@@ -359,7 +360,7 @@ object NetworkRequest {
                 if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(fileName)) {
 
                     //开始请求
-                    val response: Response<ResultMsg<Any?>> = retrofitClient.create(NetWorkResponseCallback::class.java).RemoveUploadedFile(APIs.removeFiles, token, fileName).execute()
+                    val response: Response<ResultMsg<Any?>> = retrofitClient.create(NetWorkResponseCallback::class.java).RemoveUploadedFile(APIs.removeFiles(), token, fileName).execute()
                     //执行完后检查结果
                     if (response.isSuccessful) {
                         if (response.body().isSuccess) {

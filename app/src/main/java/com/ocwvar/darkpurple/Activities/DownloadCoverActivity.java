@@ -117,12 +117,12 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
 
         showInfoDialog();
 
-        if (TextUtils.isEmpty(songItem.getAlbum()) || songItem.getAlbum().equals("<unknown>") || songItem.getAlbum().equals("未知")) {
+        if (TextUtils.isEmpty(songItem.getTitle()) || songItem.getTitle().equals("<unknown>") || songItem.getTitle().equals("未知")) {
             //如果没有专辑名称,则使用音频文件名来搜索
             new LoadAllPreviewTask(songItem.getFileName()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         } else {
             //用专辑名来搜索数据
-            new LoadAllPreviewTask(songItem.getAlbum()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+            new LoadAllPreviewTask(songItem.getTitle()).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
 
         setResult(DATA_UNCHANGED, null);
