@@ -183,7 +183,11 @@ class MediaNotificationCompact {
         if (songItem == null) {
             return null;
         } else if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-            return BitmapFactory.decodeFile(songItem.getCustomCoverPath().subSequence(7, songItem.getCustomCoverPath().length()).toString(), options);
+            try {
+                return BitmapFactory.decodeFile(songItem.getCustomCoverPath().subSequence(7, songItem.getCustomCoverPath().length()).toString(), options);
+            } catch (Exception e) {
+                return null;
+            }
         } else if (songItem.getAlbumCoverUri() != null) {
             try {
                 return MediaStore.Images.Media.getBitmap(context.getContentResolver(), songItem.getAlbumCoverUri());
