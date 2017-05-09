@@ -16,11 +16,9 @@
 
         <!--SurfaceView 的灰色背景-->
         <View
-            android:id="@+id/surfaceViewBG"
+            android:id="@+id/darkBG"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/backgroundColor_Dark"
-            android:visibility="gone" />
+            android:layout_height="match_parent" />
 
         <!--状态栏间距容器-->
         <LinearLayout
@@ -100,21 +98,18 @@
         </LinearLayout>
 
         <!--主控制按钮-->
-        <ImageButton
+        <View
             android:id="@+id/shower_mainButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:background="@null"
-            android:padding="5dp"
-            android:src="@drawable/ic_action_play" />
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:padding="5dp" />
 
         <com.ocwvar.darkpurple.widgets.LineSlider
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_above="@id/shower_mainButton"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />
 
         <TextView

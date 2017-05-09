@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Units;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
@@ -32,6 +33,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         //当SurfaceView创建的时候，获取 SurfaceHolder 对象
         surfaceHolder = holder;
+        surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
     }
 
     @Override
@@ -39,6 +41,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
         //当SurfaceView更改的时候，获取 SurfaceHolder 对象  （比如：横竖屏切换时 和 第一次创建的时候）
         //同时更新当前SurfaceView的尺寸数据，并终止旧的动画线程，创建新的线程
         surfaceHolder = holder;
+        surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
         sfWidth = width;
         sfHeight = height;
     }
@@ -314,7 +317,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
 
                     //清屏
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                    canvas.drawColor(Color.rgb(36, 44, 54));
+                    canvas.drawColor(Color.TRANSPARENT);
 
                     //临时变量数据
                     float lastX = -1, lastY = -1;
@@ -410,7 +413,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                 if (fftDataSet != null && fftDataSet.length >= 100 && canvas != null) {
                     //清屏
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                    canvas.drawColor(Color.rgb(36, 44, 54));
+                    canvas.drawColor(Color.TRANSPARENT);
 
                     //临时变量数据
                     float lastX = -1, lastY = -1;

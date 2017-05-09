@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -34,8 +35,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -93,8 +92,6 @@ public class PlayingActivity
     TextView title, album, artist;
     //当前播放时间
     TextView currentTime, restTime;
-    //主按钮
-    ImageButton mainButton;
     //歌曲进度条
     LineSlider musicSeekBar;
     //频谱开关
@@ -106,8 +103,8 @@ public class PlayingActivity
     //用于显示频谱的SurfaceView
     SurfaceView surfaceView;
     SurfaceViewController surfaceViewController;
-    //模糊画面显示位置
-    View backGround, surfaceViewBG;
+    //动画Drawable显示View
+    View backGround, darkAnime, mainButton;
 
     //侧滑菜单适配器
     SlidingListAdapter slidingListAdapter;
@@ -122,6 +119,10 @@ public class PlayingActivity
     private WeakReference<Bitmap> blurBG = new WeakReference<>(null);
     //背景模糊图片处理线程弱引用
     private WeakReference<BlurCoverThread> blurCoverThreadObject = new WeakReference<>(null);
+    //动画Drawable弱引用
+    private WeakReference<TransitionDrawable> weakAnimDrawable = new WeakReference<>(null);
+    //主按钮动画Drawable弱引用
+    private WeakReference<TransitionDrawable> mainButtonAnimDrawable = new WeakReference<>(null);
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -148,6 +149,7 @@ public class PlayingActivity
         setContentView(R.layout.activity_playing);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
+        //初始化对象
         seekBarController = new SeekBarController();
         date = new Date();
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
@@ -156,8 +158,9 @@ public class PlayingActivity
         surfaceViewController = new SurfaceViewController();
         showerAdapter = new CoverShowerAdapter(playingList);
 
-        surfaceViewBG = findViewById(R.id.surfaceViewBG);
+        //加载View对象
         backGround = findViewById(R.id.contener);
+        darkAnime = findViewById(R.id.darkBG);
         spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
         equalizerPage = (ImageButton) findViewById(R.id.equalizer);
         surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
@@ -169,7 +172,7 @@ public class PlayingActivity
         artist = (TextView) findViewById(R.id.shower_artist);
         currentTime = (TextView) findViewById(R.id.shower_playing_position);
         restTime = (TextView) findViewById(R.id.shower_rest_position);
-        mainButton = (ImageButton) findViewById(R.id.shower_mainButton);
+        mainButton = findViewById(R.id.shower_mainButton);
         musicSeekBar = (LineSlider) findViewById(R.id.seekBar);
 
         //设置均衡器界面
@@ -177,6 +180,7 @@ public class PlayingActivity
 
         //设置频谱的控制器
         spectrumSwitch.setOnClickListener(this);
+        surfaceView.setZOrderOnTop(true);
         surfaceView.getHolder().addCallback(surfaceViewController);
 
         //Toolbar属性设置
@@ -197,8 +201,10 @@ public class PlayingActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(slidingListAdapter);
 
-        //设置背景的默认TAG
-        backGround.setTag(-1L);
+        //设置动画显示View的默认TAG
+        backGround.setTag(-1L);    //-1为无背景ID
+        darkAnime.setTag(false);    //false为不显示，true为已显示
+        mainButton.setTag(false);   //false为不显示，true为已显示
 
         //设置主按钮的按键回调
         mainButton.setOnClickListener(this);
@@ -215,7 +221,6 @@ public class PlayingActivity
             showerAdapter.notifyDataSetChanged();
 
             slidingListAdapter.setSongItems(this.playingList);
-
         }
 
         if (slidingListAdapter.getItemCount() == 0) {
@@ -243,6 +248,11 @@ public class PlayingActivity
         super.onResume();
         updateInformation(audioService == null);
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
+        if (audioService.getAudioStatus() == AudioCore.AudioStatus.Paused) {
+            //如果一切换回当前页面，音频状态是暂停，则显示黑色背景
+            switchDarkAnime(true);
+            switchMainButtonAnim(true);
+        }
     }
 
     /**
@@ -344,16 +354,6 @@ public class PlayingActivity
                 currentTime.setText(time2String(audioService.getPlayingPosition()));
                 //设置当前剩余时间
                 restTime.setText(time2String(audioService.getAudioLength() - audioService.getPlayingPosition()));
-                //设置主按钮的状态
-                switch (audioService.getAudioStatus()) {
-                    case Playing:
-                        mainButton.setImageResource(R.drawable.ic_action_pause);
-                        break;
-                    case Stopped:
-                    case Paused:
-                        mainButton.setImageResource(R.drawable.ic_action_play);
-                        break;
-                }
                 //执行封面模糊风格处理
                 if (!AppConfigs.isUseSimplePlayingScreen) {
                     generateBlurBackGround();
@@ -489,7 +489,6 @@ public class PlayingActivity
                         case Playing:
                             //当前是播放状态 , 则执行暂停操作
                             audioService.pause(true);
-                            mainButton.setImageResource(R.drawable.ic_action_play);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新
                                 if (surfaceViewController.isDrawing()) {
@@ -501,7 +500,6 @@ public class PlayingActivity
                         case Paused:
                             //当前是暂停/停止状态 , 则执行继续播放操作
                             audioService.resume();
-                            mainButton.setImageResource(R.drawable.ic_action_pause);
                             if (surfaceView.isShown()) {
                                 //如果当前正在显示频谱 , 则开始
                                 if (!surfaceViewController.isDrawing()) {
@@ -567,6 +565,60 @@ public class PlayingActivity
     }
 
     /**
+     * 切换暗色调背景动画
+     *
+     * @param show True：显示，False：隐藏
+     */
+    private void switchDarkAnime(boolean show) {
+        TransitionDrawable drawable = weakAnimDrawable.get();
+        if (drawable == null) {
+            final Drawable[] layers = new Drawable[]{
+                    new ColorDrawable(Color.TRANSPARENT),
+                    new ColorDrawable(Color.argb(100, 0, 0, 0))
+            };
+            drawable = new TransitionDrawable(layers);
+            drawable.setCrossFadeEnabled(true);
+            weakAnimDrawable = new WeakReference<>(drawable);
+        }
+        darkAnime.setBackground(drawable);
+        if (show && !((boolean) darkAnime.getTag())) {
+            //需要切换为显示状态，同时当前为隐藏状态
+            drawable.startTransition(300);
+            darkAnime.setTag(true);
+        } else if (!show && ((boolean) darkAnime.getTag())) {
+            drawable.reverseTransition(300);
+            darkAnime.setTag(false);
+        }
+    }
+
+    /**
+     * 切换主按钮动画
+     *
+     * @param show True：显示，False：隐藏
+     */
+    private void switchMainButtonAnim(boolean show) {
+        TransitionDrawable drawable = mainButtonAnimDrawable.get();
+        if (drawable == null) {
+            final Drawable[] layers = new Drawable[]{
+                    new ColorDrawable(Color.TRANSPARENT),
+                    new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.ic_main_big_play))
+            };
+            drawable = new TransitionDrawable(layers);
+            drawable.setCrossFadeEnabled(true);
+            mainButtonAnimDrawable = new WeakReference<>(drawable);
+        }
+        mainButton.setBackground(drawable);
+        if (show && !((boolean) mainButton.getTag())) {
+            //需要切换为显示状态，同时当前为隐藏状态
+            drawable.startTransition(500);
+            mainButton.setTag(true);
+        } else if (!show && ((boolean) mainButton.getTag())) {
+            drawable.reverseTransition(500);
+            mainButton.setTag(false);
+        }
+    }
+
+    /**
      * 侧滑菜单点击事件回调
      *
      * @param songItem 选择中的歌曲数据集合
@@ -593,66 +645,30 @@ public class PlayingActivity
         //判断用户是要显示还是隐藏动画
         if (spectrumSwitch.getTag().toString().equals("off")) {
             //显示频谱动画的时候 , 先执行背景淡入动画 , 动画结束后显示SurfaceView , 然后开始绘制频谱动画
-            final Animation anim = new AlphaAnimation(0f, 1f);
-            anim.setDuration(500);
-            anim.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
+            //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
+            spectrumSwitch.setEnabled(true);
+            spectrumSwitch.setAlpha(1f);
+            spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
 
-                }
+            //设置状态到TAG中
+            spectrumSwitch.setTag("on");
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
-                    spectrumSwitch.setEnabled(true);
-                    spectrumSwitch.setAlpha(1f);
-                    spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
-                    //设置状态到TAG中
-                    spectrumSwitch.setTag("on");
-
-                    surfaceView.setVisibility(View.VISIBLE);
-                    if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
-                        //如果当前是正在播放 , 才执行动画
-                        surfaceViewController.start();
-                    }
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            surfaceViewBG.startAnimation(anim);
-            surfaceViewBG.setVisibility(View.VISIBLE);
+            surfaceView.setVisibility(View.VISIBLE);
+            if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
+                //如果当前是正在播放 , 才执行动画
+                surfaceViewController.start();
+            }
         } else {
             //不显示频谱动画的时候 , 隐藏SurfaceView 和 SurfaceView BG , 然后停止动画刷新
-            final Animation anim = new AlphaAnimation(1f, 0f);
-            anim.setDuration(500);
-            anim.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
+            //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
+            spectrumSwitch.setEnabled(true);
+            spectrumSwitch.setAlpha(1f);
+            spectrumSwitch.setImageResource(R.drawable.ic_action_sp_off);
 
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
-                    spectrumSwitch.setEnabled(true);
-                    spectrumSwitch.setAlpha(1f);
-                    spectrumSwitch.setImageResource(R.drawable.ic_action_sp_off);
-                    //设置状态到TAG中
-                    spectrumSwitch.setTag("off");
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
+            //设置状态到TAG中
+            spectrumSwitch.setTag("off");
             surfaceViewController.stop();
             surfaceView.setVisibility(View.GONE);
-            surfaceViewBG.startAnimation(anim);
-            surfaceViewBG.setVisibility(View.GONE);
         }
 
     }
@@ -660,7 +676,7 @@ public class PlayingActivity
     /**
      * 处理封面图片背景效果线程
      */
-    class BlurCoverThread extends AsyncTask<Integer, Void, Bitmap> {
+    private class BlurCoverThread extends AsyncTask<Integer, Void, Bitmap> {
 
         private SongItem songItem;
 
@@ -758,7 +774,7 @@ public class PlayingActivity
     /**
      * 轮播切换等待线程
      */
-    class PendingStartThread extends AsyncTask<Integer, Void, Boolean> {
+    private class PendingStartThread extends AsyncTask<Integer, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Integer... integers) {
@@ -788,7 +804,7 @@ public class PlayingActivity
     /**
      * 更新当前播放长度
      */
-    class UpdatingTimerThread extends Thread {
+    private class UpdatingTimerThread extends Thread {
 
         private String TAG = "更新位置线程";
 
@@ -826,7 +842,7 @@ public class PlayingActivity
     /**
      * 滚动条的控制器
      */
-    class SeekBarController implements LineSlider.OnSlidingCallback {
+    private class SeekBarController implements LineSlider.OnSlidingCallback {
 
         /**
          * 用户当前是否正在滑动的标志，用于阻止歌曲进度在用户滑动进度条的时候更新，而导致
@@ -869,29 +885,32 @@ public class PlayingActivity
 
             switch (intent.getAction()) {
                 case AudioService.AUDIO_PLAY:
-                    mainButton.setImageResource(R.drawable.ic_action_pause);
+                    switchMainButtonAnim(false);
                     if (updatingTimerThread != null) {
                         updatingTimerThread.interrupt();
                         updatingTimerThread = null;
                     }
                     updatingTimerThread = new UpdatingTimerThread();
                     updatingTimerThread.start();
+                    switchDarkAnime(false);
                     break;
                 case AudioService.AUDIO_PAUSED:
-                    mainButton.setImageResource(R.drawable.ic_action_play);
+                    switchMainButtonAnim(true);
                     if (updatingTimerThread != null) {
                         updatingTimerThread.interrupt();
                         updatingTimerThread = null;
                     }
+                    switchDarkAnime(true);
                     break;
                 case AudioService.AUDIO_RESUMED:
-                    mainButton.setImageResource(R.drawable.ic_action_pause);
+                    switchMainButtonAnim(false);
                     if (updatingTimerThread != null) {
                         updatingTimerThread.interrupt();
                         updatingTimerThread = null;
                     }
                     updatingTimerThread = new UpdatingTimerThread();
                     updatingTimerThread.start();
+                    switchDarkAnime(false);
                     break;
                 case AudioService.AUDIO_SWITCH:
                     updateInformation(false);
