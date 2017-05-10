@@ -38,11 +38,12 @@ class CircleDrawable extends Drawable {
         this.picPaint = new Paint();
         this.circlePaint = new Paint();
         this.borderPaint = new Paint();
-        this.r = r;
+        this.r = r / 1.5f;
         this.x = x;
         this.y = y;
+        final float scaleRatio = 0.68f;  //数值越大，封面放大程度就越大
 
-        drawArea.set((int) (x - r), (int) (y - r), (int) (x + r), (int) (y + r));
+        drawArea.set((int) (x - r * scaleRatio), (int) (y - r * scaleRatio), (int) (x + r * scaleRatio), (int) (y + r * scaleRatio));
 
         picPaint.setAntiAlias(true);
         circlePaint.setAntiAlias(true);

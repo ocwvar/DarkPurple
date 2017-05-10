@@ -199,7 +199,8 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
             if (sfHeight > sfWidth) {
                 //竖屏状态屏幕尺寸
                 r = sfWidth / 3;
-                drawArea = new Rect(0, sfHeight / 4, sfWidth, sfHeight - sfWidth / 4);
+                //drawArea = new Rect(0, sfHeight / 4, sfWidth, sfHeight - sfWidth / 4);
+                drawArea = new Rect(0, 0, sfWidth, sfHeight);
             } else if (sfHeight < sfWidth) {
                 //横屏状态屏幕尺寸
                 r = sfHeight / 3;

@@ -3,8 +3,7 @@ package com.ocwvar.darkpurple.widgets;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.support.v7.widget.AppCompatImageView;
 
 /**
  * Project DarkPurple
@@ -14,7 +13,7 @@ import android.widget.ImageView;
  * 显示圆形图像的ImageView
  */
 
-public class CImageView extends ImageView {
+public class CImageView extends AppCompatImageView {
 
     private float r, x, y;
     private int borderColor;
@@ -34,12 +33,10 @@ public class CImageView extends ImageView {
         this.borderColor = borderColor;
     }
 
-    public CImageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public CImageView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension((int) (r * 2.0f), (int) (r * 2.0f));
     }
 
     @Override

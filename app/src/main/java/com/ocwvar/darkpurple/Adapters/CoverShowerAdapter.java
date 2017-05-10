@@ -60,11 +60,11 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final SongItem songItem = playingList.get(position);
         //封面绘制中心点  X轴
-        final float centerX = container.getMeasuredWidth() / 2;
+        final float centerX = container.getMeasuredWidth() / 2.0f;
         //封面绘制中心点  Y轴
-        final float centerY = container.getMeasuredHeight() / 2;
+        final float centerY = centerX;
         //封面绘制的半径长度
-        final int coverR = (int) (container.getMeasuredWidth() / 3.0f);
+        final int coverR = (int) (centerX);
 
         final CImageView imageView;
 
@@ -78,7 +78,6 @@ public class CoverShowerAdapter extends PagerAdapter {
                     .load(songItem.getCustomCoverPath())
                     .error(R.drawable.ic_music_big)
                     .placeholder(R.drawable.ic_music_big)
-                    .resize(coverR, coverR)
                     .into(imageView);
 
         } else if (songItem.isHaveCover()) {
@@ -88,7 +87,6 @@ public class CoverShowerAdapter extends PagerAdapter {
                     .load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath()))
                     .error(R.drawable.ic_music_big)
                     .placeholder(R.drawable.ic_music_big)
-                    .resize(coverR, coverR)
                     .into(imageView);
         } else {
             //默认图像
