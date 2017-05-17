@@ -9,8 +9,8 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 
 import com.ocwvar.darkpurple.AppConfigs;
-import com.ocwvar.darkpurple.Services.AudioCore;
 import com.ocwvar.darkpurple.Services.AudioService;
+import com.ocwvar.darkpurple.Services.AudioStatus;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 
 import java.util.ArrayList;
@@ -143,7 +143,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
         public void run() {
 
             //当音频处于已经加载的状态才进行显示
-            if (service.getAudioStatus() != AudioCore.AudioStatus.Empty) {
+            if (service.getAudioStatus() != AudioStatus.Empty) {
 
                 //先自动计算好各类必须的数据
                 computeResourceSize();

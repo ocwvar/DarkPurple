@@ -103,6 +103,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         Logger.warnning(TAG, "onCreate");
 
         //创建对象
+        //core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.BASS_Library);
         core = new AudioCore(getApplicationContext());
         notificationControl = new NotificationControl();
         headsetDisconnectedReceiver = new HeadsetDisconnectedReceiver();
@@ -146,7 +147,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     public void onDestroy() {
         super.onDestroy();
         Logger.warnning(TAG, "onDestroy");
-        if (core.getCurrectStatus() != AudioCore.AudioStatus.Empty) {
+        if (core.getCurrectStatus() != AudioStatus.Empty) {
             core.releaseAudio();
         }
         hideNotification();
@@ -475,7 +476,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     /**
      * @return 当前音频播放状态
      */
-    public AudioCore.AudioStatus getAudioStatus() {
+    public AudioStatus getAudioStatus() {
         return core.getCurrectStatus();
     }
 
@@ -589,13 +590,13 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                 //当前是正在运行的时候才能通过媒体按键来操作音频
                 switch (intent.getAction()) {
                     case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
-                        if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioCore.AudioStatus.Playing) {
+                        if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioStatus.Playing) {
                             //蓝牙耳机断开连接 同时当前音乐正在播放
                             pause(true);
                         }
                         break;
                     case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
-                        if (core.getCurrectStatus() == AudioCore.AudioStatus.Playing) {
+                        if (core.getCurrectStatus() == AudioStatus.Playing) {
                             //有线耳机断开连接 同时当前音乐正在播放
                             pause(true);
                         }
@@ -629,7 +630,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                 final boolean isPlugIn = intent.getExtras().getInt("state") == 1;
                 if (isPlugIn) {
 
-                    if (getAudioStatus() == AudioCore.AudioStatus.Paused) {
+                    if (getAudioStatus() == AudioStatus.Paused) {
                         //如果插入耳机的时候 , 当前有暂停的音频 , 则会继续播放 , 同时显示状态栏数据
                         resume();
                         updateNotification();
@@ -666,9 +667,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
             switch (mediaButtonPressCount) {
                 case 1:
                     //点击一次暂停播放
-                    if (getAudioStatus() == AudioCore.AudioStatus.Paused || getAudioStatus() == AudioCore.AudioStatus.Stopped) {
+                    if (getAudioStatus() == AudioStatus.Paused) {
                         sendBroadcast(new Intent(NOTIFICATION_PLAY));
-                    } else if (getAudioStatus() == AudioCore.AudioStatus.Playing) {
+                    } else if (getAudioStatus() == AudioStatus.Playing) {
                         sendBroadcast(new Intent(NOTIFICATION_PAUSE));
                     }
                     break;

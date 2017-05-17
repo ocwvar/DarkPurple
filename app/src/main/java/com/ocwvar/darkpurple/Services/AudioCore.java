@@ -508,12 +508,4 @@ public class AudioCore {
         }
     }
 
-    public enum AudioStatus {
-        Playing,
-        Paused,
-        Stopped,
-        Empty,
-        Error
-    }
-
 }

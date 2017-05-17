@@ -1,0 +1,225 @@
+package com.ocwvar.darkpurple.Services.Core
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.support.v4.content.FileProvider
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ExtractorsFactory
+import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+import com.ocwvar.darkpurple.Bean.SongItem
+import com.ocwvar.darkpurple.Services.AudioService
+import com.ocwvar.darkpurple.Services.AudioStatus
+import com.ocwvar.darkpurple.Units.Logger
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+
+/**
+ * Project DarkPurple
+ * Created by OCWVAR
+ * On 2017/05/12 12:56 PM
+ * File Location com.ocwvar.darkpurple.Services.Core
+ * This file use to :   Google ExoPlayer2 播放方案
+ */
+class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
+
+    private val TAG: String = "EXO_CORE"
+    private val exoPlayer: ExoPlayer
+    private val exoPlayerCallback: ExoPlayerCallback
+
+    init {
+        exoPlayerCallback = ExoPlayerCallback()
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext, DefaultTrackSelector())
+        exoPlayer.addListener(exoPlayerCallback)
+    }
+
+    /**
+     * 播放音频
+     * @param songItem 音频信息对象
+     * @param onlyInit 是否仅加载音频数据，而不进行播放
+     * @return  执行结果
+     */
+    override fun play(songItem: SongItem, onlyInit: Boolean): Boolean {
+        //从歌曲路径获取Uri路径
+        val songUri: Uri? = FILE2URI(songItem.path)
+        songUri?.let {
+            //成功获取到路径，则开始加载音频数据
+            val factory: DataSource.Factory = DefaultDataSourceFactory(applicationContext, Util.getUserAgent(applicationContext, TAG))
+            val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory()
+            val mediaSource: MediaSource = ExtractorMediaSource(it, factory, extractorsFactory, null, exoPlayerCallback)
+            //开始准备音频数据
+            exoPlayer.prepare(mediaSource, true, true)
+            if (onlyInit) {
+                //仅加载不播放状态，通知刷新UI
+                applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_UPDATE))
+            }
+            exoPlayer.playWhenReady = !onlyInit
+            return true
+        }
+        //无法获取到Uri路径
+        return false
+    }
+
+    /**
+     * 续播音频
+     * @return 执行结果
+     */
+    override fun resume(): Boolean {
+        if (exoPlayer.playbackState == ExoPlayer.STATE_READY) {
+            //如果当前core已经装载有音频数据，则开始播放
+            exoPlayer.playWhenReady = true
+            applicationContext.sendBroadcast(Intent(AudioService.AUDIO_RESUMED))
+            return true
+        } else {
+            return false
+        }
+    }
+
+    /**
+     * 暂停音频
+     * @return 执行结果
+     */
+    override fun pause(): Boolean {
+        if (exoPlayer.playbackState == ExoPlayer.STATE_READY) {
+            //如果当前core已经装载有音频数据，则可以执行暂停操作
+            exoPlayer.playWhenReady = false
+            applicationContext.sendBroadcast(Intent(AudioService.AUDIO_PAUSED))
+            return true
+        } else {
+            return false
+        }
+    }
+
+    /**
+     * 释放音频资源
+     * @return 执行结果
+     */
+    override fun release(): Boolean {
+        exoPlayer.stop()
+        //执行完成后如果状态为静止，则表明释放成功
+        return exoPlayer.playbackState == ExoPlayer.STATE_IDLE
+    }
+
+    /**
+     * 获取音频当前播放的位置，即已播放的长度
+     * @return 当前位置，异常返回 0
+     */
+    override fun playingPosition(): Double {
+        if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
+            //当前音频资源不为空，则可以返回数据
+            return exoPlayer.currentPosition.toDouble()
+        } else {
+            return 0.0
+        }
+    }
+
+    /**
+     * 跳转至指定音频长度位置
+     * @return 执行结果
+     */
+    override fun seekPosition(position: Double): Boolean {
+        if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
+            //当前音频资源不为空，可以进行播放位置调整
+            exoPlayer.seekTo(position.toLong())
+            return true
+        } else {
+            return false
+        }
+    }
+
+    /**
+     * 获取音频长度
+     * @return 音频长度，异常返回 0
+     */
+    override fun getAudioLength(): Double {
+        if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
+            //当前音频资源不为空，可以获取音频长度
+            return exoPlayer.duration.toDouble()
+        } else {
+            return 0.0
+        }
+    }
+
+    /**
+     * 获取当前音乐播放状态
+     * @return  当前状态
+     */
+    override fun getAudioStatus(): AudioStatus {
+        if (exoPlayer.playbackState == ExoPlayer.STATE_READY && exoPlayer.playWhenReady) {
+            return AudioStatus.Playing
+        } else if (exoPlayer.playbackState == ExoPlayer.STATE_READY && !exoPlayer.playWhenReady) {
+            return AudioStatus.Paused
+        } else if (exoPlayer.playbackState == ExoPlayer.STATE_IDLE) {
+            return AudioStatus.Empty
+        } else {
+            return AudioStatus.Error
+        }
+    }
+
+    /**
+     * 将文件路径转换为Uri
+     * @return  文件的URI路径，如果文件无法找到或解析失败，返回NULL结果
+     */
+    private fun FILE2URI(filePath: String): Uri? {
+        try {
+            val fileObject = File(filePath)
+            if (fileObject.exists() && fileObject.canRead()) {
+                return FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".provider", fileObject)
+            }
+            throw FileNotFoundException("没有找到文件：$filePath")
+        } catch(e: Exception) {
+            Logger.error(TAG, "解析文件Uri路径失败！  $e")
+            return null
+        }
+    }
+
+    /**
+     * 播放器状态回调
+     */
+    private inner class ExoPlayerCallback : ExoPlayer.EventListener, ExtractorMediaSource.EventListener {
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+        }
+
+        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+        }
+
+        override fun onPlayerError(error: ExoPlaybackException?) {
+            //音频播放失败，则直接播放下一首
+            Logger.warnning(TAG, "音频播放失败！ 原因：$error")
+            applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
+        }
+
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            if (playWhenReady && playbackState == ExoPlayer.STATE_ENDED) {
+                //播放完成后，需要播放下一首歌曲
+                Logger.warnning(TAG, "播放结束!")
+                applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
+            }
+        }
+
+        override fun onLoadingChanged(isLoading: Boolean) {
+        }
+
+        override fun onPositionDiscontinuity() {
+        }
+
+        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+        }
+
+        override fun onLoadError(error: IOException?) {
+            //音频加载失败，则直接播放下一首
+            Logger.warnning(TAG, "音频加载失败！ 原因：$error")
+        }
+    }
+
+}

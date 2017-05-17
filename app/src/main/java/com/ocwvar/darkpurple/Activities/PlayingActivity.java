@@ -43,8 +43,8 @@ import com.ocwvar.darkpurple.Adapters.SlidingListAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Services.AudioCore;
 import com.ocwvar.darkpurple.Services.AudioService;
+import com.ocwvar.darkpurple.Services.AudioStatus;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
@@ -252,7 +252,7 @@ public class PlayingActivity
         super.onResume();
         updateInformation(audioService == null);
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
-        if (audioService.getAudioStatus() == AudioCore.AudioStatus.Paused) {
+        if (audioService.getAudioStatus() == AudioStatus.Paused) {
             //如果一切换回当前页面，音频状态是暂停，则显示黑色背景
             switchDarkAnime(true);
             switchMainButtonAnim(true);
@@ -290,15 +290,29 @@ public class PlayingActivity
         Logger.warnning("播放界面", "开始释放内存");
         blurBG.clear();
         blurCoverThreadObject.clear();
+        weakAnimDrawable.clear();
+        mainButtonAnimDrawable.clear();
+
+        coverShower.addOnPageChangeListener(null);
+        slidingListAdapter.setCallback(null);
+        recyclerView.setAdapter(null);
+        coverShower.setAdapter(null);
+
+        if (pendingStartThread != null && pendingStartThread.getStatus() != AsyncTask.Status.FINISHED) {
+            pendingStartThread.cancel(true);
+        }
+        if (updatingTimerThread != null) {
+            updatingTimerThread.interrupt();
+        }
+
+        musicSeekBar = null;
+        drawerLayout = null;
+        seekBarController = null;
         dateFormat = null;
         date = null;
-        recyclerView.setAdapter(null);
         recyclerView = null;
-        coverShower.setAdapter(null);
-        coverShower.addOnPageChangeListener(null);
         coverShower = null;
         showerAdapter = null;
-        slidingListAdapter.setCallback(null);
         slidingListAdapter = null;
         updatingTimerThread = null;
         spectrumSwitch = null;
@@ -308,6 +322,7 @@ public class PlayingActivity
         artist = null;
         currentTime = null;
         restTime = null;
+        System.gc();
     }
 
     /**
@@ -363,7 +378,7 @@ public class PlayingActivity
                     generateBlurBackGround();
                 }
                 //如果歌曲播放了 , 就开始更新界面, 更新之前中断旧的更新线程
-                if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
+                if (audioService.getAudioStatus() == AudioStatus.Playing) {
                     if (updatingTimerThread != null) {
                         updatingTimerThread.interrupt();
                         updatingTimerThread = null;
@@ -473,6 +488,12 @@ public class PlayingActivity
         }
     }
 
+    /**
+     * 界面点击事件处理
+     * 1.切换频谱动画
+     * 2.打开EQ界面
+     * 3.切换暂停播放主按钮
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -500,7 +521,6 @@ public class PlayingActivity
                                 }
                             }
                             break;
-                        case Stopped:
                         case Paused:
                             //当前是暂停/停止状态 , 则执行继续播放操作
                             audioService.resume();
@@ -658,7 +678,7 @@ public class PlayingActivity
             spectrumSwitch.setTag("on");
 
             coverSpectrum.setVisibility(View.VISIBLE);
-            if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
+            if (audioService.getAudioStatus() == AudioStatus.Playing) {
                 //如果当前是正在播放 , 才执行动画
                 surfaceViewController.start();
             }
@@ -794,7 +814,7 @@ public class PlayingActivity
             super.onPostExecute(aBoolean);
 
             //如果当前是正在播放状态 , 则直接播放
-            if (audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
+            if (audioService.getAudioStatus() == AudioStatus.Playing) {
                 audioService.play(playingList, coverShower.getCurrentItem());
             } else {
                 //否则仅仅加载音频数据 , 同时通知状态栏数据更新
@@ -815,8 +835,8 @@ public class PlayingActivity
         @Override
         public void run() {
             Logger.warnning(TAG, "开始更新");
-            while (!isInterrupted() && audioService != null && audioService.getAudioStatus() == AudioCore.AudioStatus.Playing) {
-
+            while (!isInterrupted() && seekBarController != null && audioService != null && musicSeekBar != null && audioService.getAudioStatus() == AudioStatus.Playing) {
+                Logger.warnning(TAG, "已更新进度条");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

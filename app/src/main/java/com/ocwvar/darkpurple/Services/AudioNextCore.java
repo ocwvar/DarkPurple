@@ -34,7 +34,6 @@ public class AudioNextCore {
      * 当前播放的音频位于列表内的位置
      */
     private int playingIndex = -1;
-
     /**
      * 当前使用的音频播放方案类型
      */
@@ -47,6 +46,15 @@ public class AudioNextCore {
     AudioNextCore(@NonNull Context applicationContext, @NonNull CoreType defaultCoreType) {
         this.applicationContext = applicationContext;
         this.coreType = defaultCoreType;
+        switch (this.coreType) {
+            case BASS_Library:
+                basscore = new BASSCORE();
+                break;
+            case EXO:
+                break;
+            case COMPAT:
+                break;
+        }
     }
 
     /**
@@ -379,28 +387,6 @@ public class AudioNextCore {
             default:
                 return false;
         }
-    }
-
-    /**
-     * 音频播放状态枚举类型
-     */
-    public enum AudioStatus {
-        /**
-         * 正在播放
-         */
-        Playing,
-        /**
-         * 暂停
-         */
-        Paused,
-        /**
-         * 未加载音频数据
-         */
-        Empty,
-        /**
-         * 错误或未知状态
-         */
-        Error
     }
 
     /**
@@ -798,6 +784,53 @@ public class AudioNextCore {
                 byteBuffer.asFloatBuffer().get(spectrum);
                 return spectrum;
             }
+        }
+
+    }
+
+    /**
+     * 基于Google ExoPlayer的音频播放方案
+     */
+    private final class EXOCORE implements CoreBaseFunctions {
+
+        @Override
+        public boolean play(SongItem songItem, boolean onlyInit) {
+            return false;
+        }
+
+        @Override
+        public boolean resume() {
+            return false;
+        }
+
+        @Override
+        public boolean pause() {
+            return false;
+        }
+
+        @Override
+        public boolean release() {
+            return false;
+        }
+
+        @Override
+        public double playingPosition() {
+            return 0;
+        }
+
+        @Override
+        public boolean seekPosition(double position) {
+            return false;
+        }
+
+        @Override
+        public double getAudioLength() {
+            return 0;
+        }
+
+        @Override
+        public AudioStatus getAudioStatus() {
+            return null;
         }
 
     }

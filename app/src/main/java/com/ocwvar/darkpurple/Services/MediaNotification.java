@@ -55,7 +55,7 @@ class MediaNotification {
      * @param audioStatus 当前的播放状态
      * @return 更新后的Notification
      */
-    Notification updateNotification(@Nullable SongItem songItem, @NonNull AudioCore.AudioStatus audioStatus) {
+    Notification updateNotification(@Nullable SongItem songItem, @NonNull AudioStatus audioStatus) {
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         final NotificationCompat.MediaStyle mediaStyle = new NotificationCompat.MediaStyle(builder);

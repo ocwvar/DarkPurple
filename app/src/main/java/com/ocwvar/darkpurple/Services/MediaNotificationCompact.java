@@ -25,6 +25,7 @@ import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 /**
  * Project DarkPurple
@@ -43,9 +44,9 @@ class MediaNotificationCompact {
     private final AudioManager audioManager;
 
     MediaNotificationCompact(@NonNull Context context) {
+        this.context = context;
         this.notificationReceiver = new MediaNotificationReceiver();
         this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        this.context = context;
         this.bigRemoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_mediastyle_big);
         this.normalRemoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_mediastyle_normal);
         setup();
@@ -58,7 +59,7 @@ class MediaNotificationCompact {
      * @param audioStatus 当前的播放状态
      * @return 更新后的Notification
      */
-    Notification updateNotification(@Nullable SongItem songItem, @NonNull AudioCore.AudioStatus audioStatus) {
+    Notification updateNotification(@Nullable SongItem songItem, @NonNull AudioStatus audioStatus) {
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -98,14 +99,13 @@ class MediaNotificationCompact {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         builder.setContentIntent(pendingIntent);
 
-        Bitmap cover = loadCoverFromMainThread(songItem);
-        if (cover == null) {
-            cover = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_music_big);
+        Bitmap bitmap = loadCoverFromMainThread(songItem);
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_music_big);
         }
-
+        final WeakReference<Bitmap> weakCover = new WeakReference<>(bitmap);
         switch (audioStatus) {
             case Paused:
-            case Stopped:
                 bigRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
                 normalRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
                 break;
@@ -116,8 +116,8 @@ class MediaNotificationCompact {
         }
 
         //更新封面
-        bigRemoteViews.setImageViewBitmap(R.id.notification_cover, cover);
-        normalRemoteViews.setImageViewBitmap(R.id.notification_cover, cover);
+        bigRemoteViews.setImageViewBitmap(R.id.notification_cover, weakCover.get());
+        normalRemoteViews.setImageViewBitmap(R.id.notification_cover, weakCover.get());
 
         if (songItem != null) {
             //更新标题
@@ -250,10 +250,9 @@ class MediaNotificationCompact {
             switch (action) {
                 case BUTTON_MAIN_N:
                 case BUTTON_MAIN:
-                    final AudioCore.AudioStatus audioStatus = ServiceHolder.getInstance().getService().getAudioStatus();
+                    final AudioStatus audioStatus = ServiceHolder.getInstance().getService().getAudioStatus();
                     switch (audioStatus) {
                         case Paused:
-                        case Stopped:
                             toService.setAction(AudioService.NOTIFICATION_PLAY);
                             break;
                         case Playing:
