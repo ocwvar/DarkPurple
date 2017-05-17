@@ -1,6 +1,7 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/logo-nv.png) 
 
-###### (Android 4.2.2 ~ Android 7.0) 暂不支持Android 7.0分屏功能
+#### (Android 4.2.2 ~ Android 7.1) 不支持Android 7+分屏功能
+#### 目前正在添加 Google Exo Player2 播放方案，以及MediaPlayer(Compat)播放方案
 
 ##### 功能介绍  Features introduce
 
