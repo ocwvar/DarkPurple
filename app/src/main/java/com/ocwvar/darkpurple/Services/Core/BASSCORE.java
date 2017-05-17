@@ -11,6 +11,9 @@ import com.ocwvar.darkpurple.Units.EqualizerUnits;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.un4seen.bass.BASS;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.nio.ByteBuffer;
 
@@ -22,7 +25,7 @@ import java.nio.ByteBuffer;
  * This file use to :   BASS Library 播放方案
  */
 
-final class BASSCORE implements CoreBaseFunctions {
+final class BASSCORE implements CoreAdvFunctions {
 
     final String TAG = "BASS_CORE";
     final Context applicationContext;
@@ -41,13 +44,83 @@ final class BASSCORE implements CoreBaseFunctions {
     private int[] eqParameters = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     public BASSCORE(Context applicationContext) {
-        //获取最后一次保存的EQ设置数据
         this.applicationContext = applicationContext;
+
+        //获取最后一次保存的EQ设置数据
         this.eqParameters = EqualizerUnits.getInstance().loadLastTimeEqualizer();
+        //CORE的初始化操作
         BASS.BASS_Init(-1, 44100, BASS.BASS_DEVICE_LATENCY);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_DEV_BUFFER, 0);
     }
 
+    /**
+     * 加载歌曲数据
+     *
+     * @param path 歌曲文件路径
+     * @return 返回歌曲的Channel数据 , 否则返回 0 表示失败
+     */
+    private int initAudio(String path) {
+        if (!TextUtils.isEmpty(path)) {
+            //路径不为空
+            File audioFile = new File(path);
+            if (audioFile.exists() && audioFile.length() > 0) {
+                audioFile = null;
+                return BASS.BASS_StreamCreateFile(path, 0, 0, 0);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 注册音频播放结束回调
+     *
+     * @param playingChannel 需要注册的音频数据
+     */
+    private void initCallback(int playingChannel) {
+        BASS.BASS_ChannelSetSync(playingChannel, BASS.BASS_SYNC_END, 0, new BASS.SYNCPROC() {
+            @Override
+            public void SYNCPROC(int handle, int channel, int data, Object user) {
+                if (applicationContext != null) {
+                    Logger.warnning(TAG, "播放结束!");
+                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_NEXT));
+                }
+            }
+        }, 0);
+        BASS.BASS_ChannelSetSync(playingChannel, BASS.BASS_SYNC_POS, 0, new BASS.SYNCPROC() {
+            @Override
+            public void SYNCPROC(int handle, int channel, int data, Object user) {
+
+            }
+        }, 0);
+    }
+
+    /**
+     * 释放歌曲占用的资源
+     *
+     * @return 执行结果
+     */
+    private boolean releaseAudio() {
+        if (playingChannel != 0) {
+            //如果频道有数据
+            if (BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
+                //如果当前正在播放或者是暂停 , 则全部停止
+                BASS.BASS_ChannelStop(playingChannel);
+            }
+            final boolean result = BASS.BASS_StreamFree(playingChannel);
+            playingChannel = 0;
+            return result;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 播放音频
+     *
+     * @param songItem 音频信息对象
+     * @param onlyInit 是否仅加载音频数据，而不进行播放
+     * @return 执行结果
+     */
     @Override
     public boolean play(SongItem songItem, boolean onlyInit) {
         if (playingChannel != 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
@@ -122,46 +195,10 @@ final class BASSCORE implements CoreBaseFunctions {
     }
 
     /**
-     * 加载歌曲数据
+     * 续播音频
      *
-     * @param path 歌曲文件路径
-     * @return 返回歌曲的Channel数据 , 否则返回 0 表示失败
+     * @return 执行结果
      */
-    private int initAudio(String path) {
-        if (!TextUtils.isEmpty(path)) {
-            //路径不为空
-            File audioFile = new File(path);
-            if (audioFile.exists() && audioFile.length() > 0) {
-                audioFile = null;
-                return BASS.BASS_StreamCreateFile(path, 0, 0, 0);
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * 注册音频播放结束回调
-     *
-     * @param playingChannel 需要注册的音频数据
-     */
-    private void initCallback(int playingChannel) {
-        BASS.BASS_ChannelSetSync(playingChannel, BASS.BASS_SYNC_END, 0, new BASS.SYNCPROC() {
-            @Override
-            public void SYNCPROC(int handle, int channel, int data, Object user) {
-                if (applicationContext != null) {
-                    Logger.warnning(TAG, "播放结束!");
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_NEXT));
-                }
-            }
-        }, 0);
-        BASS.BASS_ChannelSetSync(playingChannel, BASS.BASS_SYNC_POS, 0, new BASS.SYNCPROC() {
-            @Override
-            public void SYNCPROC(int handle, int channel, int data, Object user) {
-
-            }
-        }, 0);
-    }
-
     @Override
     public boolean resume() {
         if (playingChannel != 0 && BASS.BASS_ChannelIsActive(playingChannel) == BASS.BASS_ACTIVE_PAUSED) {
@@ -183,6 +220,10 @@ final class BASSCORE implements CoreBaseFunctions {
         }
     }
 
+    /**
+     * 暂停音频
+     * @return 执行结果
+     */
     @Override
     public boolean pause() {
         if (this.playingChannel != 0 && BASS.BASS_ChannelIsActive(this.playingChannel) == BASS.BASS_ACTIVE_PLAYING) {
@@ -197,6 +238,10 @@ final class BASSCORE implements CoreBaseFunctions {
         }
     }
 
+    /**
+     * 释放音频资源
+     * @return 执行结果
+     */
     @Override
     public boolean release() {
         if (this.playingChannel != 0) {
@@ -213,6 +258,10 @@ final class BASSCORE implements CoreBaseFunctions {
         }
     }
 
+    /**
+     * 获取音频当前播放的位置，即已播放的长度
+     * @return 当前位置，异常返回 0
+     */
     @Override
     public double playingPosition() {
         if (playingChannel != 0) {
@@ -222,6 +271,10 @@ final class BASSCORE implements CoreBaseFunctions {
         }
     }
 
+    /**
+     * 跳转至指定音频长度位置
+     * @return 执行结果
+     */
     @Override
     public boolean seekPosition(double position) {
         if (playingChannel != 0) {
@@ -231,6 +284,10 @@ final class BASSCORE implements CoreBaseFunctions {
         }
     }
 
+    /**
+     * 获取音频长度
+     * @return 音频长度，异常返回 0
+     */
     @Override
     public double getAudioLength() {
         if (playingChannel != 0) {
@@ -240,6 +297,10 @@ final class BASSCORE implements CoreBaseFunctions {
         }
     }
 
+    /**
+     * 获取当前音乐播放状态
+     * @return 当前状态
+     */
     @Override
     public AudioStatus getAudioStatus() {
         if (playingChannel != 0) {
@@ -258,42 +319,23 @@ final class BASSCORE implements CoreBaseFunctions {
     }
 
     /**
-     * 释放歌曲占用的资源
-     *
-     * @return 执行结果
+     * 获取均衡器各个频段参数
+     * @return  均衡器参数
      */
-    boolean releaseAudio() {
-        if (playingChannel != 0) {
-            //如果频道有数据
-            if (BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_STOPPED) {
-                //如果当前正在播放或者是暂停 , 则全部停止
-                BASS.BASS_ChannelStop(playingChannel);
-            }
-            final boolean result = BASS.BASS_StreamFree(playingChannel);
-            playingChannel = 0;
-            return result;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * 获取均衡器频段设置
-     *
-     * @return 频段参数
-     */
-    int[] getEqParameters() {
+    @NotNull
+    @Override
+    public int[] getEQParameters() {
         return this.eqParameters;
     }
 
     /**
      * 更改均衡器频段参数
-     *
      * @param eqParameter 均衡器参数 -10 ~ 10
      * @param eqIndex     调节位置
      * @return 执行结果
      */
-    boolean updateEqParameter(int eqParameter, int eqIndex) {
+    @Override
+    public boolean setEQParameters(int eqParameter, int eqIndex) {
         this.eqParameters[eqIndex] = eqParameter;
         BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
         BASS.BASS_FXGetParameters(this.eqIndex[eqIndex], eq);
@@ -305,9 +347,10 @@ final class BASSCORE implements CoreBaseFunctions {
     }
 
     /**
-     * 重置均衡器设置
+     * 重置均衡器
      */
-    void resetEqualizer() {
+    @Override
+    public void resetEQ() {
         this.eqParameters = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i < 10; i++) {
             BASS.BASS_DX8_PARAMEQ eq = new BASS.BASS_DX8_PARAMEQ();
@@ -318,11 +361,12 @@ final class BASSCORE implements CoreBaseFunctions {
     }
 
     /**
-     * 得到当前的频谱
-     *
-     * @return 频谱数据数组
+     * 获取当前频谱数据
+     * @return 频谱数据，异常返回 NULL
      */
-    float[] getSpectrum() {
+    @Nullable
+    @Override
+    public float[] getSpectrum() {
         if (playingChannel == 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_PLAYING) {
             return null;
         } else {

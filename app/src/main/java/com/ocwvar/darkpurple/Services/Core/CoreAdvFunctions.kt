@@ -16,10 +16,10 @@ interface CoreAdvFunctions : CoreBaseFunctions {
     fun getEQParameters(): IntArray
 
     /**
-     * 设置均衡器参数
-     * @param   eqIndex 要设置的频段位置
-     * @param   eqParameter 频段的数据
-     * @return  是否执行成功
+     * 更改均衡器频段参数
+     * @param eqParameter 均衡器参数 -10 ~ 10
+     * @param eqIndex     调节位置
+     * @return 执行结果
      */
     fun setEQParameters(eqParameter: Int, eqIndex: Int): Boolean
 
