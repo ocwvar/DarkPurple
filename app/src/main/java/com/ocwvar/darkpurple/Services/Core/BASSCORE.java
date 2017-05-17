@@ -25,10 +25,10 @@ import java.nio.ByteBuffer;
  * This file use to :   BASS Library 播放方案
  */
 
-final class BASSCORE implements CoreAdvFunctions {
+public final class BASSCORE implements CoreAdvFunctions {
 
-    final String TAG = "BASS_CORE";
-    final Context applicationContext;
+    private final String TAG = "BASS_CORE";
+    private final Context applicationContext;
 
     /**
      * 当前播放的音频频道
