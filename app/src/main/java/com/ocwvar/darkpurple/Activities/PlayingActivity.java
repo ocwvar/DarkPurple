@@ -359,16 +359,15 @@ public class PlayingActivity
 
                 SongItem playingSong = playingList.get(audioService.getPlayingIndex());
                 //设置歌曲名称显示
-                title.setText(getString(R.string.main_header_title) + "  " + playingSong.getTitle());
+                title.setText(String.format("%s %s", getString(R.string.main_header_title), playingSong.getTitle()));
                 //设置歌手名称显示
-                artist.setText(getString(R.string.main_header_artist) + "  " + playingSong.getArtist());
+                artist.setText(String.format("%s %s", getString(R.string.main_header_artist), playingSong.getArtist()));
                 //设置专辑名称显示
-                album.setText(getString(R.string.main_header_album) + "  " + playingSong.getAlbum());
+                album.setText(String.format("%s %s", getString(R.string.main_header_album), playingSong.getAlbum()));
                 //重置滚动控制条数据
                 musicSeekBar.setProgress(0);
-
-                musicSeekBar.setMax((int) audioService.getAudioLength());
-                System.out.println(musicSeekBar.getMax());
+                //设置需要重置歌曲长度标记
+                musicSeekBar.setTag(true);
                 //设置当前播放的时间
                 currentTime.setText(time2String(audioService.getPlayingPosition()));
                 //设置当前剩余时间
@@ -378,7 +377,7 @@ public class PlayingActivity
                     generateBlurBackGround();
                 }
                 //如果歌曲播放了 , 就开始更新界面, 更新之前中断旧的更新线程
-                if (audioService.getAudioStatus() == AudioStatus.Playing) {
+                if (audioService.getAudioStatus() == AudioStatus.Playing || audioService.getAudioStatus() == AudioStatus.Buffering) {
                     if (updatingTimerThread != null) {
                         updatingTimerThread.interrupt();
                         updatingTimerThread = null;
@@ -387,6 +386,7 @@ public class PlayingActivity
                     updatingTimerThread.start();
                 }
             } else {
+                //当前没有播放数据，则显示空界面
                 updateInformation(true);
             }
         }
@@ -498,14 +498,18 @@ public class PlayingActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.spectrum:
-                if (Build.VERSION.SDK_INT != 18) {
+                if (Build.VERSION.SDK_INT != 18 && audioService.isCoreSupportedAdvFunction()) {
                     switchSpectrumEffect();
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), R.string.close_in_4_3, Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(android.R.id.content), R.string.coreNotSupported, Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.equalizer:
-                EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
+                if (audioService.isCoreSupportedAdvFunction()) {
+                    EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), R.string.coreNotSupported, Snackbar.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.shower_mainButton:
                 //主按钮点击事件
@@ -835,20 +839,35 @@ public class PlayingActivity
         @Override
         public void run() {
             Logger.warnning(TAG, "开始更新");
-            while (!isInterrupted() && seekBarController != null && audioService != null && musicSeekBar != null && audioService.getAudioStatus() == AudioStatus.Playing) {
-                Logger.warnning(TAG, "已更新进度条");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //更新进度文字数据
-                        currentTime.setText(time2String(audioService.getPlayingPosition()));
-                        restTime.setText(time2String(audioService.getAudioLength() - audioService.getPlayingPosition()));
-                        //如果当前没有用户在调整进度条 , 则更新
-                        if (!seekBarController.isUserTorching) {
-                            musicSeekBar.setProgress((int) (audioService.getPlayingPosition()));
-                        }
+            while (!isInterrupted() && seekBarController != null && audioService != null && musicSeekBar != null && audioService.getAudioStatus() != AudioStatus.Empty) {
+                if (audioService.getAudioStatus() == AudioStatus.Playing) {
+                    //如果当前不为正在缓冲，则可以读取正确的歌曲长度和当前位置（EXO核心特性）
+                    Logger.warnning(TAG, "已更新进度条");
+                    final double length = audioService.getAudioLength();
+                    final double currentPosition = audioService.getPlayingPosition();
+                    if (length > 0.0d && currentPosition >= 0.0d) {
+                        //如果当前时间数据都合法，则进行更新
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //更新进度文字数据
+                                currentTime.setText(time2String(currentPosition));
+                                restTime.setText(time2String(length - currentPosition));
+                                //如果进度条需要重置歌曲长度标记，则更新歌曲长度
+                                if (musicSeekBar.getTag() != null && (boolean) musicSeekBar.getTag()) {
+                                    musicSeekBar.setMax((int) length);
+                                    musicSeekBar.setTag(false);
+                                }
+                                //如果当前没有用户在调整进度条 , 则更新当前播放位置
+                                if (!seekBarController.isUserTorching) {
+                                    musicSeekBar.setProgress((int) currentPosition);
+                                }
+                            }
+                        });
                     }
-                });
+                } else {
+                    Logger.warnning(TAG, "缓冲中...");
+                }
 
                 try {
                     Thread.sleep(1000);

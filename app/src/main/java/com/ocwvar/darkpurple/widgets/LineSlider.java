@@ -168,6 +168,9 @@ public class LineSlider extends View implements View.OnTouchListener {
      * @param value 当前进度
      */
     public synchronized void setProgress(int value) {
+        if (VALUE_MAX == value && value == 0) {
+            return;
+        }
         //先处理值的大小
         value = (value >= VALUE_MAX) ? VALUE_MAX : value;
         value = (value <= 0) ? 0 : value;

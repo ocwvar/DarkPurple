@@ -18,6 +18,7 @@ import com.google.android.exoplayer2.util.Util
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.AudioStatus
+import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.Logger
 import java.io.File
 import java.io.FileNotFoundException
@@ -35,6 +36,11 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
     private val TAG: String = "EXO_CORE"
     private val exoPlayer: ExoPlayer
     private val exoPlayerCallback: ExoPlayerCallback
+    //当前音频状态枚举
+    private var currentAudioStatus = AudioStatus.Empty
+    //曲目长度变量
+    private var isMusicLoaded: Boolean = false
+    private var loadedSourceDuration: Double = 100000.0
 
     init {
         exoPlayerCallback = ExoPlayerCallback()
@@ -52,10 +58,14 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
         //从歌曲路径获取Uri路径
         val songUri: Uri? = FILE2URI(songItem.path)
         songUri?.let {
+            release()
             //成功获取到路径，则开始加载音频数据
             val factory: DataSource.Factory = DefaultDataSourceFactory(applicationContext, Util.getUserAgent(applicationContext, TAG))
             val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory()
             val mediaSource: MediaSource = ExtractorMediaSource(it, factory, extractorsFactory, null, exoPlayerCallback)
+            //重置音频长度
+            isMusicLoaded = false
+            loadedSourceDuration = 0.0
             //开始准备音频数据
             exoPlayer.prepare(mediaSource, true, true)
             if (onlyInit) {
@@ -116,7 +126,7 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
     override fun playingPosition(): Double {
         if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
             //当前音频资源不为空，则可以返回数据
-            return exoPlayer.currentPosition.toDouble()
+            return exoPlayer.currentPosition / 1000.0
         } else {
             return 0.0
         }
@@ -129,7 +139,7 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
     override fun seekPosition(position: Double): Boolean {
         if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
             //当前音频资源不为空，可以进行播放位置调整
-            exoPlayer.seekTo(position.toLong())
+            exoPlayer.seekTo((position * 1000).toLong())
             return true
         } else {
             return false
@@ -141,12 +151,7 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
      * @return 音频长度，异常返回 0
      */
     override fun getAudioLength(): Double {
-        if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
-            //当前音频资源不为空，可以获取音频长度
-            return exoPlayer.duration.toDouble()
-        } else {
-            return 0.0
-        }
+        return loadedSourceDuration
     }
 
     /**
@@ -154,15 +159,7 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
      * @return  当前状态
      */
     override fun getAudioStatus(): AudioStatus {
-        if (exoPlayer.playbackState == ExoPlayer.STATE_READY && exoPlayer.playWhenReady) {
-            return AudioStatus.Playing
-        } else if (exoPlayer.playbackState == ExoPlayer.STATE_READY && !exoPlayer.playWhenReady) {
-            return AudioStatus.Paused
-        } else if (exoPlayer.playbackState == ExoPlayer.STATE_IDLE) {
-            return AudioStatus.Empty
-        } else {
-            return AudioStatus.Error
-        }
+        return currentAudioStatus
     }
 
     /**
@@ -199,11 +196,74 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
             applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
         }
 
+        /**
+         * 播放状态变化回调接口
+         * @param   playWhenReady   是否当音频准备好后会自动播放
+         * @param   playbackState   变更为的状态
+         */
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            if (playWhenReady && playbackState == ExoPlayer.STATE_ENDED) {
-                //播放完成后，需要播放下一首歌曲
-                Logger.warnning(TAG, "播放结束!")
-                applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
+            //是否需要更新Notification的标记变量
+            val need2UpdateNotification: Boolean
+
+            when (playbackState) {
+                ExoPlayer.STATE_ENDED -> {
+                    need2UpdateNotification = false
+                    currentAudioStatus = AudioStatus.Buffering
+                    if (playWhenReady) {
+                        //播放完成后，需要播放下一首歌曲
+                        Logger.warnning(TAG, "状态变更：播放结束")
+                        applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
+                    }
+                }
+
+                ExoPlayer.STATE_READY -> {
+                    need2UpdateNotification = true
+                    Logger.warnning(TAG, "状态变更：音频加载完成")
+                    //更新状态
+                    if (playWhenReady) {
+                        currentAudioStatus = AudioStatus.Playing
+                    } else {
+                        currentAudioStatus = AudioStatus.Paused
+                    }
+                    //设置标记
+                    isMusicLoaded = true
+                    //当读取完成后，设置音频的长度
+                    loadedSourceDuration = exoPlayer.duration / 1000.0
+                    Logger.warnning(TAG, "音频长度：$loadedSourceDuration")
+                }
+
+                ExoPlayer.STATE_BUFFERING -> {
+                    need2UpdateNotification = false
+                    Logger.warnning(TAG, "状态变更：音频正在缓冲")
+                    //更新状态
+                    currentAudioStatus = AudioStatus.Buffering
+                    //设置标记
+                    isMusicLoaded = false
+                    //当读取完成后，设置音频的长度
+                    loadedSourceDuration = 0.0
+                }
+
+                ExoPlayer.STATE_IDLE -> {
+                    need2UpdateNotification = false
+                    //更新状态
+                    currentAudioStatus = AudioStatus.Empty
+                }
+
+                else -> {
+                    need2UpdateNotification = false
+                    currentAudioStatus = AudioStatus.Error
+                }
+
+            }
+            if (!need2UpdateNotification) {
+                //不需要更新Notification，直接跳出
+                return
+            }
+            ServiceHolder.getInstance().service?.let {
+                if (it.isRunningForeground) {
+                    //通知Notification刷新
+                    applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_UPDATE))
+                }
             }
         }
 

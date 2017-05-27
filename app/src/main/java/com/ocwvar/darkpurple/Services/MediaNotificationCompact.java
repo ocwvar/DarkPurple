@@ -104,16 +104,6 @@ class MediaNotificationCompact {
             bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_music_big);
         }
         final WeakReference<Bitmap> weakCover = new WeakReference<>(bitmap);
-        switch (audioStatus) {
-            case Paused:
-                bigRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
-                normalRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
-                break;
-            case Playing:
-                bigRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_pause);
-                normalRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_pause);
-                break;
-        }
 
         //更新封面
         bigRemoteViews.setImageViewBitmap(R.id.notification_cover, weakCover.get());
@@ -137,6 +127,18 @@ class MediaNotificationCompact {
             normalRemoteViews.setTextViewText(R.id.notification_artist, "");
         }
 
+        Logger.warnning(TAG, "通知栏生成时音频播放状态：" + audioStatus.name());
+        switch (audioStatus) {
+            case Paused:
+                bigRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
+                normalRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
+                break;
+            case Playing:
+            case Buffering:
+                bigRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_pause);
+                normalRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_pause);
+                break;
+        }
         return builder.build();
     }
 
@@ -255,6 +257,7 @@ class MediaNotificationCompact {
                         case Paused:
                             toService.setAction(AudioService.NOTIFICATION_PLAY);
                             break;
+                        case Buffering:
                         case Playing:
                             toService.setAction(AudioService.NOTIFICATION_PAUSE);
                             break;

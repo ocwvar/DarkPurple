@@ -15,19 +15,19 @@ public class Logger {
 
     public static void warnning(String TAG, String message) {
         if (DEBUG) {
-            Log.w(TAG, message);
+            Log.w("#$" + TAG, message);
         }
     }
 
     public static void normal(String TAG, String message) {
         if (DEBUG) {
-            Log.d(TAG, message);
+            Log.d("#$" + TAG, message);
         }
     }
 
     public static void error(String TAG, String message) {
         if (DEBUG) {
-            Log.e(TAG, message);
+            Log.e("#$" + TAG, message);
         }
     }
 

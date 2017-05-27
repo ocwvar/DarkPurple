@@ -14,6 +14,10 @@ public enum AudioStatus {
      */
     Playing,
     /**
+     * 正在缓冲
+     */
+    Buffering,
+    /**
      * 暂停
      */
     Paused,

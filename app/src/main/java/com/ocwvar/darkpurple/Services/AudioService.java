@@ -60,13 +60,18 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     public int mediaButtonPressCount = 0;
     //===========使用到的对象===========
     //音频处理核心
-    private AudioCore core;
+    private AudioNextCore core;
     //音频服务
     private AudioManager audioManager;
     //Notification按钮点击广播监听器
     private NotificationControl notificationControl;
-    //MediaStyle的Notification对象
-    //private MediaNotification mediaNotification;
+    /**
+     * 系统自带的MediaStyle Notification：
+     * private MediaNotification mediaNotification;
+     * <p>
+     * 自定义Notification：
+     * private MediaNotificationCompact mediaNotification;
+     */
     private MediaNotificationCompact mediaNotification;
     //耳机拔出监听回调
     private HeadsetDisconnectedReceiver headsetDisconnectedReceiver;
@@ -103,8 +108,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         Logger.warnning(TAG, "onCreate");
 
         //创建对象
-        //core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.BASS_Library);
-        core = new AudioCore(getApplicationContext());
+        core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.EXO2);
         notificationControl = new NotificationControl();
         headsetDisconnectedReceiver = new HeadsetDisconnectedReceiver();
         headsetPlugInReceiver = new HeadsetPlugInReceiver();
@@ -141,13 +145,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      * 结束服务常驻后台
      * 反注册监听器
      * 停止监听焦点变化
+     * 清空服务储存的单例对象
      */
     @SuppressWarnings("deprecation")
     @Override
     public void onDestroy() {
         super.onDestroy();
         Logger.warnning(TAG, "onDestroy");
-        if (core.getCurrectStatus() != AudioStatus.Empty) {
+        if (core.getCurrentStatus() != AudioStatus.Empty) {
             core.releaseAudio();
         }
         hideNotification();
@@ -167,6 +172,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
             mediaNotification.close();
         }
         disableAudioFocus();
+        ServiceHolder.getInstance().setService(null);
     }
 
     /**
@@ -237,6 +243,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         disableAudioFocus();
 
         //暂停当前的播放
+        if (core.currentCoreType() == AudioNextCore.CoreType.EXO2) {
+            this.isRunningForeground = false;   //此标记是给EXO2內核使用的
+        }
         core.pauseAudio();
 
         //不显示当前的状态栏
@@ -273,9 +282,40 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         boolean result = core.play(songList, playIndex);
         if (result) {
-            updateNotification();
+            switch (core.currentCoreType()) {
+                case EXO2:
+                    /**
+                     * 如果是使用 EXO2 播放方案的时候，由于在调用play()方法后內核仍处于加载状态，此时更新
+                     * Notification会导致状态不准确，所以Notification的状态更新由內核通过发送 NOTIFICATION_UPDATE
+                     * 广播来进行状态的更新，在这里就只需要把：isRunningForeground变量设为真，內核即可进行更新操作。
+                     *
+                     * 注意：如果变量  isRunningForeground  为假，则EXO音频內核不会因为音频状态发生改变而更新Notification
+                     * （调用  initAudio()  方法除外）
+                     */
+                    this.isRunningForeground = true;
+                    break;
+                case BASS_Library:
+                    updateNotification();
+                    break;
+                case COMPAT:
+                    break;
+            }
         }
         return result;
+    }
+
+    /**
+     * @return 当前使用的播放核心是否支持高级功能
+     */
+    public boolean isCoreSupportedAdvFunction() {
+        return core.isCoreSupportedAdvFunction();
+    }
+
+    /**
+     * @return 当前服务是否处于后台运行状态
+     */
+    public boolean isRunningForeground() {
+        return this.isRunningForeground;
     }
 
     /**
@@ -291,7 +331,16 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         final boolean result = core.resumeAudio();
         if (result) {
-            updateNotification();
+            switch (core.currentCoreType()) {
+                case EXO2:
+                    this.isRunningForeground = true;
+                    break;
+                case BASS_Library:
+                    updateNotification();
+                    break;
+                case COMPAT:
+                    break;
+            }
         }
         return result;
     }
@@ -311,7 +360,16 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         final boolean result = core.pauseAudio();
         if (result) {
-            updateNotification();
+            switch (core.currentCoreType()) {
+                case EXO2:
+                    this.isRunningForeground = true;
+                    break;
+                case BASS_Library:
+                    updateNotification();
+                    break;
+                case COMPAT:
+                    break;
+            }
         }
         return result;
     }
@@ -477,7 +535,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      * @return 当前音频播放状态
      */
     public AudioStatus getAudioStatus() {
-        return core.getCurrectStatus();
+        return core.getCurrentStatus();
     }
 
     /**
@@ -590,13 +648,13 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                 //当前是正在运行的时候才能通过媒体按键来操作音频
                 switch (intent.getAction()) {
                     case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
-                        if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrectStatus() == AudioStatus.Playing) {
+                        if (bluetoothAdapter != null && BluetoothProfile.STATE_DISCONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) && core.getCurrentStatus() == AudioStatus.Playing) {
                             //蓝牙耳机断开连接 同时当前音乐正在播放
                             pause(true);
                         }
                         break;
                     case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
-                        if (core.getCurrectStatus() == AudioStatus.Playing) {
+                        if (core.getCurrentStatus() == AudioStatus.Playing) {
                             //有线耳机断开连接 同时当前音乐正在播放
                             pause(true);
                         }

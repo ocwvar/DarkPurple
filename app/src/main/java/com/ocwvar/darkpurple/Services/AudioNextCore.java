@@ -111,6 +111,7 @@ public class AudioNextCore {
     /**
      * @return 当前播放的音频列表
      */
+    @NonNull
     ArrayList<SongItem> getPlayingList() {
         return this.songList;
     }
@@ -134,6 +135,14 @@ public class AudioNextCore {
      */
     int getPlayingIndex() {
         return this.playingIndex;
+    }
+
+    /**
+     * @return 当前使用的播放方案类型
+     */
+    @NonNull
+    CoreType currentCoreType() {
+        return coreType;
     }
 
     /**
@@ -262,11 +271,19 @@ public class AudioNextCore {
     }
 
     /**
+     * @return 当前使用的播放核心是否支持高级功能
+     */
+    boolean isCoreSupportedAdvFunction() {
+        return coreInterface instanceof CoreAdvFunctions;
+    }
+
+    /**
      * 获取当前音频播放的状态
      *
      * @return 当前状态
      */
-    AudioStatus getCurrectStatus() {
+    @NonNull
+    AudioStatus getCurrentStatus() {
         return coreInterface.getAudioStatus();
     }
 
