@@ -245,6 +245,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         //暂停当前的播放
         if (core.currentCoreType() == AudioNextCore.CoreType.EXO2) {
             this.isRunningForeground = false;   //此标记是给EXO2內核使用的
+            System.out.println();
         }
         core.pauseAudio();
 
