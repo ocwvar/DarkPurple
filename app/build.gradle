@@ -15,7 +15,7 @@ android {
     signingConfigs {
         release {
             try {
-                storeFile rootProject.file(project.hasProperty("KEY_ONLINE_PATH") ? KEY_ONLINE_PATH : KEY_LOCAL_PATH)
+                storeFile file(System.getenv("KEY_ONLINE_PATH"))
                 storePassword project.hasProperty("KAY_PASSWORD") ? KAY_PASSWORD : System.getenv("KAY_PASSWORD")
                 keyAlias project.hasProperty("KEY_ALIAS") ? KEY_ALIAS : System.getenv("KEY_ALIAS")
                 keyPassword project.hasProperty("KEY_ALIAS_PASSWORD") ? KEY_ALIAS_PASSWORD : System.getenv("KEY_ALIAS_PASSWORD")
