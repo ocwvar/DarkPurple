@@ -16,6 +16,7 @@ licenses:
 - google-gdk-license-.+
 
 before_install:
+- gem install fir-cli
 - openssl aes-256-cbc -K $encrypted_8846a63f5eda_key -iv $encrypted_8846a63f5eda_iv
   -in OCWVAR_KEY.jks.enc -out OCWVAR_KEY.jks -d
 - chmod +x gradlew
