@@ -325,7 +325,6 @@ public final class BASSCORE implements CoreAdvFunctions {
     @NotNull
     @Override
     public int[] getEQParameters() {
-        System.out.println();
         return this.eqParameters;
     }
 
