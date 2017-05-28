@@ -75,8 +75,6 @@ public class PlayingActivity
         View.OnClickListener,
         SlidingListAdapter.OnSlidingMenuClickCallback {
 
-    //音频服务
-    AudioService audioService;
     //轮播滚动等待线程
     PendingStartThread pendingStartThread;
     //刷新界面播放位置线程
@@ -106,7 +104,6 @@ public class PlayingActivity
     SurfaceViewController surfaceViewController;
     //动画Drawable显示View
     View backGround, darkAnime, mainButton;
-
     //侧滑菜单适配器
     SlidingListAdapter slidingListAdapter;
     //封面轮播适配器
@@ -116,6 +113,8 @@ public class PlayingActivity
     Date date;
     //当前播放的歌曲信息列表
     ArrayList<SongItem> playingList;
+    //音频服务
+    private AudioService audioService;
     //背景模糊图片弱引用
     private WeakReference<Bitmap> blurBG = new WeakReference<>(null);
     //背景模糊图片处理线程弱引用
