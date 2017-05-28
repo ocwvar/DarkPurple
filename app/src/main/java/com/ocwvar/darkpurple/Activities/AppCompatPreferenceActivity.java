@@ -26,7 +26,7 @@ import java.util.List;
  */
 public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
-    List<Header> mCopyHeaders;
+    private List<Header> mCopyHeaders;
     private AppCompatDelegate mDelegate;
 
     @Override
