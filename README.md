@@ -2,9 +2,13 @@
 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=master) 
 
 #### (Android 4.2.2 ~ Android 7.1) 不支持Android 7+分屏功能
-#### 目前正在添加 Google Exo Player2 播放方案，以及MediaPlayer(Compat)播放方案
+#### 开发计划
+---
+- 添加Google EXO Player2基础功能 √
+- 新的歌曲选择主界面
+- 添加基于Google EXO Player2的频谱和均衡器功能
 
-##### 功能介绍  Features introduce
+#### 功能介绍
 
 ---
 - 可通过耳机按钮和状态栏Notification来控制音乐的播放 
