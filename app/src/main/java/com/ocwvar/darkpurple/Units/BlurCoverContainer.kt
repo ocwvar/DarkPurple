@@ -87,6 +87,17 @@ object BlurCoverContainer {
         this.callback = callback
     }
 
+    /**
+     * 释放所有数据
+     */
+    fun release() {
+        jobThread?.cancel(true)
+        weakContainer?.clear()
+        weakContainer = null
+        lastCompletedPath = null
+        handlingFilePath = null
+    }
+
     interface Callback {
         fun onCompleted(drawable: Drawable)
         fun onFailed(drawable: Drawable = ColorDrawable(AppConfigs.Color.WindowBackground_Color))
@@ -131,6 +142,11 @@ object BlurCoverContainer {
             } catch(e: Exception) {
                 return null
             }
+        }
+
+        override fun onCancelled() {
+            super.onCancelled()
+            handlingFilePath = null
         }
 
         override fun onPostExecute(result: Drawable?) {
