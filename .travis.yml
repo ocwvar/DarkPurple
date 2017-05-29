@@ -1,6 +1,6 @@
 language: android
 jdk: oraclejdk8
-sudo: required
+sudo: false
 android:
   components:
   - tools
@@ -12,12 +12,21 @@ licenses:
 - android-sdk-preview-license-.+
 - android-sdk-license-.+
 - google-gdk-license-.+
+before_install:
+- openssl aes-256-cbc -K $encrypted_324fbd844df1_key -iv $encrypted_324fbd844df1_iv
+  -in OCWVAR_KEY.jks.enc -out OCWVAR_KEY.jks -d
+- chmod +x gradlew
+after_success:
+- sh set_tags.sh
+script:
+- "./gradlew :app:assembleRelease"
 deploy:
   skip_cleanup: true
   provider: releases
   api_key:
     secure: av0f0svv2DbEVEDX/ALssIDA3cNFAzNiylBx8qYW7JewjTDdaVs689iBKKjrWBiBv7gtNOk1dBdhDz30KS4huuFjEyc0+LbrKYbmg1oKN2PKLsxaKiVLXZmnX21q1xhbgzNpsC63iipcbdhICPPpsm8WbnmkhkgJZu5uuQSIW8I6kbQLPdtGaDpTeAAl666qltGyQ6AmgUNQqv8sgRbXUq2h8QFqg9ZDzh9+c7FAsgoxYLYutwmPbnp95T7OPVgVkjiPSyDuHPg9OIMHy5jq1pAP7XUyim0hq7zsfQHY4/yrEUV1hyESQubj9ci4jPUegpbOp5noAdOv/DUUKauXNGud6IgOb/rOH9z588w8BzNnwZGygjuk9csv30ittYmOAq8KSkw7Qkm3jcmJ1iHeaG2VPeM9aMzRnQJeqTF8gPel9csC+isgeN/xWuyg3QetSjFkkW3ZEkEJ30HEI5r8JJpsF3fgXHy+JSu7rTe2ymUQjvDNlo4M74vaw/eOQfYgjsARKgE+LSlN7Z4PgAV8YuFjsJKaxi+00m+J0wV4wGz2k8vr4d3xKqZBbPLt0k8qvZVmhvuIh85xCVUHl/aj2Mle4fYXbLMlj+EYSDkDDY2DOgPlXD6T70jqY2XpseY2bqQvN5iInPDmV84IeZBdQGM8GZYok8bKmdfLJtfVAxo=
-  file: DarkPurple\app\build\outputs\apk\app-release.apk
+  file: app/build/outputs/apk/app-release.apk
   on:
+    tags: true
     repo: ocwvar/DarkPurple
-    branch: dev
+    branch: master
