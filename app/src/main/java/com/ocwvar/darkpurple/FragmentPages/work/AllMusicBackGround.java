@@ -453,13 +453,18 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
             recyclerView.setOnTouchListener(null);
             allMusicAdapter.setOnClick(null);
             recyclerView = null;
-            moreDialog.clear();
-            newPlaylistDialog.clear();
+            if (moreDialog != null) {
+                moreDialog.clear();
+                moreDialog = null;
+            }
+            if (newPlaylistDialog != null) {
+                newPlaylistDialog.clear();
+                newPlaylistDialog = null;
+            }
             swipeRefreshLayout = null;
             fragmentView = null;
             floatingActionButton = null;
             getPlaylistTitle = null;
-            newPlaylistDialog = null;
             MediaScanner.getInstance().setCallback(null);
         }
 

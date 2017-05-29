@@ -40,10 +40,10 @@
             android:value="A008251242" />
 
         <activity
-            android:name=".Activities.LoginActivity"
+            android:name=".Activities.MainFrameworkActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar.LoginActivity">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

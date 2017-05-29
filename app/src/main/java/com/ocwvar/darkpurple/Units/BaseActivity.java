@@ -180,22 +180,22 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      *
      * @param clickedView 被点击的控件
      */
-    protected abstract void onViewClick(View clickedView);
+    protected abstract void onViewClick(@NonNull View clickedView);
 
     /**
      * 长按的点击事件
      *
      * @param holdedView 被点击的控件
      */
-    protected abstract boolean onViewLongClick(View holdedView);
+    protected abstract boolean onViewLongClick(@NonNull View holdedView);
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         onViewClick(v);
     }
 
     @Override
-    public boolean onLongClick(View v) {
+    public boolean onLongClick(@NonNull View v) {
         return onViewLongClick(v);
     }
 

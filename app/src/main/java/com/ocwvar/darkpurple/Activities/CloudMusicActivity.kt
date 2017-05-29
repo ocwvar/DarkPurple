@@ -76,11 +76,11 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onViewClick(clickedView: View?) {
+    override fun onViewClick(clickedView: View) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onViewLongClick(holdedView: View?): Boolean {
+    override fun onViewLongClick(holdedView: View): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

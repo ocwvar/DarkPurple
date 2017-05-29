@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/button_song"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:drawablePadding="5dp"
+    android:drawableTop="@drawable/ic_button_song"
+    android:gravity="center"
+    android:tag="button_song"
+    android:text="@string/button_song"
+    android:textColor="#fff" />

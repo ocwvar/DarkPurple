@@ -48,6 +48,12 @@ public class AppConfigs {
     //应用是否为第一次启动
     public static boolean IsFirstBoot = true;
 
+    //系统是否大于5.0
+    public static boolean OS_5_UP = false;
+
+    //系统是否大于6.0
+    public static boolean OS_6_UP = false;
+
     //设置扫描的路径数组集合 如果存在数据不为NULL , 则会扫描指定目录  否则扫描数据库
     public static String[] MusicFolders = null;
 
@@ -122,7 +128,9 @@ public class AppConfigs {
      */
     public static void initDefaultValue(Context applicationContext) {
         if (applicationContext != null) {
-            System.out.println();
+            OS_5_UP = Build.VERSION.SDK_INT >= 21;
+            OS_6_UP = Build.VERSION.SDK_INT >= 23;
+
             ApplicationContext = applicationContext;
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
 
