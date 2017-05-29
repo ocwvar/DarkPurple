@@ -122,6 +122,7 @@ public class AppConfigs {
      */
     public static void initDefaultValue(Context applicationContext) {
         if (applicationContext != null) {
+            System.out.println();
             ApplicationContext = applicationContext;
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
 
