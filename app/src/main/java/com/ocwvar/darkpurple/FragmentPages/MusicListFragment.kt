@@ -148,7 +148,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         //当前显示菜单是基于的音频数据
         private lateinit var songData: SongItem
         //当前显示菜单是基于的列表项目位置
-        private var songDataPosition: Int = -1
+        private var songDataPosition: Int = 0
 
         /**
          * 显示对话框
