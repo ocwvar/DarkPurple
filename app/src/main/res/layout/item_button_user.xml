@@ -7,6 +7,8 @@
     android:drawablePadding="5dp"
     android:drawableTop="@drawable/ic_button_user"
     android:gravity="center"
+    android:padding="5dp"
     android:tag="button_user"
     android:text="@string/button_user"
-    android:textColor="#fff" />
+    android:textColor="#fff"
+    android:textSize="12sp" />

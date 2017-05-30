@@ -1,10 +1,16 @@
 package com.ocwvar.darkpurple.Activities
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
+import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
 import android.view.View
 import com.ocwvar.darkpurple.AppConfigs
-import com.ocwvar.darkpurple.FragmentPages.ui.AllMusicFragment
+import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
 import com.ocwvar.darkpurple.FragmentPages.ui.PlaylistPageFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Units.BaseActivity
@@ -23,9 +29,12 @@ class MainFrameworkActivity : BaseActivity() {
     private lateinit var playlistButton: View
     private lateinit var userButton: View
 
-    private var songPage: AllMusicFragment? = null
+    private var musicPage: MusicListFragment? = null
     private var playlistPage: PlaylistPageFragment? = null
     private var currentPageTAG: Any? = null
+
+    //请求权限用的Snackbar
+    private lateinit var requestPermission: Snackbar
 
     override fun onPreSetup(): Boolean {
         if (AppConfigs.OS_5_UP) {
@@ -43,6 +52,19 @@ class MainFrameworkActivity : BaseActivity() {
     }
 
     override fun onSetupViews() {
+        requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(AppConfigs.ApplicationContext.resources.getColor(R.color.colorSecond))
+                .setAction(R.string.request_permission_button, {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        //如果应用还可以请求权限,则弹出请求对话框
+                        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 9)
+                    } else {
+                        //如果用户选择了不再提醒,则不弹出请求对话框,直接跳转到设置界面
+                        val packageURI = Uri.parse("package:" + AppConfigs.ApplicationContext.packageName)
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
+                        startActivity(intent)
+                    }
+                })
         songButton = findViewById(R.id.button_song)
         playlistButton = findViewById(R.id.button_playlist)
         userButton = findViewById(R.id.button_user)
@@ -50,6 +72,15 @@ class MainFrameworkActivity : BaseActivity() {
         playlistButton.setOnClickListener(this@MainFrameworkActivity)
         userButton.setOnClickListener(this@MainFrameworkActivity)
         onViewClick(songButton)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            requestPermission.show()
+        } else if (requestPermission.isShown) {
+            requestPermission.dismiss()
+        }
     }
 
     override fun onViewClick(clickedView: View) {
@@ -95,10 +126,10 @@ class MainFrameworkActivity : BaseActivity() {
         fragmentTransaction.setCustomAnimations(R.anim.fragment_anim_in, R.anim.fragment_anim_out)
         when (pageTAG) {
             songButton.tag -> {
-                if (songPage == null) {
-                    songPage = AllMusicFragment()
+                if (musicPage == null) {
+                    musicPage = MusicListFragment()
                 }
-                fragmentTransaction.replace(R.id.fragmentWindow, songPage)
+                fragmentTransaction.replace(R.id.fragmentWindow, musicPage)
             }
             playlistButton.tag -> {
                 if (playlistPage == null) {

@@ -401,7 +401,7 @@ public class MediaScanner {
                 return AppConfigs.Color.DefaultCoverColor;
             }
 
-            int color = AppConfigs.Color.DefaultCoverColor, item = 0;
+            int color = AppConfigs.Color.DefaultCoverColor, item = 4;
             //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
             while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
                 switch (item) {
@@ -717,7 +717,7 @@ public class MediaScanner {
                 return AppConfigs.Color.DefaultCoverColor;
             }
 
-            int color = AppConfigs.Color.DefaultCoverColor, item = 0;
+            int color = AppConfigs.Color.DefaultCoverColor, item = 4;
             //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
             while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
                 switch (item) {
