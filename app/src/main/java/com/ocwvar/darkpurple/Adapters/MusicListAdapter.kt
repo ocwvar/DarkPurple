@@ -21,7 +21,7 @@ import com.squareup.picasso.Picasso
  * File Location com.ocwvar.darkpurple.Adapters
  * This file use to :   音乐列表适配器
  */
-class MusicListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var array: ArrayList<SongItem> = ArrayList()
 
@@ -29,6 +29,12 @@ class MusicListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.array.clear()
         this.array.addAll(array)
         notifyDataSetChanged()
+    }
+
+    fun removeData(position: Int) {
+        if (position >= 0 && position < array.size && array.removeAt(position) != null) {
+            notifyItemRemoved(position)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -74,13 +80,28 @@ class MusicListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         views.album.text = songData.album
     }
 
-    private class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    interface Callback {
+        fun onListClick(songData: SongItem, position: Int)
+        fun onListLongClick(songData: SongItem, position: Int)
+    }
+
+    private inner class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         //val colorBar: View = itemView.findViewById(R.id.item_menu_list_color)
         val cover: ImageView = itemView.findViewById(R.id.item_menu_list_cover) as ImageView
         val title: TextView = itemView.findViewById(R.id.item_menu_list_title) as TextView
         val artist: TextView = itemView.findViewById(R.id.item_menu_list_artist) as TextView
         val album: TextView = itemView.findViewById(R.id.item_menu_list_album) as TextView
+
+        init {
+            itemView.setOnClickListener {
+                callback.onListClick(array[adapterPosition], adapterPosition)
+            }
+            itemView.setOnLongClickListener {
+                callback.onListLongClick(array[adapterPosition], adapterPosition)
+                false
+            }
+        }
 
     }
 

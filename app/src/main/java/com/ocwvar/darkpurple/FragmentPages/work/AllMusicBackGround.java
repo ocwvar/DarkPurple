@@ -712,7 +712,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             if (PlaylistUnits.getInstance().getPlaylistItem(i).getPlaylist() == null) {
                 //如果要添加到的列表还没加载 , 则先加载
-                PlaylistUnits.getInstance().loadPlaylistAudioesData(new PlaylistUnits.PlaylistLoadingCallbacks() {
+                PlaylistUnits.getInstance().loadPlaylistAudiosData(new PlaylistUnits.PlaylistLoadingCallbacks() {
 
                     @Override
                     public void onPreLoad() {
@@ -734,7 +734,6 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
                         dismissMessageDialog();
                         Snackbar.make(fragmentView, R.string.text_playlist_loadFailed, Snackbar.LENGTH_SHORT).show();
                     }
-
 
                 }, PlaylistUnits.getInstance().getPlaylistItem(i));
             } else {

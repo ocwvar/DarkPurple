@@ -93,6 +93,10 @@
     <string name="musicFolder_noPermission">应用无权限进行扫描 , 请先授权</string>
 
     <!--All Music 版面信息-->
+    <string name="musicList_deleted">音频已删除</string>
+    <string name="musicList_delete_failed">音频无法删除，文件无法写入</string>
+    <string name="musicList_uploading">音频正在后台上传中…</string>
+    <string name="musicList_upload_wait">当请等待上一个上传任务完成后再执行</string>
     <string name="textview_option">点此设置设置歌曲文件夹</string>
     <string name="noMusic">无歌曲扫描结果</string>
     <string name="gotMusicDone">扫描结束</string>

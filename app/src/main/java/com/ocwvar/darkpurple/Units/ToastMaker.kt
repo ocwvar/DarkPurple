@@ -1,6 +1,7 @@
 package com.ocwvar.darkpurple.Units
 
 import android.content.Context
+import android.support.annotation.StringRes
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -25,7 +26,7 @@ object ToastMaker {
      * 显示Toast
      * @param   resource 要显示的内容资源ID
      */
-    fun show(resource: Int) {
+    fun show(@StringRes resource: Int) {
         show(AppConfigs.ApplicationContext.getString(resource))
     }
 

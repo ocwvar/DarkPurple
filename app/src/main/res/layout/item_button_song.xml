@@ -6,6 +6,7 @@
     android:layout_weight="1"
     android:drawablePadding="5dp"
     android:drawableTop="@drawable/ic_button_song"
+    android:foreground="?android:selectableItemBackground"
     android:gravity="center"
     android:padding="5dp"
     android:tag="button_song"

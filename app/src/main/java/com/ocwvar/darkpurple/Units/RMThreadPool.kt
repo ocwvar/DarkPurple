@@ -32,12 +32,14 @@ class RMThreadPool(poolName: String, corePoolSize: Int = 1, maximumPoolSize: Int
      * @param task      线程载体
      * @param taskTag   线程唯一标识TAG
      */
-    fun run_single(task: FutureTask<Any>, taskTag: String) {
+    fun run_single(task: FutureTask<Any>, taskTag: String): Boolean {
         if (taskHashMap.containsKey(taskTag)) {
             Logger.error(POOL_TAG, "相同线程TAG：$taskTag ，拒绝执行")
+            return false
         } else {
             taskHashMap.put(taskTag, task)
             submit(task)
+            return true
         }
     }
 

@@ -29,7 +29,7 @@ public class PlaylistUnits {
     private PlaylistLoadingCallbacks loadingCallbacks;
     private PlaylistChangedCallbacks changedCallbacks;
     private ArrayList<PlaylistItem> playlists;
-    private GetPlaylistAudioesThread audioesThread = null;
+    private GetPlaylistAudiosThread audioesThread = null;
 
     private PlaylistUnits() {
         this.playlists = new ArrayList<>();
@@ -283,12 +283,12 @@ public class PlaylistUnits {
      * @param callbacks    读取回调
      * @param playlistItem 播放列表对象
      */
-    public void loadPlaylistAudioesData(PlaylistLoadingCallbacks callbacks, PlaylistItem playlistItem) {
+    public void loadPlaylistAudiosData(PlaylistLoadingCallbacks callbacks, PlaylistItem playlistItem) {
         if (audioesThread != null && audioesThread.getStatus() != AsyncTask.Status.FINISHED) {
             audioesThread.cancel(true);
             audioesThread = null;
         }
-        audioesThread = new GetPlaylistAudioesThread(playlistItem, callbacks);
+        audioesThread = new GetPlaylistAudiosThread(playlistItem, callbacks);
         audioesThread.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
@@ -360,12 +360,12 @@ public class PlaylistUnits {
 
     }
 
-    private final class GetPlaylistAudioesThread extends AsyncTask<Integer, Void, ArrayList<SongItem>> {
+    private final class GetPlaylistAudiosThread extends AsyncTask<Integer, Void, ArrayList<SongItem>> {
 
         private PlaylistItem playlistItem;
         private PlaylistLoadingCallbacks callbacks;
 
-        GetPlaylistAudioesThread(PlaylistItem playlistItem, PlaylistLoadingCallbacks callbacks) {
+        GetPlaylistAudiosThread(PlaylistItem playlistItem, PlaylistLoadingCallbacks callbacks) {
             this.playlistItem = playlistItem;
             this.callbacks = callbacks;
         }

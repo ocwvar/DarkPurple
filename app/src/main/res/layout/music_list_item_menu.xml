@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layoutAnimation="@anim/layout_anim_equalizer"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/menu_music_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_playlist_delete"
+        android:foreground="?android:selectableItemBackground"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/button_dialog_allmusic_delete"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/menu_music_online_cover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_download_pic"
+        android:foreground="?android:selectableItemBackground"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/button_dialog_allmusic_cover"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/menu_music_add2playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_add_to_playlist"
+        android:foreground="?android:selectableItemBackground"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/button_dialog_allmusic_add"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/menu_music_upload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_upload"
+        android:foreground="?android:selectableItemBackground"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/button_dialog_allmusic_upload"
+        android:textColor="#fff" />
+
+</LinearLayout>

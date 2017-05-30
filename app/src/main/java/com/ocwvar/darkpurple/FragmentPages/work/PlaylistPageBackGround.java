@@ -166,7 +166,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
     public void onPlayButtonClick(PlaylistItem playlistItem, int position) {
         if (playlistItem.getPlaylist() == null) {
             //如果选择的播放列表内容为空 , 则去获取 , 否则就直接播放即可
-            PlaylistUnits.getInstance().loadPlaylistAudioesData(new PlaylistUnits.PlaylistLoadingCallbacks() {
+            PlaylistUnits.getInstance().loadPlaylistAudiosData(new PlaylistUnits.PlaylistLoadingCallbacks() {
                 @Override
                 public void onPreLoad() {
                     if (loadingDialog != null) {
@@ -228,7 +228,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
             case R.id.fb_detail:
                 if (selectedPlaylistItem.getPlaylist() == null) {
                     //如果选择的播放列表内容为空 , 则去获取 , 否则就开始转跳
-                    PlaylistUnits.getInstance().loadPlaylistAudioesData(new PlaylistUnits.PlaylistLoadingCallbacks() {
+                    PlaylistUnits.getInstance().loadPlaylistAudiosData(new PlaylistUnits.PlaylistLoadingCallbacks() {
                         @Override
                         public void onPreLoad() {
                             if (loadingDialog != null) {

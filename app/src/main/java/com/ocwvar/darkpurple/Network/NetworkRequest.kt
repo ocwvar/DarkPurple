@@ -65,8 +65,8 @@ object NetworkRequest {
      * @param requestObjects  请求携带的东西
      * @param baseCallback  执行结果返回的回调接口
      */
-    fun newRequest(requestTypes: NetworkRequestTypes, requestObjects: HashMap<String, *>, baseCallback: BaseCallback) {
-        threadPool.run_single(FutureTask(TaskThread(requestTypes, requestObjects, baseCallback)), requestTypes.name)
+    fun newRequest(requestTypes: NetworkRequestTypes, requestObjects: HashMap<String, *>, baseCallback: BaseCallback): Boolean {
+        return threadPool.run_single(FutureTask(TaskThread(requestTypes, requestObjects, baseCallback)), requestTypes.name)
     }
 
     /**
