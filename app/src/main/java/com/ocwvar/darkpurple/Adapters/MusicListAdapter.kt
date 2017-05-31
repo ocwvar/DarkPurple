@@ -25,6 +25,8 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
 
     private var array: ArrayList<SongItem> = ArrayList()
 
+    fun source(): ArrayList<SongItem> = array
+
     fun changeSource(array: ArrayList<SongItem>) {
         this.array.clear()
         this.array.addAll(array)
@@ -53,7 +55,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
 
         if (!TextUtils.isEmpty(songData.customCoverPath)) {
             //有自定义封面
-            views.cover.setBackgroundColor(songData.customPaletteColor)
+            views.colorBar.setBackgroundColor(songData.customPaletteColor)
             Picasso.with(views.itemView.context)
                     .load(songData.customCoverPath)
                     .config(Bitmap.Config.RGB_565)
@@ -62,7 +64,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                     .into(views.cover)
         } else if (songData.isHaveCover) {
             //有默认封面
-            views.cover.setBackgroundColor(songData.paletteColor)
+            views.colorBar.setBackgroundColor(songData.paletteColor)
             Picasso.with(views.itemView.context)
                     .load(CoverImage2File.getInstance().getCacheFile(songData.path))
                     .config(Bitmap.Config.RGB_565)
@@ -71,7 +73,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                     .into(views.cover)
         } else {
             //无封面
-            views.cover.setBackgroundColor(AppConfigs.Color.DefaultCoverColor)
+            views.colorBar.setBackgroundColor(AppConfigs.Color.DefaultCoverColor)
             views.cover.setImageResource(R.drawable.ic_music_mid)
         }
 
@@ -87,7 +89,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
 
     private inner class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        //val colorBar: View = itemView.findViewById(R.id.item_menu_list_color)
+        val colorBar: View = itemView.findViewById(R.id.item_menu_list_color)
         val cover: ImageView = itemView.findViewById(R.id.item_menu_list_cover) as ImageView
         val title: TextView = itemView.findViewById(R.id.item_menu_list_title) as TextView
         val artist: TextView = itemView.findViewById(R.id.item_menu_list_artist) as TextView

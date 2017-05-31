@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:gravity="center"
+    android:gravity="start"
     android:layoutAnimation="@anim/layout_anim_equalizer"
     android:orientation="vertical">
 
@@ -14,9 +14,8 @@
         android:layout_gravity="start"
         android:layout_marginStart="10dp"
         android:drawablePadding="10dp"
-        android:drawableStart="@drawable/ic_action_playlist_delete"
+        android:drawableStart="@drawable/ic_action_delete"
         android:foreground="?android:selectableItemBackground"
-        android:gravity="center"
         android:padding="10dp"
         android:text="@string/button_dialog_allmusic_delete"
         android:textColor="#fff" />
@@ -28,9 +27,8 @@
         android:layout_gravity="start"
         android:layout_marginStart="10dp"
         android:drawablePadding="10dp"
-        android:drawableStart="@drawable/ic_action_download_pic"
+        android:drawableStart="@drawable/ic_action_online_cover"
         android:foreground="?android:selectableItemBackground"
-        android:gravity="center"
         android:padding="10dp"
         android:text="@string/button_dialog_allmusic_cover"
         android:textColor="#fff" />
@@ -42,9 +40,8 @@
         android:layout_gravity="start"
         android:layout_marginStart="10dp"
         android:drawablePadding="10dp"
-        android:drawableStart="@drawable/ic_action_add_to_playlist"
+        android:drawableStart="@drawable/ic_action_playlist_add"
         android:foreground="?android:selectableItemBackground"
-        android:gravity="center"
         android:padding="10dp"
         android:text="@string/button_dialog_allmusic_add"
         android:textColor="#fff" />
@@ -58,7 +55,6 @@
         android:drawablePadding="10dp"
         android:drawableStart="@drawable/ic_action_upload"
         android:foreground="?android:selectableItemBackground"
-        android:gravity="center"
         android:padding="10dp"
         android:text="@string/button_dialog_allmusic_upload"
         android:textColor="#fff" />

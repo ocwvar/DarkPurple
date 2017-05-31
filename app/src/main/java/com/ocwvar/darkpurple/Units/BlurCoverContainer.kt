@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Units
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -24,8 +25,11 @@ import java.lang.ref.WeakReference
  */
 object BlurCoverContainer {
 
+    //广播通知更新的Action
+    val ACTION_BLUR_UPDATED: String = "ACTION_BLUR_UPDATED"
+    val ACTION_BLUR_UPDATE_FAILED: String = "ACTION_BLUR_UPDATE_FAILED"
     //模糊封面Drawable对象储存容器
-    private var weakContainer: WeakReference<Drawable>? = null
+    private var weakContainer: WeakReference<Drawable?> = WeakReference(null)
     //储存最后一次完成的任务图像路径，供弱引用图像失效时重新生成使用
     private var lastCompletedPath: String? = null
     //储存当前正在处理的图像路径，供新的任务请求时检查使用
@@ -81,6 +85,14 @@ object BlurCoverContainer {
     }
 
     /**
+     * 获取上一次的模糊结果
+     * @return  Drawable图像，当资源被释放时返回NULL
+     */
+    fun get(): Drawable? {
+        return weakContainer.get()
+    }
+
+    /**
      * @param   callback    结果回调接口
      */
     fun setCallback(callback: Callback) {
@@ -93,7 +105,6 @@ object BlurCoverContainer {
     fun release() {
         jobThread?.cancel(true)
         weakContainer?.clear()
-        weakContainer = null
         lastCompletedPath = null
         handlingFilePath = null
     }
@@ -112,12 +123,12 @@ object BlurCoverContainer {
         override fun doInBackground(vararg params: Void?): Drawable? {
             //原始图像
             var bitmap: Bitmap = BitmapFactory.decodeFile(coverFilePath) ?: return null
-            //模糊图像
-            var blurBitmap: Bitmap = Bitmap.createBitmap((bitmap.width / scaleSize).toInt(), (bitmap.height / scaleSize).toInt(), Bitmap.Config.ARGB_8888)
             val matrix: Matrix = Matrix()
             matrix.postScale(scaleSize, scaleSize)
             //得到缩小指定倍数后的原始图像
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, (bitmap.width / scaleSize).toInt(), (bitmap.height / scaleSize).toInt(), matrix, false)
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            //模糊图像容器
+            var blurBitmap: Bitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
 
             try {
                 //原始图像进行模糊处理后存入模糊图像
@@ -140,6 +151,7 @@ object BlurCoverContainer {
                 weakContainer = WeakReference(blurDrawable)
                 return blurDrawable
             } catch(e: Exception) {
+                weakContainer.clear()
                 return null
             }
         }
@@ -154,8 +166,10 @@ object BlurCoverContainer {
             handlingFilePath = null
             if (result != null) {
                 lastCompletedPath = coverFilePath
+                AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATED))
                 callback?.onCompleted(result)
             } else {
+                AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATE_FAILED))
                 callback?.onFailed()
             }
         }

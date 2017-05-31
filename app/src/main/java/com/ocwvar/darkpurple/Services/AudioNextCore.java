@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Services.Core.BASSCORE;
 import com.ocwvar.darkpurple.Services.Core.CoreAdvFunctions;
 import com.ocwvar.darkpurple.Services.Core.CoreBaseFunctions;
 import com.ocwvar.darkpurple.Services.Core.EXOCORE;
+import com.ocwvar.darkpurple.Units.BlurCoverContainer;
+import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Logger;
 
 import java.util.ArrayList;
@@ -193,17 +196,25 @@ public class AudioNextCore {
     boolean play(ArrayList<SongItem> songList, int playIndex) {
         if (songList != null && songList.size() > 0 && playIndex >= 0 && playIndex < songList.size()) {
             //如果音频列表和播放位置合法 , 则开始读取
-            if (playAudio(songList.get(playIndex), false)) {
-                //如果播放成功 , 则记录当前数据和列表 , 同时发送开始播放的广播
+            final SongItem songItem = songList.get(playIndex);
+            if (playAudio(songItem, false)) {
+                //如果播放成功 , 则记录当前数据和列表
                 this.playingIndex = playIndex;
-                applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
                 if (this.songList == null || !this.songList.equals(songList)) {
                     Logger.warnning(TAG, "播放列表已更新!");
                     this.songList = songList;
                 }
+                //更新封面效果
+                if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
+                    BlurCoverContainer.INSTANCE.handleThis(songItem.getCustomCoverPath());
+                } else if (songItem.isHaveCover()) {
+                    BlurCoverContainer.INSTANCE.handleThis(CoverImage2File.getInstance().getCacheFile(songItem.getPath()));
+                }
+                //发送开始播放广播
+                applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
                 return true;
             } else if (this.songList != null && this.songList.size() > 1) {
-                //如果读取不成功 , 同时列表有多个音频，则返回错误信息
+                //如果读取不成功 , 同时列表有多个音频，则返回错误信息，并尝试播放下一首
                 this.playingIndex = playIndex;
                 playNext();
             } else {

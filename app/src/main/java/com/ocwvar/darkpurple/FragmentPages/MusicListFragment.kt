@@ -25,6 +25,7 @@ import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
+import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.CoverImage2File
 import com.ocwvar.darkpurple.Units.MediaScanner
 import com.ocwvar.darkpurple.Units.PlaylistUnits
@@ -124,7 +125,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      * @param   position    在列表中的位置
      */
     override fun onListClick(songData: SongItem, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        ServiceHolder.getInstance().service?.play(adapter.source(), position)
     }
 
     /**

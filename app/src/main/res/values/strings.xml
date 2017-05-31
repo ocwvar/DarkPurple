@@ -43,10 +43,12 @@
     <string name="login_input_only_word">用户名仅可为字母和数字</string>
     <string name="login_head_login">欢迎回来 </string>
     <string name="login_head_register">注册成啦 ! 您的用户名为:</string>
-    <!--主页面框架问题-->
+
+    <!--主页面框架文字-->
     <string name="button_song">歌曲</string>
     <string name="button_playlist">列表</string>
     <string name="button_user">用户</string>
+    <string name="head_playing">当前歌曲</string>
 
     <!--播放列表详情页面文字数据-->
     <string name="title_detail">列表详情</string>
