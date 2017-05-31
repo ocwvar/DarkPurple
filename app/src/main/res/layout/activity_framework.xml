@@ -38,7 +38,8 @@
                         android:layout_gravity="end|bottom"
                         android:layout_margin="5dp"
                         android:gravity="end"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:tag="12">
 
                         <TextView
                             android:id="@+id/MainMusic_title"
