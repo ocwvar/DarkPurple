@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.ListView
 import com.ocwvar.darkpurple.Activities.DownloadCoverActivity
 import com.ocwvar.darkpurple.Adapters.MusicListAdapter
@@ -60,6 +61,8 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
     private var itemMoreDialog: ItemMoreDialog? = null
     //添加至播放列表菜单处理类
     private var add2PlaylistDialog: Add2PlaylistDialog? = null
+    //创建播放列表处理类
+    private var createPlaylistDialog: CreatePlaylistDialog? = null
     //歌曲切换监听广播接收器
     private var playingDataUpdateReceive: PlayingDataUpdateReceiver? = null
 
@@ -132,6 +135,11 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         }
     }
 
+    /**
+     * 当前Fragment恢复完成时
+     * 更新当前播放曲目条目样式
+     * 注册接收器
+     */
     override fun onResume() {
         super.onResume()
         //恢复后先更新当前播放状态
@@ -149,6 +157,8 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
 
     /**
      * 当前Fragment被暂停时
+     * 退出多选模式
+     * 注销接收器
      */
     override fun onPause() {
         super.onPause()
@@ -274,11 +284,11 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     }
                 }
                 R.id.menu_music_create -> {
-                    //创建播放列表操作
-                    if (!adapter.isSelectingMode()) {
-                        ToastMaker.show(R.string.message_plzSelect)
-                        adapter.switchMode()
+                    //显示创建播放列表对话框
+                    if (createPlaylistDialog == null) {
+                        createPlaylistDialog = CreatePlaylistDialog()
                     }
+                    createPlaylistDialog?.show()
                     hide()
                 }
                 R.id.menu_music_add2playlist -> {
@@ -363,6 +373,76 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     ToastMaker.show(R.string.text_playlist_addNewSong_Failed)
                 }
             }
+        }
+
+    }
+
+    /**
+     * 创建新的播放列表对话框处理类
+     */
+    private inner class CreatePlaylistDialog {
+        //对话框持有器
+        private var dialogKeeper: WeakReference<AlertDialog?> = WeakReference(null)
+        //保存的有效播放列表名称
+        var lastPlaylistName: String = ""
+
+        /**
+         * 显示对话框
+         */
+        fun show() {
+            var dialog: AlertDialog? = dialogKeeper.get()
+            if (dialog == null) {
+                //创建输入框对象
+                val inputText: EditText = EditText(fragmentView.context)
+                inputText.maxLines = 1
+                inputText.setBackgroundColor(Color.argb(120, 0, 0, 0))
+                inputText.textSize = 15.0f
+                inputText.setTextColor(Color.WHITE)
+                inputText.setSingleLine(true)
+                //创建对话框对象
+                dialog = AlertDialog
+                        .Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
+                        .setView(inputText)
+                        .setPositiveButton(R.string.simple_done) { dialog, _ ->
+                            //确认    按钮处理
+                            val playlistName: String = inputText.text.toString()
+                            if (TextUtils.isEmpty(playlistName)) {
+                                //检查输入的名称有效性
+                                ToastMaker.show(R.string.message_playlist_name_error)
+                                return@setPositiveButton
+                            }
+                            if (PlaylistUnits.getInstance().isPlaylistExisted(playlistName)) {
+                                //检查名称是否与现有的播放列表名称重复
+                                ToastMaker.show(R.string.message_playlist_name_existed)
+                                return@setPositiveButton
+                            }
+                            dialog.dismiss()
+                            //保存当前播放列表名称
+                            this.lastPlaylistName = playlistName
+                            //切换当前列表为多选模式
+                            if (!adapter.isSelectingMode()) {
+                                ToastMaker.show(R.string.message_plzSelect)
+                                adapter.switchMode()
+                            }
+                            //清空输入框
+                            inputText.text.clear()
+                        }
+                        .setNegativeButton(R.string.simple_cancel, { dialog, _ ->
+                            //取消    按钮处理
+                            dialog.dismiss()
+                            inputText.text.clear()
+                        })
+                        .create()
+                dialogKeeper = WeakReference(dialog)
+            }
+            dialogKeeper.get()?.show()
+        }
+
+        /**
+         * 隐藏对话框
+         */
+        fun hide() {
+            dialogKeeper.get()?.dismiss()
         }
 
     }

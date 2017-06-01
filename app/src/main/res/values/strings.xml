@@ -27,6 +27,8 @@
     <!--主音乐列表界面-->
     <string name="message_waitForSelecting">请先完成添加播放列表</string>
     <string name="message_plzSelect">请单击选择需要添加的曲目</string>
+    <string name="message_playlist_name_error">请输入有效的名称</string>
+    <string name="message_playlist_name_existed">存在相同名称的播放列表</string>
     <string name="dialog_button_create">创建新的播放列表</string>
     <string name="dialog_button_add2">添加到现有播放列表</string>
     <string name="dialog_button_delete">删除音频</string>
