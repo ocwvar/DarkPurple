@@ -77,6 +77,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     private HeadsetDisconnectedReceiver headsetDisconnectedReceiver;
     //耳机插入广播接收器
     private HeadsetPlugInReceiver headsetPlugInReceiver;
+    //封面更新广播接收器
+    private CoverUpdateReceiver coverUpdateReceiver;
     //耳机按钮次数延时统计线程
     private MediaButtonPressCountingThread countingThread;
     //===========标记变量===========
@@ -112,6 +114,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         notificationControl = new NotificationControl();
         headsetDisconnectedReceiver = new HeadsetDisconnectedReceiver();
         headsetPlugInReceiver = new HeadsetPlugInReceiver();
+        coverUpdateReceiver = new CoverUpdateReceiver();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mediaNotification = new MediaNotificationCompact(getApplicationContext());
 
@@ -119,10 +122,12 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         registerReceiver(notificationControl, notificationControl.filter);
         registerReceiver(headsetPlugInReceiver, headsetPlugInReceiver.filter);
         registerReceiver(headsetDisconnectedReceiver, headsetDisconnectedReceiver.filter);
+        registerReceiver(coverUpdateReceiver, coverUpdateReceiver.filter);
 
         headsetPlugInReceiver.registered = true;
         headsetDisconnectedReceiver.registered = true;
         notificationControl.registered = true;
+        coverUpdateReceiver.registered = true;
     }
 
     /**
@@ -167,6 +172,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         if (headsetPlugInReceiver != null && headsetPlugInReceiver.registered) {
             headsetPlugInReceiver.registered = false;
             unregisterReceiver(headsetPlugInReceiver);
+        }
+        if (coverUpdateReceiver != null && coverUpdateReceiver.registered) {
+            coverUpdateReceiver.registered = false;
+            unregisterReceiver(coverUpdateReceiver);
         }
         if (mediaNotification != null) {
             mediaNotification.close();
@@ -285,13 +294,13 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         if (result) {
             switch (core.currentCoreType()) {
                 case EXO2:
-                    /**
-                     * 如果是使用 EXO2 播放方案的时候，由于在调用play()方法后內核仍处于加载状态，此时更新
-                     * Notification会导致状态不准确，所以Notification的状态更新由內核通过发送 NOTIFICATION_UPDATE
-                     * 广播来进行状态的更新，在这里就只需要把：isRunningForeground变量设为真，內核即可进行更新操作。
-                     *
-                     * 注意：如果变量  isRunningForeground  为假，则EXO音频內核不会因为音频状态发生改变而更新Notification
-                     * （调用  initAudio()  方法除外）
+                    /*
+                      如果是使用 EXO2 播放方案的时候，由于在调用play()方法后內核仍处于加载状态，此时更新
+                      Notification会导致状态不准确，所以Notification的状态更新由內核通过发送 NOTIFICATION_UPDATE
+                      广播来进行状态的更新，在这里就只需要把：isRunningForeground变量设为真，內核即可进行更新操作。
+
+                      注意：如果变量  isRunningForeground  为假，则EXO音频內核不会因为音频状态发生改变而更新Notification
+                      （调用  initAudio()  方法除外）
                      */
                     this.isRunningForeground = true;
                     break;
@@ -623,6 +632,32 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
             }
         }
 
+    }
+
+    /**
+     * 标准的接收封面模糊处理结果的广播接收器
+     */
+    private class CoverUpdateReceiver extends BroadcastReceiver {
+
+        final IntentFilter filter;
+        public boolean registered = false;
+
+        public CoverUpdateReceiver() {
+            filter = new IntentFilter();
+            filter.addAction("ACTION_BLUR_UPDATED");
+            filter.addAction("ACTION_BLUR_UPDATE_FAILED");
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) return;
+            switch (intent.getAction()) {
+                case "ACTION_BLUR_UPDATED":
+                case "ACTION_BLUR_UPDATE_FAILED":
+                    updateNotification();
+                    break;
+            }
+        }
     }
 
     /**

@@ -32,6 +32,13 @@
                         android:scaleType="centerCrop"
                         android:src="@color/backgroundColor_Dark" />
 
+                    <com.ocwvar.darkpurple.widgets.SquareHightImageView
+                        android:id="@+id/MainMusic_coverShower"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="start|bottom"
+                        android:scaleType="centerCrop" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

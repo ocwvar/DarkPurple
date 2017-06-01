@@ -11,8 +11,8 @@ import com.ocwvar.darkpurple.Services.Core.BASSCORE;
 import com.ocwvar.darkpurple.Services.Core.CoreAdvFunctions;
 import com.ocwvar.darkpurple.Services.Core.CoreBaseFunctions;
 import com.ocwvar.darkpurple.Services.Core.EXOCORE;
-import com.ocwvar.darkpurple.Units.BlurCoverContainer;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.ocwvar.darkpurple.Units.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
 
 import java.util.ArrayList;
@@ -78,7 +78,10 @@ public class AudioNextCore {
             boolean result = play(songList, playingIndex);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
-                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
+                if (coreType != CoreType.EXO2) {
+                    //EXO2 需要由核心自主发送广播
+                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
+                }
             }
             return result;
         } else {
@@ -103,7 +106,10 @@ public class AudioNextCore {
             boolean result = play(songList, playingIndex);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
-                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
+                if (coreType != CoreType.EXO2) {
+                    //EXO2 需要由核心自主发送广播
+                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
+                }
             }
             return result;
         } else {
@@ -206,9 +212,9 @@ public class AudioNextCore {
                 }
                 //更新封面效果
                 if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-                    BlurCoverContainer.INSTANCE.handleThis(songItem.getCustomCoverPath());
+                    CoverProcesser.INSTANCE.handleThis(songItem.getCustomCoverPath());
                 } else if (songItem.isHaveCover()) {
-                    BlurCoverContainer.INSTANCE.handleThis(CoverImage2File.getInstance().getCacheFile(songItem.getPath()));
+                    CoverProcesser.INSTANCE.handleThis(CoverImage2File.getInstance().getCacheFile(songItem.getPath()));
                 }
                 //发送开始播放广播
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));

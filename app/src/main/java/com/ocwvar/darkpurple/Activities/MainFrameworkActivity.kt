@@ -15,6 +15,8 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import com.ocwvar.darkpurple.AppConfigs
@@ -25,7 +27,7 @@ import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.BaseActivity
-import com.ocwvar.darkpurple.Units.BlurCoverContainer
+import com.ocwvar.darkpurple.Units.CoverProcesser
 import com.ocwvar.darkpurple.Units.ToastMaker
 
 /**
@@ -42,6 +44,7 @@ class MainFrameworkActivity : BaseActivity() {
     private lateinit var playlistButton: View
     private lateinit var userButton: View
     private lateinit var headShower: ImageView
+    private lateinit var headCoverShower: ImageView
     private lateinit var headMusicTitle: TextView
     private lateinit var headMusicArtist: TextView
     private lateinit var headMusicAlbum: TextView
@@ -89,6 +92,7 @@ class MainFrameworkActivity : BaseActivity() {
                     }
                 })
         headShower = findViewById(R.id.MainMusic_headShower) as ImageView
+        headCoverShower = findViewById(R.id.MainMusic_coverShower) as ImageView
         headMusicTitle = findViewById(R.id.MainMusic_title) as TextView
         headMusicArtist = findViewById(R.id.MainMusic_artist) as TextView
         headMusicAlbum = findViewById(R.id.MainMusic_album) as TextView
@@ -152,7 +156,7 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
         //更新当前的头部图像
-        updateHeaderDrawable(BlurCoverContainer.get())
+        updateHeaderDrawable(CoverProcesser.getBlur(), CoverProcesser.getOriginal())
         //检查封面处理广播接收器
         if (!blurCoverUpdateReceiver.isRegistered) {
             blurCoverUpdateReceiver.isRegistered = true
@@ -243,20 +247,46 @@ class MainFrameworkActivity : BaseActivity() {
 
     /**
      * 更新首页头部图像
-     * @param   drawable    要更新图像的Drawable对象，如果没有封面图像则传入NULL
+     * @param   blurDrawable    要更新图像的模糊Drawable对象，如果没有封面图像则传入NULL
+     * @param   originalDrawable    要更新图像的清晰Drawable对象，如果没有封面图像则传入NULL
      */
-    private fun updateHeaderDrawable(drawable: Drawable?) {
+    private fun updateHeaderDrawable(blurDrawable: Drawable?, originalDrawable: Drawable?) {
+        //处理头部模糊背景部分的图像加载
         val animeDrawable: TransitionDrawable
-        if (drawable == null) {
+        if (blurDrawable == null) {
             animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, ColorDrawable(AppConfigs.Color.DefaultCoverColor)))
         } else {
-            animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, drawable))
+            animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, blurDrawable))
         }
-
         animeDrawable.isCrossFadeEnabled = true
         headShower.setImageDrawable(animeDrawable)
 
-        animeDrawable.startTransition(300)
+        //处理头部封面部分的图像加载和动画
+        headCoverShower.setImageDrawable(originalDrawable)
+
+        //开始处理封面切换动画
+        if (originalDrawable != null) {
+            //只有当存在封面图像的时候才进行动画设置
+            val anim: Animation = AnimationUtils.loadAnimation(AppConfigs.ApplicationContext, R.anim.fragment_anim_in)
+            anim.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationRepeat(animation: Animation?) {
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    //当封面动画执行完后再执行背景切换动画
+                    animeDrawable.startTransition(300)
+                    headCoverShower.clearAnimation()
+                }
+
+                override fun onAnimationStart(animation: Animation?) {
+                }
+            })
+            //先开始执行封面动画，避免UI卡顿
+            headCoverShower.startAnimation(anim)
+        } else {
+            //不存在封面图像，则直接开始背景切换动画
+            animeDrawable.startTransition(300)
+        }
     }
 
     /**
@@ -285,8 +315,8 @@ class MainFrameworkActivity : BaseActivity() {
         var isRegistered: Boolean = false
 
         init {
-            intentFilter.addAction(BlurCoverContainer.ACTION_BLUR_UPDATED)
-            intentFilter.addAction(BlurCoverContainer.ACTION_BLUR_UPDATE_FAILED)
+            intentFilter.addAction(CoverProcesser.ACTION_BLUR_UPDATED)
+            intentFilter.addAction(CoverProcesser.ACTION_BLUR_UPDATE_FAILED)
         }
 
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -294,12 +324,12 @@ class MainFrameworkActivity : BaseActivity() {
             intent ?: return
             when (intent.action) {
             //有新的封面模糊图像产生
-                BlurCoverContainer.ACTION_BLUR_UPDATED -> {
-                    updateHeaderDrawable(BlurCoverContainer.get())
+                CoverProcesser.ACTION_BLUR_UPDATED -> {
+                    updateHeaderDrawable(CoverProcesser.getBlur(), CoverProcesser.getOriginal())
                 }
             //有新的封面模糊图像发生失败
-                BlurCoverContainer.ACTION_BLUR_UPDATE_FAILED -> {
-                    updateHeaderDrawable(null)
+                CoverProcesser.ACTION_BLUR_UPDATE_FAILED -> {
+                    updateHeaderDrawable(null, null)
                 }
             }
         }

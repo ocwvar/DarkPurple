@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -22,10 +23,10 @@ import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.ocwvar.darkpurple.Units.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 /**
  * Project DarkPurple
@@ -99,15 +100,18 @@ class MediaNotificationCompact {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         builder.setContentIntent(pendingIntent);
 
-        Bitmap bitmap = loadCoverFromMainThread(songItem);
-        if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_music_big);
+        Bitmap cover;
+        try {
+            //尝试获取封面图像
+            cover = ((BitmapDrawable) CoverProcesser.INSTANCE.getOriginal()).getBitmap();
+        } catch (Exception e) {
+            //如果获取失败，则生成空白封面
+            cover = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
         }
-        final WeakReference<Bitmap> weakCover = new WeakReference<>(bitmap);
 
         //更新封面
-        bigRemoteViews.setImageViewBitmap(R.id.notification_cover, weakCover.get());
-        normalRemoteViews.setImageViewBitmap(R.id.notification_cover, weakCover.get());
+        bigRemoteViews.setImageViewBitmap(R.id.notification_cover, cover);
+        normalRemoteViews.setImageViewBitmap(R.id.notification_cover, cover);
 
         if (songItem != null) {
             //更新标题
@@ -170,7 +174,6 @@ class MediaNotificationCompact {
     void close() {
         context.unregisterReceiver(notificationReceiver);
     }
-
     /**
      * 读取歌曲封面图像
      *

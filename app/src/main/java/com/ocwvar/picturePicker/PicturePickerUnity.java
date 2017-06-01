@@ -1153,7 +1153,7 @@ public class PicturePickerUnity extends AppCompatActivity
     private class PickUriUtils {
 
         /**
-         * Get a file path from a Uri. This will get the the path for Storage Access
+         * Get a file path from a Uri. This will getBlur the the path for Storage Access
          * Framework Documents, as well as the _data field for the MediaStore and
          * other file-based ContentProviders.
          *

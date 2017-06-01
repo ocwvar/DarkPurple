@@ -14,7 +14,6 @@ import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import com.ocwvar.darkpurple.AppConfigs
 import java.io.File
-import java.lang.ref.WeakReference
 
 /**
  * Project DarkPurple
@@ -23,13 +22,15 @@ import java.lang.ref.WeakReference
  * File Location com.ocwvar.darkpurple.Units
  * This file use to :   封面模糊处理与储存类
  */
-object BlurCoverContainer {
+object CoverProcesser {
 
     //广播通知更新的Action
     val ACTION_BLUR_UPDATED: String = "ACTION_BLUR_UPDATED"
     val ACTION_BLUR_UPDATE_FAILED: String = "ACTION_BLUR_UPDATE_FAILED"
+    //清晰封面Drawable对象储存容器
+    private var original: Drawable? = null
     //模糊封面Drawable对象储存容器
-    private var weakContainer: WeakReference<Drawable?> = WeakReference(null)
+    private var blurd: Drawable? = null
     //储存最后一次完成的任务图像路径，供弱引用图像失效时重新生成使用
     private var lastCompletedPath: String? = null
     //储存当前正在处理的图像路径，供新的任务请求时检查使用
@@ -58,8 +59,7 @@ object BlurCoverContainer {
             Logger.error(javaClass.simpleName, "当前已有相同的任务：" + coverFile.path)
         } else if (lastCompletedPath == coverFile.path) {
             //上一次完成的任务与本次相同
-            val blurDrawable: Drawable? = weakContainer?.get()
-            if (blurDrawable == null) {
+            if (blurd == null) {
                 //如果上次生成的图像已经失效，则重新进行生成操作
                 Logger.warnning(javaClass.simpleName, "上次图像已失效，进行重新生成：" + coverFile.path)
                 handlingFilePath = coverFile.path
@@ -69,7 +69,7 @@ object BlurCoverContainer {
             } else {
                 //上次生成的图像仍可以使用，直接通过回调接口返回
                 Logger.warnning(javaClass.simpleName, "请求图像与现有图像相同：" + coverFile.path)
-                callback?.onCompleted(blurDrawable)
+                callback?.onCompleted(blurd!!)
             }
         } else if (coverFile.exists() && coverFile.canRead()) {
             //开始执行新的任务
@@ -88,9 +88,13 @@ object BlurCoverContainer {
      * 获取上一次的模糊结果
      * @return  Drawable图像，当资源被释放时返回NULL
      */
-    fun get(): Drawable? {
-        return weakContainer.get()
-    }
+    fun getBlur(): Drawable? = blurd
+
+    /**
+     * 获取上一次的原图结果
+     * @return  Drawable图像，当资源被释放时返回NULL
+     */
+    fun getOriginal(): Drawable? = original
 
     /**
      * @param   callback    结果回调接口
@@ -104,9 +108,10 @@ object BlurCoverContainer {
      */
     fun release() {
         jobThread?.cancel(true)
-        weakContainer?.clear()
         lastCompletedPath = null
         handlingFilePath = null
+        blurd = null
+        original = null
     }
 
     interface Callback {
@@ -118,23 +123,27 @@ object BlurCoverContainer {
      * 图像模糊处理工作子线程
      */
     class BlurThread(val coverFilePath: String) : AsyncTask<Void, Int, Drawable?>() {
-        val scaleSize: Float = 0.2f
+        //模糊图像缩小倍数
+        val scaleSize: Float = 0.4f
 
         override fun doInBackground(vararg params: Void?): Drawable? {
             //原始图像
-            var bitmap: Bitmap = BitmapFactory.decodeFile(coverFilePath) ?: return null
+            val originalBitmap: Bitmap = BitmapFactory.decodeFile(coverFilePath) ?: return null
             val matrix: Matrix = Matrix()
             matrix.postScale(scaleSize, scaleSize)
             //得到缩小指定倍数后的原始图像
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-            //模糊图像容器
-            var blurBitmap: Bitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+            val scaledBitmap: Bitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
+            //储存原始图像
+            original = BitmapDrawable(AppConfigs.ApplicationContext.resources, scaledBitmap)
+            //模糊图像容器，图像尺寸为已缩小后的图像尺寸
+            var blurBitmap: Bitmap = Bitmap.createBitmap(scaledBitmap.width, scaledBitmap.height, Bitmap.Config.ARGB_8888)
 
             try {
                 //原始图像进行模糊处理后存入模糊图像
                 if (Build.VERSION.SDK_INT >= 17) {
+                    //RenderScript处理方式
                     val renderScript = RenderScript.create(AppConfigs.ApplicationContext)
-                    val inAllocation: Allocation = Allocation.createFromBitmap(renderScript, bitmap)
+                    val inAllocation: Allocation = Allocation.createFromBitmap(renderScript, scaledBitmap)
                     val outAllocation = Allocation.createFromBitmap(renderScript, blurBitmap)
                     val scriptIntrinsicBlur = ScriptIntrinsicBlur.create(renderScript, inAllocation.element)
                     scriptIntrinsicBlur.setInput(inAllocation)
@@ -145,13 +154,13 @@ object BlurCoverContainer {
                     scriptIntrinsicBlur.destroy()
                     renderScript.destroy()
                 } else {
-                    blurBitmap = FastBlur.doBlur(bitmap, 25, false)
+                    //低版本API兼容方式，并不能保证每次处理都正确
+                    blurBitmap = FastBlur.doBlur(scaledBitmap, 25, false)
                 }
-                val blurDrawable: Drawable = BitmapDrawable(AppConfigs.ApplicationContext.resources, blurBitmap)
-                weakContainer = WeakReference(blurDrawable)
-                return blurDrawable
+                blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, blurBitmap)
+                return blurd
             } catch(e: Exception) {
-                weakContainer.clear()
+                blurd = null
                 return null
             }
         }

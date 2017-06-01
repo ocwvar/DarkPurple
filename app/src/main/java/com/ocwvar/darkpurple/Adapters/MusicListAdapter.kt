@@ -61,6 +61,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                     .config(Bitmap.Config.RGB_565)
                     .error(R.drawable.ic_music_mid)
                     .placeholder(R.drawable.ic_music_mid)
+                    .fit()
                     .into(views.cover)
         } else if (songData.isHaveCover) {
             //有默认封面
@@ -70,6 +71,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                     .config(Bitmap.Config.RGB_565)
                     .error(R.drawable.ic_music_mid)
                     .placeholder(R.drawable.ic_music_mid)
+                    .fit()
                     .into(views.cover)
         } else {
             //无封面

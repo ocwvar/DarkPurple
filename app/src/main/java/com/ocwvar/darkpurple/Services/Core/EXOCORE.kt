@@ -253,7 +253,6 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
                     need2UpdateNotification = false
                     currentAudioStatus = AudioStatus.Error
                 }
-
             }
             if (!need2UpdateNotification) {
                 //不需要更新Notification，直接跳出
