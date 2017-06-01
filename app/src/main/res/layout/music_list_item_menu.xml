@@ -8,29 +8,16 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/menu_music_delete"
+        android:id="@+id/menu_music_create"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="10dp"
         android:drawablePadding="10dp"
-        android:drawableStart="@drawable/ic_action_delete"
+        android:drawableStart="@drawable/ic_action_add"
         android:foreground="?android:selectableItemBackground"
         android:padding="10dp"
-        android:text="@string/button_dialog_allmusic_delete"
-        android:textColor="#fff" />
-
-    <TextView
-        android:id="@+id/menu_music_online_cover"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="10dp"
-        android:drawablePadding="10dp"
-        android:drawableStart="@drawable/ic_action_online_cover"
-        android:foreground="?android:selectableItemBackground"
-        android:padding="10dp"
-        android:text="@string/button_dialog_allmusic_cover"
+        android:text="@string/dialog_button_create"
         android:textColor="#fff" />
 
     <TextView
@@ -43,7 +30,33 @@
         android:drawableStart="@drawable/ic_action_playlist_add"
         android:foreground="?android:selectableItemBackground"
         android:padding="10dp"
-        android:text="@string/button_dialog_allmusic_add"
+        android:text="@string/dialog_button_add2"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/menu_music_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_delete"
+        android:foreground="?android:selectableItemBackground"
+        android:padding="10dp"
+        android:text="@string/dialog_button_delete"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/menu_music_online_cover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_online_cover"
+        android:foreground="?android:selectableItemBackground"
+        android:padding="10dp"
+        android:text="@string/dialog_button_cover"
         android:textColor="#fff" />
 
     <TextView
@@ -56,7 +69,7 @@
         android:drawableStart="@drawable/ic_action_upload"
         android:foreground="?android:selectableItemBackground"
         android:padding="10dp"
-        android:text="@string/button_dialog_allmusic_upload"
+        android:text="@string/dialog_button_upload"
         android:textColor="#fff" />
 
 </LinearLayout>

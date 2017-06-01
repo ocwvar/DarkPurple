@@ -24,6 +24,15 @@
     <string name="button_dialog_playlist_delete">删除列表</string>
     <string name="button_dialog_playlist_detail">列表详情</string>
 
+    <!--主音乐列表界面-->
+    <string name="message_waitForSelecting">请先完成添加播放列表</string>
+    <string name="message_plzSelect">请单击选择需要添加的曲目</string>
+    <string name="dialog_button_create">创建新的播放列表</string>
+    <string name="dialog_button_add2">添加到现有播放列表</string>
+    <string name="dialog_button_delete">删除音频</string>
+    <string name="dialog_button_cover">从网络获取封面图像</string>
+    <string name="dialog_button_upload">将歌曲上传至我的云</string>
+
     <!--网络基础文字-->
     <string name="network_simple_unknown_error">应用未知异常</string>
     <string name="network_simple_args_error">不满足必须数据参数</string>

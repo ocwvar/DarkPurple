@@ -1,5 +1,9 @@
 package com.ocwvar.darkpurple.FragmentPages
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -25,6 +29,7 @@ import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
+import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.CoverImage2File
 import com.ocwvar.darkpurple.Units.MediaScanner
@@ -55,6 +60,8 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
     private var itemMoreDialog: ItemMoreDialog? = null
     //添加至播放列表菜单处理类
     private var add2PlaylistDialog: Add2PlaylistDialog? = null
+    //歌曲切换监听广播接收器
+    private var playingDataUpdateReceive: PlayingDataUpdateReceiver? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (inflater != null && container != null) {
@@ -80,11 +87,17 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         recycleView.setHasFixedSize(true)
         swipeRefreshLayout.setColorSchemeColors(AppConfigs.Color.DefaultCoverColor)
         swipeRefreshLayout.setOnRefreshListener {
-            //下拉刷新回调接口，设为半透明并无法被触摸
-            swipeRefreshLayout.isRefreshing = true
-            recycleView.alpha = 0.3f
-            recycleView.setOnTouchListener({ _, _ -> true })
-            MediaScanner.getInstance().start()
+            itemMoreDialog?.hide()
+            if (adapter.isSelectingMode()) {
+                //当前如果是多选模式，不能进行刷新
+                ToastMaker.show(R.string.message_waitForSelecting)
+                swipeRefreshLayout.isRefreshing = false
+            } else {
+                //下拉刷新回调接口，设为半透明并无法被触摸
+                recycleView.alpha = 0.3f
+                recycleView.setOnTouchListener({ _, _ -> true })
+                MediaScanner.getInstance().start()
+            }
         }
 
         //设置扫描回调接口
@@ -116,6 +129,36 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         } else {
             adapter.changeSource(songItems)
             ToastMaker.show(R.string.gotMusicDone)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //恢复后先更新当前播放状态
+        adapter.updatePlayingPath(ServiceHolder.getInstance().service?.playingSong?.path)
+        //注册歌曲切换接收器
+        if (playingDataUpdateReceive == null || !playingDataUpdateReceive!!.isRegistered) {
+            if (playingDataUpdateReceive == null) {
+                playingDataUpdateReceive = PlayingDataUpdateReceiver()
+            }
+            playingDataUpdateReceive?.let {
+                AppConfigs.ApplicationContext.registerReceiver(it, it.intentFilter)
+            }
+        }
+    }
+
+    /**
+     * 当前Fragment被暂停时
+     */
+    override fun onPause() {
+        super.onPause()
+        //如果当前是多选模式，则退出
+        if (adapter.isSelectingMode()) {
+            adapter.switchMode()
+        }
+        //注销歌曲切换接收器
+        if (playingDataUpdateReceive != null && playingDataUpdateReceive!!.isRegistered) {
+            AppConfigs.ApplicationContext.unregisterReceiver(playingDataUpdateReceive!!)
         }
     }
 
@@ -166,10 +209,18 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 view.findViewById(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById(R.id.menu_music_online_cover).setOnClickListener(this@ItemMoreDialog)
+                view.findViewById(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
                 dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
                 dialogKeeper = WeakReference(dialog)
             }
             dialog?.show()
+        }
+
+        /**
+         * 隐藏对话框
+         */
+        fun hide() {
+            dialogKeeper.get()?.dismiss()
         }
 
         override fun onClick(v: View) {
@@ -181,7 +232,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         //删除文件成功
                         adapter.removeData(songDataPosition)
                         ToastMaker.show(R.string.musicList_deleted)
-                        dialogKeeper.get()?.dismiss()
+                        hide()
                     } else {
                         ToastMaker.show(R.string.musicList_delete_failed)
                     }
@@ -212,7 +263,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                                 ToastMaker.show(message)
                             }
                         })
-                        dialogKeeper.get()?.dismiss()
+                        hide()
                         if (result) {
                             //成功提交任务
                             ToastMaker.show(R.string.musicList_uploading)
@@ -222,12 +273,21 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         }
                     }
                 }
+                R.id.menu_music_create -> {
+                    //创建播放列表操作
+                    if (!adapter.isSelectingMode()) {
+                        ToastMaker.show(R.string.message_plzSelect)
+                        adapter.switchMode()
+                    }
+                    hide()
+                }
                 R.id.menu_music_add2playlist -> {
                     //显示添加至播放列表对话框
                     if (add2PlaylistDialog == null) {
                         add2PlaylistDialog = Add2PlaylistDialog()
                     }
                     add2PlaylistDialog?.show(songData)
+                    hide()
                 }
                 R.id.menu_music_online_cover -> {
                     //打开在线封面获取界面
@@ -301,6 +361,25 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     dialogKeeper.get()?.dismiss()
                 } else {
                     ToastMaker.show(R.string.text_playlist_addNewSong_Failed)
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 接收当前播放音频数据
+     */
+    private inner class PlayingDataUpdateReceiver : BroadcastReceiver() {
+
+        val intentFilter: IntentFilter = IntentFilter(AudioService.NOTIFICATION_UPDATE)
+        var isRegistered: Boolean = false
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
+            when (intent.action) {
+                AudioService.NOTIFICATION_UPDATE -> {
+                    adapter.updatePlayingPath(ServiceHolder.getInstance().service.playingSong?.path)
                 }
             }
         }
