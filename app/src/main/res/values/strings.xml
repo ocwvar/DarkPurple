@@ -31,7 +31,7 @@
     <string name="network_simple_timeout_error">请求超时</string>
 
     <!--登录界面文字-->
-    <string name="login_hint_username">请输入用户名</string>
+    <string name="login_hint_username">请输入用户名1</string>
     <string name="login_hint_password">请输入密码</string>
     <string name="login_start_login">登录账户</string>
     <string name="login_start_register">注册并登录</string>
