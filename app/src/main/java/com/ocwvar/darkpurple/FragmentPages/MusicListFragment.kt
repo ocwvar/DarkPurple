@@ -414,7 +414,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                             if (PlaylistUnits.getInstance().isPlaylistExisted(playlistName)) {
                                 //检查名称是否与现有的播放列表名称重复
                                 ToastMaker.show(R.string.message_playlist_name_existed)
-                                return@setPositiveButton
                             }
                             dialog.dismiss()
                             //保存当前播放列表名称
