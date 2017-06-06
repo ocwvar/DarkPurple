@@ -79,7 +79,7 @@ class MainFrameworkActivity : BaseActivity() {
 
     override fun onSetupViews() {
         requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
-                .setActionTextColor(AppConfigs.ApplicationContext.resources.getColor(R.color.colorSecond))
+                .setActionTextColor(AppConfigs.Color.getColor(R.color.colorSecond))
                 .setAction(R.string.request_permission_button, {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         //如果应用还可以请求权限,则弹出请求对话框

@@ -43,12 +43,12 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
     /**
      * @return  当前显示数据源
      */
-    fun source(): ArrayList<SongItem> = array
+    fun source(): ArrayList<SongItem> = array.clone() as ArrayList<SongItem>
 
     /**
      * @return  当前已选择的数据
      */
-    fun selected(): ArrayList<SongItem> = selected
+    fun selected(): ArrayList<SongItem> = selected.clone() as ArrayList<SongItem>
 
     /**
      * @return  当前是否为多选模式
@@ -167,8 +167,8 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
     }
 
     interface Callback {
-        fun onListClick(songData: SongItem, position: Int)
-        fun onListLongClick(songData: SongItem, position: Int)
+        fun onListClick(songData: SongItem, position: Int, itemView: View)
+        fun onListLongClick(songData: SongItem, position: Int, itemView: View)
     }
 
     private inner class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -196,7 +196,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                     notifyItemChanged(adapterPosition)
                 } else {
                     //非多选模式下将点击事件传递给回调接口
-                    callback.onListClick(array[adapterPosition], adapterPosition)
+                    callback.onListClick(array[adapterPosition], adapterPosition, itemView)
                 }
             }
             itemView.setOnLongClickListener {
@@ -204,7 +204,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                     ToastMaker.show(R.string.message_waitForSelecting)
                 } else {
                     //非多选模式下将长按事件传递给回调接口
-                    callback.onListLongClick(array[adapterPosition], adapterPosition)
+                    callback.onListLongClick(array[adapterPosition], adapterPosition, itemView)
                 }
                 false
             }

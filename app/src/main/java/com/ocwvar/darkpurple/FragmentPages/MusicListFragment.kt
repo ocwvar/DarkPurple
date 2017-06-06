@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
@@ -20,6 +22,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ListView
 import com.ocwvar.darkpurple.Activities.DownloadCoverActivity
+import com.ocwvar.darkpurple.Activities.PlayingActivity
 import com.ocwvar.darkpurple.Adapters.MusicListAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
@@ -32,10 +35,7 @@ import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
-import com.ocwvar.darkpurple.Units.CoverImage2File
-import com.ocwvar.darkpurple.Units.MediaScanner
-import com.ocwvar.darkpurple.Units.PlaylistUnits
-import com.ocwvar.darkpurple.Units.ToastMaker
+import com.ocwvar.darkpurple.Units.*
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
@@ -47,7 +47,7 @@ import java.util.*
  * File Location com.ocwvar.darkpurple.FragmentPages
  * This file use to :   音乐选择Fragment（主要）
  */
-class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Callback {
+class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Callback, View.OnClickListener {
 
     //歌曲条目展示适配器
     private val adapter: MusicListAdapter = MusicListAdapter(this@MusicListFragment)
@@ -65,6 +65,8 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
     private var createPlaylistDialog: CreatePlaylistDialog? = null
     //歌曲切换监听广播接收器
     private var playingDataUpdateReceive: PlayingDataUpdateReceiver? = null
+    //异步保存扫描结果
+    private var cacheScanResult: CacheScanResult? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (inflater != null && container != null) {
@@ -176,21 +178,68 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      * 歌曲单击回调接口
      * @param   songData    歌曲数据
      * @param   position    在列表中的位置
+     * @param   itemView    条目的View对象
      */
-    override fun onListClick(songData: SongItem, position: Int) {
-        ServiceHolder.getInstance().service?.play(adapter.source(), position)
+    override fun onListClick(songData: SongItem, position: Int, itemView: View) {
+        ServiceHolder.getInstance().service?.let {
+            if (it.play(adapter.source(), position)) {
+                //播放成功
+                if (AppConfigs.isAutoSwitchPlaying) {
+                    //如果设置为自动跳转到播放界面，则进行跳转
+                    activity.startActivity(Intent(activity, PlayingActivity::class.java))
+                }
+            } else {
+                //播放失败
+                ToastMaker.show(R.string.message_play_error)
+            }
+        }
     }
 
     /**
      * 歌曲长按回调接口
      * @param   songData    歌曲数据
      * @param   position    在列表中的位置
+     * @param   itemView    条目的View对象
      */
-    override fun onListLongClick(songData: SongItem, position: Int) {
+    override fun onListLongClick(songData: SongItem, position: Int, itemView: View) {
         if (itemMoreDialog == null) {
             itemMoreDialog = ItemMoreDialog()
         }
         itemMoreDialog?.show(songData, position)
+    }
+
+    /**
+     * 点击事件处理位置
+     * 1.浮动按钮点击事件，保存播放列表数据
+     */
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.fab -> {
+                if (adapter.isSelectingMode()) {
+                    //确认当前的确为多选模式
+                    val array: ArrayList<SongItem> = adapter.selected()
+                    if (array.size <= 0) {
+                        //没有选择歌曲对象
+                        ToastMaker.show(R.string.message_playlist_add_error_no_song)
+                    } else {
+                        //添加播放列表
+                        createPlaylistDialog?.let {
+                            PlaylistUnits.getInstance().savePlaylist(it.lastPlaylistName, array)
+                            ToastMaker.show(R.string.message_playlist_add_done)
+                        }
+                    }
+                    adapter.switchMode()
+                } else {
+                    ToastMaker.show(R.string.message_playlist_add_error_no_selecting)
+                }
+                //隐藏点击按钮并取消点击事件监听
+                ((fragmentView.findViewById(R.id.fab)) as FloatingActionButton).let {
+                    it.hide()
+                    it.visibility = View.GONE
+                    it.setOnClickListener(null)
+                }
+            }
+        }
     }
 
     /**
@@ -422,6 +471,12 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                             if (!adapter.isSelectingMode()) {
                                 ToastMaker.show(R.string.message_plzSelect)
                                 adapter.switchMode()
+                                //显示确定按钮并设置监听事件
+                                ((fragmentView.findViewById(R.id.fab)) as FloatingActionButton).let {
+                                    it.show()
+                                    it.visibility = View.VISIBLE
+                                    it.setOnClickListener(this@MusicListFragment)
+                                }
                             }
                             //清空输入框
                             inputText.text.clear()
@@ -461,6 +516,18 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     adapter.updatePlayingPath(ServiceHolder.getInstance().service.playingSong?.path)
                 }
             }
+        }
+
+    }
+
+    /**
+     * 异步缓存最后一次扫描历史，给快速启动APP使用
+     */
+    private class CacheScanResult(val array: ArrayList<SongItem>) : AsyncTask<Void, Int, Boolean>() {
+
+        override fun doInBackground(vararg params: Void?): Boolean {
+            JSONHandler.cacheSearchResult(array)
+            return true
         }
 
     }

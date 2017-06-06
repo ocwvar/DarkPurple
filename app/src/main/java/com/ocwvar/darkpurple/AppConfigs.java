@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -558,6 +559,26 @@ public class AppConfigs {
 
             //在清空配置文件之后重新加载默认数据
             loadColors();
+        }
+
+        /**
+         * 获取颜色资源
+         *
+         * @param resInt 资源地址
+         * @return 颜色
+         */
+
+        public static int getColor(int resInt) {
+            if (OS_6_UP) {
+                //noinspection ResourceType
+                return ApplicationContext.getColor(resInt);
+            } else {
+                try {
+                    return ApplicationContext.getResources().getColor(resInt);
+                } catch (Resources.NotFoundException e) {
+                    return android.graphics.Color.BLACK;
+                }
+            }
         }
 
     }
