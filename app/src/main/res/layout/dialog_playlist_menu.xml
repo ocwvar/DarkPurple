@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="start"
+    android:layoutAnimation="@anim/layout_anim_equalizer"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/menu_playlist_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_edit"
+        android:foreground="?android:selectableItemBackground"
+        android:padding="10dp"
+        android:text="@string/dialog_button_playlist_edit"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/menu_playlist_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_delete"
+        android:foreground="?android:selectableItemBackground"
+        android:padding="10dp"
+        android:text="@string/dialog_button_playlist_delete"
+        android:textColor="#fff" />
+
+</LinearLayout>

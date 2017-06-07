@@ -34,7 +34,6 @@
     <string name="message_playlist_add_error_existed">添加音频失败,可能存在同名音频</string>
     <string name="message_playlist_add_error_no_song">没有被选择的歌曲</string>
     <string name="message_playlist_add_done">正在添加播放列表…</string>
-    <string name="message_playlist_loading">正在读取播放列表数据</string>
     <string name="message_playlist_add_done_item">成功添加音频</string>
     <string name="message_scan_result_empty">无歌曲</string>
     <string name="message_scan_result_done">已更新列表:D</string>
@@ -48,6 +47,20 @@
     <string name="dialog_button_delete">删除音频</string>
     <string name="dialog_button_cover">从网络获取封面图像</string>
     <string name="dialog_button_upload">将歌曲上传至我的云</string>
+
+    <!--播放列表界面-->
+    <string name="text_cloud_userText_head">当前账户:</string>
+    <string name="text_cloud_offline">当前为离线模式，请先登录后再使用此功能</string>
+    <string name="text_cloud_title">我的云储存音乐</string>
+    <string name="part_playlist_count_head">曲目数:</string>
+    <string name="part_playlist_count_end">首</string>
+    <string name="message_playlist_play_failed">播放失败,此列表可能已损坏</string>
+    <string name="message_playlist_loading">正在加载数据…</string>
+    <string name="message_playlist_load_failed">无法读取列表数据,可能数据已损坏</string>
+    <string name="message_playlist_empty_removed">列表已无数据,将自动移除</string>
+    <string name="message_playlist_saved">已保存更改</string>
+    <string name="dialog_button_playlist_edit">编辑播放列表</string>
+    <string name="dialog_button_playlist_delete">删除播放列表</string>
 
     <!--网络基础文字-->
     <string name="network_simple_unknown_error">应用未知异常</string>
@@ -83,9 +96,6 @@
     <string name="empty_playlist">哎呀! 您还没有添加播放列表噢 ~</string>
 
     <!--播放列表项目文字信息-->
-    <string name="text_cloud_userText_head">当前账户:</string>
-    <string name="text_cloud_no_user">当前为离线模式 , 无法使用此功能</string>
-    <string name="text_cloud_title">我的云储存音乐</string>
     <string name="text_playlist_name">播放列表名称</string>
     <string name="text_playlist_count">包含音频数量</string>
     <string name="text_playlist_countEND">首</string>

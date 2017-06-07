@@ -37,7 +37,6 @@ import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.*
-import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
@@ -67,12 +66,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
     private var createPlaylistDialog: CreatePlaylistDialog? = null
     //歌曲切换监听广播接收器
     private var playingDataUpdateReceive: PlayingDataUpdateReceiver? = null
-    //动画Adapter外壳
-    private var animeAdapter: AlphaInAnimationAdapter = AlphaInAnimationAdapter(adapter).let {
-        //条目淡入淡出时间
-        it.setDuration(500)
-        it
-    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (inflater != null && container != null) {
@@ -93,7 +86,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         }
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout) as SwipeRefreshLayout
         recycleView = view.findViewById(R.id.recycleView) as RecyclerView
-        recycleView.adapter = animeAdapter
+        recycleView.adapter = adapter
         recycleView.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
         recycleView.setHasFixedSize(true)
         swipeRefreshLayout.setColorSchemeColors(AppConfigs.Color.DefaultCoverColor)
@@ -128,7 +121,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             ToastMaker.show(R.string.message_scan_result_empty)
         } else {
             adapter.changeSource(songItems)
-            animeAdapter.notifyDataSetChanged()
             ToastMaker.show(R.string.message_scan_result_done)
         }
     }
@@ -146,7 +138,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         } else if (MediaScanner.getInstance().isUpdated) {
             //检查是否有最近的扫描缓存
             adapter.changeSource(MediaScanner.getInstance().cachedDatas)
-            animeAdapter.notifyDataSetChanged()
         } else {
             //新的扫描
             MediaScanner.getInstance().start()
@@ -272,7 +263,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             this.songData = songData
             var dialog: AlertDialog? = dialogKeeper.get()
             if (dialog == null) {
-                val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.music_list_item_menu, null)
+                val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_music_list_menu, null)
                 view.findViewById(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
@@ -299,7 +290,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     if (file.exists() && file.canWrite() && file.delete()) {
                         //删除文件成功
                         adapter.removeData(songDataPosition)
-                        animeAdapter.notifyItemRemoved(songDataPosition)
                         ToastMaker.show(R.string.message_song_delete_failed)
                         hide()
                     } else {
@@ -391,7 +381,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_addto_playlist, null)
                 val listView: ListView = view.findViewById(R.id.listview) as ListView
                 val adapter: ArrayAdapter<String> = ArrayAdapter(fragmentView.context, R.layout.simple_textview)
-                PlaylistUnits.getInstance().playlists.forEach {
+                PlaylistUnits.getInstance().playlistSet.forEach {
                     adapter.add(it.name)
                 }
 
@@ -404,15 +394,24 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         }
 
         override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            if (PlaylistUnits.getInstance().playlists[position].playlist == null) {
+            if (PlaylistUnits.getInstance().playlistSet[position].playlist == null) {
                 //如果要添加到的列表还没加载 , 则先加载
                 PlaylistUnits.getInstance().loadPlaylistAudiosData(object : PlaylistUnits.PlaylistLoadingCallbacks {
 
+                    /**
+                     * 准备读取列表数据
+                     */
                     override fun onPreLoad() {
                         ToastMaker.show(R.string.message_playlist_loading)
                     }
 
-                    override fun onLoadCompleted(playlistItem: PlaylistItem, data: ArrayList<SongItem>) {
+                    /**
+                     * 读取播放列表数据成功
+                     * @param playlistItem  读取的播放列表数据
+                     * *
+                     * @param data  对应的歌曲列表
+                     */
+                    override fun onLoadCompleted(playlistItem: PlaylistItem, data: ArrayList<SongItem>?) {
                         if (PlaylistUnits.getInstance().addAudio(playlistItem, songData)) {
                             ToastMaker.show(R.string.message_playlist_add_done_item)
                         } else {
@@ -420,13 +419,17 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         }
                     }
 
+                    /**
+                     * 读取播放列表数据失败
+                     */
                     override fun onLoadFailed() {
                         ToastMaker.show(R.string.text_playlist_loadFailed)
                     }
-                }, PlaylistUnits.getInstance().playlists[position])
-            } else run {
+
+                }, PlaylistUnits.getInstance().playlistSet[position])
+            } else {
                 //如果已经加载了 , 则直接添加进去
-                if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().playlists[position], songData)) {
+                if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().playlistSet[position], songData)) {
                     ToastMaker.show(R.string.message_playlist_add_done_item)
                     dialogKeeper.get()?.dismiss()
                 } else {

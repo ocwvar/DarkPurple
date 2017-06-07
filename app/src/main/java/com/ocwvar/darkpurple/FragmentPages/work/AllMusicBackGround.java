@@ -680,7 +680,7 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
         private void refreshPlaylistSet() {
             if (stringArrayAdapter != null) {
                 stringArrayAdapter.clear();
-                ArrayList<PlaylistItem> playlistItems = PlaylistUnits.getInstance().getPlaylists();
+                ArrayList<PlaylistItem> playlistItems = PlaylistUnits.getInstance().getPlaylistSet();
                 for (PlaylistItem item : playlistItems) {
                     stringArrayAdapter.add(item.getName());
                 }

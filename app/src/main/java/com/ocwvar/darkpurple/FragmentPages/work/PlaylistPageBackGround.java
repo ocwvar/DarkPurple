@@ -85,7 +85,7 @@ public class PlaylistPageBackGround extends Fragment implements PlaylistItemAdap
 
             //显示云音乐的用户名状态 ,如果当前为离线则显示不可用
             if (TextUtils.isEmpty(AppConfigs.USER.USERNAME)) {
-                ((TextView) fragmentView.findViewById(R.id.cloudMusic_userName)).setText(R.string.text_cloud_no_user);
+                ((TextView) fragmentView.findViewById(R.id.cloudMusic_userName)).setText(R.string.text_cloud_offline);
             } else {
                 ((TextView) fragmentView.findViewById(R.id.cloudMusic_userName)).setText(String.format("%s%s", AppConfigs.ApplicationContext.getString(R.string.text_cloud_userText_head), AppConfigs.USER.USERNAME));
                 fragmentView.findViewById(R.id.cloudMusic).setOnClickListener(new View.OnClickListener() {

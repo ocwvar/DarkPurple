@@ -31,7 +31,7 @@ public class PlaylistItemAdapter extends RecyclerView.Adapter {
     OnButtonClickCallback callback;
 
     public PlaylistItemAdapter() {
-        playlistItems = PlaylistUnits.getInstance().getPlaylists();
+        playlistItems = PlaylistUnits.getInstance().getPlaylistSet();
     }
 
     public void setOnButtonClickCallback(OnButtonClickCallback callback) {

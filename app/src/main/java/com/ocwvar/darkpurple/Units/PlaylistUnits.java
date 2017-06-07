@@ -24,15 +24,15 @@ import java.util.Set;
  */
 public class PlaylistUnits {
     private static PlaylistUnits playlistUnits;
-    private final String playlistSPName = "playlists";
+    private final String playlistSPName = "playlistSet";
     private final String TAG = "PlaylistUnits";
     private PlaylistLoadingCallbacks loadingCallbacks;
     private PlaylistChangedCallbacks changedCallbacks;
-    private ArrayList<PlaylistItem> playlists;
+    private ArrayList<PlaylistItem> playlistSet;
     private GetPlaylistAudiosThread audioesThread = null;
 
     private PlaylistUnits() {
-        this.playlists = new ArrayList<>();
+        this.playlistSet = new ArrayList<>();
     }
 
     public static PlaylistUnits getInstance() {
@@ -76,10 +76,10 @@ public class PlaylistUnits {
                 String[] playlistValues = loadStringArray(sp, playlistName);
                 if (playlistValues != null && playlistValues.length == 3) {
                     //如果字符集合有效 , 同时数量为3
-                    this.playlists.add(new PlaylistItem(playlistName, playlistValues));
+                    this.playlistSet.add(new PlaylistItem(playlistName, playlistValues));
                 }
             }
-            Logger.warnning(TAG, "基本数据获取完毕.  总计: " + playlists.size());
+            Logger.warnning(TAG, "基本数据获取完毕.  总计: " + playlistSet.size());
         } else {
             Logger.error(TAG, "无法获取. 原因: 没有已保存的数据");
         }
@@ -106,8 +106,8 @@ public class PlaylistUnits {
         playlistItem.setFirstAudioPath(playlist.get(0).getPath());
         playlistItem.setPlaylist(playlist);
         //移除旧的数据 , 添加新的数据
-        this.playlists.remove(playlistItem);
-        this.playlists.add(playlistItem);
+        this.playlistSet.remove(playlistItem);
+        this.playlistSet.add(playlistItem);
 
         //回调更新数据
         if (changedCallbacks != null) {
@@ -152,8 +152,8 @@ public class PlaylistUnits {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         //移除列表内的数据对象
-        if (playlists.contains(playlistItem)) {
-            playlists.remove(playlistItem);
+        if (playlistSet.contains(playlistItem)) {
+            playlistSet.remove(playlistItem);
         }
 
         //回调更新数据
@@ -184,7 +184,7 @@ public class PlaylistUnits {
      */
     @SuppressLint("CommitPrefEdits")
     public boolean renamePlaylist(@NonNull String oldName, @NonNull final String newName) {
-        if (playlists.contains(new PlaylistItem(oldName)) && !playlists.contains(new PlaylistItem(newName))) {
+        if (playlistSet.contains(new PlaylistItem(oldName)) && !playlistSet.contains(new PlaylistItem(newName))) {
             //如果旧的列表的确存在 同时不存在与新名字相同的列表 , 则可以执行
             //获取名字集合 , 更改后重新保存到SP中
             final SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
@@ -214,7 +214,7 @@ public class PlaylistUnits {
             }
 
             //获取要改名的对象 , 更改名字
-            final PlaylistItem playlistItem = playlists.get(playlists.indexOf(new PlaylistItem(oldName)));
+            final PlaylistItem playlistItem = playlistSet.get(playlistSet.indexOf(new PlaylistItem(oldName)));
             playlistItem.setName(newName);
 
             //回调更新数据
@@ -301,7 +301,7 @@ public class PlaylistUnits {
     public boolean isPlaylistExisted(String name) {
         PlaylistItem playlistItem = new PlaylistItem();
         playlistItem.setName(name);
-        boolean result = playlists.contains(playlistItem);
+        boolean result = playlistSet.contains(playlistItem);
         playlistItem = null;
         return result;
     }
@@ -328,28 +328,40 @@ public class PlaylistUnits {
         }
     }
 
-    public ArrayList<PlaylistItem> getPlaylists() {
-        return playlists;
+    public ArrayList<PlaylistItem> getPlaylistSet() {
+        return playlistSet;
     }
 
     public PlaylistItem getPlaylistItem(int position) {
-        if (playlists != null && position >= 0 && position < playlists.size()) {
-            return playlists.get(position);
+        if (playlistSet != null && position >= 0 && position < playlistSet.size()) {
+            return playlistSet.get(position);
         } else {
             return null;
         }
     }
 
     public int indexOfPlaylistItem(PlaylistItem playlistItem) {
-        return playlists.indexOf(playlistItem);
+        return playlistSet.indexOf(playlistItem);
     }
 
     public interface PlaylistLoadingCallbacks {
 
+        /**
+         * 准备读取列表数据
+         */
         void onPreLoad();
 
-        void onLoadCompleted(PlaylistItem playlistItem, ArrayList<SongItem> data);
+        /**
+         * 读取播放列表数据成功
+         *
+         * @param playlistItem 读取的播放列表数据
+         * @param data         对应的歌曲列表
+         */
+        void onLoadCompleted(@NonNull final PlaylistItem playlistItem, @Nullable final ArrayList<SongItem> data);
 
+        /**
+         * 读取播放列表数据失败
+         */
         void onLoadFailed();
 
     }

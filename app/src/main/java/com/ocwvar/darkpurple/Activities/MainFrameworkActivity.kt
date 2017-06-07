@@ -22,7 +22,7 @@ import android.widget.TextView
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
-import com.ocwvar.darkpurple.FragmentPages.ui.PlaylistPageFragment
+import com.ocwvar.darkpurple.FragmentPages.PlaylistFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.AudioStatus
@@ -51,7 +51,7 @@ class MainFrameworkActivity : BaseActivity() {
     private lateinit var headMusicAlbum: TextView
 
     private var musicPage: MusicListFragment? = null
-    private var playlistPage: PlaylistPageFragment? = null
+    private var playlistPage: PlaylistFragment? = null
     private var currentPageTAG: Any? = null
     private var blurCoverUpdateReceiver: BlurCoverUpdateReceiver = BlurCoverUpdateReceiver()
     private var playingDataUpdateReceiver: PlayingDataUpdateReceiver = PlayingDataUpdateReceiver()
@@ -245,7 +245,7 @@ class MainFrameworkActivity : BaseActivity() {
             }
             playlistButton.tag -> {
                 if (playlistPage == null) {
-                    playlistPage = PlaylistPageFragment()
+                    playlistPage = PlaylistFragment()
                 }
                 fragmentTransaction.replace(R.id.fragmentWindow, playlistPage)
             }
