@@ -147,17 +147,17 @@ public class AllMusicBackGround extends Fragment implements MediaScannerCallback
     public void onScanCompleted(ArrayList<SongItem> songItems, boolean isFromLastSaved) {
         if (songItems == null) {
             if (fragmentView == null) {
-                Toast.makeText(getActivity(), R.string.noMusic, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.message_scan_result_empty, Toast.LENGTH_SHORT).show();
             } else {
-                Snackbar.make(fragmentView, R.string.noMusic, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(fragmentView, R.string.message_scan_result_empty, Snackbar.LENGTH_SHORT).show();
             }
         } else {
             allMusicAdapter.setDatas(songItems);
             allMusicAdapter.notifyDataSetChanged();
             if (fragmentView == null) {
-                Toast.makeText(getActivity(), R.string.gotMusicDone, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.message_scan_result_done, Toast.LENGTH_SHORT).show();
             } else {
-                Snackbar.make(fragmentView, R.string.gotMusicDone, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(fragmentView, R.string.message_scan_result_done, Snackbar.LENGTH_SHORT).show();
             }
 
         }
