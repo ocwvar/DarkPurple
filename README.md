@@ -5,8 +5,9 @@
 #### 开发计划
 ---
 - 添加Google EXO Player2基础功能 √
-- 新的歌曲选择主界面
-- 添加基于Google EXO Player2的频谱和均衡器功能
+- 新的歌曲选择主界面 √
+- 新的播放列表界面 → 
+- 添加基于Google EXO Player2的频谱和均衡器功能 x
 
 #### 功能介绍
 
