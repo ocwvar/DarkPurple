@@ -25,6 +25,7 @@ import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
 import com.ocwvar.darkpurple.FragmentPages.ui.PlaylistPageFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
+import com.ocwvar.darkpurple.Services.AudioStatus
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.BaseActivity
 import com.ocwvar.darkpurple.Units.CoverProcesser
@@ -91,6 +92,7 @@ class MainFrameworkActivity : BaseActivity() {
                         startActivity(intent)
                     }
                 })
+
         headShower = findViewById(R.id.MainMusic_headShower) as ImageView
         headCoverShower = findViewById(R.id.MainMusic_coverShower) as ImageView
         headMusicTitle = findViewById(R.id.MainMusic_title) as TextView
@@ -99,9 +101,17 @@ class MainFrameworkActivity : BaseActivity() {
         songButton = findViewById(R.id.button_song)
         playlistButton = findViewById(R.id.button_playlist)
         userButton = findViewById(R.id.button_user)
+
         songButton.setOnClickListener(this@MainFrameworkActivity)
         playlistButton.setOnClickListener(this@MainFrameworkActivity)
         userButton.setOnClickListener(this@MainFrameworkActivity)
+        findViewById(R.id.framework_appbar).setOnClickListener {
+            //点击标题主界面栏
+            if (ServiceHolder.getInstance().service?.audioStatus != AudioStatus.Empty) {
+                //转跳到播放界面
+                startActivity(Intent(this@MainFrameworkActivity, PlayingActivity::class.java))
+            }
+        }
 
         //初始化音频服务
         onSetupService()
@@ -298,7 +308,7 @@ class MainFrameworkActivity : BaseActivity() {
             //显示默认数据
             headMusicAlbum.text = ""
             headMusicArtist.text = ""
-            headMusicTitle.text = "#DarkPurple"
+            headMusicTitle.text = "#Project DarkPurple"
         } else {
             headMusicAlbum.text = songData.album
             headMusicArtist.text = songData.artist

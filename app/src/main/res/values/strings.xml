@@ -27,12 +27,22 @@
     <!--主音乐列表界面-->
     <string name="message_waitForSelecting">请先完成添加播放列表</string>
     <string name="message_plzSelect">请单击选择需要添加的曲目</string>
-    <string name="message_play_error">歌曲无法播放，可能文件已损坏</string>
+    <string name="message_play_error">歌曲无法播放,可能文件已损坏</string>
     <string name="message_playlist_name_error">请输入有效的名称</string>
     <string name="message_playlist_name_existed">存在相同名称的播放列表</string>
     <string name="message_playlist_add_error_no_selecting">当前不是选择模式</string>
+    <string name="message_playlist_add_error_existed">添加音频失败,可能存在同名音频</string>
     <string name="message_playlist_add_error_no_song">没有被选择的歌曲</string>
-    <string name="message_playlist_add_done">正在添加播放列表...</string>
+    <string name="message_playlist_add_done">正在添加播放列表…</string>
+    <string name="message_playlist_loading">正在读取播放列表数据</string>
+    <string name="message_playlist_add_done_item">成功添加音频</string>
+    <string name="message_scan_result_empty">无歌曲</string>
+    <string name="message_scan_result_done">已更新列表:D</string>
+    <string name="message_song_deleted">音频已删除</string>
+    <string name="message_song_delete_failed">音频删除失败，可能文件不存在</string>
+    <string name="message_upload_offline">当前为离线模式,暂时无法使用</string>
+    <string name="message_upload_started">音频正在后台上传中…</string>
+    <string name="message_upload_busy">当请等待上一个上传任务完成后再执行</string>
     <string name="dialog_button_create">创建新的播放列表</string>
     <string name="dialog_button_add2">添加到现有播放列表</string>
     <string name="dialog_button_delete">删除音频</string>
@@ -115,8 +125,6 @@
     <string name="musicList_uploading">音频正在后台上传中…</string>
     <string name="musicList_upload_wait">当请等待上一个上传任务完成后再执行</string>
     <string name="textview_option">点此设置设置歌曲文件夹</string>
-    <string name="noMusic">无歌曲扫描结果</string>
-    <string name="gotMusicDone">扫描结束</string>
     <string name="wrongPlaylistName">无效名称,请重新输入</string>
     <string name="existedlaylistName">已经有相同名称的播放列表</string>
     <string name="startSelectPlaylist">请从列表中选择要添加的歌曲</string>

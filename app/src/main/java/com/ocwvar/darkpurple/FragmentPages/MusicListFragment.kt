@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.FragmentPages
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -36,6 +37,7 @@ import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.*
+import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
@@ -65,8 +67,12 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
     private var createPlaylistDialog: CreatePlaylistDialog? = null
     //歌曲切换监听广播接收器
     private var playingDataUpdateReceive: PlayingDataUpdateReceiver? = null
-    //异步保存扫描结果
-    private var cacheScanResult: CacheScanResult? = null
+    //动画Adapter外壳
+    private var animeAdapter: AlphaInAnimationAdapter = AlphaInAnimationAdapter(adapter).let {
+        //条目淡入淡出时间
+        it.setDuration(500)
+        it
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (inflater != null && container != null) {
@@ -87,7 +93,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         }
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout) as SwipeRefreshLayout
         recycleView = view.findViewById(R.id.recycleView) as RecyclerView
-        recycleView.adapter = adapter
+        recycleView.adapter = animeAdapter
         recycleView.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
         recycleView.setHasFixedSize(true)
         swipeRefreshLayout.setColorSchemeColors(AppConfigs.Color.DefaultCoverColor)
@@ -107,17 +113,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
 
         //设置扫描回调接口
         MediaScanner.getInstance().setCallback(this@MusicListFragment)
-
-        if (MediaScanner.getInstance().isHasCachedData) {
-            //优先获取上一次保存至本地的扫描结果
-            MediaScanner.getInstance().getLastTimeCachedData()
-        } else if (MediaScanner.getInstance().isUpdated) {
-            //检查是否有最近的扫描缓存
-            adapter.changeSource(MediaScanner.getInstance().cachedDatas)
-        } else {
-            //新的扫描
-            MediaScanner.getInstance().start()
-        }
     }
 
     /**
@@ -130,10 +125,11 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         recycleView.alpha = 1.0f
         recycleView.setOnTouchListener({ _, _ -> false })
         if (songItems == null) {
-            ToastMaker.show(R.string.noMusic)
+            ToastMaker.show(R.string.message_scan_result_empty)
         } else {
             adapter.changeSource(songItems)
-            ToastMaker.show(R.string.gotMusicDone)
+            animeAdapter.notifyDataSetChanged()
+            ToastMaker.show(R.string.message_scan_result_done)
         }
     }
 
@@ -144,6 +140,18 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      */
     override fun onResume() {
         super.onResume()
+        if (MediaScanner.getInstance().isHasCachedData) {
+            //优先获取上一次保存至本地的扫描结果
+            MediaScanner.getInstance().getLastTimeCachedData()
+        } else if (MediaScanner.getInstance().isUpdated) {
+            //检查是否有最近的扫描缓存
+            adapter.changeSource(MediaScanner.getInstance().cachedDatas)
+            animeAdapter.notifyDataSetChanged()
+        } else {
+            //新的扫描
+            MediaScanner.getInstance().start()
+        }
+
         //恢复后先更新当前播放状态
         adapter.updatePlayingPath(ServiceHolder.getInstance().service?.playingSong?.path)
         //注册歌曲切换接收器
@@ -258,6 +266,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
          * @param   songData    菜单基于的音频数据
          * @param   songDataPosition    列表中的位置
          */
+        @SuppressLint("InflateParams")
         fun show(songData: SongItem, songDataPosition: Int) {
             this.songDataPosition = songDataPosition
             this.songData = songData
@@ -290,7 +299,8 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     if (file.exists() && file.canWrite() && file.delete()) {
                         //删除文件成功
                         adapter.removeData(songDataPosition)
-                        ToastMaker.show(R.string.musicList_deleted)
+                        animeAdapter.notifyItemRemoved(songDataPosition)
+                        ToastMaker.show(R.string.message_song_delete_failed)
                         hide()
                     } else {
                         ToastMaker.show(R.string.musicList_delete_failed)
@@ -300,7 +310,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     //上传文件操作
                     if (TextUtils.isEmpty(AppConfigs.USER.TOKEN)) {
                         //如果当前没有Token,则认为当前为离线模式
-                        ToastMaker.show(R.string.error_need_online)
+                        ToastMaker.show(R.string.message_upload_offline)
                     } else {
                         //上传音频文件
                         val args = HashMap<String, String>()
@@ -325,10 +335,10 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         hide()
                         if (result) {
                             //成功提交任务
-                            ToastMaker.show(R.string.musicList_uploading)
+                            ToastMaker.show(R.string.message_upload_started)
                         } else {
                             //线程池仍有相同的任务未完成
-                            ToastMaker.show(R.string.musicList_upload_wait)
+                            ToastMaker.show(R.string.message_upload_busy)
                         }
                     }
                 }
@@ -350,11 +360,11 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 }
                 R.id.menu_music_online_cover -> {
                     //打开在线封面获取界面
-                    if (songData != null) {
-                        val bundle = Bundle()
-                        bundle.putParcelable("item", songData)
-                        DownloadCoverActivity.startBlurActivityForResultByFragment(10, Color.argb(100, 0, 0, 0), false, this@MusicListFragment, DownloadCoverActivity::class.java, bundle, 10)
+                    val bundle: Bundle = Bundle().let {
+                        it.putParcelable("item", songData)
+                        it
                     }
+                    DownloadCoverActivity.startBlurActivityForResultByFragment(10, Color.argb(100, 0, 0, 0), false, this@MusicListFragment, DownloadCoverActivity::class.java, bundle, 10)
                 }
             }
         }
@@ -373,6 +383,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
          * 显示对话框
          * @param   songData    菜单基于的音频数据
          */
+        @SuppressLint("InflateParams")
         fun show(songData: SongItem) {
             this.songData = songData
             var dialog: AlertDialog? = dialogKeeper.get()
@@ -398,14 +409,14 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 PlaylistUnits.getInstance().loadPlaylistAudiosData(object : PlaylistUnits.PlaylistLoadingCallbacks {
 
                     override fun onPreLoad() {
-                        ToastMaker.show(R.string.text_playlist_loading)
+                        ToastMaker.show(R.string.message_playlist_loading)
                     }
 
                     override fun onLoadCompleted(playlistItem: PlaylistItem, data: ArrayList<SongItem>) {
                         if (PlaylistUnits.getInstance().addAudio(playlistItem, songData)) {
-                            ToastMaker.show(R.string.text_playlist_addNewSong)
+                            ToastMaker.show(R.string.message_playlist_add_done_item)
                         } else {
-                            ToastMaker.show(R.string.text_playlist_addNewSong_Failed)
+                            ToastMaker.show(R.string.message_playlist_add_error_existed)
                         }
                     }
 
@@ -416,10 +427,10 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             } else run {
                 //如果已经加载了 , 则直接添加进去
                 if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().playlists[position], songData)) {
-                    ToastMaker.show(R.string.text_playlist_addNewSong)
+                    ToastMaker.show(R.string.message_playlist_add_done_item)
                     dialogKeeper.get()?.dismiss()
                 } else {
-                    ToastMaker.show(R.string.text_playlist_addNewSong_Failed)
+                    ToastMaker.show(R.string.message_playlist_add_error_existed)
                 }
             }
         }
