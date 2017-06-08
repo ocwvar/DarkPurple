@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,7 +55,7 @@ public class FolderSelectorActivity extends BaseBlurActivity implements MusicFol
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    protected void onSetupViews() {
+    protected void onSetupViews(Bundle savedInstanceState) {
         openUI = (TextView) findViewById(R.id.openUI);
         addPath = (ImageButton) findViewById(R.id.imageButton_addPath);
 

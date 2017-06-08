@@ -48,18 +48,27 @@
     <string name="text_cloud_userText_head">当前账户:</string>
     <string name="text_cloud_offline">当前为离线模式，请先登录后再使用此功能</string>
     <string name="text_cloud_title">我的云储存音乐</string>
-    <string name="text_menu_playlist_detail_rename">修改名称</string>
-    <string name="text_snackbar_playlist_detail_tip">长按曲目进行排序，滑动移除曲目</string>
-    <string name="text_dialog_playlist_detail_rename_title">请输入新的名称</string>
+    <string name="snackbar_playlist_detail_tip">长按曲目进行排序，滑动移除曲目</string>
     <string name="part_playlist_count_head">曲目数:</string>
     <string name="part_playlist_count_end">首</string>
+    <string name="menu_playlist_detail_rename">修改名称</string>
     <string name="message_playlist_play_failed">播放失败,此列表可能已损坏</string>
     <string name="message_playlist_loading">正在加载数据…</string>
     <string name="message_playlist_load_failed">无法读取列表数据,可能数据已损坏</string>
     <string name="message_playlist_empty_removed">列表已无数据,将自动移除</string>
     <string name="message_playlist_saved">已保存更改</string>
+    <string name="dialog_playlist_detail_rename_title">请输入新的名称</string>
     <string name="dialog_button_playlist_edit">编辑播放列表</string>
     <string name="dialog_button_playlist_delete">删除播放列表</string>
+
+    <!--用户设置界面-->
+    <string name="text_button_setting_music_scanning">目录扫描位置设置</string>
+    <string name="text_button_setting_music_sort">歌曲排序设置</string>
+    <string name="text_button_setting_other">其他设置</string>
+    <string name="text_button_setting_login">登录账户</string>
+    <string name="text_button_setting_register">注册账户</string>
+    <string name="text_button_setting_logout">登出账户</string>
+    <string name="text_button_setting_userInfo">用户信息</string>
 
     <!--网络基础文字-->
     <string name="network_simple_unknown_error">应用未知异常</string>

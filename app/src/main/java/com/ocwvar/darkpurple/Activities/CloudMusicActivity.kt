@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.AsyncTask
+import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
@@ -60,7 +61,7 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
         return R.id.toolbar
     }
 
-    override fun onSetupViews() {
+    override fun onSetupViews(savedInstanceState: Bundle?) {
         val recycleView: RecyclerView = findViewById(R.id.recycleView) as RecyclerView
         recycleView.setHasFixedSize(true)
         recycleView.layoutManager = LinearLayoutManager(this@CloudMusicActivity, LinearLayoutManager.VERTICAL, false)

@@ -44,7 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         if (onPreSetup()) {
             setContentView(setActivityView());
             settingToolBar(onSetToolBar());
-            onSetupViews();
+            onSetupViews(savedInstanceState);
         } else {
             finish();
         }
@@ -81,9 +81,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * 初始化控件的操作
      * </p>
      * 执行顺序: 3
+     * @param savedInstanceState
      */
     @SuppressWarnings("ConstantConditions")
-    protected abstract void onSetupViews();
+    protected abstract void onSetupViews(@Nullable Bundle savedInstanceState);
 
     /**
      * 设置默认ToolBar属性

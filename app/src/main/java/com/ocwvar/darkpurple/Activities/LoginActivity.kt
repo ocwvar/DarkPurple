@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Activities
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
@@ -61,7 +62,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
         return 0
     }
 
-    override fun onSetupViews() {
+    override fun onSetupViews(savedInstanceState: Bundle?) {
         inputUsername = findViewById(R.id.login_input_username) as AppCompatEditText
         inputPassword = findViewById(R.id.login_input_password) as AppCompatEditText
         rememberButton = findViewById(R.id.login_remember) as AppCompatCheckBox

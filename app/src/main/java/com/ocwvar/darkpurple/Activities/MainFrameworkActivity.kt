@@ -9,7 +9,9 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
+import android.os.Bundle
 import android.os.IBinder
+import android.os.PersistableBundle
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
@@ -23,6 +25,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
 import com.ocwvar.darkpurple.FragmentPages.PlaylistFragment
+import com.ocwvar.darkpurple.FragmentPages.UserFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.AudioStatus
@@ -30,6 +33,7 @@ import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.BaseActivity
 import com.ocwvar.darkpurple.Units.CoverProcesser
 import com.ocwvar.darkpurple.Units.ToastMaker
+import java.lang.ref.WeakReference
 
 /**
  * Project DarkPurple
@@ -50,8 +54,10 @@ class MainFrameworkActivity : BaseActivity() {
     private lateinit var headMusicArtist: TextView
     private lateinit var headMusicAlbum: TextView
 
-    private var musicPage: MusicListFragment? = null
-    private var playlistPage: PlaylistFragment? = null
+    private var musicPageKeeper: WeakReference<MusicListFragment?> = WeakReference(null)
+    private var playlistPageKeeper: WeakReference<PlaylistFragment?> = WeakReference(null)
+    private var userFragmentkeeper: WeakReference<UserFragment?> = WeakReference(null)
+
     private var currentPageTAG: Any? = null
     private var blurCoverUpdateReceiver: BlurCoverUpdateReceiver = BlurCoverUpdateReceiver()
     private var playingDataUpdateReceiver: PlayingDataUpdateReceiver = PlayingDataUpdateReceiver()
@@ -78,7 +84,7 @@ class MainFrameworkActivity : BaseActivity() {
         return 0
     }
 
-    override fun onSetupViews() {
+    override fun onSetupViews(savedInstanceState: Bundle?) {
         requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(AppConfigs.Color.getColor(R.color.colorSecond))
                 .setAction(R.string.text_snackbar_request_permission_button, {
@@ -116,8 +122,25 @@ class MainFrameworkActivity : BaseActivity() {
         //初始化音频服务
         onSetupService()
 
-        //默认切换到音频列表
-        onViewClick(songButton)
+        //尝试获取上一次的页面位置
+        val lastPage: String? = savedInstanceState?.getString("LastPage", null)
+        lastPage?.let {
+            when (it) {
+                songButton.tag as String -> {
+                    onViewClick(songButton)
+                }
+                playlistButton.tag as String -> {
+                    onViewClick(playlistButton)
+                }
+                userButton.tag as String -> {
+                    onViewClick(userButton)
+                }
+            }
+        }
+        //默认启动页面
+        if (lastPage == null) {
+            onViewClick(songButton)
+        }
     }
 
     /**
@@ -160,9 +183,9 @@ class MainFrameworkActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         //检查文件读写权限
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             requestPermission.show()
-        } else if (requestPermission.isShown) {
+        } else if (AppConfigs.OS_6_UP && requestPermission.isShown) {
             requestPermission.dismiss()
         }
         //更新当前的头部图像
@@ -195,6 +218,20 @@ class MainFrameworkActivity : BaseActivity() {
         }
     }
 
+    /**
+     * 保存上一次的页面位置
+     */
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        if (outState != null && currentPageTAG != null) {
+            try {
+                outState.putString("LastPage", currentPageTAG as String)
+            } catch(e: Exception) {
+                outState.putString("LastPage", null)
+            }
+        }
+    }
+
     override fun onViewClick(clickedView: View) {
         if (clickedView.tag == currentPageTAG) {
             return
@@ -222,9 +259,7 @@ class MainFrameworkActivity : BaseActivity() {
         switchPage(currentPageTAG)
     }
 
-    override fun onViewLongClick(holdedView: View): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onViewLongClick(holdedView: View): Boolean = false
 
     /**
      * 切换页面
@@ -238,18 +273,28 @@ class MainFrameworkActivity : BaseActivity() {
         fragmentTransaction.setCustomAnimations(R.anim.fragment_anim_in, R.anim.fragment_anim_out)
         when (pageTAG) {
             songButton.tag -> {
-                if (musicPage == null) {
-                    musicPage = MusicListFragment()
+                var page: MusicListFragment? = musicPageKeeper.get()
+                if (page == null) {
+                    page = MusicListFragment()
+                    musicPageKeeper = WeakReference(page)
                 }
-                fragmentTransaction.replace(R.id.fragmentWindow, musicPage)
+                fragmentTransaction.replace(R.id.fragmentWindow, page)
             }
             playlistButton.tag -> {
-                if (playlistPage == null) {
-                    playlistPage = PlaylistFragment()
+                var page: PlaylistFragment? = playlistPageKeeper.get()
+                if (page == null) {
+                    page = PlaylistFragment()
+                    playlistPageKeeper = WeakReference(page)
                 }
-                fragmentTransaction.replace(R.id.fragmentWindow, playlistPage)
+                fragmentTransaction.replace(R.id.fragmentWindow, page)
             }
             userButton.tag -> {
+                var page: UserFragment? = userFragmentkeeper.get()
+                if (page == null) {
+                    page = UserFragment()
+                    userFragmentkeeper = WeakReference(page)
+                }
+                fragmentTransaction.replace(R.id.fragmentWindow, page)
             }
         }
         fragmentTransaction.commit()

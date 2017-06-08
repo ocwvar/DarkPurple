@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Activities;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -75,7 +76,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
     }
 
     @Override
-    protected void onSetupViews() {
+    protected void onSetupViews(Bundle savedInstanceState) {
 
         //重置按钮
         (findViewById(R.id.eq_reset)).setOnClickListener(this);

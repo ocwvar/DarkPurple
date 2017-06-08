@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -83,7 +84,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    protected void onSetupViews() {
+    protected void onSetupViews(Bundle savedInstanceState) {
 
         setTitle(this.selectPlaylistItem.getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -97,7 +98,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecycleSwipeHelper(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        info = Snackbar.make(findViewById(android.R.id.content), R.string.text_snackbar_playlist_detail_tip, Snackbar.LENGTH_INDEFINITE)
+        info = Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_playlist_detail_tip, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.simple_done, PlaylistDetailActivity.this)
                 .setActionTextColor(AppConfigs.Color.FloatingButton_Color);
     }
@@ -150,7 +151,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
                 getNewname.setTextColor(Color.WHITE);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(PlaylistDetailActivity.this, R.style.FullScreen_TransparentBG);
-            builder.setTitle(R.string.text_dialog_playlist_detail_rename_title);
+            builder.setTitle(R.string.dialog_playlist_detail_rename_title);
             builder.setView(getNewname);
             builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
                 @Override
