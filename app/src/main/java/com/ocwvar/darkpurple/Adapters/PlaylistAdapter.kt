@@ -35,7 +35,7 @@ class PlaylistAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVie
             if (viewType == 0) {
                 return PlaylistCloudVH(LayoutInflater.from(it.context).inflate(R.layout.item_playlist_cloud_option, it, false))
             } else {
-                return PlaylistVH(LayoutInflater.from(it.context).inflate(R.layout.item_playlist_new, it, false))
+                return PlaylistVH(LayoutInflater.from(it.context).inflate(R.layout.item_playlist, it, false))
             }
         }
         return null
