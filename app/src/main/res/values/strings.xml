@@ -2,8 +2,6 @@
     <!--App 名字-->
     <string name="app_name">DarkPurple</string>
 
-    <!--基本菜单名称-->
-
     <!--文字信息-->
     <string name="simple_unknown">未知</string>
     <string name="simple_cancel">取消</string>
@@ -13,16 +11,13 @@
     <string name="simple_download_failed">下载文件失败,请检查网络状态</string>
     <string name="simple_loading">正在读取中,请稍候</string>
     <string name="simple_uploading">正在上传中,请稍候</string>
-    <string name="service_ok">音频服务连接成功</string>
-    <string name="title_dialog_allmusic_more">对选择的音频进行操作</string>
-    <string name="button_dialog_allmusic_delete">删除音频</string>
-    <string name="button_dialog_allmusic_add">添加到现有播放列表</string>
-    <string name="button_dialog_allmusic_cover">从网络获取封面图像</string>
-    <string name="button_dialog_allmusic_upload">将歌曲上传至我的云</string>
-    <string name="title_dialog_playlist_more">对选择的播放列表进行操作</string>
-    <string name="request_permission_button">申请</string>
-    <string name="button_dialog_playlist_delete">删除列表</string>
-    <string name="button_dialog_playlist_detail">列表详情</string>
+
+    <!--主页面框架文字-->
+    <string name="message_service_ok">音频服务连接成功</string>
+    <string name="text_snackbar_request_permission_button">申请</string>
+    <string name="text_button_song">歌曲</string>
+    <string name="text_button_playlist">列表</string>
+    <string name="text_button_user">用户</string>
 
     <!--主音乐列表界面-->
     <string name="message_waitForSelecting">请先完成添加播放列表</string>
@@ -47,11 +42,15 @@
     <string name="dialog_button_delete">删除音频</string>
     <string name="dialog_button_cover">从网络获取封面图像</string>
     <string name="dialog_button_upload">将歌曲上传至我的云</string>
+    <string name="text_dialog_add2_title">选择要存入的列表中</string>
 
     <!--播放列表界面-->
     <string name="text_cloud_userText_head">当前账户:</string>
     <string name="text_cloud_offline">当前为离线模式，请先登录后再使用此功能</string>
     <string name="text_cloud_title">我的云储存音乐</string>
+    <string name="text_menu_playlist_detail_rename">修改名称</string>
+    <string name="text_snackbar_playlist_detail_tip">长按曲目进行排序，滑动移除曲目</string>
+    <string name="text_dialog_playlist_detail_rename_title">请输入新的名称</string>
     <string name="part_playlist_count_head">曲目数:</string>
     <string name="part_playlist_count_end">首</string>
     <string name="message_playlist_play_failed">播放失败,此列表可能已损坏</string>
@@ -82,19 +81,6 @@
     <string name="login_head_login">欢迎回来 </string>
     <string name="login_head_register">注册成啦 ! 您的用户名为:</string>
 
-    <!--主页面框架文字-->
-    <string name="button_song">歌曲</string>
-    <string name="button_playlist">列表</string>
-    <string name="button_user">用户</string>
-    <string name="head_playing">当前歌曲</string>
-
-    <!--播放列表详情页面文字数据-->
-    <string name="title_detail">列表详情</string>
-    <string name="title_menu_rename">修改名字</string>
-
-    <string name="info_playlist">长按项目进行拖动排序 , 滑动项目进行删除.</string>
-    <string name="empty_playlist">哎呀! 您还没有添加播放列表噢 ~</string>
-
     <!--播放列表项目文字信息-->
     <string name="text_playlist_name">播放列表名称</string>
     <string name="text_playlist_count">包含音频数量</string>
@@ -121,31 +107,8 @@
     <string name="text_cloudMusic_subTitle">云端歌曲数量:</string>
     <string name="text_cloud_header_owner">所属者:</string>
 
-    <!--ViewPager滚动标签栏-->
-    <string name="ViewPage_Tab_AllMusic">音乐库</string>
-    <string name="ViewPage_Tab_Playlist">播放列表</string>
-
     <!--扫描目录版面信息-->
     <string name="musicFolder_name">设置扫描目录</string>
-    <string name="musicFolder_noPermission">应用无权限进行扫描 , 请先授权</string>
-
-    <!--All Music 版面信息-->
-    <string name="musicList_deleted">音频已删除</string>
-    <string name="musicList_delete_failed">音频无法删除，文件无法写入</string>
-    <string name="musicList_uploading">音频正在后台上传中…</string>
-    <string name="musicList_upload_wait">当请等待上一个上传任务完成后再执行</string>
-    <string name="textview_option">点此设置设置歌曲文件夹</string>
-    <string name="wrongPlaylistName">无效名称,请重新输入</string>
-    <string name="existedlaylistName">已经有相同名称的播放列表</string>
-    <string name="startSelectPlaylist">请从列表中选择要添加的歌曲</string>
-    <string name="playliseSaved">列表储存成功</string>
-    <string name="playliseSaveFailed">列表储存失败</string>
-    <string name="playliseSaveCanceled">已取消添加播放列表操作</string>
-    <string name="music_failed">歌曲不存在或已损坏</string>
-    <string name="title_newplaylist_dialog">请输入新建播放列表的名称</string>
-    <string name="title_addPL_dialog">选择需要添加到的播放列表</string>
-    <string name="header_noMusic">无正在播放曲目</string>
-    <string name="error_need_online">当前为离线模式 , 无法使用此功能</string>
 
     <!--添加歌曲文件夹 版面信息-->
     <string name="title_select_folder_ui">选择要扫描的音乐文件夹</string>

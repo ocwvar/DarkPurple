@@ -302,10 +302,10 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     if (file.exists() && file.canWrite() && file.delete()) {
                         //删除文件成功
                         adapter.removeData(songDataPosition)
-                        ToastMaker.show(R.string.message_song_delete_failed)
+                        ToastMaker.show(R.string.message_song_deleted)
                         hide()
                     } else {
-                        ToastMaker.show(R.string.musicList_delete_failed)
+                        ToastMaker.show(R.string.message_song_delete_failed)
                     }
                 }
                 R.id.menu_music_upload -> {
@@ -392,7 +392,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             var dialog: AlertDialog? = dialogKeeper.get()
             if (dialog == null) {
                 val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_addto_playlist, null)
-                val listView: ListView = view.findViewById(R.id.listview) as ListView
+                val listView: ListView = view.findViewById(R.id.listView) as ListView
                 val adapter: ArrayAdapter<String> = ArrayAdapter(fragmentView.context, R.layout.simple_textview)
                 PlaylistUnits.getInstance().playlistSet.forEach {
                     adapter.add(it.name)

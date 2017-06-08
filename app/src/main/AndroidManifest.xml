@@ -52,11 +52,6 @@
         </activity>
 
         <activity
-            android:name=".Activities.SelectMusicActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity
             android:name=".Activities.PlayingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.PlayingActivity" />
@@ -92,11 +87,6 @@
             android:name=".Activities.CloudMusicActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity
-            android:name=".Activities.WelcomeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/WelcomeStyle" />
 
         <activity
             android:name=".Activities.FolderSelectorUI"

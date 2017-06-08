@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/menu_action_rename"
-        android:icon="@drawable/ic_action_rename"
-        android:title="@string/title_menu_rename"
+        android:icon="@drawable/ic_action_edit"
+        android:title="@string/text_menu_playlist_detail_rename"
         app:showAsAction="always" />
 
 </menu>

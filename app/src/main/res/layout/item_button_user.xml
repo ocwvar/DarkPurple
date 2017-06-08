@@ -10,6 +10,6 @@
     android:gravity="center"
     android:padding="5dp"
     android:tag="button_user"
-    android:text="@string/button_user"
+    android:text="@string/text_button_user"
     android:textColor="#fff"
     android:textSize="12sp" />

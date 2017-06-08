@@ -36,9 +36,9 @@ public class CoverPreviewAdapter extends RecyclerView.Adapter {
     public CoverPreviewAdapter() {
         list = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= 21) {
-            loadingRes = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_picture_loading);
+            loadingRes = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_music_mid);
         } else {
-            loadingRes = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_picture_loading);
+            loadingRes = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_music_mid);
         }
     }
 

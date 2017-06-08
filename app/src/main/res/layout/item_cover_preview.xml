@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="#7f000000"
         android:scaleType="center"
-        android:src="@drawable/ic_picture_loading" />
+        android:src="@drawable/ic_music_mid" />
 
     <TextView
         android:id="@+id/textView_cover_preview_name"

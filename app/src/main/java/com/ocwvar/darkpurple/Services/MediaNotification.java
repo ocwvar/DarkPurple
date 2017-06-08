@@ -17,7 +17,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
-import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
+import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
@@ -96,7 +96,7 @@ class MediaNotification {
         }
 
         //点击通知操作
-        Intent intent = new Intent(context, SelectMusicActivity.class);
+        Intent intent = new Intent(context, MainFrameworkActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);

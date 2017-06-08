@@ -99,7 +99,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
 
             R.id.login_start_offline -> {
                 //离线使用 , 则直接进入主界面即可
-                startActivity(Intent(this@LoginActivity, SelectMusicActivity::class.java))
+                startActivity(Intent(this@LoginActivity, MainFrameworkActivity::class.java))
                 finish()
             }
         }
@@ -276,7 +276,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
             inputPassword.text.clear()
         }
         Toast.makeText(this@LoginActivity, String.format("%s%s", AppConfigs.ApplicationContext.getText(R.string.login_head_login), username), Toast.LENGTH_SHORT).show()
-        startActivity(Intent(this@LoginActivity, SelectMusicActivity::class.java))
+        startActivity(Intent(this@LoginActivity, MainFrameworkActivity::class.java))
         finish()
     }
 
@@ -294,7 +294,7 @@ class LoginActivity : BaseActivity(), OnLoginCallbacks {
             inputPassword.text.clear()
         }
         Toast.makeText(this@LoginActivity, String.format("%s%s", AppConfigs.ApplicationContext.getText(R.string.login_head_register), username), Toast.LENGTH_SHORT).show()
-        startActivity(Intent(this@LoginActivity, SelectMusicActivity::class.java))
+        startActivity(Intent(this@LoginActivity, MainFrameworkActivity::class.java))
         finish()
     }
 

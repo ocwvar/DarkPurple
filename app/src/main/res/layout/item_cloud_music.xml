@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:drawablePadding="3dp"
-                    android:drawableStart="@drawable/ic_action_playlist_delete"
+                    android:drawableStart="@drawable/ic_action_delete"
                     android:gravity="center"
                     android:text="@string/text_cloudMusic_button_remove"
                     android:textColor="@color/pureWhite" />

@@ -442,7 +442,7 @@ public class MediaScanner {
         private final String[] defaultPaths = new String[]{
                 AppConfigs.DownloadMusicFolder
         };
-        
+
         private final FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -507,7 +507,7 @@ public class MediaScanner {
                 }
             }
         }
-        
+
         /**
          * 检查目录是否有效
          *
@@ -570,7 +570,7 @@ public class MediaScanner {
          * 扫描获取设置的目录下的音频文件
          *
          * @return 音频文件列表
-         * @throws Exception    扫描发生的异常
+         * @throws Exception 扫描发生的异常
          */
         private
         @Nullable

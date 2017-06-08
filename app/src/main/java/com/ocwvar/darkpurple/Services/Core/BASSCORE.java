@@ -222,6 +222,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 暂停音频
+     *
      * @return 执行结果
      */
     @Override
@@ -240,6 +241,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 释放音频资源
+     *
      * @return 执行结果
      */
     @Override
@@ -260,6 +262,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 获取音频当前播放的位置，即已播放的长度
+     *
      * @return 当前位置，异常返回 0
      */
     @Override
@@ -273,6 +276,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 跳转至指定音频长度位置
+     *
      * @return 执行结果
      */
     @Override
@@ -286,6 +290,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 获取音频长度
+     *
      * @return 音频长度，异常返回 0
      */
     @Override
@@ -299,6 +304,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 获取当前音乐播放状态
+     *
      * @return 当前状态
      */
     @Override
@@ -320,7 +326,8 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 获取均衡器各个频段参数
-     * @return  均衡器参数
+     *
+     * @return 均衡器参数
      */
     @NotNull
     @Override
@@ -330,6 +337,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 更改均衡器频段参数
+     *
      * @param eqParameter 均衡器参数 -10 ~ 10
      * @param eqIndex     调节位置
      * @return 执行结果
@@ -362,6 +370,7 @@ public final class BASSCORE implements CoreAdvFunctions {
 
     /**
      * 获取当前频谱数据
+     *
      * @return 频谱数据，异常返回 NULL
      */
     @Nullable

@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.ocwvar.darkpurple.Activities.LoginActivity;
-import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
+import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class ActivityManager implements Application.ActivityLifecycleCallbacks {
 
     public void restartMainActivity() {
         release();
-        Intent intent = new Intent(AppConfigs.ApplicationContext, SelectMusicActivity.class);
+        Intent intent = new Intent(AppConfigs.ApplicationContext, MainFrameworkActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         AppConfigs.ApplicationContext.startActivity(intent);
     }

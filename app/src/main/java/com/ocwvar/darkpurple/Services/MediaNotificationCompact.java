@@ -19,7 +19,7 @@ import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
-import com.ocwvar.darkpurple.Activities.SelectMusicActivity;
+import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
@@ -94,7 +94,7 @@ class MediaNotificationCompact {
         }
 
         //点击通知操作
-        Intent intent = new Intent(context, SelectMusicActivity.class);
+        Intent intent = new Intent(context, MainFrameworkActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -174,6 +174,7 @@ class MediaNotificationCompact {
     void close() {
         context.unregisterReceiver(notificationReceiver);
     }
+
     /**
      * 读取歌曲封面图像
      *

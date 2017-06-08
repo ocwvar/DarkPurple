@@ -85,7 +85,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
     @SuppressWarnings("ConstantConditions")
     protected void onSetupViews() {
 
-        setTitle(this.selectPlaylistItem.getName() + " " + getApplicationContext().getString(R.string.title_detail));
+        setTitle(this.selectPlaylistItem.getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         adapter = new PlaylistDetailAdapter(this.selectPlaylistItem.getPlaylist(), this);
 
@@ -97,7 +97,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RecycleSwipeHelper(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        info = Snackbar.make(findViewById(android.R.id.content), R.string.info_playlist, Snackbar.LENGTH_INDEFINITE)
+        info = Snackbar.make(findViewById(android.R.id.content), R.string.text_snackbar_playlist_detail_tip, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.simple_done, PlaylistDetailActivity.this)
                 .setActionTextColor(AppConfigs.Color.FloatingButton_Color);
     }
@@ -150,7 +150,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
                 getNewname.setTextColor(Color.WHITE);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(PlaylistDetailActivity.this, R.style.FullScreen_TransparentBG);
-            builder.setTitle(R.string.title_newplaylist_dialog);
+            builder.setTitle(R.string.text_dialog_playlist_detail_rename_title);
             builder.setView(getNewname);
             builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
                 @Override
@@ -168,7 +168,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
                             //可以开始更改
                             PlaylistUnits.getInstance().renamePlaylist(selectPlaylistItem.getName(), getNewname.getText().toString());
                             getNewname.getText().clear();
-                            setTitle(selectPlaylistItem.getName() + " " + getApplicationContext().getString(R.string.title_detail));
+                            setTitle(selectPlaylistItem.getName());
                             intent.putExtra("renamed", true);
                             setResult(LIST_CHANGED, intent);
                             dialogInterface.dismiss();

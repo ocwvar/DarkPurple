@@ -81,7 +81,7 @@ class MainFrameworkActivity : BaseActivity() {
     override fun onSetupViews() {
         requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(AppConfigs.Color.getColor(R.color.colorSecond))
-                .setAction(R.string.request_permission_button, {
+                .setAction(R.string.text_snackbar_request_permission_button, {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         //如果应用还可以请求权限,则弹出请求对话框
                         requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 9)
@@ -135,7 +135,7 @@ class MainFrameworkActivity : BaseActivity() {
                         if (service != null) {
                             //如果获取服务成功 , 则保存到全局储存器中 , 然后解除绑定
                             ServiceHolder.getInstance().service = service
-                            ToastMaker.show(R.string.service_ok)
+                            ToastMaker.show(R.string.message_service_ok)
                         } else {
                             //否则提示用户
                             ToastMaker.show(R.string.ERROR_SERVICE_CREATE)

@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import com.ocwvar.darkpurple.Adapters.AllMusicAdapter;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaScanner;
 
@@ -116,9 +115,6 @@ public class AppConfigs {
     //状态栏高度
     public static int StatusBarHeight = -1;
 
-    //主界面列表样式
-    public static AllMusicAdapter.LayoutStyle layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
-
     //播放界面是否使用兼容模式
     public static boolean useCompatMode = false;
 
@@ -192,19 +188,6 @@ public class AppConfigs {
                     break;
             }
 
-            value = preferences.getString("MainList_Style", "0");
-            switch (value) {
-                case "0":
-                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
-                    break;
-                case "1":
-                    layoutStyle = AllMusicAdapter.LayoutStyle.Linear;
-                    break;
-                default:
-                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
-                    break;
-            }
-
             value = preferences.getString("spectrum_style", "0");
             switch (value) {
                 case "0":
@@ -273,19 +256,6 @@ public class AppConfigs {
                     break;
                 default:
                     SortType = MediaScanner.SortType.ByName;
-                    break;
-            }
-
-            value = preferences.getString("MainList_Style", "0");
-            switch (value) {
-                case "0":
-                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
-                    break;
-                case "1":
-                    layoutStyle = AllMusicAdapter.LayoutStyle.Linear;
-                    break;
-                default:
-                    layoutStyle = AllMusicAdapter.LayoutStyle.Grid;
                     break;
             }
 
@@ -567,7 +537,6 @@ public class AppConfigs {
          * @param resInt 资源地址
          * @return 颜色
          */
-
         public static int getColor(int resInt) {
             if (OS_6_UP) {
                 //noinspection ResourceType
