@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -36,7 +35,10 @@ import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
-import com.ocwvar.darkpurple.Units.*
+import com.ocwvar.darkpurple.Units.CoverImage2File
+import com.ocwvar.darkpurple.Units.MediaScanner
+import com.ocwvar.darkpurple.Units.PlaylistUnits
+import com.ocwvar.darkpurple.Units.ToastMaker
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
@@ -170,6 +172,16 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         //注销歌曲切换接收器
         if (playingDataUpdateReceive != null && playingDataUpdateReceive!!.isRegistered) {
             AppConfigs.ApplicationContext.unregisterReceiver(playingDataUpdateReceive!!)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 10 && resultCode == DownloadCoverActivity.DATA_CHANGED) {
+            //如果封面发生修改，则回到界面时重新刷新数据
+            recycleView.alpha = 0.3f
+            recycleView.setOnTouchListener({ _, _ -> true })
+            MediaScanner.getInstance().start()
         }
     }
 
@@ -355,6 +367,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         it
                     }
                     DownloadCoverActivity.startBlurActivityForResultByFragment(10, Color.argb(100, 0, 0, 0), false, this@MusicListFragment, DownloadCoverActivity::class.java, bundle, 10)
+                    hide()
                 }
             }
         }
@@ -530,18 +543,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     adapter.updatePlayingPath(ServiceHolder.getInstance().service.playingSong?.path)
                 }
             }
-        }
-
-    }
-
-    /**
-     * 异步缓存最后一次扫描历史，给快速启动APP使用
-     */
-    private class CacheScanResult(val array: ArrayList<SongItem>) : AsyncTask<Void, Int, Boolean>() {
-
-        override fun doInBackground(vararg params: Void?): Boolean {
-            JSONHandler.cacheSearchResult(array)
-            return true
         }
 
     }
