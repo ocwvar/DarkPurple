@@ -131,14 +131,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || ThemePreferenceFragment.class.getName().equals(fragmentName);
     }
 
-    @Override
-    public void onHeaderClick(Header header, int position) {
-        super.onHeaderClick(header, position);
-        if (header.titleRes == R.string.logout) {
-            ActivityManager.getInstance().restartLoginActivity();
-        }
-    }
-
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
         @Override

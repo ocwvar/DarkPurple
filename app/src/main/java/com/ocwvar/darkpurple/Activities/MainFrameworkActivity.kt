@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
@@ -56,7 +55,7 @@ class MainFrameworkActivity : BaseActivity() {
 
     private var musicPageKeeper: WeakReference<MusicListFragment?> = WeakReference(null)
     private var playlistPageKeeper: WeakReference<PlaylistFragment?> = WeakReference(null)
-    private var userFragmentkeeper: WeakReference<UserFragment?> = WeakReference(null)
+    private var userPagekeeper: WeakReference<UserFragment?> = WeakReference(null)
 
     private var currentPageTAG: Any? = null
     private var blurCoverUpdateReceiver: BlurCoverUpdateReceiver = BlurCoverUpdateReceiver()
@@ -289,10 +288,10 @@ class MainFrameworkActivity : BaseActivity() {
                 fragmentTransaction.replace(R.id.fragmentWindow, page)
             }
             userButton.tag -> {
-                var page: UserFragment? = userFragmentkeeper.get()
+                var page: UserFragment? = userPagekeeper.get()
                 if (page == null) {
                     page = UserFragment()
-                    userFragmentkeeper = WeakReference(page)
+                    userPagekeeper = WeakReference(page)
                 }
                 fragmentTransaction.replace(R.id.fragmentWindow, page)
             }
@@ -309,7 +308,7 @@ class MainFrameworkActivity : BaseActivity() {
         //处理头部模糊背景部分的图像加载
         val animeDrawable: TransitionDrawable
         if (blurDrawable == null) {
-            animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, ColorDrawable(AppConfigs.Color.DefaultCoverColor)))
+            animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, this@MainFrameworkActivity.resources.getDrawable(R.drawable.blur)))
         } else {
             animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, blurDrawable))
         }

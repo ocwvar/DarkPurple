@@ -69,6 +69,16 @@
     <string name="text_button_setting_register">注册账户</string>
     <string name="text_button_setting_logout">登出账户</string>
     <string name="text_button_setting_userInfo">用户信息</string>
+    <string name="text_button_setting_about">关于应用</string>
+    <string name="text_about_title">DarkPurple Music Player</string>
+    <string name="text_about_me_title">软件作者</string>
+    <string name="text_about_me">OCWVAR</string>
+    <string name="text_about_project_title">项目开源地址</string>
+    <string name="text_about_project">https://github.com/ocwvar/DarkPurple</string>
+    <string name="text_about_email_title">联系邮箱</string>
+    <string name="text_about_email">ocwvarx2@gmail.com\n727575311@qq.com</string>
+    <string name="text_about_thanks_title">感谢</string>
+    <string name="text_about_thanks">Android Asset Studio\ncoverbox.sinaapp.com</string>
 
     <!--网络基础文字-->
     <string name="network_simple_unknown_error">应用未知异常</string>
