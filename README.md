@@ -42,24 +42,30 @@ CoverBox 的作者为 Henry Hu
 
 ---
 
-##### APP截图 (2017/4/23 00:10) ，目前为旧样式
+##### APP截图 (2017/6/9 19:52)
 ##### *截图无法展示所有应用的细节*
 
-### 登录界面<p></p>
+### 主界面<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/login.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_3.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_4.png)
 
-### 主界面  可以修改头部图像，可以修改为列表形式<p></p>
+### 播放列表<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_1.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_2.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_3.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_4_list.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/main_submenu.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_detail.jpg)
 
 ### 播放界面<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_2.png)
+
+### 基础设置<p></p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_1.png)
 
 ### 扫描目录设置<p></p>
 
@@ -69,16 +75,6 @@ CoverBox 的作者为 Henry Hu
 ### 封面下载<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cover.jpg)
-
-### 播放列表<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_detail.jpg)
-
-### 云储存功能<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_list.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cloud_download.jpg)
 
 ### 均衡器设置<p></p>
 
@@ -92,10 +88,6 @@ CoverBox 的作者为 Henry Hu
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_sp.jpg)
 
-### 基础设置<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_normal.jpg)
-
 ### 频谱动画 (风格1)<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp.gif)
@@ -108,9 +100,5 @@ CoverBox 的作者为 Henry Hu
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp3.gif)
 ---
-
-### 通知栏显示效果 (机型: Nexus 6 Android 7.1.1)<p></p>
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/notification_l.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/notification_s.jpg)
 
 
