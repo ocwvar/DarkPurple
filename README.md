@@ -47,25 +47,25 @@ CoverBox 的作者为 Henry Hu
 
 ### 主界面<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_1.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_2.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_3.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_4.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_3.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/musiclist_4.png)
 
 ### 播放列表<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_1.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_2.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_2.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playlist_detail.jpg)
 
 ### 播放界面<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing_1.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing_2.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/playing_2.png)
 
 ### 基础设置<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_1.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_1.png)
 
 ### 扫描目录设置<p></p>
 
