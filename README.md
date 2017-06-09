@@ -101,8 +101,4 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp3.gif)
 ---
 
-### 通知栏显示效果 (机型: Nexus 6 Android 7.1.1)<p></p>
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/notification_l.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/notification_s.jpg)
-
 
