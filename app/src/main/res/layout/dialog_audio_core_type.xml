@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    android:padding="15dp">
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/radioButton_coreType_bass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="bass"
+            android:text="@string/text_button_core_bass"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            app:buttonTint="@color/myCloud_Offline" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/text_core_bass_info"
+            android:textColor="@color/Text_LightGray" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/radioButton_coreType_exo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="exo"
+            android:text="@string/text_button_core_exo"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            app:buttonTint="@color/myCloud_Offline" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/text_core_exo_info"
+            android:textColor="@color/Text_LightGray" />
+
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/radioButton_coreType_compat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.3"
+            android:clickable="false"
+            android:tag="compat"
+            android:text="@string/text_button_core_compat"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            app:buttonTint="@color/myCloud_Offline" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_core_compat_info"
+            android:textColor="@color/Text_LightGray" />
+
+        <Button
+            android:id="@+id/button_coreType_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="20dp"
+            android:background="@null"
+            android:text="@string/text_button_core_done"
+            android:textColor="@color/myCloud_Offline"
+            android:textStyle="bold" />
+
+    </RadioGroup>
+
+</android.support.v4.widget.NestedScrollView>

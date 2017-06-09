@@ -110,7 +110,18 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         Logger.warnning(TAG, "onCreate");
 
         //创建对象
-        core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.EXO2);
+        switch (AppConfigs.audioCoreType) {
+            case 0:
+                core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.BASS_Library);
+                break;
+            case 1:
+                core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.EXO2);
+                break;
+            case 2:
+            default:
+                core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.BASS_Library);
+                break;
+        }
         notificationControl = new NotificationControl();
         headsetDisconnectedReceiver = new HeadsetDisconnectedReceiver();
         headsetPlugInReceiver = new HeadsetPlugInReceiver();
