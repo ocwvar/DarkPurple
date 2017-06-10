@@ -45,6 +45,7 @@ import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.AudioStatus;
+import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
@@ -681,6 +682,10 @@ public class PlayingActivity
             spectrumSwitch.setTag("on");
 
             coverSpectrum.setVisibility(View.VISIBLE);
+            if (audioService.currentCoreType() == CoreType.EXO2) {
+                //如果当前是EXO2音频模式，则需要提前打开频谱接收器
+                audioService.EXO_ONLY_switch_on_visualizer();
+            }
             if (audioService.getAudioStatus() == AudioStatus.Playing) {
                 //如果当前是正在播放 , 才执行动画
                 surfaceViewController.start();
@@ -696,6 +701,10 @@ public class PlayingActivity
             spectrumSwitch.setTag("off");
             surfaceViewController.stop();
             coverSpectrum.setVisibility(View.GONE);
+            if (audioService.currentCoreType() == CoreType.EXO2) {
+                //如果当前是EXO2音频模式，则需要手动关闭频谱接收器
+                audioService.EXO_ONLY_switch_off_visualizer();
+            }
         }
 
     }

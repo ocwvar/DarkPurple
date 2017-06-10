@@ -10,7 +10,9 @@ import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Services.Core.BASSCORE;
 import com.ocwvar.darkpurple.Services.Core.CoreAdvFunctions;
 import com.ocwvar.darkpurple.Services.Core.CoreBaseFunctions;
+import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Services.Core.EXOCORE;
+import com.ocwvar.darkpurple.Services.Core.EXO_ONLY_Functions;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 音频播放处理
  */
-public class AudioNextCore {
+class AudioNextCore {
     private final String TAG = "音频引擎";
     private final Context applicationContext;
 
@@ -288,6 +290,22 @@ public class AudioNextCore {
     }
 
     /**
+     * EXO核心特有方法
+     * 开始允许接收频谱数据，调用此方法后才可以从：getSpectrum()方法内获取到数据
+     */
+    void EXO_ONLY_switch_on_visualizer() {
+        ((EXO_ONLY_Functions) coreInterface).EXO_ONLY_switch_on_visualizer();
+    }
+
+    /**
+     * EXO核心特有方法
+     * 关闭接收频谱数据，调用此方法后将无法接收到频谱数据
+     */
+    void EXO_ONLY_switch_off_visualizer() {
+        ((EXO_ONLY_Functions) coreInterface).EXO_ONLY_switch_off_visualizer();
+    }
+
+    /**
      * @return 当前使用的播放核心是否支持高级功能
      */
     boolean isCoreSupportedAdvFunction() {
@@ -357,24 +375,6 @@ public class AudioNextCore {
      */
     boolean seek2Position(double position) {
         return coreInterface.seekPosition(position);
-    }
-
-    /**
-     * 播放类型方案枚举类型
-     */
-    public enum CoreType {
-        /**
-         * Un4seen Bass Library 方案
-         */
-        BASS_Library,
-        /**
-         * Google ExoPlayer2 方案
-         */
-        EXO2,
-        /**
-         * 原生MediaPlayer方案
-         */
-        COMPAT
     }
 
 }

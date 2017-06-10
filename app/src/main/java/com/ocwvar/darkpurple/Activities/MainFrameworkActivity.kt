@@ -115,7 +115,7 @@ class MainFrameworkActivity : BaseActivity() {
         userButton.setOnClickListener(this@MainFrameworkActivity)
 
         floatingActionButton.setOnClickListener {
-            //点击标题主界面栏
+            //点击主界面上的Floating Action Button事件
             if (ServiceHolder.getInstance().service?.audioStatus != AudioStatus.Empty) {
                 //转跳到播放界面
                 startActivity(Intent(this@MainFrameworkActivity, PlayingActivity::class.java))

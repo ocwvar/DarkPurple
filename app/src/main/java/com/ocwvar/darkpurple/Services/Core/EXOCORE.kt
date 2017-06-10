@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Services.Core
 
 import android.content.Context
 import android.content.Intent
+import android.media.audiofx.Visualizer
 import android.net.Uri
 import android.support.v4.content.FileProvider
 import com.google.android.exoplayer2.*
@@ -23,6 +24,7 @@ import com.ocwvar.darkpurple.Units.Logger
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.nio.ByteBuffer
 
 /**
  * Project DarkPurple
@@ -31,16 +33,18 @@ import java.io.IOException
  * File Location com.ocwvar.darkpurple.Services.Core
  * This file use to :   Google ExoPlayer2 播放方案
  */
-class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
+class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Functions {
 
     private val TAG: String = "EXO_CORE"
-    private val exoPlayer: ExoPlayer
+    private val exoPlayer: SimpleExoPlayer
     private val exoPlayerCallback: ExoPlayerCallback
     //当前音频状态枚举
     private var currentAudioStatus = AudioStatus.Empty
     //曲目长度变量
     private var isMusicLoaded: Boolean = false
     private var loadedSourceDuration: Double = 100000.0
+    //频谱取样对象
+    private var visualizerLoader: VisualizerLoader? = null
 
     init {
         exoPlayerCallback = ExoPlayerCallback()
@@ -163,6 +167,68 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
     }
 
     /**
+     * 获取均衡器各个频段参数
+     * @return  均衡器参数
+     */
+    override fun getEQParameters(): IntArray {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    /**
+     * 更改均衡器频段参数
+     * @param eqParameter 均衡器参数 -10 ~ 10
+     * @param eqIndex     调节位置
+     * @return 执行结果
+     */
+    override fun setEQParameters(eqParameter: Int, eqIndex: Int): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    /**
+     * 重置均衡器
+     */
+    override fun resetEQ() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    /**
+     * 获取当前频谱数据
+     * 使用此接口前需要调用：switchOnSpectrum()
+     * 使用完成后需要调用：switchOffSpectrum()
+     * @return  频谱数据，异常返回 NULL
+     */
+    override fun getSpectrum(): FloatArray? {
+        try {
+            return visualizerLoader?.get()
+        } catch(e: Exception) {
+            //获取频谱数据期间发生异常
+            Logger.error(TAG, "获取频谱数据发生异常！ " + e)
+            return null
+        }
+    }
+
+    /**
+     * EXO核心特有方法
+     * 开始允许接收频谱数据，调用此方法后才可以从：getSpectrum()方法内获取到数据
+     */
+    override fun EXO_ONLY_switch_on_visualizer() {
+        visualizerLoader?.switcher = true
+        if (visualizerLoader == null || visualizerLoader!!.sessionId != exoPlayer.audioSessionId) {
+            //如果当前频谱加载器的音频ID不等于当前正在播放的曲目ID，则需要重新创建
+            visualizerLoader?.release()
+            visualizerLoader = VisualizerLoader(exoPlayer.audioSessionId)
+        }
+    }
+
+    /**
+     * EXO核心特有方法
+     * 关闭接收频谱数据，调用此方法后将无法接收到频谱数据
+     */
+    override fun EXO_ONLY_switch_off_visualizer() {
+        visualizerLoader?.switcher = false
+    }
+
+    /**
      * 将文件路径转换为Uri
      * @return  文件的URI路径，如果文件无法找到或解析失败，返回NULL结果
      */
@@ -177,6 +243,54 @@ class EXOCORE(val applicationContext: Context) : CoreBaseFunctions {
             Logger.error(TAG, "解析文件Uri路径失败！  $e")
             return null
         }
+    }
+
+
+    /**
+     * 频谱加载器
+     */
+    private inner class VisualizerLoader(val sessionId: Int) {
+
+        private val visualizerObject: Visualizer = Visualizer(sessionId)
+        //负责控制是否接收数据的标记变量
+        var switcher: Boolean = false
+
+        init {
+            //初始状态为未启用，不接收数据
+            visualizerObject.enabled = false
+            visualizerObject.captureSize = Visualizer.getCaptureSizeRange()[1]
+        }
+
+        /**
+         * 获取瞬时的频谱数据
+         */
+        fun get(): FloatArray? {
+            //不接收，不返回 数据
+            if (!switcher) return null
+
+            if (!visualizerObject.enabled) {
+                visualizerObject.enabled = true
+            }
+            val byteBuffer: ByteBuffer = ByteBuffer.allocate(512)
+            val byteArray: ByteArray = ByteArray(512)
+            val floatArray: FloatArray = FloatArray(128)
+            byteBuffer.order(null)
+            visualizerObject.getFft(byteArray)
+            byteBuffer.put(byteArray)
+
+            //将字节流转换为浮点数组
+            byteBuffer.asFloatBuffer().get(floatArray)
+            return floatArray
+        }
+
+        /**
+         * 释放频谱资源
+         */
+        fun release() {
+            visualizerObject.enabled = false
+            visualizerObject.release()
+        }
+
     }
 
     /**

@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
+import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Logger;
 
@@ -112,14 +113,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         //创建对象
         switch (AppConfigs.audioCoreType) {
             case 0:
-                core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.BASS_Library);
+                core = new AudioNextCore(getApplicationContext(), CoreType.BASS_Library);
                 break;
             case 1:
-                core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.EXO2);
+                core = new AudioNextCore(getApplicationContext(), CoreType.EXO2);
                 break;
             case 2:
             default:
-                core = new AudioNextCore(getApplicationContext(), AudioNextCore.CoreType.BASS_Library);
+                core = new AudioNextCore(getApplicationContext(), CoreType.BASS_Library);
                 break;
         }
         notificationControl = new NotificationControl();
@@ -263,7 +264,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         disableAudioFocus();
 
         //暂停当前的播放
-        if (core.currentCoreType() == AudioNextCore.CoreType.EXO2) {
+        if (core.currentCoreType() == CoreType.EXO2) {
             this.isRunningForeground = false;   //此标记是给EXO2內核使用的
             System.out.println();
         }
@@ -316,8 +317,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                     this.isRunningForeground = true;
                     break;
                 case BASS_Library:
-                    /**
-                     * 由 BASS 核心发起的 Notification 广播更新通知，这里就不需要调用 updateNotification()
+                    /*
+                      由 BASS 核心发起的 Notification 广播更新通知，这里就不需要调用 updateNotification()
                      */
                     break;
                 case COMPAT:
@@ -493,6 +494,29 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         return core.getSpectrum();
     }
 
+    /**
+     * EXO核心特有方法
+     * 开始允许接收频谱数据，调用此方法后才可以从：getSpectrum()方法内获取到数据
+     */
+    public void EXO_ONLY_switch_on_visualizer() {
+        core.EXO_ONLY_switch_on_visualizer();
+    }
+
+    /**
+     * EXO核心特有方法
+     * 关闭接收频谱数据，调用此方法后将无法接收到频谱数据
+     */
+    public void EXO_ONLY_switch_off_visualizer() {
+        core.EXO_ONLY_switch_off_visualizer();
+    }
+
+    /**
+     * @return 当前音频核心类型
+     */
+    public CoreType currentCoreType() {
+        return core.currentCoreType();
+    }
+    
     /**
      * 获取均衡器频段设置
      *
