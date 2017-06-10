@@ -51,6 +51,7 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_2.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_3.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_4.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_5.png)
 
 ### 播放列表<p></p>
 
@@ -66,6 +67,7 @@ CoverBox 的作者为 Henry Hu
 ### 基础设置<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_2.png)
 
 ### 扫描目录设置<p></p>
 
