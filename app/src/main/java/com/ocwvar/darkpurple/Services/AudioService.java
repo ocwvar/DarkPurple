@@ -588,6 +588,16 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     /**
+     * 关闭服务
+     */
+    public void closeService() {
+        core.releaseAudio();
+        stopForeground(true);
+        stopSelf();
+        ServiceHolder.getInstance().setService(null);
+    }
+
+    /**
      * 服务对象传递类
      */
     public class ServiceObject extends Binder {

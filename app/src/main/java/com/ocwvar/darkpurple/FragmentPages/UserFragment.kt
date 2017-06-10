@@ -17,6 +17,8 @@ import com.ocwvar.darkpurple.Activities.SettingsActivity
 import com.ocwvar.darkpurple.Adapters.UserSettingsAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.R
+import com.ocwvar.darkpurple.Services.ServiceHolder
+import com.ocwvar.darkpurple.Units.ActivityManager
 import java.lang.ref.WeakReference
 
 
@@ -125,47 +127,46 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
      */
     private inner class CoreSelectorDialog {
 
-        private var viewkeeper: WeakReference<View?> = WeakReference(null)
         private var selectedPos: Int = -1
 
         fun show() {
-            var view: View? = viewkeeper.get()
-            if (view == null) {
-                view = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_audio_core_type, null, false)
-                view.findViewById(R.id.button_coreType_done).setOnClickListener {
-                    //点击确定按钮事件
-                    if (selectedPos in 0..2 && selectedPos != AppConfigs.audioCoreType) {
-                        //如果选择的项目在0~2之间，同时发生了类型的改变
-                        val spEditor: SharedPreferences.Editor = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit()
-                        spEditor.putInt("audioCoreType", selectedPos)
-                    }
+            var view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_audio_core_type, null, false)
+            view.findViewById(R.id.button_coreType_done).setOnClickListener {
+                //点击确定按钮事件
+                if (selectedPos in 0..2 && selectedPos != AppConfigs.audioCoreType) {
+                    //如果选择的项目在0~2之间，同时发生了类型的改变
+                    val spEditor: SharedPreferences.Editor = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit()
+                    //应用设置
+                    spEditor.putInt("audioCoreType", selectedPos).commit()
+                    AppConfigs.reInitOptionValues()
+                    //关闭现有服务
+                    ServiceHolder.getInstance().service.closeService()
+                    //重新启动界面
+                    ActivityManager.getInstance().restartMainActivity()
                 }
-                (view.findViewById(R.id.radioButton_coreType_bass) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
-                    //BASS类型 点击事件
-                    if (isChecked) {
-                        selectedPos = 0
-                    }
-                }
-                (view.findViewById(R.id.radioButton_coreType_exo) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
-                    //EXO类型 点击事件
-                    if (isChecked) {
-                        selectedPos = 1
-                    }
-                }
-                (view.findViewById(R.id.radioButton_coreType_compat) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
-                    //Compat类型 点击事件
-                    if (isChecked) {
-                        selectedPos = 2
-                    }
-                }
-                viewkeeper = WeakReference(view)
             }
-            view?.let {
-                //选择已选定的条目
-                selectCurrentCoreType(it)
-                //显示对话框
-                AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(it).show()
+            (view.findViewById(R.id.radioButton_coreType_bass) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
+                //BASS类型 点击事件
+                if (isChecked) {
+                    selectedPos = 0
+                }
             }
+            (view.findViewById(R.id.radioButton_coreType_exo) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
+                //EXO类型 点击事件
+                if (isChecked) {
+                    selectedPos = 1
+                }
+            }
+            (view.findViewById(R.id.radioButton_coreType_compat) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
+                //Compat类型 点击事件
+                if (isChecked) {
+                    selectedPos = 2
+                }
+            }
+            //选择已选定的条目
+            selectCurrentCoreType(view)
+            //显示对话框
+            AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).show()
         }
 
         /**
