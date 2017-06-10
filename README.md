@@ -8,8 +8,8 @@
 - 添加Google EXO Player2基础功能 √
 - 新的歌曲选择主界面 √
 - 新的播放列表界面 √
-- 用户选项界面 → (正在构思样式)
-- 添加基于Google EXO Player2的频谱和均衡器功能 x
+- 用户选项界面 √
+- 添加基于Google EXO Player2的频谱和均衡器功能 →
 
 #### 功能介绍
 
@@ -42,7 +42,7 @@ CoverBox 的作者为 Henry Hu
 
 ---
 
-##### APP截图 (2017/6/9 19:52)
+##### APP截图 (2017/6/11 01:04)
 ##### *截图无法展示所有应用的细节*
 
 ### 主界面<p></p>
@@ -51,6 +51,7 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_2.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_3.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_4.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_5.png)
 
 ### 播放列表<p></p>
 
@@ -66,6 +67,7 @@ CoverBox 的作者为 Henry Hu
 ### 基础设置<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_2.png)
 
 ### 扫描目录设置<p></p>
 
