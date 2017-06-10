@@ -187,7 +187,9 @@ public final class BASSCORE implements CoreAdvFunctions {
                 applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
                 return true;
             } else {
-                return BASS.BASS_ChannelPlay(this.playingChannel, true);
+                final boolean result = BASS.BASS_ChannelPlay(this.playingChannel, true);
+                applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
+                return result;
             }
         } else {
             return false;

@@ -19,6 +19,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.ActivityManager
+import com.ocwvar.darkpurple.Units.CoverProcesser
 import java.lang.ref.WeakReference
 
 
@@ -143,6 +144,8 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
                     ServiceHolder.getInstance().service.closeService()
                     //重新启动界面
                     ActivityManager.getInstance().restartMainActivity()
+                    //清空模糊缓存
+                    CoverProcesser.release()
                 }
             }
             (view.findViewById(R.id.radioButton_coreType_bass) as RadioButton).setOnCheckedChangeListener { _, isChecked ->

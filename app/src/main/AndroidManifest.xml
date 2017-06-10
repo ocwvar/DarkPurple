@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
-    <!--以下为网易云捕所需权限  Permissions required by Netease CrashCatcher-->
+    <!-- 以下为网易云捕所需权限  Permissions required by Netease CrashCatcher -->
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH" />
     <uses-permission-sdk-23 android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -35,7 +35,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="BUGRPT_APPID"
             android:value="A008251242" />
@@ -47,53 +46,45 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Activities.PlayingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.PlayingActivity" />
-
         <activity
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme" />
-
         <activity
             android:name=".Activities.FolderSelectorActivity"
             android:label="@string/musicFolder_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Activities.PlaylistDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Activities.DownloadCoverActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Activities.EqualizerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Activities.CloudMusicActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Activities.FolderSelectorUI"
             android:label="@string/title_select_folder_ui"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:screenOrientation="portrait"
@@ -108,13 +99,14 @@
             </intent-filter>
         </receiver>
 
-        <!--图片选择器的页面-->
-        <!--Picture Picker Activity-->
-        <activity android:name="com.ocwvar.picturePicker.PicturePickerUnity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <!-- 图片选择器的页面 -->
+        <!-- Picture Picker Activity -->
+        <activity
+            android:name="com.ocwvar.picturePicker.PicturePickerUnity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <!--FileProvider 权限申请-->
-        <!--FileProvider Permission request-->
+        <!-- FileProvider 权限申请 -->
+        <!-- FileProvider Permission request -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -122,7 +114,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
     </application>

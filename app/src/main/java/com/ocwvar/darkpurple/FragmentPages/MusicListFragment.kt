@@ -540,6 +540,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             intent ?: return
             when (intent.action) {
                 AudioService.NOTIFICATION_UPDATE -> {
+                    //用正在播放的曲目路径与适配器内的曲目路径比较，确定当前正在播放的曲目，从而能设置正在播放样式
                     adapter.updatePlayingPath(ServiceHolder.getInstance().service.playingSong?.path)
                 }
             }

@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.PersistableBundle
 import android.provider.Settings
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
 import android.view.View
@@ -52,6 +53,7 @@ class MainFrameworkActivity : BaseActivity() {
     private lateinit var headMusicTitle: TextView
     private lateinit var headMusicArtist: TextView
     private lateinit var headMusicAlbum: TextView
+    private lateinit var floatingActionButton: FloatingActionButton
 
     private var musicPageKeeper: WeakReference<MusicListFragment?> = WeakReference(null)
     private var playlistPageKeeper: WeakReference<PlaylistFragment?> = WeakReference(null)
@@ -87,7 +89,7 @@ class MainFrameworkActivity : BaseActivity() {
         requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(AppConfigs.Color.getColor(R.color.colorSecond))
                 .setAction(R.string.text_snackbar_request_permission_button, {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         //如果应用还可以请求权限,则弹出请求对话框
                         requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 9)
                     } else {
@@ -103,6 +105,7 @@ class MainFrameworkActivity : BaseActivity() {
         headMusicTitle = findViewById(R.id.MainMusic_title) as TextView
         headMusicArtist = findViewById(R.id.MainMusic_artist) as TextView
         headMusicAlbum = findViewById(R.id.MainMusic_album) as TextView
+        floatingActionButton = findViewById(R.id.fab) as FloatingActionButton
         songButton = findViewById(R.id.button_song)
         playlistButton = findViewById(R.id.button_playlist)
         userButton = findViewById(R.id.button_user)
@@ -110,7 +113,8 @@ class MainFrameworkActivity : BaseActivity() {
         songButton.setOnClickListener(this@MainFrameworkActivity)
         playlistButton.setOnClickListener(this@MainFrameworkActivity)
         userButton.setOnClickListener(this@MainFrameworkActivity)
-        findViewById(R.id.framework_appbar).setOnClickListener {
+
+        floatingActionButton.setOnClickListener {
             //点击标题主界面栏
             if (ServiceHolder.getInstance().service?.audioStatus != AudioStatus.Empty) {
                 //转跳到播放界面
@@ -194,12 +198,19 @@ class MainFrameworkActivity : BaseActivity() {
             blurCoverUpdateReceiver.isRegistered = true
             registerReceiver(blurCoverUpdateReceiver, blurCoverUpdateReceiver.intentFilter)
         }
-        //更新当前的播放数据
+        //更新当前的播放曲目图像
         updateHeaderMessage(ServiceHolder.getInstance().service?.playingSong)
         //检查数据广播接收器
         if (!playingDataUpdateReceiver.isRegistered) {
             playingDataUpdateReceiver.isRegistered = true
             registerReceiver(playingDataUpdateReceiver, playingDataUpdateReceiver.intentFilter)
+        }
+        //获取当前的播放状态，来确定是否显示浮动按钮
+        val currentStatus: AudioStatus? = ServiceHolder.getInstance().service?.audioStatus
+        if (currentStatus != null && currentStatus != AudioStatus.Error && currentStatus != AudioStatus.Empty) {
+            floatingActionButton.show()
+        } else {
+            floatingActionButton.hide()
         }
     }
 
@@ -403,6 +414,9 @@ class MainFrameworkActivity : BaseActivity() {
             when (intent.action) {
                 AudioService.NOTIFICATION_UPDATE -> {
                     updateHeaderMessage(ServiceHolder.getInstance().service?.playingSong)
+                    if (!floatingActionButton.isShown) {
+                        floatingActionButton.show()
+                    }
                 }
             }
         }

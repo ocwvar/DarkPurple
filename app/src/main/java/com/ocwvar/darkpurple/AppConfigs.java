@@ -88,10 +88,10 @@ public class AppConfigs {
     public static SpectrumStyles spectrumStyle = SpectrumStyles.Normal;
 
     //频谱项 - 是否显示Node
-    public static boolean isSpectrumShowNode = true;
+    public static boolean isSpectrumShowNode = false;
 
     //频谱项 - 是否显示外边线条
-    public static boolean isSpectrumShowOutLine = true;
+    public static boolean isSpectrumShowOutLine = false;
 
     //频谱项 - 是否显示柱状线
     public static boolean isSpectrumShowLine = true;
@@ -156,9 +156,9 @@ public class AppConfigs {
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
-            isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", true);
+            isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", false);
 
-            isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", true);
+            isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", false);
 
             isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
 

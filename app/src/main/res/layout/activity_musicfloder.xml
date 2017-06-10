@@ -56,7 +56,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="end|center_vertical"
             android:background="@null"
-            android:src="@drawable/fab_add" />
+            android:src="@drawable/ic_action_add" />
     </RelativeLayout>
 
     <TextView

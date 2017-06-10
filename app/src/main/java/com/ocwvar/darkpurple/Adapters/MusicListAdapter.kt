@@ -104,7 +104,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
      */
     fun removeData(position: Int) {
         if (isSelecting) return
-        if (position >= 0 && position < array.size && array.removeAt(position) != null) {
+        if (position in 0..array.size) {
             notifyItemRemoved(position)
         }
     }
@@ -167,7 +167,21 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
     }
 
     interface Callback {
+
+        /**
+         * 歌曲单击回调接口
+         * @param   songData    歌曲数据
+         * @param   position    在列表中的位置
+         * @param   itemView    条目的View对象
+         */
         fun onListClick(songData: SongItem, position: Int, itemView: View)
+
+        /**
+         * 歌曲长按回调接口
+         * @param   songData    歌曲数据
+         * @param   position    在列表中的位置
+         * @param   itemView    条目的View对象
+         */
         fun onListLongClick(songData: SongItem, position: Int, itemView: View)
     }
 
@@ -182,6 +196,7 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
         init {
             itemView.setOnClickListener {
                 if (isSelecting) {
+                    //多选模式
                     if (selectedIndex.indexOf(adapterPosition) != -1) {
                         //如果是已选状态，则将其移除
                         selectedIndex.remove(adapterPosition)
@@ -193,7 +208,6 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
                         selected.add(array[adapterPosition])
                         itemView.setBackgroundColor(selectedColor)
                     }
-                    notifyItemChanged(adapterPosition)
                 } else {
                     //非多选模式下将点击事件传递给回调接口
                     callback.onListClick(array[adapterPosition], adapterPosition, itemView)

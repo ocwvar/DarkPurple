@@ -316,7 +316,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                     this.isRunningForeground = true;
                     break;
                 case BASS_Library:
-                    updateNotification();
+                    /**
+                     * 由 BASS 核心发起的 Notification 广播更新通知，这里就不需要调用 updateNotification()
+                     */
                     break;
                 case COMPAT:
                     break;

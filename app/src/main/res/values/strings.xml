@@ -327,37 +327,4 @@
     <string name="ERROR_FAILED_CREATE_FILE">无法创建目录，操作失败</string>
     <string name="ERROR_SERVICE_NULL">音频服务异常中断，请重新打开APP重试</string>
 
-    <!--选取器以及返回错误代码部分文字-->
-
-    <string name="cameraTips">考虑到系统兼容性，请您使用系统自带的相机，而非第三方相机APP，以保证数据的兼容性。</string>
-
-    <string name="ERROR_TEXT_COMPRESS_FILED">压缩储存失败,无法返回带压缩请求的位图和文件.</string>
-    <string name="ERROR_TEXT_FILE_FILED">文件操作失败,请检查储存容量和应用权限.</string>
-    <string name="ERROR_TEXT_FILE_SAVE_FAILED">文件储存失败,无法返回结果.</string>
-    <string name="ERROR_TEXT_PIC_INCURRECT">获取到的图像异常,无法进行操作.</string>
-    <string name="ERROR_TEXT_BITMAP_TOOLAGER">Bitmap对象大于 1MB 无法返回.</string>
-
-    <string name="ERROR_TEXT_CAMERA_NO_DATA">照相机无数据返回.</string>
-    <string name="ERROR_TEXT_LOCAL_NO_DATA">图库无数据返回.</string>
-    <string name="ERROR_TEXT_ARG">请求参数异常.</string>
-    <string name="ERROR_TEXT_UNKNOWN">未知的返回数据.</string>
-    <string name="ERROR_TEXT_PERMISSION">请先授予应用权限.</string>
-    <string name="ERROR_TEXT_MOVEFAILED">移动文件时发生错误.</string>
-    <string name="ERROR_TEXT_OOM">操作的图像数据过大，内存不足无法进行使用</string>
-
-    <!--内建图像选取器文字部分-->
-    <string name="TEXT_UP_FOLDER">上一级</string>
-    <string name="LOADING_SCANNING_RECENT">正在获取最近图像…</string>
-    <string name="LOADING_SCANNING_FILES">正在获取文件列表…</string>
-    <string name="FILE_TYPE_FOLDER">文件夹</string>
-    <string name="FILE_TYPE_OPTION_OTHER_GALLERY">使用其他图库</string>
-    <string name="FILE_TYPE_OPTION_CAMERA">通过照相获取</string>
-    <string name="FILE_TYPE_OPTION_RECENT">查看最近图像</string>
-
-    <string name="RECENT">最近图像</string>
-    <string name="MAIN">储存设备</string>
-    <string name="EXStorage">外置储存</string>
-    <string name="NOUP">无上一级</string>
-    <string name="CURRENT">当前路径：</string>
-
 </resources>
