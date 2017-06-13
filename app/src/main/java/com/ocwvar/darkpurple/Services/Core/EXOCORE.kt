@@ -175,10 +175,11 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
     }
 
     /**
-     * @see EXOCORE.VisualizerLoader.switchOff
+     * @see EXOCORE.VisualizerLoader.release
      */
     override fun switchOffVisualizer() {
         visualizerLoader?.switchOff()
+        visualizerLoader?.release()
     }
 
     /**
@@ -186,8 +187,12 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
      * @return  频谱数据，异常返回 NULL
      */
     override fun getSpectrum(): FloatArray? {
-        if (visualizerLoader == null || visualizerLoader!!.id != exoPlayer.audioSessionId) {
-            //如果当前频谱加载器为空、频谱加载器中的音频ID不是当前的播放ID
+        if (visualizerLoader == null || visualizerLoader!!.isRelease || visualizerLoader!!.id != exoPlayer.audioSessionId) {
+            //如果当以下一种情况就重新创建对象：
+            //1.前频谱加载器为空
+            //2.已经释放资源
+            //3.频谱加载器中的音频SessionID不是当前的SessionID
+
             //如果存在旧的频谱加载器则先关闭
             visualizerLoader?.switchOff()
             //获取音频ID
@@ -248,6 +253,9 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
 
         private val TAG: String = "ID$id 频谱数据"
 
+        //是否已经释放资源标记，需要重新创建对象
+        var isRelease: Boolean = false
+
         private val visualizer: Visualizer = Visualizer(id)
 
         init {
@@ -270,16 +278,29 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
          * @see switchOff
          */
         fun switchOn() {
-            Logger.warnning(TAG, "开始接收数据")
-            visualizer.enabled = true
+            if (!isRelease) {
+                Logger.warnning(TAG, "开始接收数据")
+                visualizer.enabled = true
+            }
         }
 
         /**
          * 停止接收频谱数据
          */
         fun switchOff() {
-            Logger.warnning(TAG, "停止接收数据，并释放资源")
-            visualizer.enabled = false
+            if (!isRelease) {
+                Logger.warnning(TAG, "停止接收数据")
+                visualizer.enabled = false
+            }
+        }
+
+        /**
+         * 释放频谱数据
+         * 调用此功能后不能再调用 "visualizer.enabled = true" 否则会出现 "error status = 0"
+         */
+        fun release() {
+            Logger.warnning(TAG, "释放频谱资源")
+            this.isRelease = true
             visualizer.release()
         }
 

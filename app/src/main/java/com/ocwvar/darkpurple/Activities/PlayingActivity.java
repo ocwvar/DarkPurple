@@ -697,14 +697,16 @@ public class PlayingActivity
             spectrumSwitch.setAlpha(1f);
             spectrumSwitch.setImageResource(R.drawable.ic_action_sp_off);
 
+            //设置状态到TAG中
+            spectrumSwitch.setTag("off");
+            //先关闭频谱输出动画（EXO2需求）
+            surfaceViewController.stop();
+
             if (audioService.currentCoreType() == CoreType.EXO2) {
                 //如果是EXO2，则需要手动调用频谱数据接收器
                 audioService.exo2_Visualizer_SwitchOff();
             }
 
-            //设置状态到TAG中
-            spectrumSwitch.setTag("off");
-            surfaceViewController.stop();
             coverSpectrum.setVisibility(View.GONE);
         }
 
