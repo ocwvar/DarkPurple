@@ -119,7 +119,6 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
      */
     override fun release(): Boolean {
         exoPlayer.stop()
-        visualizerLoader?.switchOff()
         //执行完成后如果状态为静止，则表明释放成功
         return exoPlayer.playbackState == ExoPlayer.STATE_IDLE
     }
