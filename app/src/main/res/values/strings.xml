@@ -83,7 +83,7 @@
     <string name="text_button_core_bass">BASS Library</string>
     <string name="text_core_bass_info">支持本APP中所有的功能。但在某些自带音乐芯片处理的手机下，会产生破音现象。</string>
     <string name="text_button_core_exo">Google EXO Player2</string>
-    <string name="text_core_exo_info">不支持均衡器调整，频谱动画需要"音频录制"权限</string>
+    <string name="text_core_exo_info">不支持均衡器调整、频谱动画</string>
     <string name="text_button_core_compat">Android MediaPlayer</string>
     <string name="text_core_compat_info">系统自带的音频播放方案，但稳定性不能得到保证，容易崩溃以及产生异常。</string>
     <string name="text_button_core_done">确定并重启应用</string>

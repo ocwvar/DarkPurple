@@ -151,6 +151,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                 final ArrayList<Point> points;
                 //不同的动画绘制类型
                 try {
+                    Logger.warnning("频谱绘制", "开始绘制频谱图像...");
                     switch (AppConfigs.spectrumStyle) {
                         case Normal:
                             //根据计算得出的 r 半径 与设置的角度等分，计算圆圈上所有点的坐标
@@ -167,6 +168,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                             break;
                     }
                 } catch (Exception ignore) {
+                    Logger.error("频谱绘制", "绘制过程发生异常，已停止绘制线程！");
                 }
 
                 isDrawing = false;
@@ -200,6 +202,8 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                 //竖屏状态屏幕尺寸
                 r = sfWidth / 3;
                 //drawArea = new Rect(0, sfHeight / 4, sfWidth, sfHeight - sfWidth / 4);
+
+                //现在默认使用全屏尺寸，避免因为回执范围过大而导致画像残留
                 drawArea = new Rect(0, 0, sfWidth, sfHeight);
             } else if (sfHeight < sfWidth) {
                 //横屏状态屏幕尺寸
@@ -374,16 +378,14 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
 
                     try {
                         Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        break;
+                    } catch (InterruptedException ignore) {
                     }
                 } else {
                     //如果频谱数据为 NULL ， 则休眠 1000 毫秒再请求
                     surfaceHolder.unlockCanvasAndPost(canvas);
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        break;
+                    } catch (InterruptedException ignore) {
                     }
                 }
 
@@ -492,16 +494,14 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
 
                     try {
                         Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        break;
+                    } catch (InterruptedException ignore) {
                     }
                 } else {
                     //如果频谱数据为 NULL ， 则休眠 1000 毫秒再请求
                     surfaceHolder.unlockCanvasAndPost(canvas);
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        break;
+                    } catch (InterruptedException ignore) {
                     }
                 }
             }

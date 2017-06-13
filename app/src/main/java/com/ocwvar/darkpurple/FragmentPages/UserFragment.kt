@@ -1,9 +1,7 @@
 package com.ocwvar.darkpurple.FragmentPages
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -138,11 +136,6 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
                 //点击确定按钮事件
                 if (selectedPos in 0..2 && selectedPos != AppConfigs.audioCoreType) {
                     //如果选择的项目在0~2之间，同时发生了类型的改变
-                    if (selectedPos == 1 && activity?.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
-                        //EXO核心需要“音频录制”权限，用于显示频谱数据，如果此时并没有获取到此权限，则需要申请
-                        activity?.requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 0)
-                        return@setOnClickListener
-                    }
                     val spEditor: SharedPreferences.Editor = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit()
                     //应用设置
                     spEditor.putInt("audioCoreType", selectedPos).commit()

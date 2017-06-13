@@ -683,8 +683,8 @@ public class PlayingActivity
 
             coverSpectrum.setVisibility(View.VISIBLE);
             if (audioService.currentCoreType() == CoreType.EXO2) {
-                //如果当前是EXO2音频模式，则需要提前打开频谱接收器
-                audioService.EXO_ONLY_switch_on_visualizer();
+                //如果是EXO2，则需要手动调用频谱数据接收器
+                audioService.exo2_Visualizer_SwitchOn();
             }
             if (audioService.getAudioStatus() == AudioStatus.Playing) {
                 //如果当前是正在播放 , 才执行动画
@@ -697,14 +697,15 @@ public class PlayingActivity
             spectrumSwitch.setAlpha(1f);
             spectrumSwitch.setImageResource(R.drawable.ic_action_sp_off);
 
+            if (audioService.currentCoreType() == CoreType.EXO2) {
+                //如果是EXO2，则需要手动调用频谱数据接收器
+                audioService.exo2_Visualizer_SwitchOff();
+            }
+
             //设置状态到TAG中
             spectrumSwitch.setTag("off");
             surfaceViewController.stop();
             coverSpectrum.setVisibility(View.GONE);
-            if (audioService.currentCoreType() == CoreType.EXO2) {
-                //如果当前是EXO2音频模式，则需要手动关闭频谱接收器
-                audioService.EXO_ONLY_switch_off_visualizer();
-            }
         }
 
     }

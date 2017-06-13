@@ -12,7 +12,7 @@ import com.ocwvar.darkpurple.Services.Core.CoreAdvFunctions;
 import com.ocwvar.darkpurple.Services.Core.CoreBaseFunctions;
 import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Services.Core.EXOCORE;
-import com.ocwvar.darkpurple.Services.Core.EXO_ONLY_Functions;
+import com.ocwvar.darkpurple.Services.Core.EXO_ONLY_Interface;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
@@ -290,22 +290,6 @@ class AudioNextCore {
     }
 
     /**
-     * EXO核心特有方法
-     * 开始允许接收频谱数据，调用此方法后才可以从：getSpectrum()方法内获取到数据
-     */
-    void EXO_ONLY_switch_on_visualizer() {
-        ((EXO_ONLY_Functions) coreInterface).EXO_ONLY_switch_on_visualizer();
-    }
-
-    /**
-     * EXO核心特有方法
-     * 关闭接收频谱数据，调用此方法后将无法接收到频谱数据
-     */
-    void EXO_ONLY_switch_off_visualizer() {
-        ((EXO_ONLY_Functions) coreInterface).EXO_ONLY_switch_off_visualizer();
-    }
-
-    /**
      * @return 当前使用的播放核心是否支持高级功能
      */
     boolean isCoreSupportedAdvFunction() {
@@ -375,6 +359,22 @@ class AudioNextCore {
      */
     boolean seek2Position(double position) {
         return coreInterface.seekPosition(position);
+    }
+
+    /**
+     * EXO2特有方法
+     * 打开频谱数据接收器
+     */
+    void exo2_Visualizer_SwitchOn() {
+        ((EXO_ONLY_Interface) coreInterface).switchOnVisualizer();
+    }
+
+    /**
+     * EXO2特有方法
+     * 停止频谱数据接收器
+     */
+    void exo2_Visualizer_SwitchOff() {
+        ((EXO_ONLY_Interface) coreInterface).switchOffVisualizer();
     }
 
 }

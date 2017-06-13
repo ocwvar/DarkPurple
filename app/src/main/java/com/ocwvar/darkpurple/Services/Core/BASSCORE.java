@@ -381,13 +381,9 @@ public final class BASSCORE implements CoreAdvFunctions {
         if (playingChannel == 0 || BASS.BASS_ChannelIsActive(playingChannel) != BASS.BASS_ACTIVE_PLAYING) {
             return null;
         } else {
-            ByteBuffer byteBuffer = null;
-            if (byteBuffer == null) {
-                byteBuffer = ByteBuffer.allocate(512);
-                byteBuffer.order(null);
-            }
+            final ByteBuffer byteBuffer = ByteBuffer.allocate(512).order(null);
+            final float[] spectrum = new float[128];
             BASS.BASS_ChannelGetData(playingChannel, byteBuffer, BASS.BASS_DATA_FFT256);
-            float[] spectrum = new float[128];
             byteBuffer.asFloatBuffer().get(spectrum);
             return spectrum;
         }

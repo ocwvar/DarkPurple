@@ -495,22 +495,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     /**
-     * EXO核心特有方法
-     * 开始允许接收频谱数据，调用此方法后才可以从：getSpectrum()方法内获取到数据
-     */
-    public void EXO_ONLY_switch_on_visualizer() {
-        core.EXO_ONLY_switch_on_visualizer();
-    }
-
-    /**
-     * EXO核心特有方法
-     * 关闭接收频谱数据，调用此方法后将无法接收到频谱数据
-     */
-    public void EXO_ONLY_switch_off_visualizer() {
-        core.EXO_ONLY_switch_off_visualizer();
-    }
-
-    /**
      * @return 当前音频核心类型
      */
     public CoreType currentCoreType() {
@@ -621,6 +605,26 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         stopForeground(true);
         stopSelf();
         ServiceHolder.getInstance().setService(null);
+    }
+
+    /**
+     * EXO2特有方法
+     * 打开频谱数据接收器
+     */
+    public void exo2_Visualizer_SwitchOn() {
+        if (core.currentCoreType() == CoreType.EXO2) {
+            core.exo2_Visualizer_SwitchOn();
+        }
+    }
+
+    /**
+     * EXO2特有方法
+     * 停止频谱数据接收器
+     */
+    public void exo2_Visualizer_SwitchOff() {
+        if (core.currentCoreType() == CoreType.EXO2) {
+            core.exo2_Visualizer_SwitchOff();
+        }
     }
 
     /**

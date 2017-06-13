@@ -33,7 +33,7 @@ import java.nio.ByteBuffer
  * File Location com.ocwvar.darkpurple.Services.Core
  * This file use to :   Google ExoPlayer2 播放方案
  */
-class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Functions {
+class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Interface {
 
     private val TAG: String = "EXO_CORE"
     private val exoPlayer: SimpleExoPlayer
@@ -43,7 +43,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Func
     //曲目长度变量
     private var isMusicLoaded: Boolean = false
     private var loadedSourceDuration: Double = 100000.0
-    //频谱取样对象
+    //频谱加载对象
     private var visualizerLoader: VisualizerLoader? = null
 
     init {
@@ -119,6 +119,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Func
      */
     override fun release(): Boolean {
         exoPlayer.stop()
+        visualizerLoader?.switchOff()
         //执行完成后如果状态为静止，则表明释放成功
         return exoPlayer.playbackState == ExoPlayer.STATE_IDLE
     }
@@ -167,12 +168,47 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Func
     }
 
     /**
+     * @see EXOCORE.VisualizerLoader.switchOn
+     */
+    override fun switchOnVisualizer() {
+        visualizerLoader?.switchOn()
+    }
+
+    /**
+     * @see EXOCORE.VisualizerLoader.switchOff
+     */
+    override fun switchOffVisualizer() {
+        visualizerLoader?.switchOff()
+    }
+
+    /**
+     * 获取当前频谱数据
+     * @return  频谱数据，异常返回 NULL
+     */
+    override fun getSpectrum(): FloatArray? {
+        if (visualizerLoader == null || visualizerLoader!!.id != exoPlayer.audioSessionId) {
+            //如果当前频谱加载器为空、频谱加载器中的音频ID不是当前的播放ID
+            //如果存在旧的频谱加载器则先关闭
+            visualizerLoader?.switchOff()
+            //获取音频ID
+            val id: Int = exoPlayer.audioSessionId
+            if (id == 0) {
+                //如果当前播放的ID为0，则是无效状态，直接返回NULL，并不创建对象
+                return null
+            } else {
+                //创建频谱加载器对象，并自动打开
+                visualizerLoader = VisualizerLoader(id)
+                visualizerLoader?.switchOn()
+            }
+        }
+        return visualizerLoader?.get()
+    }
+
+    /**
      * 获取均衡器各个频段参数
      * @return  均衡器参数
      */
-    override fun getEQParameters(): IntArray {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getEQParameters(): IntArray = intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     /**
      * 更改均衡器频段参数
@@ -180,52 +216,12 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Func
      * @param eqIndex     调节位置
      * @return 执行结果
      */
-    override fun setEQParameters(eqParameter: Int, eqIndex: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setEQParameters(eqParameter: Int, eqIndex: Int): Boolean = false
 
     /**
      * 重置均衡器
      */
     override fun resetEQ() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    /**
-     * 获取当前频谱数据
-     * 使用此接口前需要调用：switchOnSpectrum()
-     * 使用完成后需要调用：switchOffSpectrum()
-     * @return  频谱数据，异常返回 NULL
-     */
-    override fun getSpectrum(): FloatArray? {
-        try {
-            return visualizerLoader?.get()
-        } catch(e: Exception) {
-            //获取频谱数据期间发生异常
-            Logger.error(TAG, "获取频谱数据发生异常！ " + e)
-            return null
-        }
-    }
-
-    /**
-     * EXO核心特有方法
-     * 开始允许接收频谱数据，调用此方法后才可以从：getSpectrum()方法内获取到数据
-     */
-    override fun EXO_ONLY_switch_on_visualizer() {
-        visualizerLoader?.switcher = true
-        if (visualizerLoader == null || visualizerLoader!!.sessionId != exoPlayer.audioSessionId) {
-            //如果当前频谱加载器的音频ID不等于当前正在播放的曲目ID，则需要重新创建
-            visualizerLoader?.release()
-            visualizerLoader = VisualizerLoader(exoPlayer.audioSessionId)
-        }
-    }
-
-    /**
-     * EXO核心特有方法
-     * 关闭接收频谱数据，调用此方法后将无法接收到频谱数据
-     */
-    override fun EXO_ONLY_switch_off_visualizer() {
-        visualizerLoader?.switcher = false
     }
 
     /**
@@ -245,50 +241,100 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Func
         }
     }
 
-
     /**
-     * 频谱加载器
+     * 频谱数据加载器
      */
-    private inner class VisualizerLoader(val sessionId: Int) {
+    private class VisualizerLoader(val id: Int) {
 
-        private val visualizerObject: Visualizer = Visualizer(sessionId)
-        //负责控制是否接收数据的标记变量
-        var switcher: Boolean = false
+        private val TAG: String = "ID$id 频谱数据"
+
+        private val visualizer: Visualizer = Visualizer(id)
 
         init {
-            //初始状态为未启用，不接收数据
-            visualizerObject.enabled = false
-            visualizerObject.captureSize = Visualizer.getCaptureSizeRange()[1]
+            visualizer.captureSize = Visualizer.getCaptureSizeRange()[1]
         }
 
         /**
-         * 获取瞬时的频谱数据
+         * 获取频谱前需要调用 switchOn 来开始接收数据
+         * @see switchOn
+         * @return  频谱数据，无数据返回NULL
          */
         fun get(): FloatArray? {
-            //不接收，不返回 数据
-            if (!switcher) return null
-
-            if (!visualizerObject.enabled) {
-                visualizerObject.enabled = true
-            }
-            val byteBuffer: ByteBuffer = ByteBuffer.allocate(512)
-            val byteArray: ByteArray = ByteArray(512)
-            val floatArray: FloatArray = FloatArray(128)
-            byteBuffer.order(null)
-            visualizerObject.getFft(byteArray)
-            byteBuffer.put(byteArray)
-
-            //将字节流转换为浮点数组
-            byteBuffer.asFloatBuffer().get(floatArray)
-            return floatArray
+            val byteArray: ByteArray = ByteArray(1024)
+            visualizer.getFft(byteArray)
+            return handleIntArray2PositionArray(byteArray2intArray(byteArray), 0f, 128)
         }
 
         /**
-         * 释放频谱资源
+         * 开始接收数据，在不需要频谱数据的时候必须要调用 switchOff 来停止接收数据
+         * @see switchOff
          */
-        fun release() {
-            visualizerObject.enabled = false
-            visualizerObject.release()
+        fun switchOn() {
+            Logger.warnning(TAG, "开始接收数据")
+            visualizer.enabled = true
+        }
+
+        /**
+         * 停止接收频谱数据
+         */
+        fun switchOff() {
+            Logger.warnning(TAG, "停止接收数据，并释放资源")
+            visualizer.enabled = false
+            visualizer.release()
+        }
+
+        /**
+         * 将原生FFT数据转换为IntArray的格式
+         *
+         * @param byteArray 原生FFT数据
+         * @return 转换得到的数据，如果转换失败则返回NULL
+         */
+        private fun byteArray2intArray(byteArray: ByteArray?): IntArray? {
+            if (byteArray == null) return null
+            val byteBuffer = ByteBuffer.wrap(byteArray)
+            val numberArray = IntArray(byteBuffer.asIntBuffer().limit())
+            try {
+                //得到FloatArray数据
+                byteBuffer.asIntBuffer().get(numberArray)
+            } catch (e: Exception) {
+                Logger.error(TAG, "ByteArray → IntArray 发生异常：" + e)
+                return null
+            }
+
+            return numberArray
+        }
+
+        /**
+         * 将原生FFT IntArray转换为 0 ~ 限制大小 区间内的FloatArray
+         * @param inArray           要用于转换的IntArray
+         * @param sizeLimit         限制每个Float数值的最大值 <=0 则不限制
+         * @param arrayLengthLimit 输出数组的长度 <=0 则不限制
+         * @return 转换得到的数据，如果转换失败则返回NULL
+         */
+        private fun handleIntArray2PositionArray(inArray: IntArray?, sizeLimit: Float, arrayLengthLimit: Int): FloatArray? {
+            if (inArray == null || arrayLengthLimit >= inArray.size) return null
+            //根据限制创建工作数组长度
+            val workArray = if (arrayLengthLimit <= 0) FloatArray(inArray.size) else FloatArray(arrayLengthLimit)
+            for (i in workArray.indices) {
+                var number = inArray[i].toFloat()
+                if (number == 0.0f) {
+                    //原本数据就是 0f 不需要重新设置
+                    continue
+                }
+                if (number < 0f) {
+                    //数据为负数，转为正数
+                    number *= -1f
+                }
+                //移动小数点
+                number *= 0.0000000001f
+
+                if (sizeLimit > 0 && sizeLimit < number) {
+                    //如果大于限制数，则将数字设为最大数值
+                    number = sizeLimit
+                }
+                workArray[i] = number
+            }
+            return workArray
         }
 
     }
