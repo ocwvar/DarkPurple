@@ -43,7 +43,7 @@ object ToastMaker {
             layoutKeeper = WeakReference(layout)
         }
         layout?.let {
-            (it.findViewById(R.id.toast_message) as TextView).text = message
+            (it.findViewById<TextView>(R.id.toast_message)).text = message
             val toast: Toast = Toast(context)
             toast.view = it
             toast.duration = Toast.LENGTH_SHORT

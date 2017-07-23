@@ -50,7 +50,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
         view ?: return
         this.fragmentView = view
 
-        val recycleView: RecyclerView = fragmentView.findViewById(R.id.recycleView) as RecyclerView
+        val recycleView: RecyclerView = fragmentView.findViewById(R.id.recycleView)
         recycleView.adapter = adapter
         recycleView.layoutManager = LinearLayoutManager(fragmentView.context, LinearLayoutManager.VERTICAL, false)
     }
@@ -132,7 +132,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
 
         fun show() {
             var view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_audio_core_type, null, false)
-            view.findViewById(R.id.button_coreType_done).setOnClickListener {
+            view.findViewById<View>(R.id.button_coreType_done).setOnClickListener {
                 //点击确定按钮事件
                 if (selectedPos in 0..2 && selectedPos != AppConfigs.audioCoreType) {
                     //如果选择的项目在0~2之间，同时发生了类型的改变
@@ -148,19 +148,19 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
                     CoverProcesser.release()
                 }
             }
-            (view.findViewById(R.id.radioButton_coreType_bass) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
+            (view.findViewById<View>(R.id.radioButton_coreType_bass) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
                 //BASS类型 点击事件
                 if (isChecked) {
                     selectedPos = 0
                 }
             }
-            (view.findViewById(R.id.radioButton_coreType_exo) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
+            (view.findViewById<View>(R.id.radioButton_coreType_exo) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
                 //EXO类型 点击事件
                 if (isChecked) {
                     selectedPos = 1
                 }
             }
-            (view.findViewById(R.id.radioButton_coreType_compat) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
+            (view.findViewById<View>(R.id.radioButton_coreType_compat) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
                 //Compat类型 点击事件
                 if (isChecked) {
                     selectedPos = 2
@@ -179,17 +179,17 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
             when (AppConfigs.audioCoreType) {
                 0 -> {
                     //BASS
-                    (view.findViewById(R.id.radioButton_coreType_bass) as RadioButton).isChecked = true
+                    (view.findViewById<View>(R.id.radioButton_coreType_bass) as RadioButton).isChecked = true
                 }
 
                 1 -> {
                     //EXO2
-                    (view.findViewById(R.id.radioButton_coreType_exo) as RadioButton).isChecked = true
+                    (view.findViewById<View>(R.id.radioButton_coreType_exo) as RadioButton).isChecked = true
                 }
 
                 2 -> {
                     //Compat
-                    (view.findViewById(R.id.radioButton_coreType_compat) as RadioButton).isChecked = true
+                    (view.findViewById<View>(R.id.radioButton_coreType_compat) as RadioButton).isChecked = true
                 }
             }
         }

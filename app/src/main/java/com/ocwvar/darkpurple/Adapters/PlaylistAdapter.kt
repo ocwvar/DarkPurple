@@ -96,9 +96,9 @@ class PlaylistAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVie
 
     private inner class PlaylistVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        val name: TextView = itemView.findViewById(R.id.playlist_name) as TextView
-        val count: TextView = itemView.findViewById(R.id.playlist_count) as TextView
-        val cover: ImageView = itemView.findViewById(R.id.playlist_cover) as ImageView
+        val name: TextView = itemView.findViewById(R.id.playlist_name)
+        val count: TextView = itemView.findViewById(R.id.playlist_count)
+        val cover: ImageView = itemView.findViewById(R.id.playlist_cover)
 
         init {
             itemView.setOnClickListener {
@@ -116,8 +116,8 @@ class PlaylistAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVie
     private inner class PlaylistCloudVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val bg: View = itemView.findViewById(R.id.myclound_bar_bg)
-        val icon: ImageView = itemView.findViewById(R.id.myclound_bar_icon) as ImageView
-        val message: TextView = itemView.findViewById(R.id.myclound_bar_subtitle) as TextView
+        val icon: ImageView = itemView.findViewById(R.id.myclound_bar_icon)
+        val message: TextView = itemView.findViewById(R.id.myclound_bar_subtitle)
 
         init {
             itemView.setOnClickListener {

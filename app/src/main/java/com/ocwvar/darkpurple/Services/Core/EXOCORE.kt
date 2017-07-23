@@ -364,6 +364,10 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
      */
     private inner class ExoPlayerCallback : ExoPlayer.EventListener, ExtractorMediaSource.EventListener {
 
+        override fun onRepeatModeChanged(repeatMode: Int) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
         }
 

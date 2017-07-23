@@ -188,10 +188,10 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
     private inner class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val colorBar: View = itemView.findViewById(R.id.item_menu_list_color)
-        val cover: ImageView = itemView.findViewById(R.id.item_menu_list_cover) as ImageView
-        val title: TextView = itemView.findViewById(R.id.item_menu_list_title) as TextView
-        val artist: TextView = itemView.findViewById(R.id.item_menu_list_artist) as TextView
-        val album: TextView = itemView.findViewById(R.id.item_menu_list_album) as TextView
+        val cover: ImageView = itemView.findViewById(R.id.item_menu_list_cover)
+        val title: TextView = itemView.findViewById(R.id.item_menu_list_title)
+        val artist: TextView = itemView.findViewById(R.id.item_menu_list_artist)
+        val album: TextView = itemView.findViewById(R.id.item_menu_list_album)
 
         init {
             itemView.setOnClickListener {

@@ -79,11 +79,11 @@ class CloudMusicAdapter(val callback: OnListClickCallback) : RecyclerView.Adapte
 
     inner private class CloudMusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        val title: TextView = itemView.findViewById(R.id.cloudMusic_title) as TextView
-        val owner: TextView = itemView.findViewById(R.id.cloudMusic_owner) as TextView
-        val cover: ImageView = itemView.findViewById(R.id.cloudMusic_cover) as ImageView
-        val downloadButton: TextView = itemView.findViewById(R.id.cloudMusic_download) as TextView
-        val removeButton: TextView = itemView.findViewById(R.id.cloudMusic_remove) as TextView
+        val title: TextView = itemView.findViewById(R.id.cloudMusic_title)
+        val owner: TextView = itemView.findViewById(R.id.cloudMusic_owner)
+        val cover: ImageView = itemView.findViewById(R.id.cloudMusic_cover)
+        val downloadButton: TextView = itemView.findViewById(R.id.cloudMusic_download)
+        val removeButton: TextView = itemView.findViewById(R.id.cloudMusic_remove)
 
         init {
             downloadButton.setOnClickListener(this@CloudMusicViewHolder)

@@ -52,7 +52,7 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
         } else {
             this.fragmentView = view
         }
-        val recycleView: RecyclerView = fragmentView.findViewById(R.id.recycleView) as RecyclerView
+        val recycleView: RecyclerView = fragmentView.findViewById(R.id.recycleView)
         recycleView.layoutManager = GridLayoutManager(fragmentView.context, 2, GridLayoutManager.VERTICAL, false)
         recycleView.setHasFixedSize(true)
         recycleView.adapter = adapter
@@ -189,8 +189,8 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
             var dialog: AlertDialog? = dialogKeeper.get()
             if (dialog == null) {
                 val dialogView: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_playlist_menu, null)
-                dialogView.findViewById(R.id.menu_playlist_edit).setOnClickListener(this@PlaylistMenuDialog)
-                dialogView.findViewById(R.id.menu_playlist_delete).setOnClickListener(this@PlaylistMenuDialog)
+                dialogView.findViewById<View>(R.id.menu_playlist_edit).setOnClickListener(this@PlaylistMenuDialog)
+                dialogView.findViewById<View>(R.id.menu_playlist_delete).setOnClickListener(this@PlaylistMenuDialog)
                 dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
                         .setView(dialogView)
                         .create()

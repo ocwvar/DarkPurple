@@ -86,8 +86,8 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         } else {
             this.fragmentView = view
         }
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout) as SwipeRefreshLayout
-        recycleView = view.findViewById(R.id.recycleView) as RecyclerView
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        recycleView = view.findViewById(R.id.recycleView)
         recycleView.adapter = adapter
         recycleView.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
         recycleView.setHasFixedSize(true)
@@ -244,7 +244,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     ToastMaker.show(R.string.message_playlist_add_error_no_selecting)
                 }
                 //隐藏点击按钮并取消点击事件监听
-                ((fragmentView.findViewById(R.id.fab)) as FloatingActionButton).let {
+                ((fragmentView.findViewById<FloatingActionButton>(R.id.fab))).let {
                     it.hide()
                     it.visibility = View.GONE
                     it.setOnClickListener(null)
@@ -276,11 +276,11 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             var dialog: AlertDialog? = dialogKeeper.get()
             if (dialog == null) {
                 val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_music_list_menu, null)
-                view.findViewById(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById(R.id.menu_music_online_cover).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
+                view.findViewById<View>(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
+                view.findViewById<View>(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
+                view.findViewById<View>(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
+                view.findViewById<View>(R.id.menu_music_online_cover).setOnClickListener(this@ItemMoreDialog)
+                view.findViewById<View>(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
                 dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
                 dialogKeeper = WeakReference(dialog)
             }
@@ -392,7 +392,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             var dialog: AlertDialog? = dialogKeeper.get()
             if (dialog == null) {
                 val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_addto_playlist, null)
-                val listView: ListView = view.findViewById(R.id.listView) as ListView
+                val listView: ListView = view.findViewById(R.id.listView)
                 val adapter: ArrayAdapter<String> = ArrayAdapter(fragmentView.context, R.layout.simple_textview)
                 PlaylistUnits.getInstance().playlistSet.forEach {
                     adapter.add(it.name)
@@ -499,7 +499,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                                 ToastMaker.show(R.string.message_plzSelect)
                                 adapter.switchMode()
                                 //显示确定按钮并设置监听事件
-                                ((fragmentView.findViewById(R.id.fab)) as FloatingActionButton).let {
+                                ((fragmentView.findViewById<FloatingActionButton>(R.id.fab))).let {
                                     it.show()
                                     it.visibility = View.VISIBLE
                                     it.setOnClickListener(this@MusicListFragment)
