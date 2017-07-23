@@ -33,7 +33,7 @@ import java.nio.ByteBuffer
  * File Location com.ocwvar.darkpurple.Services.Core
  * This file use to :   Google ExoPlayer2 播放方案
  */
-class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Interface {
+class EXOCORE(val applicationContext: Context) : IPlayer {
 
     private val TAG: String = "EXO_CORE"
     private val exoPlayer: SimpleExoPlayer
@@ -42,7 +42,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
     private var currentAudioStatus = AudioStatus.Empty
     //曲目长度变量
     private var isMusicLoaded: Boolean = false
-    private var loadedSourceDuration: Double = 100000.0
+    private var loadedSourceDuration: Long = 100000L
     //频谱加载对象
     private var visualizerLoader: VisualizerLoader? = null
 
@@ -69,7 +69,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
             val mediaSource: MediaSource = ExtractorMediaSource(it, factory, extractorsFactory, null, exoPlayerCallback)
             //重置音频长度
             isMusicLoaded = false
-            loadedSourceDuration = 0.0
+            loadedSourceDuration = 0L
             //开始准备音频数据
             exoPlayer.prepare(mediaSource, true, true)
             if (onlyInit) {
@@ -140,10 +140,10 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
      * 跳转至指定音频长度位置
      * @return 执行结果
      */
-    override fun seekPosition(position: Double): Boolean {
+    override fun seekPosition(position: Long): Boolean {
         if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
             //当前音频资源不为空，可以进行播放位置调整
-            exoPlayer.seekTo((position * 1000).toLong())
+            exoPlayer.seekTo(position * 1000)
             return true
         } else {
             return false
@@ -154,7 +154,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
      * 获取音频长度
      * @return 音频长度，异常返回 0
      */
-    override fun getAudioLength(): Double {
+    override fun getAudioLength(): Long {
         return loadedSourceDuration
     }
 
@@ -412,7 +412,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
                     //设置标记
                     isMusicLoaded = true
                     //当读取完成后，设置音频的长度
-                    loadedSourceDuration = exoPlayer.duration / 1000.0
+                    loadedSourceDuration = exoPlayer.duration / 1000
                     Logger.warnning(TAG, "音频长度：$loadedSourceDuration")
                 }
 
@@ -424,7 +424,7 @@ class EXOCORE(val applicationContext: Context) : CoreAdvFunctions, EXO_ONLY_Inte
                     //设置标记
                     isMusicLoaded = false
                     //当读取完成后，设置音频的长度
-                    loadedSourceDuration = 0.0
+                    loadedSourceDuration = 0L
                 }
 
                 ExoPlayer.STATE_IDLE -> {

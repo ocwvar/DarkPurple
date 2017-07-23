@@ -18,7 +18,6 @@ import android.view.KeyEvent;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
-import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Logger;
 
@@ -111,18 +110,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         Logger.warnning(TAG, "onCreate");
 
         //创建对象
-        switch (AppConfigs.audioCoreType) {
-            case 0:
-                core = new AudioNextCore(getApplicationContext(), CoreType.BASS_Library);
-                break;
-            case 1:
-                core = new AudioNextCore(getApplicationContext(), CoreType.EXO2);
-                break;
-            case 2:
-            default:
-                core = new AudioNextCore(getApplicationContext(), CoreType.BASS_Library);
-                break;
-        }
+        core = new AudioNextCore(getApplicationContext());
         notificationControl = new NotificationControl();
         headsetDisconnectedReceiver = new HeadsetDisconnectedReceiver();
         headsetPlugInReceiver = new HeadsetPlugInReceiver();
@@ -264,10 +252,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         disableAudioFocus();
 
         //暂停当前的播放
-        if (core.currentCoreType() == CoreType.EXO2) {
-            this.isRunningForeground = false;   //此标记是给EXO2內核使用的
-            System.out.println();
-        }
+        this.isRunningForeground = false;
         core.pauseAudio();
 
         //不显示当前的状态栏
@@ -304,35 +289,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         boolean result = core.play(songList, playIndex);
         if (result) {
-            switch (core.currentCoreType()) {
-                case EXO2:
-                    /*
-                      如果是使用 EXO2 播放方案的时候，由于在调用play()方法后內核仍处于加载状态，此时更新
-                      Notification会导致状态不准确，所以Notification的状态更新由內核通过发送 NOTIFICATION_UPDATE
-                      广播来进行状态的更新，在这里就只需要把：isRunningForeground变量设为真，內核即可进行更新操作。
-
-                      注意：如果变量  isRunningForeground  为假，则EXO音频內核不会因为音频状态发生改变而更新Notification
-                      （调用  initAudio()  方法除外）
-                     */
-                    this.isRunningForeground = true;
-                    break;
-                case BASS_Library:
-                    /*
-                      由 BASS 核心发起的 Notification 广播更新通知，这里就不需要调用 updateNotification()
-                     */
-                    break;
-                case COMPAT:
-                    break;
-            }
+            this.isRunningForeground = true;
         }
         return result;
-    }
-
-    /**
-     * @return 当前使用的播放核心是否支持高级功能
-     */
-    public boolean isCoreSupportedAdvFunction() {
-        return core.isCoreSupportedAdvFunction();
     }
 
     /**
@@ -355,16 +314,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         final boolean result = core.resumeAudio();
         if (result) {
-            switch (core.currentCoreType()) {
-                case EXO2:
-                    this.isRunningForeground = true;
-                    break;
-                case BASS_Library:
-                    updateNotification();
-                    break;
-                case COMPAT:
-                    break;
-            }
+            this.isRunningForeground = true;
         }
         return result;
     }
@@ -384,16 +334,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         final boolean result = core.pauseAudio();
         if (result) {
-            switch (core.currentCoreType()) {
-                case EXO2:
-                    this.isRunningForeground = true;
-                    break;
-                case BASS_Library:
-                    updateNotification();
-                    break;
-                case COMPAT:
-                    break;
-            }
+            this.isRunningForeground = true;
         }
         return result;
     }
@@ -495,13 +436,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     /**
-     * @return 当前音频核心类型
-     */
-    public CoreType currentCoreType() {
-        return core.currentCoreType();
-    }
-    
-    /**
      * 获取均衡器频段设置
      *
      * @return 频段参数
@@ -593,7 +527,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      * @param position 位置长度
      * @return 执行结果
      */
-    public boolean seek2Position(double position) {
+    public boolean seek2Position(long position) {
         return core.seek2Position(position);
     }
 
@@ -612,9 +546,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      * 打开频谱数据接收器
      */
     public void exo2_Visualizer_SwitchOn() {
-        if (core.currentCoreType() == CoreType.EXO2) {
-            core.exo2_Visualizer_SwitchOn();
-        }
+        core.exo2_Visualizer_SwitchOn();
     }
 
     /**
@@ -622,9 +554,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      * 停止频谱数据接收器
      */
     public void exo2_Visualizer_SwitchOff() {
-        if (core.currentCoreType() == CoreType.EXO2) {
-            core.exo2_Visualizer_SwitchOff();
-        }
+        core.exo2_Visualizer_SwitchOff();
     }
 
     /**

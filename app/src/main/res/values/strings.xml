@@ -69,7 +69,6 @@
     <string name="text_button_setting_register">注册账户</string>
     <string name="text_button_setting_logout">登出账户</string>
     <string name="text_button_setting_userInfo">用户信息</string>
-    <string name="text_button_setting_core">设置播放核心</string>
     <string name="text_button_setting_about">关于应用</string>
     <string name="text_about_title">DarkPurple Music Player</string>
     <string name="text_about_me_title">软件作者</string>

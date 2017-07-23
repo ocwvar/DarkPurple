@@ -1,7 +1,6 @@
 package com.ocwvar.darkpurple.FragmentPages
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -11,15 +10,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import com.ocwvar.darkpurple.Activities.FolderSelectorActivity
 import com.ocwvar.darkpurple.Activities.SettingsActivity
 import com.ocwvar.darkpurple.Adapters.UserSettingsAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Services.ServiceHolder
-import com.ocwvar.darkpurple.Units.ActivityManager
-import com.ocwvar.darkpurple.Units.CoverProcesser
 import java.lang.ref.WeakReference
 
 
@@ -34,7 +29,6 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
 
     private val adapter: UserSettingsAdapter = UserSettingsAdapter(this@UserFragment)
     private var aboutDialogKeeper: WeakReference<AlertDialog?> = WeakReference(null)
-    private var coreTypeDialogKeeper: WeakReference<CoreSelectorDialog?> = WeakReference(null)
     private lateinit var fragmentView: View
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -77,13 +71,6 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
                 //显示关于对话框
                 showAboutDialog()
             }
-            R.string.text_button_setting_core -> {
-                //设置播放核心
-                if (coreTypeDialogKeeper.get() == null) {
-                    coreTypeDialogKeeper = WeakReference(CoreSelectorDialog())
-                }
-                coreTypeDialogKeeper.get()?.show()
-            }
         }
     }
 
@@ -121,79 +108,6 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
             aboutDialogKeeper = WeakReference(dialog)
         }
         aboutDialogKeeper.get()?.show()
-    }
-
-    /**
-     * 音频核心选择对话框处理类
-     */
-    private inner class CoreSelectorDialog {
-
-        private var selectedPos: Int = -1
-
-        fun show() {
-            var view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_audio_core_type, null, false)
-            view.findViewById<View>(R.id.button_coreType_done).setOnClickListener {
-                //点击确定按钮事件
-                if (selectedPos in 0..2 && selectedPos != AppConfigs.audioCoreType) {
-                    //如果选择的项目在0~2之间，同时发生了类型的改变
-                    val spEditor: SharedPreferences.Editor = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit()
-                    //应用设置
-                    spEditor.putInt("audioCoreType", selectedPos).commit()
-                    AppConfigs.reInitOptionValues()
-                    //关闭现有服务
-                    ServiceHolder.getInstance().service.closeService()
-                    //重新启动界面
-                    ActivityManager.getInstance().restartMainActivity()
-                    //清空模糊缓存
-                    CoverProcesser.release()
-                }
-            }
-            (view.findViewById<View>(R.id.radioButton_coreType_bass) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
-                //BASS类型 点击事件
-                if (isChecked) {
-                    selectedPos = 0
-                }
-            }
-            (view.findViewById<View>(R.id.radioButton_coreType_exo) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
-                //EXO类型 点击事件
-                if (isChecked) {
-                    selectedPos = 1
-                }
-            }
-            (view.findViewById<View>(R.id.radioButton_coreType_compat) as RadioButton).setOnCheckedChangeListener { _, isChecked ->
-                //Compat类型 点击事件
-                if (isChecked) {
-                    selectedPos = 2
-                }
-            }
-            //选择已选定的条目
-            selectCurrentCoreType(view)
-            //显示对话框
-            AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).show()
-        }
-
-        /**
-         * 选择当下已选择的项目
-         */
-        private fun selectCurrentCoreType(view: View) {
-            when (AppConfigs.audioCoreType) {
-                0 -> {
-                    //BASS
-                    (view.findViewById<View>(R.id.radioButton_coreType_bass) as RadioButton).isChecked = true
-                }
-
-                1 -> {
-                    //EXO2
-                    (view.findViewById<View>(R.id.radioButton_coreType_exo) as RadioButton).isChecked = true
-                }
-
-                2 -> {
-                    //Compat
-                    (view.findViewById<View>(R.id.radioButton_coreType_compat) as RadioButton).isChecked = true
-                }
-            }
-        }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

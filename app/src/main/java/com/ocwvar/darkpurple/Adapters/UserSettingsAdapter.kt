@@ -47,7 +47,6 @@ class UserSettingsAdapter(val callback: Callback) : RecyclerView.Adapter<Recycle
         array.add(Setting(R.string.text_button_setting_music_scanning, R.drawable.ic_action_folder, true, false))
         array.add(Setting(R.string.text_button_setting_music_sort, R.drawable.ic_action_sort, true, false))
         array.add(Setting(R.string.text_button_setting_other, R.drawable.ic_action_setting, true, false))
-        array.add(Setting(R.string.text_button_setting_core, R.drawable.ic_action_core, true, false))
         array.add(Setting(R.string.text_button_setting_about, R.drawable.ic_action_about, true, false))
         notifyDataSetChanged()
     }

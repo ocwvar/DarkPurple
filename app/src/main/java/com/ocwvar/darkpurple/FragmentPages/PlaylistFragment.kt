@@ -95,12 +95,12 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                  * 读取播放列表数据成功
                  * @param playlistItem  读取的播放列表数据
                  * *
-                 * @param data  对应的歌曲列表
+                 * @param dataObject  对应的歌曲列表
                  */
-                override fun onLoadCompleted(playlistItem: PlaylistItem, data: ArrayList<SongItem>?) {
-                    if (data != null && data.size > 0) {
+                override fun onLoadCompleted(playlistItem: PlaylistItem, dataObject: ArrayList<SongItem>?) {
+                    if (dataObject != null && dataObject.size > 0) {
                         //如果已经有有效的歌曲列表数据，则可以直接进行播放
-                        val result: Boolean = ServiceHolder.getInstance().service?.play(data, 0) ?: false
+                        val result: Boolean = ServiceHolder.getInstance().service?.play(dataObject, 0) ?: false
                         if (!result) {
                             //播放失败
                             ToastMaker.show(R.string.message_playlist_play_failed)
@@ -231,10 +231,10 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                              * 读取播放列表数据成功
                              * @param playlistItem  读取的播放列表数据
                              * *
-                             * @param data  对应的歌曲列表
+                             * @param dataObject  对应的歌曲列表
                              */
-                            override fun onLoadCompleted(playlistItem: PlaylistItem, data: ArrayList<SongItem>?) {
-                                if (data != null && data.size > 0) {
+                            override fun onLoadCompleted(playlistItem: PlaylistItem, dataObject: ArrayList<SongItem>?) {
+                                if (dataObject != null && dataObject.size > 0) {
                                     //成功获取数据
                                     val bundle: Bundle = Bundle().let {
                                         it.putInt("position", position)

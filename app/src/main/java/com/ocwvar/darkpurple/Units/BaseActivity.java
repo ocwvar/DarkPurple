@@ -81,6 +81,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * 初始化控件的操作
      * </p>
      * 执行顺序: 3
+     *
      * @param savedInstanceState
      */
     @SuppressWarnings("ConstantConditions")

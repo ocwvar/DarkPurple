@@ -7,12 +7,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.Bean.SongItem;
-import com.ocwvar.darkpurple.Services.Core.BASSCORE;
-import com.ocwvar.darkpurple.Services.Core.CoreAdvFunctions;
-import com.ocwvar.darkpurple.Services.Core.CoreBaseFunctions;
-import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Services.Core.EXOCORE;
-import com.ocwvar.darkpurple.Services.Core.EXO_ONLY_Interface;
+import com.ocwvar.darkpurple.Services.Core.IPlayer;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
@@ -38,29 +34,15 @@ class AudioNextCore {
      * 当前播放的音频位于列表内的位置
      */
     private int playingIndex = -1;
-    /**
-     * 当前使用的音频播放方案类型
-     */
-    private CoreType coreType = CoreType.BASS_Library;
 
     /**
      * CORE调用接口
      */
-    private CoreBaseFunctions coreInterface = null;
+    private IPlayer iPlayer = null;
 
-    AudioNextCore(@NonNull Context applicationContext, @NonNull CoreType defaultCoreType) {
+    AudioNextCore(@NonNull Context applicationContext) {
         this.applicationContext = applicationContext;
-        this.coreType = defaultCoreType;
-        switch (this.coreType) {
-            case BASS_Library:
-                coreInterface = new BASSCORE(applicationContext);
-                break;
-            case EXO2:
-                coreInterface = new EXOCORE(applicationContext);
-                break;
-            case COMPAT:
-                break;
-        }
+        this.iPlayer = new EXOCORE(applicationContext);
     }
 
     /**
@@ -80,10 +62,6 @@ class AudioNextCore {
             boolean result = play(songList, playingIndex);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
-                if (coreType != CoreType.EXO2) {
-                    //EXO2 需要由核心自主发送广播
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
-                }
             }
             return result;
         } else {
@@ -108,10 +86,6 @@ class AudioNextCore {
             boolean result = play(songList, playingIndex);
             if (result) {
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_SWITCH));
-                if (coreType != CoreType.EXO2) {
-                    //EXO2 需要由核心自主发送广播
-                    applicationContext.sendBroadcast(new Intent(AudioService.NOTIFICATION_UPDATE));
-                }
             }
             return result;
         } else {
@@ -149,14 +123,6 @@ class AudioNextCore {
     }
 
     /**
-     * @return 当前使用的播放方案类型
-     */
-    @NonNull
-    CoreType currentCoreType() {
-        return coreType;
-    }
-
-    /**
      * 播放音频
      *
      * @param songItem 音频信息集合
@@ -164,7 +130,7 @@ class AudioNextCore {
      * @return 执行结果
      */
     private boolean playAudio(SongItem songItem, boolean onlyInit) {
-        return coreInterface.play(songItem, onlyInit);
+        return iPlayer.play(songItem, onlyInit);
     }
 
     /**
@@ -240,12 +206,7 @@ class AudioNextCore {
      * @return 频段参数
      */
     int[] getEqParameters() {
-        if (coreInterface instanceof CoreAdvFunctions) {
-            return ((CoreAdvFunctions) coreInterface).getEQParameters();
-        } else {
-            Logger.error(TAG, "\n\n当前CORE不支持此功能\n\n");
-            return null;
-        }
+        return iPlayer.getEQParameters();
     }
 
     /**
@@ -256,23 +217,14 @@ class AudioNextCore {
      * @return 执行结果
      */
     boolean updateEqParameter(int eqParameter, int eqIndex) {
-        if (coreInterface instanceof CoreAdvFunctions) {
-            return ((CoreAdvFunctions) coreInterface).setEQParameters(eqParameter, eqIndex);
-        } else {
-            Logger.error(TAG, "\n\n当前CORE不支持此功能\n\n");
-            return false;
-        }
+        return false;
     }
 
     /**
      * 重置均衡器设置
      */
     void resetEqualizer() {
-        if (coreInterface instanceof CoreAdvFunctions) {
-            ((CoreAdvFunctions) coreInterface).resetEQ();
-        } else {
-            Logger.error(TAG, "\n\n当前CORE不支持此功能\n\n");
-        }
+
     }
 
     /**
@@ -281,19 +233,7 @@ class AudioNextCore {
      * @return 频谱数据数组
      */
     float[] getSpectrum() {
-        if (coreInterface instanceof CoreAdvFunctions) {
-            return ((CoreAdvFunctions) coreInterface).getSpectrum();
-        } else {
-            Logger.error(TAG, "\n\n当前CORE不支持此功能\n\n");
-            return null;
-        }
-    }
-
-    /**
-     * @return 当前使用的播放核心是否支持高级功能
-     */
-    boolean isCoreSupportedAdvFunction() {
-        return coreInterface instanceof CoreAdvFunctions;
+        return iPlayer.getSpectrum();
     }
 
     /**
@@ -303,7 +243,7 @@ class AudioNextCore {
      */
     @NonNull
     AudioStatus getCurrentStatus() {
-        return coreInterface.getAudioStatus();
+        return iPlayer.getAudioStatus();
     }
 
     /**
@@ -312,7 +252,7 @@ class AudioNextCore {
      * @return 执行结果
      */
     boolean pauseAudio() {
-        return coreInterface.pause();
+        return iPlayer.pause();
     }
 
     /**
@@ -321,7 +261,7 @@ class AudioNextCore {
      * @return 执行结果
      */
     boolean resumeAudio() {
-        return coreInterface.resume();
+        return iPlayer.resume();
     }
 
     /**
@@ -330,7 +270,7 @@ class AudioNextCore {
      * @return 执行结果
      */
     boolean releaseAudio() {
-        return coreInterface.release();
+        return iPlayer.release();
     }
 
     /**
@@ -339,7 +279,7 @@ class AudioNextCore {
      * @return 当前音频播放位置
      */
     double getPlayingPosition() {
-        return coreInterface.playingPosition();
+        return iPlayer.playingPosition();
     }
 
     /**
@@ -348,7 +288,7 @@ class AudioNextCore {
      * @return 音频长度
      */
     double getAudioLength() {
-        return coreInterface.getAudioLength();
+        return iPlayer.getAudioLength();
     }
 
     /**
@@ -357,8 +297,8 @@ class AudioNextCore {
      * @param position 位置长度
      * @return 执行结果
      */
-    boolean seek2Position(double position) {
-        return coreInterface.seekPosition(position);
+    boolean seek2Position(long position) {
+        return iPlayer.seekPosition(position);
     }
 
     /**
@@ -366,7 +306,7 @@ class AudioNextCore {
      * 打开频谱数据接收器
      */
     void exo2_Visualizer_SwitchOn() {
-        ((EXO_ONLY_Interface) coreInterface).switchOnVisualizer();
+        iPlayer.switchOnVisualizer();
     }
 
     /**
@@ -374,7 +314,7 @@ class AudioNextCore {
      * 停止频谱数据接收器
      */
     void exo2_Visualizer_SwitchOff() {
-        ((EXO_ONLY_Interface) coreInterface).switchOffVisualizer();
+        iPlayer.switchOffVisualizer();
     }
 
 }

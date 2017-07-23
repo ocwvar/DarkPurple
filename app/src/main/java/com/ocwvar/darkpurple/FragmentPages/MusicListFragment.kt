@@ -422,9 +422,9 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                      * 读取播放列表数据成功
                      * @param playlistItem  读取的播放列表数据
                      * *
-                     * @param data  对应的歌曲列表
+                     * @param dataObject  对应的歌曲列表
                      */
-                    override fun onLoadCompleted(playlistItem: PlaylistItem, data: ArrayList<SongItem>?) {
+                    override fun onLoadCompleted(playlistItem: PlaylistItem, dataObject: ArrayList<SongItem>?) {
                         if (PlaylistUnits.getInstance().addAudio(playlistItem, songData)) {
                             ToastMaker.show(R.string.message_playlist_add_done_item)
                         } else {
@@ -479,7 +479,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 dialog = AlertDialog
                         .Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
                         .setView(inputText)
-                        .setPositiveButton(R.string.simple_done) { dialog, _ ->
+                        .setPositiveButton(R.string.simple_done) { dialogInterface, _ ->
                             //确认    按钮处理
                             val playlistName: String = inputText.text.toString()
                             if (TextUtils.isEmpty(playlistName)) {
@@ -491,7 +491,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                                 //检查名称是否与现有的播放列表名称重复
                                 ToastMaker.show(R.string.message_playlist_name_existed)
                             }
-                            dialog.dismiss()
+                            dialogInterface.dismiss()
                             //保存当前播放列表名称
                             this.lastPlaylistName = playlistName
                             //切换当前列表为多选模式
@@ -508,9 +508,9 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                             //清空输入框
                             inputText.text.clear()
                         }
-                        .setNegativeButton(R.string.simple_cancel, { dialog, _ ->
+                        .setNegativeButton(R.string.simple_cancel, { dialogInterface, _ ->
                             //取消    按钮处理
-                            dialog.dismiss()
+                            dialogInterface.dismiss()
                             inputText.text.clear()
                         })
                         .create()

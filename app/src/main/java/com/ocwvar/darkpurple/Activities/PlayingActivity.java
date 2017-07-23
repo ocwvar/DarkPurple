@@ -45,7 +45,6 @@ import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.AudioStatus;
-import com.ocwvar.darkpurple.Services.Core.CoreType;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.CoverImage2File;
 import com.ocwvar.darkpurple.Units.FastBlur;
@@ -498,18 +497,14 @@ public class PlayingActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.spectrum:
-                if (Build.VERSION.SDK_INT != 18 && audioService.isCoreSupportedAdvFunction()) {
+                if (Build.VERSION.SDK_INT != 18) {
                     switchSpectrumEffect();
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), R.string.coreNotSupported, Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.equalizer:
-                if (audioService.isCoreSupportedAdvFunction()) {
-                    EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content), R.string.coreNotSupported, Snackbar.LENGTH_SHORT).show();
-                }
+                EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
                 break;
             case R.id.shower_mainButton:
                 //主按钮点击事件
@@ -682,10 +677,10 @@ public class PlayingActivity
             spectrumSwitch.setTag("on");
 
             coverSpectrum.setVisibility(View.VISIBLE);
-            if (audioService.currentCoreType() == CoreType.EXO2) {
-                //如果是EXO2，则需要手动调用频谱数据接收器
-                audioService.exo2_Visualizer_SwitchOn();
-            }
+
+            //EXO需要手动调用频谱数据接收器
+            audioService.exo2_Visualizer_SwitchOn();
+
             if (audioService.getAudioStatus() == AudioStatus.Playing) {
                 //如果当前是正在播放 , 才执行动画
                 surfaceViewController.start();
@@ -699,13 +694,12 @@ public class PlayingActivity
 
             //设置状态到TAG中
             spectrumSwitch.setTag("off");
+
             //先关闭频谱输出动画（EXO2需求）
             surfaceViewController.stop();
 
-            if (audioService.currentCoreType() == CoreType.EXO2) {
-                //如果是EXO2，则需要手动调用频谱数据接收器
-                audioService.exo2_Visualizer_SwitchOff();
-            }
+            //EXO需要手动调用频谱数据接收器
+            audioService.exo2_Visualizer_SwitchOff();
 
             coverSpectrum.setVisibility(View.GONE);
         }

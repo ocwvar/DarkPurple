@@ -355,9 +355,9 @@ public class PlaylistUnits {
          * 读取播放列表数据成功
          *
          * @param playlistItem 读取的播放列表数据
-         * @param data         对应的歌曲列表
+         * @param dataObject   对应的歌曲列表
          */
-        void onLoadCompleted(@NonNull final PlaylistItem playlistItem, @Nullable final ArrayList<SongItem> data);
+        void onLoadCompleted(@NonNull final PlaylistItem playlistItem, @Nullable final ArrayList<SongItem> dataObject);
 
         /**
          * 读取播放列表数据失败

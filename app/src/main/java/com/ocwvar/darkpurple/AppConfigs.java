@@ -118,11 +118,6 @@ public class AppConfigs {
     //播放界面是否使用兼容模式
     public static boolean useCompatMode = false;
 
-    //音频播放核心类型
-    //0：BASS_Library    1：EXO Player2    2：Compat
-    //else：= 0
-    public static int audioCoreType = 0;
-
     /**
      * 初始化各项变量
      *
@@ -177,8 +172,6 @@ public class AppConfigs {
             preferences.edit().putBoolean("isNotFirstRunning", true).apply();
 
             useCompatMode = preferences.getBoolean("useCompatMode", false);
-
-            audioCoreType = preferences.getInt("audioCoreType", 0);
 
             Color.loadColors();
 
@@ -252,8 +245,6 @@ public class AppConfigs {
             Color.loadColors();
 
             useCompatMode = preferences.getBoolean("useCompatMode", false);
-
-            audioCoreType = preferences.getInt("audioCoreType", 1);
 
             String value = preferences.getString("scanner_sort_type", "0");
             switch (value) {
