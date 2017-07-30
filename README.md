@@ -1,5 +1,5 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/logo-nv.png) 
-![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=master) 
+![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev) 
 
 #### 支持：Android 4.2.2 ~ Android 7.1.2
 #### 第二版开发计划
@@ -98,9 +98,6 @@ CoverBox 的作者为 Henry Hu
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp2.gif)
 
-### 频谱动画 (风格3)<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp3.gif)
 ---
 
 
