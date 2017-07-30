@@ -1,9 +1,12 @@
 package com.ocwvar.darkpurple.Activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,6 +23,7 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -659,6 +663,8 @@ public class PlayingActivity
     /**
      * 切换频谱效果开关
      */
+
+    @SuppressLint("NewApi")
     private void switchSpectrumEffect() {
 
         //先让控件不可用
@@ -671,6 +677,13 @@ public class PlayingActivity
             //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
             spectrumSwitch.setEnabled(true);
             spectrumSwitch.setAlpha(1f);
+
+            if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+                //判断是否有音频录制权限
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},0);
+                return;
+            }
+
             spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
 
             //设置状态到TAG中

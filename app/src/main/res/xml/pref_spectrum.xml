@@ -10,7 +10,7 @@
         android:title="@string/setting_title_spectrum_style" />
 
     <EditTextPreference
-        android:defaultValue="50"
+        android:defaultValue="70"
         android:inputType="numberDecimal"
         android:key="spectrumCounts"
         android:summary="@string/setting_info_count"
@@ -28,7 +28,7 @@
         android:title="@string/setting_info_outline" />
 
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="isSpectrumShowOutLine"
         android:title="@string/setting_title_outlineShow"
         android:widgetLayout="@layout/preference_checkbox" />
@@ -50,7 +50,7 @@
         android:title="@string/setting_info_node" />
 
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="isSpectrumShowNode"
         android:title="@string/setting_title_nodeShow"
         android:widgetLayout="@layout/preference_checkbox" />
@@ -84,7 +84,7 @@
         app:colorpicker_showAlpha="false" />
 
     <EditTextPreference
-        android:defaultValue="10.0"
+        android:defaultValue="15.0"
         android:inputType="numberDecimal"
         android:key="spectrum_line_width"
         android:title="@string/setting_title_lineWidth" />

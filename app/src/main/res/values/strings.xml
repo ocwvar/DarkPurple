@@ -199,7 +199,6 @@
     <string-array name="setting_spectrum_styles">
         <item>原始样式</item>
         <item>OSU样式</item>
-        <item>动态圆圈样式</item>
     </string-array>
 
     <string name="setting_info_color_warnning">请勿使用接近或是完全的白色，以免在部分节目无法得到满意的效果</string>
@@ -306,7 +305,6 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        <item>3</item>
     </string-array>
 
     <!--Notification相关-->

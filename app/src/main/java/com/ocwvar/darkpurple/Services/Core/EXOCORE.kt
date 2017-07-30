@@ -346,7 +346,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
                     number *= -1f
                 }
                 //移动小数点
-                number *= 0.0000000001f
+                number *= 0.000000001f
 
                 if (sizeLimit > 0 && sizeLimit < number) {
                     //如果大于限制数，则将数字设为最大数值
