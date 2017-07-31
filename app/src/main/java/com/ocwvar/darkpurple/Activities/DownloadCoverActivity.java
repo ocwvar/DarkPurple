@@ -34,6 +34,9 @@ import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
+import com.ocwvar.darkpurple.Units.Cover.ColorType;
+import com.ocwvar.darkpurple.Units.Cover.CoverManager;
+import com.ocwvar.darkpurple.Units.Cover.CoverType;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -215,13 +218,12 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     @Override
     public void onRecoverCover() {
 
-        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
+        if (!TextUtils.isEmpty(CoverManager.INSTANCE.getSource(CoverType.CUSTOM, songItem.getCoverID()))) {
             //删除下载的封面
             new File(AppConfigs.DownloadCoversFolder + songItem.getFileName() + ".jpg").delete();
             //清空自定义数据 和 Picasso的缓存
-            Picasso.with(DownloadCoverActivity.this).invalidate(songItem.getCustomCoverPath());
-            songItem.setCustomCoverPath("");
-            songItem.setCustomPaletteColor(AppConfigs.Color.DefaultCoverColor);
+            Picasso.with(DownloadCoverActivity.this).invalidate(CoverManager.INSTANCE.getSource(CoverType.CUSTOM, songItem.getCoverID()));
+            CoverManager.INSTANCE.removeSource(CoverType.CUSTOM, songItem.getCoverID());
 
             Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful, Toast.LENGTH_SHORT).show();
 
@@ -237,47 +239,14 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     }
 
     /**
-     * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
+     * 获取封面混合颜色，获取失败则返回封面默认颜色
      *
      * @param coverImage 封面图像
      * @return 混合颜色
      */
     private int getAlbumCoverColor(Bitmap coverImage) {
-        Palette palette;
-
-        try {
-            palette = new Palette.Builder(coverImage).generate();
-        } catch (Exception e) {
-            //如果图像解析失败 或 图像为Null 则使用默认颜色
-            return AppConfigs.Color.DefaultCoverColor;
-        }
-
-        int color = AppConfigs.Color.DefaultCoverColor, item = 0;
-        //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-        while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
-            switch (item) {
-                case 0:
-                    color = palette.getDarkMutedColor(AppConfigs.Color.DefaultCoverColor);
-                    break;
-                case 1:
-                    color = palette.getDarkVibrantColor(AppConfigs.Color.DefaultCoverColor);
-                    break;
-                case 3:
-                    color = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
-                    break;
-                case 4:
-                    color = palette.getLightMutedColor(AppConfigs.Color.DefaultCoverColor);
-                    break;
-                case 5:
-                    color = palette.getLightVibrantColor(AppConfigs.Color.DefaultCoverColor);
-                    break;
-                default:
-                    color = AppConfigs.Color.DefaultCoverColor;
-                    break;
-            }
-            item += 1;
-        }
-        return color;
+        final Palette palette = new Palette.Builder(coverImage).generate();
+        return palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
     }
 
     /**
@@ -542,7 +511,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
             AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
             //加载对话框布局
             View dialogView = LayoutInflater.from(DownloadCoverActivity.this).inflate(R.layout.dialog_selector_cover, null);
-            ListView listView = (ListView) dialogView.findViewById(R.id.listView);
+            ListView listView = dialogView.findViewById(R.id.listView);
             //加载适配器
             SelectorAdapter adapter = new SelectorAdapter(result);
             listView.setAdapter(adapter);
@@ -607,7 +576,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                 TextView sizeTextView;
 
                 SelectorViewHolder(View itemView) {
-                    sizeTextView = (TextView) itemView.findViewById(R.id.textView_cover_selector_size);
+                    sizeTextView = itemView.findViewById(R.id.textView_cover_selector_size);
                 }
 
             }
@@ -695,9 +664,10 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                     response.body().close();
                     Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
                     if (bitmap != null) {
-                        songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
-                        //这里要设置成绝对路径 , 给Picasso读取使用
-                        songItem.setCustomCoverPath("file:///" + file.getPath());
+                        //设置自定义封面颜色
+                        CoverManager.INSTANCE.setColorSource(ColorType.CUSTOM, songItem.getCoverID(), getAlbumCoverColor(bitmap), true);
+                        //设置自定义封面路径
+                        CoverManager.INSTANCE.setSource(CoverType.CUSTOM, songItem.getCoverID(), file.getPath(), true);
                         bitmap.recycle();
                         bitmap = null;
                     }
@@ -725,7 +695,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
             if (!aBoolean) {
                 Snackbar.make(findViewById(android.R.id.content), R.string.simple_download_failed, Snackbar.LENGTH_LONG).show();
             } else {
-                Picasso.with(DownloadCoverActivity.this).invalidate(songItem.getCustomCoverPath());
+                Picasso.with(DownloadCoverActivity.this).invalidate(CoverManager.INSTANCE.getCover(CoverType.CUSTOM, songItem.getCoverID()));
                 Intent intent = new Intent();
                 intent.putExtra("item", songItem);
                 setResult(DATA_CHANGED, intent);

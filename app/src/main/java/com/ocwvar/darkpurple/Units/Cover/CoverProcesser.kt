@@ -12,6 +12,7 @@ import android.os.Build
 import android.renderscript.Allocation
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
+import android.text.TextUtils
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Units.FastBlur
 import com.ocwvar.darkpurple.Units.Logger
@@ -34,9 +35,9 @@ object CoverProcesser {
     //模糊封面Drawable对象储存容器
     private var blurd: Drawable? = null
     //储存最后一次完成的任务图像路径，供弱引用图像失效时重新生成使用
-    private var lastCompletedPath: String? = null
-    //储存当前正在处理的图像路径，供新的任务请求时检查使用
-    private var handlingFilePath: String? = null
+    private var lastCompletedCoverID: String? = null
+    //储存当前正在处理的图像ID，供新的任务请求时检查使用
+    private var handlingCoverID: String? = null
     //模糊任务线程
     private var jobThread: BlurThread? = null
     //任务回调接口
@@ -44,37 +45,45 @@ object CoverProcesser {
 
     /**
      * 生成模糊图像
-     * @param   coverFile   图像文件
      * @param   coverID   图像ID
      */
-    fun handleThis(coverFile: File, coverID: String) {
-        if (handlingFilePath == coverFile.path) {
+    fun handleThis(coverID: String) {
+        if (handlingCoverID == coverID) {
             //已有相同的任务
-            Logger.error(javaClass.simpleName, "当前已有相同的任务：" + coverFile.path)
-        } else if (lastCompletedPath == coverFile.path) {
+
+            Logger.error(javaClass.simpleName, "当前已有相同的任务：" + coverID)
+        } else if (lastCompletedCoverID == coverID) {
             //上一次完成的任务与本次相同
-            if (blurd == null) {
+
+            if (blurd == null && !TextUtils.isEmpty(CoverManager.getValidSource(coverID))) {
                 //如果上次生成的图像已经失效，则重新进行生成操作
-                Logger.warnning(javaClass.simpleName, "上次图像已失效，进行重新生成：" + coverFile.path)
-                handlingFilePath = coverFile.path
+                Logger.warnning(javaClass.simpleName, "上次图像已失效，进行重新生成：" + coverID)
+                handlingCoverID = coverID
                 jobThread?.cancel(true)
-                jobThread = BlurThread(coverFile.path, coverID)
+                jobThread = BlurThread(coverID)
                 jobThread?.execute()
-            } else {
+            } else if (blurd != null) {
                 //上次生成的图像仍可以使用，直接通过回调接口返回
-                Logger.warnning(javaClass.simpleName, "请求图像与现有图像相同：" + coverFile.path)
+                Logger.warnning(javaClass.simpleName, "请求图像与现有图像相同：" + coverID)
                 callback?.onCompleted(blurd!!)
+            } else {
+                //封面ID无效
+                Logger.error(javaClass.simpleName, "无效封面ID：" + coverID)
             }
-        } else if (coverFile.exists() && coverFile.canRead()) {
+
+        } else if (!TextUtils.isEmpty(CoverManager.getValidSource(coverID))) {
             //开始执行新的任务
-            Logger.warnning(javaClass.simpleName, "开始执行新的模糊处理：" + coverFile.path)
-            handlingFilePath = coverFile.path
+
+            Logger.warnning(javaClass.simpleName, "开始执行新的模糊处理：" + coverID)
+            handlingCoverID = coverID
             jobThread?.cancel(true)
-            jobThread = BlurThread(coverFile.path, coverID)
+            jobThread = BlurThread(coverID)
             jobThread?.execute()
+
         } else {
             //无法执行任务
-            Logger.error(javaClass.simpleName, "封面图像文件缺失，不执行此次任务：" + coverFile.path)
+
+            Logger.error(javaClass.simpleName, "封面图像文件缺失，不执行此次任务：" + coverID)
         }
     }
 
@@ -102,8 +111,8 @@ object CoverProcesser {
      */
     fun release() {
         jobThread?.cancel(true)
-        lastCompletedPath = null
-        handlingFilePath = null
+        lastCompletedCoverID = null
+        handlingCoverID = null
         blurd = null
         original = null
     }
@@ -116,20 +125,36 @@ object CoverProcesser {
     /**
      * 图像模糊处理工作子线程
      */
-    class BlurThread(val coverFilePath: String, val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
+    class BlurThread(val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
         //模糊图像缩小倍数
         val scaleSize: Float = 0.4f
 
         override fun doInBackground(vararg params: Void?): Drawable? {
-            //原始图像
-            val originalBitmap: Bitmap = BitmapFactory.decodeFile(coverFilePath) ?: return null
+
+            //获取原始图像，获取失败则直接判断这次操作为失败
+            val originalBitmap: Bitmap = BitmapFactory.decodeFile(CoverManager.getValidSource(coverID)) ?: return null
+            //先尝试获取已缓存的模糊数据
+            val cachedBlurBitmap: Bitmap? = BitmapFactory.decodeFile(CoverManager.getSource(CoverType.BLUR, coverID))
+
+            if (cachedBlurBitmap != null) {
+                //储存模糊图像
+                blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, cachedBlurBitmap)
+            }
+
+            //缩放处理原始图像
             val matrix: Matrix = Matrix()
             matrix.postScale(scaleSize, scaleSize)
             //得到缩小指定倍数后的原始图像
             val scaledBitmap: Bitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
             //储存原始图像
             original = BitmapDrawable(AppConfigs.ApplicationContext.resources, scaledBitmap)
-            //模糊图像容器，图像尺寸为已缩小后的图像尺寸
+
+            if (blurd != null) {
+                //如果此时已经获取到了模糊图像，则不需要进行下一步模糊处理
+                return blurd
+            }
+
+            //开始进行模糊处理，创建模糊图像容器，图像尺寸为已缩小后的图像尺寸
             var blurBitmap: Bitmap = Bitmap.createBitmap(scaledBitmap.width, scaledBitmap.height, Bitmap.Config.ARGB_8888)
 
             try {
@@ -151,6 +176,14 @@ object CoverProcesser {
                     //低版本API兼容方式，并不能保证每次处理都正确
                     blurBitmap = FastBlur.doBlur(scaledBitmap, 25, false)
                 }
+                if (blurBitmap != null) {
+                    //模糊图像生成成功，进行文件缓存
+                    val cachedFile: File? = CoverImage2File.getInstance().makeImage2File(CoverType.BLUR, blurBitmap, coverID)
+                    cachedFile?.let {
+                        //缓存图像路径
+                        CoverManager.setSource(CoverType.BLUR, coverID, it.path, true)
+                    }
+                }
                 blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, blurBitmap)
                 return blurd
             } catch(e: Exception) {
@@ -161,18 +194,18 @@ object CoverProcesser {
 
         override fun onCancelled() {
             super.onCancelled()
-            handlingFilePath = null
+            handlingCoverID = null
         }
 
         override fun onPostExecute(result: Drawable?) {
             super.onPostExecute(result)
-            handlingFilePath = null
+            handlingCoverID = null
             if (result != null) {
-                lastCompletedPath = coverFilePath
-                CoverManager.setSource(CoverType.BLUR, coverID, coverFilePath, true)
+                lastCompletedCoverID = coverID
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATED))
                 callback?.onCompleted(result)
             } else {
+                //封面无效，删除缓存数据
                 CoverManager.removeSource(CoverType.BLUR, coverID)
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATE_FAILED))
                 callback?.onFailed()

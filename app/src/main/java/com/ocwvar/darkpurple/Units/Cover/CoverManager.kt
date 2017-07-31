@@ -86,7 +86,7 @@ object CoverManager {
     }
 
     /**
-     * 移除数据源
+     * 移除封面数据，同时移除对应的颜色资源
      *
      * @param   type    封面类型
      * @param   key 要移除的Key
@@ -98,11 +98,13 @@ object CoverManager {
             CoverType.NORMAL -> {
                 if (coverLibrary.containsKey(key)) {
                     coverLibrary.remove(key)
+                    coverColorLibrary.remove(key)
                 }
             }
 
             CoverType.CUSTOM -> {
                 if (customCoverLibrary.containsKey(key)) {
+                    customCoverLibrary.remove(key)
                     customCoverLibrary.remove(key)
                 }
             }

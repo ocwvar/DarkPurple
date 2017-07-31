@@ -31,7 +31,7 @@ import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.AudioStatus
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.BaseActivity
-import com.ocwvar.darkpurple.Units.CoverProcesser
+import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
 import com.ocwvar.darkpurple.Units.ToastMaker
 import java.lang.ref.WeakReference
 

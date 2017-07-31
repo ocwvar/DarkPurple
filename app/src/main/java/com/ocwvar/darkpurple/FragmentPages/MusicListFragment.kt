@@ -35,7 +35,8 @@ import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
-import com.ocwvar.darkpurple.Units.CoverImage2File
+import com.ocwvar.darkpurple.Units.Cover.CoverManager
+import com.ocwvar.darkpurple.Units.Cover.CoverType
 import com.ocwvar.darkpurple.Units.MediaScanner
 import com.ocwvar.darkpurple.Units.PlaylistUnits
 import com.ocwvar.darkpurple.Units.ToastMaker
@@ -319,9 +320,9 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         args.put(Keys.Token, AppConfigs.USER.TOKEN)
                         args.put(Keys.FilePath, songData.path)
                         args.put(Keys.MusicTitle, songData.title)
-                        if (!TextUtils.isEmpty(CoverImage2File.getInstance().getNormalCachePath(songData.path))) {
+                        if (!TextUtils.isEmpty(CoverManager.getSource(CoverType.NORMAL, songData.coverID))) {
                             //有封面存在才需要传递
-                            args.put(Keys.CoverPath, CoverImage2File.getInstance().getNormalCachePath(songData.path))
+                            args.put(Keys.CoverPath, CoverManager.getSource(CoverType.NORMAL, songData.coverID)!!)
                         }
                         val result: Boolean = NetworkRequest.newRequest(NetworkRequestTypes.上传文件, args, object : OnUploadFileCallback {
                             override fun OnUploaded(message: String) {

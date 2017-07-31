@@ -49,7 +49,7 @@ public class CoverImage2File {
         }
 
         //获取缓存图像文件对象
-        final File imageFile = new File(getNormalCachePath(coverID));
+        final File imageFile = new File(getNormalCachePath(coverID, coverType));
 
         if (imageFile.exists() && imageFile.length() <= 0) {
             //图像文件虽然存在 , 但是图像文件无效 , 所以需要删除
@@ -94,10 +94,11 @@ public class CoverImage2File {
      * 获取缓存图像相对路径
      *
      * @param audioPath 音频路径
+     * @param coverType 封面类型
      * @return 缓存图像的相对路径
      */
-    private String getNormalCachePath(String audioPath) {
-        return AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
+    private String getNormalCachePath(String audioPath, CoverType coverType) {
+        return AppConfigs.ImageCacheFolder + buildTag(audioPath) + "_" + coverType.name() + ".cache";
     }
 
     /**

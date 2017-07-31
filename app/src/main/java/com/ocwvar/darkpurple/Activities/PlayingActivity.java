@@ -23,7 +23,6 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -50,7 +49,7 @@ import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.AudioStatus;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
-import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.FastBlur;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.SurfaceViewController;
@@ -404,8 +403,8 @@ public class PlayingActivity
             //先获取当前播放的数据
             final SongItem playingSong = playingList.get(audioService.getPlayingIndex());
 
-            //优先读取自定义封面.  如果当前没有加载相同TAG的封面 , 则进行加载
-            if (!TextUtils.isEmpty(playingSong.getCustomCoverPath()) && !backGround.getTag().equals(playingSong.getCustomCoverPath())) {
+            //读取可用的封面. 如果当前没有加载相同TAG的封面, 则进行加载
+            if (!backGround.getTag().equals(CoverManager.INSTANCE.getValidColor(playingSong.getCoverID()))) {
 
                 if (blurCoverThreadObject != null && blurCoverThreadObject.get() != null && blurCoverThreadObject.get().getStatus() != AsyncTask.Status.FINISHED) {
                     //如果当前还在处理上一个封面模糊效果 , 则先中断了
@@ -414,28 +413,13 @@ public class PlayingActivity
                     blurCoverThreadObject = null;
                 }
                 //设置当前背景图片ID
-                backGround.setTag(playingSong.getCustomCoverPath());
+                backGround.setTag(CoverManager.INSTANCE.getValidColor(playingSong.getCoverID()));
 
                 //开始执行模糊背景处理
                 blurCoverThreadObject = new WeakReference<>(new BlurCoverThread(playingSong));
                 blurCoverThreadObject.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 
-            } else if (playingSong.isHaveCover() && !backGround.getTag().equals(playingSong.getPath())) {
-                //判断当前播放的音频是否有封面  同时  当前背景是否已经有相同的图像显示了
-                if (blurCoverThreadObject != null && blurCoverThreadObject.get() != null && blurCoverThreadObject.get().getStatus() != AsyncTask.Status.FINISHED) {
-                    //如果当前还在处理上一个封面模糊效果 , 则先中断了
-                    blurCoverThreadObject.get().cancel(true);
-                    blurCoverThreadObject.clear();
-                    blurCoverThreadObject = null;
-                }
-                //设置当前背景图片ID
-                backGround.setTag(playingSong.getPath());
-
-                //开始执行模糊背景处理
-                blurCoverThreadObject = new WeakReference<>(new BlurCoverThread(playingSong));
-                blurCoverThreadObject.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-
-            } else if (!playingSong.isHaveCover()) {
+            } else {
                 //封面不存在的时候 , 显示默认的背景
                 Drawable prevDrawable;
                 Drawable nextDrawable;
@@ -678,9 +662,9 @@ public class PlayingActivity
             spectrumSwitch.setEnabled(true);
             spectrumSwitch.setAlpha(1f);
 
-            if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+            if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 //判断是否有音频录制权限
-                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},0);
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 0);
                 return;
             }
 
@@ -732,16 +716,15 @@ public class PlayingActivity
 
         @Override
         protected Bitmap doInBackground(Integer... integers) {
-            //先获取已缓存好的图像
+            //可用图像资源路径
+            final String coverPath = CoverManager.INSTANCE.getValidSource(songItem.getCoverID());
+            //缓存图像位图声明
             Bitmap coverImage = null;
             try {
 
-                if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-                    //读取自定义封面
-                    coverImage = Picasso.with(AppConfigs.ApplicationContext).load(songItem.getCustomCoverPath()).get();
-                } else if (songItem.isHaveCover()) {
-                    //如果没有自定义封面 , 则检查是否有默认封面
-                    coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getCacheFile(songItem.getPath())).get();
+                if (!TextUtils.isEmpty(coverPath)) {
+                    //有可用封面数据
+                    coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverManager.INSTANCE.getAbsoluteSource(coverPath)).get();
                 }
 
             } catch (IOException ignored) {

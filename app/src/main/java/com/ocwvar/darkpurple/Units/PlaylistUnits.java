@@ -43,7 +43,7 @@ public class PlaylistUnits {
     /**
      * 从 SharedPreferences 读取播放列表的基本信息
      */
-    void initSPData() {
+    public void initSPData() {
         Logger.warnning(TAG, "正在获取已储存的播放列表基本数据");
         SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
         //先获取所有播放列表的名称

@@ -43,7 +43,7 @@ public class EqualizerUnits {
      *
      * @param appContext 全局Context
      */
-    void init(Context appContext) {
+    public void init(Context appContext) {
         this.appContext = appContext;
         loadEqualizer();
     }

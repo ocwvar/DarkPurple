@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Services.Core.EXOCORE;
 import com.ocwvar.darkpurple.Services.Core.IPlayer;
-import com.ocwvar.darkpurple.Units.CoverImage2File;
-import com.ocwvar.darkpurple.Units.CoverProcesser;
+import com.ocwvar.darkpurple.Units.Cover.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
 
 import java.util.ArrayList;
@@ -179,11 +177,8 @@ class AudioNextCore {
                     this.songList = songList;
                 }
                 //更新封面效果
-                if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-                    CoverProcesser.INSTANCE.handleThis(songItem.getCustomCoverPath());
-                } else if (songItem.isHaveCover()) {
-                    CoverProcesser.INSTANCE.handleThis(CoverImage2File.getInstance().getCacheFile(songItem.getPath()));
-                }
+                CoverProcesser.INSTANCE.handleThis(songItem.getCoverID());
+
                 //发送开始播放广播
                 applicationContext.sendBroadcast(new Intent(AudioService.AUDIO_PLAY));
                 return true;

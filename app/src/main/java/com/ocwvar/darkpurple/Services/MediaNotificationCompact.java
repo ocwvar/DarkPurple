@@ -8,25 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
-import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.CoverImage2File;
-import com.ocwvar.darkpurple.Units.CoverProcesser;
+import com.ocwvar.darkpurple.Units.Cover.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
-
-import java.io.IOException;
 
 /**
  * Project DarkPurple
@@ -173,38 +167,6 @@ class MediaNotificationCompact {
      */
     void close() {
         context.unregisterReceiver(notificationReceiver);
-    }
-
-    /**
-     * 读取歌曲封面图像
-     *
-     * @param songItem 歌曲数据
-     * @return 封面图像位图
-     */
-    private Bitmap loadCoverFromMainThread(@Nullable SongItem songItem) {
-
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-
-        if (songItem == null) {
-            return null;
-        } else if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-            try {
-                return BitmapFactory.decodeFile(songItem.getCustomCoverPath().subSequence(7, songItem.getCustomCoverPath().length()).toString(), options);
-            } catch (Exception e) {
-                return null;
-            }
-        } else if (songItem.getAlbumCoverUri() != null) {
-            try {
-                return MediaStore.Images.Media.getBitmap(context.getContentResolver(), songItem.getAlbumCoverUri());
-            } catch (IOException e) {
-                return null;
-            }
-        } else if (songItem.isHaveCover()) {
-            return BitmapFactory.decodeFile(CoverImage2File.getInstance().getNormalCachePath(songItem.getPath()), options);
-        } else {
-            return null;
-        }
     }
 
     /**

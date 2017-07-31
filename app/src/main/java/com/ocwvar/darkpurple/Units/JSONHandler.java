@@ -88,41 +88,67 @@ public class JSONHandler {
                 jsonArray.add(object);
             }
 
-            //创建字节缓冲数组
-            byte[] buffer = new byte[512];
-            //创建字符串字节数组
-            byte[] jsonArrayByteArray;
-            try {
-                jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                Logger.error(TAG, "保存播放列表数据时UTF-8转码出现异常 , 使用默认编码");
-                jsonArrayByteArray = jsonArray.toString().getBytes();
-            }
-            //读取的长度
-            int length;
+            return jsonArray2File(jsonArray, dataFile);
+        }
+    }
 
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(dataFile, false);
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonArrayByteArray);
-                while ((length = byteArrayInputStream.read(buffer)) != -1) {
-                    fileOutputStream.write(buffer, 0, length);
+    /**
+     * 从文件读取Json形式保存的播放列表数据
+     *
+     * @param name 播放列表名称
+     * @return 如果读取成功 , 则返回歌曲列表 , 否则返回 NULL
+     */
+    static
+    @Nullable
+    ArrayList<SongItem> loadPlaylist(String name) {
+        final String TAG = "JSON播放列表  读取";
+        if (TextUtils.isEmpty(name)) {
+            Logger.error(TAG, "请求数据无效");
+            return null;
+        } else {
+            //创建文件对象
+            File dataFile = new File(AppConfigs.PlaylistFolder + name + ".pl");
+            if (dataFile.exists() && dataFile.canRead() && dataFile.length() > 0) {
+                //如果文件合法 , 则开始读取
+
+                //获取对应的文件数据
+                final JsonArray jsonArray = file2JsonArray(dataFile.getPath());
+                if (jsonArray == null || jsonArray.size() <= 0) {
+                    //获取数据失败或数据为空
+                    return null;
                 }
-                byteArrayInputStream.close();
-                fileOutputStream.flush();
-                fileOutputStream.close();
-                byteArrayInputStream = null;
-                fileOutputStream = null;
-                dataFile = null;
-            } catch (Exception e) {
-                //无法创建数据输出流
-                jsonArray = null;
-                buffer = null;
-                dataFile = null;
-                Logger.error(TAG, "创建文件输出流失败");
-                return false;
+
+                //歌曲数据储存列表容器
+                final ArrayList<SongItem> playlist = new ArrayList<>();
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    final JsonObject object = jsonArray.get(i).getAsJsonObject();
+                    final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+
+                    //逐个Key进行获取
+                    for (final String key : mediaMetadataKeys) {
+                        if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+                            metadataBuilder.putLong(key, object.get(key).getAsLong());
+                        } else {
+                            metadataBuilder.putString(key, object.get(key).getAsString());
+                        }
+                    }
+
+                    final MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
+                    playlist.add(new SongItem(mediaMetadataCompat.getString(SongItem.SONGITEM_KEY_FILE_PATH), mediaMetadataCompat));
+                }
+
+                if (playlist.size() == 0) {
+                    Logger.error(TAG, "列表无数据储存");
+                    return null;
+                } else {
+                    Logger.warnning(TAG, "读取播放列表成功");
+                    return playlist;
+                }
+
+            } else {
+                Logger.error(TAG, "播放列表文件不存在");
+                return null;
             }
-            Logger.warnning(TAG, "播放列表保存成功 !  文件名:" + name + ".pl");
-            return true;
         }
     }
 
@@ -132,7 +158,7 @@ public class JSONHandler {
      * @param playlist 搜索得到的数据
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void cacheSearchResult(ArrayList<SongItem> playlist) {
+    static void cacheSearchResult(ArrayList<SongItem> playlist) {
         final String TAG = "搜索记录缓存";
         if (playlist == null) {
             Logger.error(TAG, "缓存列表为 NULL , 不进行缓存");
@@ -170,115 +196,7 @@ public class JSONHandler {
             jsonArray.add(object);
         }
 
-        //创建字节缓冲数组
-        byte[] buffer = new byte[512];
-        //创建字符串字节数组
-        byte[] jsonArrayByteArray;
-        try {
-            jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Logger.error(TAG, "保存搜索结果数据时UTF-8转码出现异常 , 使用默认编码");
-            jsonArrayByteArray = jsonArray.toString().getBytes();
-        }
-        //读取的长度
-        int length;
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(dataFile, false);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonArrayByteArray);
-            while ((length = byteArrayInputStream.read(buffer)) != -1) {
-                fileOutputStream.write(buffer, 0, length);
-            }
-            byteArrayInputStream.close();
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            byteArrayInputStream = null;
-            fileOutputStream = null;
-            dataFile = null;
-        } catch (Exception e) {
-            //无法创建数据输出流
-            jsonArray = null;
-            buffer = null;
-            dataFile = null;
-            Logger.error(TAG, "创建文件输出流失败");
-        }
-        Logger.warnning(TAG, "搜索结果保存成功 !");
-    }
-
-    /**
-     * 从文件读取Json形式保存的播放列表数据
-     *
-     * @param name 播放列表名称
-     * @return 如果读取成功 , 则返回歌曲列表 , 否则返回 NULL
-     */
-    public static
-    @Nullable
-    ArrayList<SongItem> loadPlaylist(String name) {
-        final String TAG = "JSON播放列表  读取";
-        if (TextUtils.isEmpty(name)) {
-            Logger.error(TAG, "请求数据无效");
-            return null;
-        } else {
-            //创建文件对象
-            File dataFile = new File(AppConfigs.PlaylistFolder + name + ".pl");
-            if (dataFile.exists() && dataFile.canRead() && dataFile.length() > 0) {
-                //如果文件合法 , 则开始读取
-                //先创建JsonArray对象用于储存数据
-                JsonArray jsonArray;
-
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(dataFile);
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-                    byte[] buffer = new byte[512];
-                    int length;
-                    while ((length = fileInputStream.read(buffer)) != -1) {
-                        byteArrayOutputStream.write(buffer, 0, length);
-                    }
-                    //关闭流
-                    byteArrayOutputStream.close();
-                    fileInputStream.close();
-                    //将字节数组转换为字符串再将转换到的数据转化为JsonArray对象
-                    jsonArray = new JsonParser().parse(new String(byteArrayOutputStream.toByteArray(), "UTF-8")).getAsJsonArray();
-                    //清空数据
-                    buffer = null;
-                    length = 0;
-                    byteArrayOutputStream.reset();
-                } catch (Exception e) {
-                    Logger.error(TAG, "创建文件输入流 或 转换JsonArray失败\n" + e);
-                    return null;
-                }
-
-                final ArrayList<SongItem> playlist = new ArrayList<>();
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    final JsonObject object = jsonArray.get(i).getAsJsonObject();
-                    final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
-
-                    for (final String key : mediaMetadataKeys) {
-                        if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
-                            metadataBuilder.putLong(key, object.get(key).getAsLong());
-                        } else {
-                            metadataBuilder.putString(key, object.get(key).getAsString());
-                        }
-                    }
-
-                    final MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
-                    playlist.add(new SongItem(mediaMetadataCompat.getString(SongItem.SONGITEM_KEY_FILE_PATH), mediaMetadataCompat));
-                }
-
-                if (playlist.size() == 0) {
-                    Logger.error(TAG, "列表无数据储存");
-                    return null;
-                } else {
-                    Logger.warnning(TAG, "读取播放列表成功");
-                    return playlist;
-                }
-
-            } else {
-                Logger.error(TAG, "播放列表文件不存在");
-                return null;
-            }
-        }
+        jsonArray2File(jsonArray, dataFile);
     }
 
     /**
@@ -348,6 +266,96 @@ public class JSONHandler {
      */
     private static boolean isJsonObjectValid(JsonObject object, String key) {
         return object != null && !TextUtils.isEmpty(key) && object.has(key) && object.get(key) != null;
+    }
+
+    /**
+     * 将JsonArray存入指定文件中
+     *
+     * @param jsonArray JsonArray数据
+     * @param target    目标文件，文件不存在则进行创建，已存在则覆写
+     * @return 执行结果
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static boolean jsonArray2File(final JsonArray jsonArray, final File target) {
+        //创建字节缓冲数组
+        final byte[] buffer = new byte[512];
+        //创建字符串字节数组
+        byte[] jsonArrayByteArray;
+        try {
+            jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
+            if (!target.exists()) {
+                target.createNewFile();
+            }
+        } catch (UnsupportedEncodingException e) {
+            Logger.error("JsonArray2File", "保存搜索结果数据时UTF-8转码出现异常 , 使用默认编码");
+            jsonArrayByteArray = jsonArray.toString().getBytes();
+        } catch (IOException e) {
+            Logger.error("JsonArray2File", "写入文件不存在 且 无法创建写入文件");
+            return false;
+        }
+        //读取的长度
+        int length;
+
+        try {
+            final FileOutputStream fileOutputStream = new FileOutputStream(target, false);
+            final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonArrayByteArray);
+            while ((length = byteArrayInputStream.read(buffer)) != -1) {
+                fileOutputStream.write(buffer, 0, length);
+            }
+            byteArrayInputStream.close();
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            Logger.warnning("JsonArray2File", "文件保存成功：" + target.getName());
+            return true;
+        } catch (Exception e) {
+            //无法创建数据输出流
+            Logger.error("JsonArray2File", "创建文件输出流失败");
+            return false;
+        }
+    }
+
+    /**
+     * 将文件内容读取成JsonArray
+     *
+     * @param targetPath 目标文件路径
+     * @return 结果JsonArray，如果提取失败，则返回 NULL
+     */
+    private static
+    @Nullable
+    JsonArray file2JsonArray(final String targetPath) {
+
+        final File target = new File(targetPath);
+        if (!target.exists() || !target.canRead()) {
+            Logger.error("file2JsonArray", "文件不存在或不可读取：" + targetPath);
+            return null;
+        }
+
+        try {
+            final FileInputStream fileInputStream = new FileInputStream(target);
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            final byte[] buffer = new byte[512];
+
+            int length;
+            while ((length = fileInputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, length);
+            }
+            //关闭流
+            byteArrayOutputStream.close();
+            fileInputStream.close();
+
+            //将字节数组转换为字符串再将转换到的数据转化为JsonArray对象
+            final JsonArray jsonArray = new JsonParser().parse(new String(byteArrayOutputStream.toByteArray(), "UTF-8")).getAsJsonArray();
+
+            //清空数据
+            byteArrayOutputStream.reset();
+
+            //返回数据
+            Logger.warnning("file2JsonArray", "文件读取成功：" + targetPath);
+            return jsonArray;
+        } catch (Exception e) {
+            Logger.error("file2JsonArray", "创建文件输入流 或 转换JsonArray失败\n" + e);
+            return null;
+        }
     }
 
 }

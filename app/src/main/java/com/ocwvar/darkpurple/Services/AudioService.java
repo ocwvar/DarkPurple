@@ -229,7 +229,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
         //更新状态
         isRunningForeground = true;
-        startForeground(MediaNotification.notificationID, notification);
+        startForeground(888, notification);
     }
 
     /**
