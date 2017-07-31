@@ -3,6 +3,9 @@ package com.ocwvar.darkpurple.Bean;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.v4.media.MediaMetadataCompat;
+import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.AppConfigs;
 
@@ -26,53 +29,26 @@ public class SongItem implements Parcelable {
             return new SongItem[size];
         }
     };
-    //歌曲名
-    private String title;
-    //专辑名
-    private String album;
-    //专辑ID
-    private long albumID = 0L;
-    //专辑封面Uri路径
-    private Uri albumCoverUri = null;
-    //歌曲作者
-    private String artist;
-    //歌曲长度 单位:ms
-    private long length = 0L;
-    //歌曲长度单位 [0]小时  [1]分钟  [2]秒数
-    private int[] lengthSet;
-    //歌曲文件大小
-    private String fileSize;
-    //歌曲文件名
-    private String fileName;
-    //歌曲文件路径
-    private String path;
-    //歌曲封面混合颜色
-    private int paletteColor = AppConfigs.Color.DefaultCoverColor;
-    //是否预先缓存了封面图像
-    private boolean haveCover = false;
-    //自定义封面
-    private String customCoverPath = "";
-    //自定义封面混合颜色
-    private int customPaletteColor = AppConfigs.Color.DefaultCoverColor;
 
-    public SongItem() {
+    //自定义Key
+    public static final String SONGITEM_KEY_FILE_NAME = "kfn";
+    public static final String SONGITEM_KEY_FILE_PATH = "kfp";
+    public static final String SONGITEM_KEY_COVER_ID = "kci";
+
+    //此音频数据唯一标识
+    private final String UID;
+
+    //媒体数据
+    private final MediaMetadataCompat mediaMetadataCompat;
+
+    public SongItem(final String UID, final MediaMetadataCompat mediaMetadataCompat) {
+        this.UID = UID;
+        this.mediaMetadataCompat = mediaMetadataCompat;
     }
 
     protected SongItem(Parcel in) {
-        title = in.readString();
-        album = in.readString();
-        albumID = in.readLong();
-        albumCoverUri = in.readParcelable(Uri.class.getClassLoader());
-        artist = in.readString();
-        length = in.readLong();
-        lengthSet = in.createIntArray();
-        fileSize = in.readString();
-        fileName = in.readString();
-        path = in.readString();
-        paletteColor = in.readInt();
-        haveCover = in.readByte() != 0;
-        customCoverPath = in.readString();
-        customPaletteColor = in.readInt();
+        this.UID = in.readString();
+        this.mediaMetadataCompat = in.readParcelable(MediaMetadataCompat.class.getClassLoader());
     }
 
     /**
@@ -117,129 +93,77 @@ public class SongItem implements Parcelable {
         return time;
     }
 
-    public String getTitle() {
-        return title;
+    public final
+    @NonNull
+    MediaMetadataCompat getMediaMetadata() {
+        if (this.mediaMetadataCompat == null) {
+            return new MediaMetadataCompat.Builder()
+                    .putText(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
+                    .putText(MediaMetadataCompat.METADATA_KEY_TITLE, AppConfigs.UNKNOWN)
+                    .putText(MediaMetadataCompat.METADATA_KEY_ARTIST, AppConfigs.UNKNOWN)
+                    .putText(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, Uri.EMPTY.toString())
+                    .build();
+        } else {
+            return mediaMetadataCompat;
+        }
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public
+    @NonNull
+    String getTitle() {
+        final String result = this.mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
+        return TextUtils.isEmpty(result) ? AppConfigs.UNKNOWN : result;
     }
 
-    public String getAlbum() {
-        return album;
+    public
+    @NonNull
+    String getAlbum() {
+        final String result = this.mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+        return TextUtils.isEmpty(result) ? AppConfigs.UNKNOWN : result;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
-    }
-
-    public long getAlbumID() {
-        return albumID;
-    }
-
-    public void setAlbumID(long albumID) {
-        this.albumID = albumID;
-    }
-
-    public Uri getAlbumCoverUri() {
-        return albumCoverUri;
-    }
-
-    public void setAlbumCoverUri(Uri albumCoverUri) {
-        this.albumCoverUri = albumCoverUri;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
+    public
+    @NonNull
+    String getArtist() {
+        final String result = this.mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
+        return TextUtils.isEmpty(result) ? AppConfigs.UNKNOWN : result;
     }
 
     public long getLength() {
-        return length;
+        return this.mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
     }
 
-    public void setLength(long length) {
-        this.length = length;
-        this.lengthSet = getTimes(length);
+    public
+    @NonNull
+    String getFileName() {
+        final String result = this.mediaMetadataCompat.getString(SONGITEM_KEY_FILE_NAME);
+        return TextUtils.isEmpty(result) ? AppConfigs.UNKNOWN : result;
     }
 
-    public String getCustomCoverPath() {
-        return customCoverPath;
+    public
+    @NonNull
+    String getPath() {
+        final String result = this.mediaMetadataCompat.getString(SONGITEM_KEY_FILE_PATH);
+        return TextUtils.isEmpty(result) ? AppConfigs.UNKNOWN : result;
     }
 
-    public void setCustomCoverPath(String customCoverPath) {
-        this.customCoverPath = customCoverPath;
-    }
-
-    public int getCustomPaletteColor() {
-        return customPaletteColor;
-    }
-
-    public void setCustomPaletteColor(int customPaletteColor) {
-        this.customPaletteColor = customPaletteColor;
-    }
-
-    public int[] getLengthSet() {
-        return lengthSet;
-    }
-
-    public String getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(String fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public int getPaletteColor() {
-        return paletteColor;
-    }
-
-    public void setPaletteColor(int paletteColor) {
-        this.paletteColor = paletteColor;
-    }
-
-    public boolean isHaveCover() {
-        return haveCover;
-    }
-
-    public void setHaveCover(boolean haveCover) {
-        this.haveCover = haveCover;
+    public
+    @NonNull
+    String getCoverID() {
+        final String result = this.mediaMetadataCompat.getString(SONGITEM_KEY_COVER_ID);
+        return TextUtils.isEmpty(result) ? "" : result;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        SongItem songItem = (SongItem) o;
-
-        return path.equals(songItem.path);
-
+        return this.hashCode() == o.hashCode();
     }
 
     @Override
     public int hashCode() {
-        return path.hashCode();
+        return this.UID.hashCode();
     }
 
     @Override
@@ -249,19 +173,7 @@ public class SongItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(title);
-        parcel.writeString(album);
-        parcel.writeLong(albumID);
-        parcel.writeParcelable(albumCoverUri, i);
-        parcel.writeString(artist);
-        parcel.writeLong(length);
-        parcel.writeIntArray(lengthSet);
-        parcel.writeString(fileSize);
-        parcel.writeString(fileName);
-        parcel.writeString(path);
-        parcel.writeInt(paletteColor);
-        parcel.writeByte((byte) (haveCover ? 1 : 0));
-        parcel.writeString(customCoverPath);
-        parcel.writeInt(customPaletteColor);
+        parcel.writeString(this.UID);
+        parcel.writeParcelable(this.mediaMetadataCompat, 0);
     }
 }

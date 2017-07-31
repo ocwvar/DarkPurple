@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Adapters;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
@@ -10,7 +11,7 @@ import android.view.ViewGroup;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.CoverImage2File;
+import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.widgets.CImageView;
 import com.squareup.picasso.Picasso;
 
@@ -68,29 +69,24 @@ public class CoverShowerAdapter extends PagerAdapter {
 
         final CImageView imageView;
 
-        if (!TextUtils.isEmpty(songItem.getCustomCoverPath())) {
-            //如果有用户手动下载的封面,则优先使用
+        //获取有效封面路径，自定义封面优先
+        final String coverPath = CoverManager.INSTANCE.getValidSource(songItem.getCoverID());
+
+        //如果存在有效封面数据，则进行加载
+        if (!TextUtils.isEmpty(coverPath)) {
 
             //创建圆形ImageView用于显示封面图像
-            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, songItem.getCustomPaletteColor());
+            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, CoverManager.INSTANCE.getValidColor(songItem.getCoverID()));
             Picasso
-                    .with(AppConfigs.ApplicationContext)
-                    .load(songItem.getCustomCoverPath())
+                    .with(imageView.getContext())
+                    .load(CoverManager.INSTANCE.getAbsoluteSource(coverPath))
                     .error(R.drawable.ic_music_big)
                     .placeholder(R.drawable.ic_music_big)
-                    .into(imageView);
-
-        } else if (songItem.isHaveCover()) {
-            //如果先前缓存有图像 , 则开始读取
-            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, songItem.getPaletteColor());
-            Picasso.with(AppConfigs.ApplicationContext)
-                    .load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath()))
-                    .error(R.drawable.ic_music_big)
-                    .placeholder(R.drawable.ic_music_big)
+                    .config(Bitmap.Config.RGB_565)
                     .into(imageView);
         } else {
             //默认图像
-            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, songItem.getPaletteColor());
+            imageView = new CImageView(container.getContext(), coverR, centerX, centerY, AppConfigs.Color.DefaultCoverColor);
             imageView.setImageDrawable(defaultCover);
         }
 

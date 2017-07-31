@@ -24,23 +24,29 @@ import java.util.Set;
  */
 public class AppConfigs {
 
+    //主数据目录
+    public static final String CoreFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/";
+
     //封面下载目录
-    public static final String DownloadCoversFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/DownloadCovers/";
+    public static final String DownloadCoversFolder = CoreFolder + "DownloadCovers/";
 
     //图片缓存目录
-    public static final String ImageCacheFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/ImageCache/";
+    public static final String ImageCacheFolder = CoreFolder + "ImageCache/";
 
     //下载歌曲文件储存目录
-    public static final String DownloadMusicFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/Restore/";
+    public static final String DownloadMusicFolder = CoreFolder + "Restore/";
+
+    //数据储存目录
+    public static final String DataFolder = CoreFolder + "Data/";
+
+    //播放列表数据储存目录
+    public static final String PlaylistFolder = DataFolder + "Playlist/";
 
     //系统保留播放列表名字 , 用于缓存上一次的搜索记录
     public final static String CACHE_NAME = ".cached";
 
     //通过封面轮播切换歌曲等待时间
     public static final long switchPending = 600;
-
-    //Json数据储存位置
-    public static String JsonFilePath = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/JSONData/";
 
     //未知文字占位资源
     public static String UNKNOWN = "未知";

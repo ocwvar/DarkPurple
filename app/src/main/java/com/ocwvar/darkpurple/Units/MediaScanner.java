@@ -10,18 +10,23 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback;
+import com.ocwvar.darkpurple.Units.Cover.ColorType;
+import com.ocwvar.darkpurple.Units.Cover.CoverImage2File;
+import com.ocwvar.darkpurple.Units.Cover.CoverManager;
+import com.ocwvar.darkpurple.Units.Cover.CoverType;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -139,7 +144,7 @@ public class MediaScanner {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean isHasCachedData() {
-        File cachedFile = new File(JSONHandler.folderPath + AppConfigs.CACHE_NAME + ".pl");
+        File cachedFile = new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl");
         if (cachedFile.exists() && cachedFile.length() > 0) {
             cachedFile = null;
             return true;
@@ -155,6 +160,99 @@ public class MediaScanner {
      */
     public void getLastTimeCachedData() {
         threadExecutor.submit(new FutureTask<>(new LoadCachedData()), LoadCachedData.TAG);
+    }
+
+    /**
+     * 进行封面数据验证以及提取缓存，并在数据有效的时候进行颜色计算
+     *
+     * @param coverType  封面类型
+     * @param coverID    封面ID
+     * @param coverBytes 封面字节数据，当从文件获取封面时需要使用到，如果封面是存在于媒体库中则不需要传入
+     */
+    private void albumCoverHandler(final @NonNull CoverType coverType, final @NonNull String coverID, @Nullable final byte[] coverBytes) throws Exception {
+        if (TextUtils.isEmpty(coverID)) {
+            return;
+        }
+
+        //获取封面数据源
+        final String source = CoverManager.INSTANCE.getSource(coverType, coverID);
+
+        //封面位图对象声明
+        Bitmap coverBitmap;
+
+        //第一步：
+        //通过使用 Picasso来加载数据源 检查已有的缓存
+        if (source == null) {
+            //当前没有数据源
+            return;
+        } else if (source.startsWith("content:")) {
+            //数据源为Uri
+            coverBitmap = Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(source)).get();
+        } else if (source.startsWith("/")) {
+            //数据源为String路径，需要使用绝对路径
+            coverBitmap = Picasso.with(AppConfigs.ApplicationContext).load(CoverManager.INSTANCE.getAbsoluteSource(source)).get();
+        } else {
+            //不支持的数据源类型
+            CoverManager.INSTANCE.removeSource(coverType, coverID);
+            return;
+        }
+
+        //第二步
+        //数据源有效，但并未缓存数据，尝试从媒体库或字节数组中加载封面
+        if (coverBitmap == null) {
+            //先清除原始路径，准备添加缓存路径
+            CoverManager.INSTANCE.removeSource(coverType, coverID);
+
+            if (source.startsWith("content:")) {
+                //封面存在于媒体库中
+                coverBitmap = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(), Uri.parse(source));
+            } else if (coverBytes != null && source.startsWith("/")) {
+                //从字节数组中加载
+                coverBitmap = BitmapFactory.decodeByteArray(coverBytes, 0, coverBytes.length);
+            } else {
+                //不支持的数据源类型
+                return;
+            }
+
+            //封面缓存，内部已判断位图是否有效
+            final File cachedFile = CoverImage2File.getInstance().makeImage2File(coverType, coverBitmap, coverID);
+            if (cachedFile != null) {
+                //缓存成功，重新设置ID数据
+                CoverManager.INSTANCE.setSource(coverType, coverID, cachedFile.getPath(), true);
+            }
+        }
+
+        //第三步
+        //如果封面位图成功获取，则进行封面颜色计算
+        if (coverBitmap != null) {
+            //先根据当前封面操作类型来确定操作的颜色类型
+            final ColorType colorType;
+            switch (coverType) {
+                case NORMAL:
+                    colorType = ColorType.NORMAL;
+                    break;
+                case CUSTOM:
+                    colorType = ColorType.CUSTOM;
+                    break;
+                default:
+                    //其他类型封面不进行计算
+                    coverBitmap.recycle();
+                    return;
+            }
+            //获取颜色
+            int coverMixColor = CoverManager.INSTANCE.getColor(colorType, coverID);
+
+            //如果颜色为默认颜色，则说明没有颜色缓存，需要进行计算
+            if (coverMixColor == AppConfigs.Color.DefaultCoverColor) {
+                final Palette palette = new Palette.Builder(coverBitmap).generate();
+                coverMixColor = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
+            }
+
+            //设置颜色
+            CoverManager.INSTANCE.setColorSource(colorType, coverID, coverMixColor, true);
+            //所有操作完成，回收位图资源
+            coverBitmap.recycle();
+        }
     }
 
     /**
@@ -220,78 +318,69 @@ public class MediaScanner {
 
                 while (cursor.moveToNext()) {
 
-                    String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                    //提取文件名
+                    final String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
 
-                    if (isFileVaild(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))) && isMusicFile(fileName)) {
-                        //判断文件是否有效 同时 是否属于可以播放的音频文件类型，如果都可以则开始解析数据
-                        SongItem songItem = new SongItem();
+                    //提取文件路径(同时作为媒体数据的 UID、封面ID、封面颜色ID)
+                    final String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+
+                    //判断文件是否有效 同时 是否属于可以播放的音频文件类型，如果都可以则开始解析数据
+                    if (isFileValid(filePath) && isMusicFile(fileName)) {
+
+                        //检查歌曲长度
+                        final long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                        if (duration < AppConfigs.LengthLimited) {
+                            //如果歌曲长度不符合最低要求 , 则不继续解析
+                            continue;
+                        }
+
+                        //创建媒体数据构造器
+                        final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+
+                        //音频长度
+                        metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration);
 
                         //文件名
-                        songItem.setFileName(fileName);
-                        //文件尺寸
-                        songItem.setFileSize(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
+                        metadataBuilder.putString(SongItem.SONGITEM_KEY_FILE_NAME, fileName);
+
                         //文件路径
-                        songItem.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
-                        final File file2 = new File(songItem.getPath());
-                        System.out.println(file2.canExecute());
-                        System.out.println(file2.canRead());
-                        System.out.println(file2.canWrite());
-                        System.out.println(file2.length());
-                        //歌曲长度
-                        final long length = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                        if (length < AppConfigs.LengthLimited) {
-                            //如果歌曲长度不符合最低要求 , 则不继续解析
-                            songItem = null;
-                            continue;
-                        } else {
-                            songItem.setLength(length);
-                        }
+                        metadataBuilder.putString(SongItem.SONGITEM_KEY_FILE_PATH, filePath);
+
+                        //封面ID
+                        metadataBuilder.putString(SongItem.SONGITEM_KEY_COVER_ID, filePath);
 
                         //标题
-                        songItem.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-                        if (TextUtils.isEmpty(songItem.getTitle())) {
-                            //如果无法获取到歌曲名 , 则使用文件名代替
-                            songItem.setTitle(songItem.getFileName());
-                        }
-                        //专辑名
-                        songItem.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                        if (TextUtils.isEmpty(songItem.getAlbum())) {
-                            //如果无法获取到专辑名 , 则使用未知代替
-                            songItem.setAlbum(AppConfigs.UNKNOWN);
-                        }
-                        //作者
-                        songItem.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                        if (TextUtils.isEmpty(songItem.getArtist())) {
-                            //如果无法获取到歌手名 , 则使用未知代替
-                            songItem.setArtist(AppConfigs.UNKNOWN);
-                        }
+                        final String musicTitle = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicTitle) ? fileName : musicTitle);
 
-                        //专辑ID  主要用于读取封面图像
+                        //专辑名
+                        final String musicAlbum = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicAlbum) ? AppConfigs.UNKNOWN : musicTitle);
+
+                        //作者
+                        final String musicArtist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicArtist) ? AppConfigs.UNKNOWN : musicTitle);
+
+                        //封面Uri路径字符串
                         final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
                         if (albumID > 0) {
-                            songItem.setAlbumID(albumID);
-                            songItem.setAlbumCoverUri(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumID));
+                            CoverManager.INSTANCE.setSource(CoverType.NORMAL, filePath, ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumID).toString(), true);
                         }
 
-                        //检查是否有自定义封面
-                        final File file = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
-                        if (file.exists() && file.length() > 0) {
-                            songItem.setCustomCoverPath("file:///" + AppConfigs.DownloadCoversFolder + fileName + ".jpg");
-                            Bitmap bitmap = BitmapFactory.decodeFile(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
-                            songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
-                            bitmap.recycle();
-                            bitmap = null;
+                        //自定义封面检查
+                        final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                        if (customCoverFile.exists() && customCoverFile.length() > 0) {
+                            CoverManager.INSTANCE.setSource(CoverType.CUSTOM, filePath, customCoverFile.getPath(), true);
                         } else {
                             //noinspection ResultOfMethodCallIgnored
-                            file.delete();
+                            customCoverFile.delete();
                         }
 
-                        Logger.normal("媒体库扫描器", songItem.getTitle());
-                        cacheAlbumCover(songItem);
+                        //开始处理所有类型的封面数据
+                        albumCoverHandler(CoverType.NORMAL, filePath, null);
+                        albumCoverHandler(CoverType.CUSTOM, filePath, null);
 
-                        songList.add(songItem);
-                    } else {
-                        fileName = null;
+                        songList.add(new SongItem(filePath, metadataBuilder.build()));
                     }
                 }
 
@@ -352,81 +441,9 @@ public class MediaScanner {
          * @param path 文件路径地址
          * @return 文件有效性
          */
-        private boolean isFileVaild(String path) {
+        private boolean isFileValid(String path) {
             final File checkFile = new File(path);
             return checkFile.canRead() && checkFile.canWrite() && checkFile.length() > 0;
-        }
-
-        /**
-         * 预先缓存专辑图像
-         *
-         * @param songItem 要处理的歌曲信息
-         */
-        private void cacheAlbumCover(SongItem songItem) {
-            Bitmap coverImage = null;
-            try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath())).get();
-            } catch (IOException ignored) {
-            }
-
-            if (coverImage == null) {
-                try {
-                    coverImage = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(), songItem.getAlbumCoverUri());
-                    CoverImage2File.getInstance().makeImage2File(coverImage, songItem.getPath());
-                } catch (Exception e) {
-                    Logger.error("媒体库扫描器", "缓存封面图像失败 " + songItem.getTitle());
-                    return;
-                }
-                songItem.setHaveCover(true);
-                songItem.setPaletteColor(getAlbumCoverColor(coverImage));
-            } else {
-                songItem.setHaveCover(true);
-                songItem.setPaletteColor(getAlbumCoverColor(coverImage));
-            }
-        }
-
-        /**
-         * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-         *
-         * @param coverImage 封面图像
-         * @return 混合颜色
-         */
-        private int getAlbumCoverColor(Bitmap coverImage) {
-            Palette palette;
-
-            try {
-                palette = new Palette.Builder(coverImage).generate();
-            } catch (Exception e) {
-                //如果图像解析失败 或 图像为Null 则使用默认颜色
-                return AppConfigs.Color.DefaultCoverColor;
-            }
-
-            int color = AppConfigs.Color.DefaultCoverColor, item = 4;
-            //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-            while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
-                switch (item) {
-                    case 0:
-                        color = palette.getDarkMutedColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 1:
-                        color = palette.getDarkVibrantColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 3:
-                        color = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 4:
-                        color = palette.getLightMutedColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 5:
-                        color = palette.getLightVibrantColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    default:
-                        color = AppConfigs.Color.DefaultCoverColor;
-                        break;
-                }
-                item += 1;
-            }
-            return color;
         }
 
     }
@@ -576,7 +593,7 @@ public class MediaScanner {
         @Nullable
         ArrayList<SongItem> core() throws Exception {
 
-            ArrayList<SongItem> songList = new ArrayList<>();
+            final ArrayList<SongItem> songList = new ArrayList<>();
 
             //循环遍历每一个音频文件夹
             for (String path : paths) {
@@ -588,68 +605,76 @@ public class MediaScanner {
 
                 //循环遍历每一个音频文件
                 for (File musicFile : files) {
-                    long musicLength;
 
-                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                    retriever.setDataSource(musicFile.getPath());
+                    //提取文件名
+                    final String fileName = musicFile.getName();
+
+                    //提取文件路径(同时作为媒体数据的 UID、封面ID、封面颜色ID)
+                    final String filePath = musicFile.getPath();
+
+                    //媒体文件解析器
+                    final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+                    //创建媒体数据构造器
+                    final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+
+                    //设置解析文件路径
+                    retriever.setDataSource(filePath);
 
                     try {
-                        musicLength = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                        if (musicLength < AppConfigs.LengthLimited) {
+                        final long duration = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                        if (duration < AppConfigs.LengthLimited) {
                             //如果歌曲长度小于限制 , 则不继续解析这个文件
                             continue;
+                        } else {
+                            //音频长度
+                            metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration);
                         }
                     } catch (NumberFormatException e) {
                         //如果无法获取到歌曲长度 , 则不解析这个文件
                         continue;
                     }
 
-                    SongItem songItem = new SongItem();
+                    //文件名
+                    metadataBuilder.putString(SongItem.SONGITEM_KEY_FILE_NAME, fileName);
 
+                    //文件路径
+                    metadataBuilder.putString(SongItem.SONGITEM_KEY_FILE_PATH, filePath);
 
-                    songItem.setTitle(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-                    if (TextUtils.isEmpty(songItem.getTitle())) {
-                        //如果无法获取到歌曲名 , 则使用文件名代替
-                        songItem.setTitle(musicFile.getName());
-                    }
-                    songItem.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-                    if (TextUtils.isEmpty(songItem.getArtist())) {
-                        //如果无法获取到歌手名 , 则使用未知代替
-                        songItem.setArtist(AppConfigs.UNKNOWN);
-                    }
-                    songItem.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-                    if (TextUtils.isEmpty(songItem.getAlbum())) {
-                        //如果无法获取到专辑名 , 则使用未知代替
-                        songItem.setAlbum(AppConfigs.UNKNOWN);
-                    }
+                    //封面ID
+                    metadataBuilder.putString(SongItem.SONGITEM_KEY_COVER_ID, filePath);
 
-                    songItem.setLength(musicLength);
-                    songItem.setFileName(musicFile.getName());
-                    songItem.setPath(musicFile.getPath());
-                    songItem.setFileSize(Long.toString(musicFile.length()));
+                    //标题
+                    final String musicTitle = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                    metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicTitle) ? fileName : musicTitle);
+
+                    //专辑名
+                    final String musicAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                    metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, TextUtils.isEmpty(musicAlbum) ? AppConfigs.UNKNOWN : musicAlbum);
+
+                    //作者
+                    final String musicArtist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                    metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, TextUtils.isEmpty(musicArtist) ? AppConfigs.UNKNOWN : musicArtist);
 
                     //检查是否有自定义封面
-                    final File file = new File(AppConfigs.DownloadCoversFolder + musicFile.getName() + ".jpg");
-                    if (file.exists() && file.length() > 0) {
-                        songItem.setCustomCoverPath("file:///" + file.getPath());
-                        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
-                        songItem.setCustomPaletteColor(getAlbumCoverColor(bitmap));
-                        bitmap.recycle();
+                    final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + filePath + ".jpg");
+                    if (customCoverFile.exists() && customCoverFile.length() > 0) {
+                        CoverManager.INSTANCE.setSource(CoverType.CUSTOM, filePath, customCoverFile.getPath(), true);
                     } else {
                         //noinspection ResultOfMethodCallIgnored
-                        file.delete();
+                        customCoverFile.delete();
                     }
 
-                    cacheAlbumCover(retriever, songItem);
+                    //开始处理所有类型的封面数据
+                    albumCoverHandler(CoverType.NORMAL, filePath, retriever.getEmbeddedPicture());
+                    albumCoverHandler(CoverType.CUSTOM, filePath, null);
 
-                    songList.add(songItem);
-                    Logger.normal("歌曲文件扫描器", songItem.getTitle());
+                    songList.add(new SongItem(filePath, metadataBuilder.build()));
                 }
 
             }
 
             if (songList.size() == 0) {
-                songList = null;
                 return null;
             } else {
                 //进行歌曲文件的排序
@@ -664,85 +689,6 @@ public class MediaScanner {
                 return songList;
             }
 
-        }
-
-        /**
-         * 缓存歌曲封面图像
-         *
-         * @param retriever MediaMetadataRetriever
-         * @param songItem  操作的歌曲数据
-         */
-        private void cacheAlbumCover(MediaMetadataRetriever retriever, SongItem songItem) {
-            Bitmap coverImage = null;
-            try {
-                coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverImage2File.getInstance().getAbsoluteCachePath(songItem.getPath())).get();
-            } catch (IOException ignored) {
-            }
-
-            if (retriever != null && coverImage == null) {
-                //如果没有缓存过图像 , 则获取图像资源并进行缓存和提取图像颜色资源
-                byte[] bytes = retriever.getEmbeddedPicture();
-                if (bytes != null) {
-                    coverImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    bytes = null;
-                    if (coverImage != null) {
-                        CoverImage2File.getInstance().makeImage2File(coverImage, songItem.getPath());
-                        songItem.setPaletteColor(getAlbumCoverColor(coverImage));
-                        songItem.setHaveCover(true);
-                    } else {
-                        Logger.error("媒体库扫描器", "缓存封面图像失败 " + songItem.getTitle());
-                    }
-                } else {
-                    Logger.error("媒体库扫描器", "该音频没有图像文件");
-                }
-            } else {
-                songItem.setPaletteColor(getAlbumCoverColor(coverImage));
-                songItem.setHaveCover(true);
-            }
-        }
-
-        /**
-         * 获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-         *
-         * @param coverImage 封面图像
-         * @return 混合颜色
-         */
-        private int getAlbumCoverColor(Bitmap coverImage) {
-            Palette palette;
-
-            try {
-                palette = new Palette.Builder(coverImage).generate();
-            } catch (Exception e) {
-                //如果图像解析失败 或 图像为Null 则使用默认颜色
-                return AppConfigs.Color.DefaultCoverColor;
-            }
-
-            int color = AppConfigs.Color.DefaultCoverColor, item = 4;
-            //获取封面混合颜色  以暗色调优先 亮色调为次  如果都没有则使用默认颜色
-            while (color == AppConfigs.Color.DefaultCoverColor && item < 7) {
-                switch (item) {
-                    case 0:
-                        color = palette.getDarkMutedColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 1:
-                        color = palette.getDarkVibrantColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 3:
-                        color = palette.getMutedColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 4:
-                        color = palette.getLightMutedColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    case 5:
-                        color = palette.getLightVibrantColor(AppConfigs.Color.DefaultCoverColor);
-                        break;
-                    default:
-                        color = AppConfigs.Color.DefaultCoverColor;
-                        break;
-                }
-                item += 1;
-            }
-            return color;
         }
 
     }

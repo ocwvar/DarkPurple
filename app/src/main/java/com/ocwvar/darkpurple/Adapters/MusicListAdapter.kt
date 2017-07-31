@@ -1,20 +1,16 @@
 package com.ocwvar.darkpurple.Adapters
 
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Units.CoverImage2File
+import com.ocwvar.darkpurple.Units.Cover.BaseCoverAdapter
 import com.ocwvar.darkpurple.Units.ToastMaker
-import com.squareup.picasso.Picasso
 
 /**
  * Project DarkPurple
@@ -23,7 +19,7 @@ import com.squareup.picasso.Picasso
  * File Location com.ocwvar.darkpurple.Adapters
  * This file use to :   音乐列表适配器
  */
-class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MusicListAdapter(val callback: Callback) : BaseCoverAdapter() {
 
     //被选择背景颜色
     private val selectedColor: Int = Color.argb(30, 255, 255, 255)
@@ -123,37 +119,14 @@ class MusicListAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVi
         val views: MusicViewHolder = holder as MusicViewHolder
         val songData: SongItem = this.array[position]
 
-        if (!TextUtils.isEmpty(songData.customCoverPath)) {
-            //有自定义封面
-            views.colorBar.setBackgroundColor(songData.customPaletteColor)
-            Picasso.with(views.itemView.context)
-                    .load(songData.customCoverPath)
-                    .config(Bitmap.Config.RGB_565)
-                    .error(R.drawable.ic_music_mid)
-                    .placeholder(R.drawable.ic_music_mid)
-                    .fit()
-                    .into(views.cover)
-        } else if (songData.isHaveCover) {
-            //有默认封面
-            views.colorBar.setBackgroundColor(songData.paletteColor)
-            Picasso.with(views.itemView.context)
-                    .load(CoverImage2File.getInstance().getCacheFile(songData.path))
-                    .config(Bitmap.Config.RGB_565)
-                    .error(R.drawable.ic_music_mid)
-                    .placeholder(R.drawable.ic_music_mid)
-                    .fit()
-                    .into(views.cover)
-        } else {
-            //无封面
-            views.colorBar.setBackgroundColor(AppConfigs.Color.DefaultCoverColor)
-            views.cover.setImageResource(R.drawable.ic_music_mid)
-        }
-
         views.title.text = songData.title
         views.artist.text = songData.artist
         views.album.text = songData.album
 
         views.itemView.setBackgroundColor(Color.TRANSPARENT)
+
+        loadCover(songData.coverID, R.drawable.ic_music_mid, views.cover)
+        loadColor(songData.coverID, views.colorBar)
 
         if (isSelecting && selectedIndex.indexOf(position) != -1) {
             //当前此项已被选择

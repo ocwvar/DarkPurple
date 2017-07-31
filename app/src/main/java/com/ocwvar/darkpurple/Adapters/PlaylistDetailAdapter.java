@@ -87,9 +87,9 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
 
         SimpleDetailViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.textView_title);
-            artist = (TextView) itemView.findViewById(R.id.textView_artist);
-            playButton = (ImageButton) itemView.findViewById(R.id.imageButton_play);
+            title = itemView.findViewById(R.id.textView_title);
+            artist = itemView.findViewById(R.id.textView_artist);
+            playButton = itemView.findViewById(R.id.imageButton_play);
 
             playButton.setOnClickListener(this);
         }

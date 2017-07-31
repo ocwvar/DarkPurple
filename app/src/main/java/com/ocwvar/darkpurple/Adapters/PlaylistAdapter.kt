@@ -1,6 +1,5 @@
 package com.ocwvar.darkpurple.Adapters
 
-import android.graphics.Bitmap
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -11,9 +10,8 @@ import android.widget.TextView
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Units.CoverImage2File
+import com.ocwvar.darkpurple.Units.Cover.BaseCoverAdapter
 import com.ocwvar.darkpurple.Units.PlaylistUnits
-import com.squareup.picasso.Picasso
 
 /**
  * Project DarkPurple
@@ -22,7 +20,7 @@ import com.squareup.picasso.Picasso
  * File Location com.ocwvar.darkpurple.Adapters
  * This file use to :   播放列表适配器
  */
-class PlaylistAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PlaylistAdapter(val callback: Callback) : BaseCoverAdapter() {
 
     private val array: ArrayList<PlaylistItem> = PlaylistUnits.getInstance().playlistSet
 
@@ -48,13 +46,9 @@ class PlaylistAdapter(val callback: Callback) : RecyclerView.Adapter<RecyclerVie
 
             holder.name.text = data.name
             holder.count.text = String.format("%s%d%s", AppConfigs.ApplicationContext.getString(R.string.part_playlist_count_head), data.counts, AppConfigs.ApplicationContext.getString(R.string.part_playlist_count_end))
-            Picasso.with(holder.itemView.context)
-                    .load(CoverImage2File.getInstance().getCacheFile(data.firstAudioPath))
-                    .config(Bitmap.Config.RGB_565)
-                    .error(R.drawable.ic_music_mid)
-                    .placeholder(R.drawable.ic_music_mid)
-                    .fit()
-                    .into(holder.cover)
+
+            loadCover(data.firstAudioCoverID, R.drawable.ic_music_mid, holder.cover)
+
         } else if (holder is PlaylistCloudVH) {
             if (TextUtils.isEmpty(AppConfigs.USER.USERNAME)) {
                 //离线模式

@@ -103,7 +103,7 @@ public class MusicFolderAdapter extends RecyclerView.Adapter {
         PathViewHolder(View itemView) {
             super(itemView);
             itemView.setOnLongClickListener(this);
-            textView = (TextView) itemView.findViewById(R.id.textView);
+            textView = itemView.findViewById(R.id.textView);
         }
 
         @Override

@@ -1,8 +1,10 @@
-package com.ocwvar.darkpurple.Units;
+package com.ocwvar.darkpurple.Units.Cover;
 
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 
 import com.ocwvar.darkpurple.AppConfigs;
+import com.ocwvar.darkpurple.Units.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,22 +31,25 @@ public class CoverImage2File {
     /**
      * 将封面图像保存成本地文件
      *
+     * @param coverType 图像类型
      * @param bitmap    图像Bitmap
-     * @param audioPath 音频的路径 , 用作唯一标识
-     * @return 缓存结果
+     * @param coverID   音频的路径 , 用作唯一标识
+     * @return 缓存得到的文件对象，缓存失败返回 NULL
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    boolean makeImage2File(Bitmap bitmap, String audioPath) {
+    public
+    @Nullable
+    File makeImage2File(CoverType coverType, Bitmap bitmap, String coverID) {
         if (bitmap == null) {
             Logger.error(TAG, "图像文件无效");
-            return false;
+            return null;
         } else if (!new File(AppConfigs.ImageCacheFolder).exists()) {
             //如果缓存文件夹不存在 , 则重新创建
             new File(AppConfigs.ImageCacheFolder).mkdirs();
         }
 
         //获取缓存图像文件对象
-        File imageFile = new File(getNormalCachePath(audioPath));
+        final File imageFile = new File(getNormalCachePath(coverID));
 
         if (imageFile.exists() && imageFile.length() <= 0) {
             //图像文件虽然存在 , 但是图像文件无效 , 所以需要删除
@@ -55,7 +60,7 @@ public class CoverImage2File {
             //图像文件已存在 , 并且有效 , 取消缓存
 
             Logger.warnning(TAG, "图像已缓存 , 跳过操作.");
-            return true;
+            return imageFile;
         }
         Logger.warnning(TAG, "图像文件缓存中.");
 
@@ -68,41 +73,21 @@ public class CoverImage2File {
             fileOutputStream = new FileOutputStream(imageFile, false);
         } catch (Exception e) {
             Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败. 原因: " + e.getCause());
-            imageFile = null;
-            return false;
+            return null;
         }
 
         boolean result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
 
         if (result) {
             //图像缓存成功
-            Logger.warnning(TAG, "图像缓存  成功");
-            return true;
+            Logger.warnning(TAG, "图像缓存并更新缓存列表  成功");
+            CoverManager.INSTANCE.setSource(coverType, coverID, imageFile.getPath(), true);
+            return imageFile;
         } else {
             //图像缓存失败
             Logger.warnning(TAG, "图像缓存  失败");
-            return false;
+            return null;
         }
-    }
-
-    /**
-     * 获取缓存图像绝对路径
-     *
-     * @param audioPath 音频路径
-     * @return 缓存图像的相对路径
-     */
-    public String getAbsoluteCachePath(String audioPath) {
-        return "file:///" + AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
-    }
-
-    /**
-     * 获取自定义图像绝对路径
-     *
-     * @param audioFileName 歌曲文件名
-     * @return 自定义图像的绝对路径
-     */
-    public String getAbsoluteCustomPath(String audioFileName) {
-        return "file:///" + AppConfigs.DownloadCoversFolder + audioFileName + ".cache";
     }
 
     /**
@@ -111,53 +96,8 @@ public class CoverImage2File {
      * @param audioPath 音频路径
      * @return 缓存图像的相对路径
      */
-    public String getNormalCachePath(String audioPath) {
+    private String getNormalCachePath(String audioPath) {
         return AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache";
-    }
-
-    /**
-     * 获取缓存图像相对路径
-     *
-     * @param audioFileName 歌曲文件名
-     * @return 自定义图像的相对路径
-     */
-    public String getNormalCustomPath(String audioFileName) {
-        return AppConfigs.DownloadCoversFolder + audioFileName + ".cache";
-    }
-
-    /**
-     * 获取缓存图像文件对象
-     *
-     * @param audioPath 音频路径
-     * @return 文件对象
-     */
-    public File getCacheFile(String audioPath) {
-        return new File(AppConfigs.ImageCacheFolder + buildTag(audioPath) + ".cache");
-    }
-
-    /**
-     * 检测是否已经缓存了图像文件
-     *
-     * @param audioPath 音频路径
-     * @return 是否缓存
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public boolean isAlreadyCached(String audioPath) {
-        File imageFile = new File(getNormalCachePath(audioPath));
-        if (imageFile.exists() && imageFile.length() <= 0) {
-            //图像文件存在.  但大小为0,文件无效
-            imageFile.delete();
-            imageFile = null;
-            return false;
-        } else if (imageFile.exists() && imageFile.length() >= 1) {
-            //图像文件存在. 可以使用
-            imageFile = null;
-            return true;
-        } else {
-            //图像文件不存在
-            imageFile = null;
-            return false;
-        }
     }
 
     /**

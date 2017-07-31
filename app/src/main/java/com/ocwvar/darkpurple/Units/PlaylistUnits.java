@@ -26,8 +26,6 @@ public class PlaylistUnits {
     private static PlaylistUnits playlistUnits;
     private final String playlistSPName = "playlistSet";
     private final String TAG = "PlaylistUnits";
-    private PlaylistLoadingCallbacks loadingCallbacks;
-    private PlaylistChangedCallbacks changedCallbacks;
     private ArrayList<PlaylistItem> playlistSet;
     private GetPlaylistAudiosThread audioesThread = null;
 
@@ -40,24 +38,6 @@ public class PlaylistUnits {
             playlistUnits = new PlaylistUnits();
         }
         return playlistUnits;
-    }
-
-    /**
-     * 设置播放列表读取回调
-     *
-     * @param loadingCallbacks 回调接口
-     */
-    public void setPlaylistLoadingCallbacks(PlaylistLoadingCallbacks loadingCallbacks) {
-        this.loadingCallbacks = loadingCallbacks;
-    }
-
-    /**
-     * 设置播放列表变动回调
-     *
-     * @param changedCallbacks 回调接口
-     */
-    public void setPlaylistChangedCallbacks(PlaylistChangedCallbacks changedCallbacks) {
-        this.changedCallbacks = changedCallbacks;
     }
 
     /**
@@ -102,17 +82,12 @@ public class PlaylistUnits {
         //在储存到播放列表List中
         PlaylistItem playlistItem = new PlaylistItem();
         playlistItem.setName(name);
-        playlistItem.setColor(playlist.get(0).getPaletteColor());
-        playlistItem.setFirstAudioPath(playlist.get(0).getPath());
+        playlistItem.setFirstAudioCoverID(playlist.get(0).getCoverID());
         playlistItem.setPlaylist(playlist);
+
         //移除旧的数据 , 添加新的数据
         this.playlistSet.remove(playlistItem);
         this.playlistSet.add(playlistItem);
-
-        //回调更新数据
-        if (changedCallbacks != null) {
-            changedCallbacks.onPlaylistDataChanged();
-        }
 
         //异步储存基本数据到 SharedPreferences 中
         SharedPreferences sharedPreferences = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
@@ -124,8 +99,7 @@ public class PlaylistUnits {
         }
         //保存基本数据
         Set<String> values = new LinkedHashSet<>();
-        values.add("fap_" + playlistItem.getFirstAudioPath());     //储存播放列表第一个对象的路径
-        values.add("color_" + Integer.toString(playlistItem.getColor()));      //储存第一个对象的颜色
+        values.add("cID_" + playlistItem.getFirstAudioCoverID());     //储存播放列表第一个对象的封面ID
         values.add("count_" + Integer.toString(playlist.size()));      //储存列表的总体大小
         editor.remove(name).putStringSet(name, values).putStringSet("names", keys).commit();    //异步操作 : 删除旧的数据 , 添加新的数据
 
@@ -156,11 +130,6 @@ public class PlaylistUnits {
             playlistSet.remove(playlistItem);
         }
 
-        //回调更新数据
-        if (changedCallbacks != null) {
-            changedCallbacks.onPlaylistDataChanged();
-        }
-
         //获取播放列表名称合集 , 移除请求的关键字
         Set<String> names = sharedPreferences.getStringSet("names", new LinkedHashSet<String>());
         if (names.contains(playlistItem.getName())) {
@@ -172,7 +141,7 @@ public class PlaylistUnits {
         //异步执行
         editor.commit();
         //移除播放列表Json数据文件
-        new File(JSONHandler.folderPath + playlistItem.getName() + ".pl").delete();
+        new File(AppConfigs.PlaylistFolder + playlistItem.getName() + ".pl").delete();
     }
 
     /**
@@ -217,20 +186,15 @@ public class PlaylistUnits {
             final PlaylistItem playlistItem = playlistSet.get(playlistSet.indexOf(new PlaylistItem(oldName)));
             playlistItem.setName(newName);
 
-            //回调更新数据
-            if (changedCallbacks != null) {
-                changedCallbacks.onPlaylistDataChanged();
-            }
-
             //更改本地播放列表音频数据储存文件
-            File plFile = new File(JSONHandler.folderPath + oldName + ".pl");
+            File plFile = new File(AppConfigs.PlaylistFolder + oldName + ".pl");
             if (plFile.exists()) {
                 //先删除与新名字相同的残留文件
-                if (new File(JSONHandler.folderPath + newName + ".pl").delete()) {
+                if (new File(AppConfigs.PlaylistFolder + newName + ".pl").delete()) {
                     Logger.warnning(TAG, "发现残留文件 , 已删除");
                 }
                 //如果文件存在 , 则进行重命名操作
-                boolean result = plFile.renameTo(new File(JSONHandler.folderPath + newName + ".pl"));
+                boolean result = plFile.renameTo(new File(AppConfigs.PlaylistFolder + newName + ".pl"));
                 plFile = null;
                 if (result) {
                     Logger.warnning(TAG, "播放列表名称成功修改.  " + oldName + " --> " + newName);
@@ -340,10 +304,6 @@ public class PlaylistUnits {
         }
     }
 
-    public int indexOfPlaylistItem(PlaylistItem playlistItem) {
-        return playlistSet.indexOf(playlistItem);
-    }
-
     public interface PlaylistLoadingCallbacks {
 
         /**
@@ -363,12 +323,6 @@ public class PlaylistUnits {
          * 读取播放列表数据失败
          */
         void onLoadFailed();
-
-    }
-
-    public interface PlaylistChangedCallbacks {
-
-        void onPlaylistDataChanged();
 
     }
 

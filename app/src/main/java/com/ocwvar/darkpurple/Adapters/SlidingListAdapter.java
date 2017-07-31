@@ -64,7 +64,7 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
         SlideMusicViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.textView);
+            title = itemView.findViewById(R.id.textView);
 
             itemView.setOnClickListener(this);
         }

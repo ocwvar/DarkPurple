@@ -1,7 +1,7 @@
 package com.ocwvar.darkpurple.Units;
 
-import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
 
 import com.google.gson.JsonArray;
@@ -29,8 +29,18 @@ import java.util.ArrayList;
  */
 public class JSONHandler {
 
-    //数据储存位置
-    final static String folderPath = AppConfigs.JsonFilePath + "Playlist/";
+    //储存读取与储存使用到的Key
+    private final static String[] mediaMetadataKeys = new String[]{
+            MediaMetadataCompat.METADATA_KEY_ALBUM,
+            MediaMetadataCompat.METADATA_KEY_ARTIST,
+            MediaMetadataCompat.METADATA_KEY_TITLE,
+            MediaMetadataCompat.METADATA_KEY_MEDIA_URI,
+            MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
+            MediaMetadataCompat.METADATA_KEY_DURATION,
+            SongItem.SONGITEM_KEY_COVER_ID,
+            SongItem.SONGITEM_KEY_FILE_NAME,
+            SongItem.SONGITEM_KEY_FILE_PATH
+    };
 
     /**
      * 以Json方式储存播放列表数据
@@ -47,9 +57,9 @@ public class JSONHandler {
             Logger.error(TAG, "无效请求数据");
             return false;
         } else {
-            File dataFile = new File(folderPath);
+            File dataFile = new File(AppConfigs.PlaylistFolder);
             dataFile.mkdirs();
-            dataFile = new File(folderPath + name + ".pl");
+            dataFile = new File(AppConfigs.PlaylistFolder + name + ".pl");
             if (!dataFile.exists()) {
                 try {
                     dataFile.createNewFile();
@@ -64,22 +74,15 @@ public class JSONHandler {
             JsonArray jsonArray = new JsonArray();
 
             for (SongItem singleSong : playlist) {
-                JsonObject object = new JsonObject();
-                object.addProperty("name", singleSong.getTitle());
-                object.addProperty("path", singleSong.getPath());
-                object.addProperty("album", singleSong.getAlbum());
-                object.addProperty("artist", singleSong.getArtist());
-                object.addProperty("filename", singleSong.getFileName());
-                object.addProperty("length", Long.toString(singleSong.getLength()));
-                object.addProperty("albumid", Long.toString(singleSong.getAlbumID()));
-                object.addProperty("color", Integer.toString(singleSong.getPaletteColor()));
-                object.addProperty("ishavecover", singleSong.isHaveCover());
-                object.addProperty("customCoverPath", singleSong.getCustomCoverPath());
-                object.addProperty("customPaletteColor", singleSong.getCustomPaletteColor());
-                if (singleSong.getAlbumCoverUri() == null) {
-                    object.addProperty("albumuri", "");
-                } else {
-                    object.addProperty("albumuri", singleSong.getAlbumCoverUri().toString());
+                final JsonObject object = new JsonObject();
+
+                //遍历所有储存的Key进行写入到 JsonObject
+                for (String key : mediaMetadataKeys) {
+                    if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+                        object.addProperty(key, singleSong.getMediaMetadata().getLong(key));
+                    } else {
+                        object.addProperty(key, singleSong.getMediaMetadata().getString(key));
+                    }
                 }
 
                 jsonArray.add(object);
@@ -136,9 +139,9 @@ public class JSONHandler {
             return;
         }
 
-        File dataFile = new File(folderPath);
+        File dataFile = new File(AppConfigs.PlaylistFolder);
         dataFile.mkdirs();
-        dataFile = new File(folderPath + AppConfigs.CACHE_NAME + ".pl");
+        dataFile = new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl");
         if (!dataFile.exists()) {
             try {
                 dataFile.createNewFile();
@@ -153,22 +156,15 @@ public class JSONHandler {
         JsonArray jsonArray = new JsonArray();
 
         for (SongItem singleSong : playlist) {
-            JsonObject object = new JsonObject();
-            object.addProperty("name", singleSong.getTitle());
-            object.addProperty("path", singleSong.getPath());
-            object.addProperty("album", singleSong.getAlbum());
-            object.addProperty("artist", singleSong.getArtist());
-            object.addProperty("filename", singleSong.getFileName());
-            object.addProperty("length", Long.toString(singleSong.getLength()));
-            object.addProperty("albumid", Long.toString(singleSong.getAlbumID()));
-            object.addProperty("color", Integer.toString(singleSong.getPaletteColor()));
-            object.addProperty("ishavecover", singleSong.isHaveCover());
-            object.addProperty("customCoverPath", singleSong.getCustomCoverPath());
-            object.addProperty("customPaletteColor", singleSong.getCustomPaletteColor());
-            if (singleSong.getAlbumCoverUri() == null) {
-                object.addProperty("albumuri", "");
-            } else {
-                object.addProperty("albumuri", singleSong.getAlbumCoverUri().toString());
+            final JsonObject object = new JsonObject();
+
+            //遍历所有储存的Key进行写入到 JsonObject
+            for (String key : mediaMetadataKeys) {
+                if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+                    object.addProperty(key, singleSong.getMediaMetadata().getLong(key));
+                } else {
+                    object.addProperty(key, singleSong.getMediaMetadata().getString(key));
+                }
             }
 
             jsonArray.add(object);
@@ -224,7 +220,7 @@ public class JSONHandler {
             return null;
         } else {
             //创建文件对象
-            File dataFile = new File(folderPath + name + ".pl");
+            File dataFile = new File(AppConfigs.PlaylistFolder + name + ".pl");
             if (dataFile.exists() && dataFile.canRead() && dataFile.length() > 0) {
                 //如果文件合法 , 则开始读取
                 //先创建JsonArray对象用于储存数据
@@ -253,75 +249,21 @@ public class JSONHandler {
                     return null;
                 }
 
-                ArrayList<SongItem> playlist = new ArrayList<>();
+                final ArrayList<SongItem> playlist = new ArrayList<>();
                 for (int i = 0; i < jsonArray.size(); i++) {
-                    JsonObject object = jsonArray.get(i).getAsJsonObject();
-                    SongItem songItem = new SongItem();
+                    final JsonObject object = jsonArray.get(i).getAsJsonObject();
+                    final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
 
-                    if (isJsonObjectVaild(object, "name")) {
-                        songItem.setTitle(object.get("name").getAsString());
-                    } else {
-                        continue;
-                    }
-
-                    if (isJsonObjectVaild(object, "path")) {
-                        songItem.setPath(object.get("path").getAsString());
-                    } else {
-                        continue;
-                    }
-
-                    if (isJsonObjectVaild(object, "album")) {
-                        songItem.setAlbum(object.get("album").getAsString());
-                    } else {
-                        continue;
-                    }
-
-                    if (isJsonObjectVaild(object, "filename")) {
-                        songItem.setFileName(object.get("filename").getAsString());
-                    } else {
-                        continue;
-                    }
-
-                    if (isJsonObjectVaild(object, "length")) {
-                        songItem.setLength(object.get("length").getAsLong());
-                    } else {
-                        continue;
-                    }
-
-                    if (isJsonObjectVaild(object, "artist")) {
-                        songItem.setArtist(object.get("artist").getAsString());
-                    }
-
-                    if (isJsonObjectVaild(object, "albumid")) {
-                        songItem.setAlbumID(object.get("albumid").getAsLong());
-                    }
-
-                    if (isJsonObjectVaild(object, "color")) {
-                        songItem.setPaletteColor(object.get("color").getAsInt());
-                    }
-
-                    if (isJsonObjectVaild(object, "ishavecover")) {
-                        songItem.setHaveCover(object.get("ishavecover").getAsBoolean());
-                    }
-
-                    if (isJsonObjectVaild(object, "customCoverPath")) {
-                        songItem.setCustomCoverPath(object.get("customCoverPath").getAsString());
-                    }
-
-                    if (isJsonObjectVaild(object, "customPaletteColor")) {
-                        songItem.setCustomPaletteColor(object.get("customPaletteColor").getAsInt());
-                    }
-
-                    if (isJsonObjectVaild(object, "albumuri")) {
-                        songItem.setAlbumCoverUri(Uri.parse(object.get("albumuri").getAsString()));
-                        if (TextUtils.isEmpty(songItem.getAlbumCoverUri().getPath())) {
-                            songItem.setAlbumCoverUri(null);
+                    for (final String key : mediaMetadataKeys) {
+                        if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+                            metadataBuilder.putLong(key, object.get(key).getAsLong());
+                        } else {
+                            metadataBuilder.putString(key, object.get(key).getAsString());
                         }
-                    } else {
-                        songItem.setAlbumCoverUri(null);
                     }
 
-                    playlist.add(songItem);
+                    final MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
+                    playlist.add(new SongItem(mediaMetadataCompat.getString(SongItem.SONGITEM_KEY_FILE_PATH), mediaMetadataCompat));
                 }
 
                 if (playlist.size() == 0) {
@@ -361,7 +303,7 @@ public class JSONHandler {
             return null;
         }
 
-        if (isJsonObjectVaild(jsonObject, "results")) {
+        if (isJsonObjectValid(jsonObject, "results")) {
             JsonArray jsonArray = jsonObject.get("results").getAsJsonArray();
             if (jsonArray.size() > 0) {
                 ArrayList<CoverPreviewBean> previewBeen = new ArrayList<>();
@@ -369,15 +311,15 @@ public class JSONHandler {
                     JsonObject object = jsonArray.get(i).getAsJsonObject();
                     CoverPreviewBean bean = new CoverPreviewBean();
 
-                    if (isJsonObjectVaild(object, "collectionName")) {
+                    if (isJsonObjectValid(object, "collectionName")) {
                         bean.setAlbumName(object.get("collectionName").getAsString());
                     }
 
-                    if (isJsonObjectVaild(object, "artworkUrl60")) {
+                    if (isJsonObjectValid(object, "artworkUrl60")) {
                         bean.setArtworkUrl60(object.get("artworkUrl60").getAsString());
                     }
 
-                    if (isJsonObjectVaild(object, "artworkUrl100")) {
+                    if (isJsonObjectValid(object, "artworkUrl100")) {
                         bean.setArtworkUrl100(object.get("artworkUrl100").getAsString());
                     }
 
@@ -404,7 +346,7 @@ public class JSONHandler {
      * @param key    要获取的key
      * @return 是否合法
      */
-    private static boolean isJsonObjectVaild(JsonObject object, String key) {
+    private static boolean isJsonObjectValid(JsonObject object, String key) {
         return object != null && !TextUtils.isEmpty(key) && object.has(key) && object.get(key) != null;
     }
 

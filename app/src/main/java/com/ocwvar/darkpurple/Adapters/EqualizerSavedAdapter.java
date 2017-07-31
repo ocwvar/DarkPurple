@@ -111,8 +111,8 @@ public final class EqualizerSavedAdapter extends RecyclerView.Adapter {
 
         ItemViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.item_equalizer_saved);
-            delete = (ImageView) itemView.findViewById(R.id.item_equalizer_remove);
+            title = itemView.findViewById(R.id.item_equalizer_saved);
+            delete = itemView.findViewById(R.id.item_equalizer_remove);
             delete.setOnClickListener(this);
             title.setOnClickListener(this);
         }

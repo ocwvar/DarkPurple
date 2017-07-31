@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.Units
+package com.ocwvar.darkpurple.Units.Cover
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,6 +13,8 @@ import android.renderscript.Allocation
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import com.ocwvar.darkpurple.AppConfigs
+import com.ocwvar.darkpurple.Units.FastBlur
+import com.ocwvar.darkpurple.Units.Logger
 import java.io.File
 
 /**
@@ -42,18 +44,10 @@ object CoverProcesser {
 
     /**
      * 生成模糊图像
-     * @param   coverPath   图像文件路径
-     */
-    fun handleThis(coverPath: String) {
-        val coverFile: File = File(coverPath)
-        handleThis(coverFile)
-    }
-
-    /**
-     * 生成模糊图像
      * @param   coverFile   图像文件
+     * @param   coverID   图像ID
      */
-    fun handleThis(coverFile: File) {
+    fun handleThis(coverFile: File, coverID: String) {
         if (handlingFilePath == coverFile.path) {
             //已有相同的任务
             Logger.error(javaClass.simpleName, "当前已有相同的任务：" + coverFile.path)
@@ -64,7 +58,7 @@ object CoverProcesser {
                 Logger.warnning(javaClass.simpleName, "上次图像已失效，进行重新生成：" + coverFile.path)
                 handlingFilePath = coverFile.path
                 jobThread?.cancel(true)
-                jobThread = BlurThread(coverFile.path)
+                jobThread = BlurThread(coverFile.path, coverID)
                 jobThread?.execute()
             } else {
                 //上次生成的图像仍可以使用，直接通过回调接口返回
@@ -76,7 +70,7 @@ object CoverProcesser {
             Logger.warnning(javaClass.simpleName, "开始执行新的模糊处理：" + coverFile.path)
             handlingFilePath = coverFile.path
             jobThread?.cancel(true)
-            jobThread = BlurThread(coverFile.path)
+            jobThread = BlurThread(coverFile.path, coverID)
             jobThread?.execute()
         } else {
             //无法执行任务
@@ -100,7 +94,7 @@ object CoverProcesser {
      * @param   callback    结果回调接口
      */
     fun setCallback(callback: Callback) {
-        this.callback = callback
+        CoverProcesser.callback = callback
     }
 
     /**
@@ -122,7 +116,7 @@ object CoverProcesser {
     /**
      * 图像模糊处理工作子线程
      */
-    class BlurThread(val coverFilePath: String) : AsyncTask<Void, Int, Drawable?>() {
+    class BlurThread(val coverFilePath: String, val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
         //模糊图像缩小倍数
         val scaleSize: Float = 0.4f
 
@@ -175,9 +169,11 @@ object CoverProcesser {
             handlingFilePath = null
             if (result != null) {
                 lastCompletedPath = coverFilePath
+                CoverManager.setSource(CoverType.BLUR, coverID, coverFilePath, true)
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATED))
                 callback?.onCompleted(result)
             } else {
+                CoverManager.removeSource(CoverType.BLUR, coverID)
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATE_FAILED))
                 callback?.onFailed()
             }

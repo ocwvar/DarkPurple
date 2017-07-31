@@ -12,10 +12,9 @@ import java.util.ArrayList;
 public class PlaylistItem {
 
     private String name;
-    private String firstAudioPath;
-    private int color;
-    private int count;
+    private String firstAudioCoverID;
     private ArrayList<SongItem> playlist = null;
+    private int count;
 
     public PlaylistItem() {
     }
@@ -27,10 +26,8 @@ public class PlaylistItem {
     public PlaylistItem(String name, String[] simpleValues) {
         this.name = name;
         for (String value : simpleValues) {
-            if (value.startsWith("fap_")) {
-                this.firstAudioPath = value.replaceFirst("fap_", "");
-            } else if (value.startsWith("color_")) {
-                this.color = Integer.parseInt(value.replaceFirst("color_", ""));
+            if (value.startsWith("cID_")) {
+                this.firstAudioCoverID = value.replaceFirst("fap_", "");
             } else if (value.startsWith("count_")) {
                 this.count = Integer.parseInt(value.replaceFirst("count_", ""));
             }
@@ -45,12 +42,12 @@ public class PlaylistItem {
         this.name = name;
     }
 
-    public String getFirstAudioPath() {
-        return firstAudioPath;
+    public String getFirstAudioCoverID() {
+        return firstAudioCoverID;
     }
 
-    public void setFirstAudioPath(String firstAudioPath) {
-        this.firstAudioPath = firstAudioPath;
+    public void setFirstAudioCoverID(String firstAudioCoverID) {
+        this.firstAudioCoverID = firstAudioCoverID;
     }
 
     public int getCounts() {
@@ -59,14 +56,6 @@ public class PlaylistItem {
         } else {
             return playlist.size();
         }
-    }
-
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
     }
 
     public ArrayList<SongItem> getPlaylist() {

@@ -90,7 +90,7 @@ public class FolderSelectorAdapter extends RecyclerView.Adapter {
 
         FolderItemViewHolder(View itemView) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.textView);
+            name = itemView.findViewById(R.id.textView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
