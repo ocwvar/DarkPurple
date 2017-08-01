@@ -276,35 +276,33 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         fun show(songData: SongItem, songDataPosition: Int) {
             this.songDataPosition = songDataPosition
             this.songData = songData
-            var dialog: AlertDialog? = dialogKeeper.get()
-            if (dialog == null) {
-                val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_music_list_menu, null)
-                view.findViewById<View>(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById<View>(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById<View>(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById<View>(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
 
-                val removeCover: View = view.findViewById<View>(R.id.menu_music_cover_remove).let {
-                    it.visibility = View.GONE
-                    it.setOnClickListener(this@ItemMoreDialog)
-                    it
-                }
-                val downloadCover: View = view.findViewById<View>(R.id.menu_music_online_cover).let {
-                    it.visibility = View.GONE
-                    it.setOnClickListener(this@ItemMoreDialog)
-                    it
-                }
-                if (!TextUtils.isEmpty(CoverManager.getSource(CoverType.CUSTOM, songData.coverID))) {
-                    //如果当前有自定义封面，则显示移除按钮，否则显示下载按钮
-                    removeCover.visibility = View.VISIBLE
-                } else {
-                    downloadCover.visibility = View.VISIBLE
-                }
+            val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_music_list_menu, null)
+            view.findViewById<View>(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
+            view.findViewById<View>(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
+            view.findViewById<View>(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
+            view.findViewById<View>(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
 
-                dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
-                dialogKeeper = WeakReference(dialog)
+            val removeCover: View = view.findViewById<View>(R.id.menu_music_cover_remove).let {
+                it.visibility = View.GONE
+                it.setOnClickListener(this@ItemMoreDialog)
+                it
             }
-            dialog?.show()
+            val downloadCover: View = view.findViewById<View>(R.id.menu_music_online_cover).let {
+                it.visibility = View.GONE
+                it.setOnClickListener(this@ItemMoreDialog)
+                it
+            }
+            if (!TextUtils.isEmpty(CoverManager.getSource(CoverType.CUSTOM, songData.coverID))) {
+                //如果当前有自定义封面，则显示移除按钮，否则显示下载按钮
+                removeCover.visibility = View.VISIBLE
+            } else {
+                downloadCover.visibility = View.VISIBLE
+            }
+
+            var dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
+            dialogKeeper = WeakReference(dialog)
+            dialog.show()
         }
 
         /**

@@ -29,6 +29,18 @@ public class CoverImage2File {
     }
 
     /**
+     * 生成唯一 TAG
+     *
+     * @param string 源数据
+     * @return TAG字符串
+     */
+    public static String buildTag(String string) {
+        string = string.replaceAll("[^\\w]", "");
+        string = string.replaceAll(" ", "");
+        return string;
+    }
+
+    /**
      * 将封面图像保存成本地文件
      *
      * @param coverType 图像类型
@@ -99,18 +111,6 @@ public class CoverImage2File {
      */
     private String getNormalCachePath(String audioPath, CoverType coverType) {
         return AppConfigs.ImageCacheFolder + buildTag(audioPath) + "_" + coverType.name() + ".cache";
-    }
-
-    /**
-     * 生成唯一 TAG
-     *
-     * @param string 源数据
-     * @return TAG字符串
-     */
-    private String buildTag(String string) {
-        string = string.replaceAll("[^\\w]", "");
-        string = string.replaceAll(" ", "");
-        return string;
     }
 
 }

@@ -34,6 +34,7 @@ import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.Cover.ColorType;
+import com.ocwvar.darkpurple.Units.Cover.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverType;
 import com.ocwvar.darkpurple.Units.JSONHandler;
@@ -615,7 +616,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                         //优先检查是否存在下载的保存目录
                         file.mkdirs();
                     }
-                    file = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                    file = new File(AppConfigs.DownloadCoversFolder + CoverImage2File.buildTag(songItem.getPath()) + ".jpg");
                     if (!file.exists()) {
                         //再检查是否存在文件 , 如果不存在则创建新的空白文件
                         file.createNewFile();

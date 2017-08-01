@@ -399,7 +399,7 @@ public class MediaScanner {
                         }
 
                         //自定义封面检查
-                        final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                        final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + CoverImage2File.buildTag(filePath) + ".jpg");
                         if (customCoverFile.exists() && customCoverFile.length() > 0) {
                             CoverManager.INSTANCE.setSource(CoverType.CUSTOM, filePath, customCoverFile.getPath(), true);
                         } else {
@@ -702,7 +702,7 @@ public class MediaScanner {
                     metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, TextUtils.isEmpty(musicArtist) ? AppConfigs.UNKNOWN : musicArtist);
 
                     //检查是否有自定义封面
-                    final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
+                    final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + CoverImage2File.buildTag(filePath) + ".jpg");
                     if (customCoverFile.exists() && customCoverFile.length() > 0) {
                         CoverManager.INSTANCE.setSource(CoverType.CUSTOM, filePath, customCoverFile.getPath(), true);
                     } else {
