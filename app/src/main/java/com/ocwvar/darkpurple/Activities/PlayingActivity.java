@@ -7,11 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -19,9 +16,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.renderscript.Allocation;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -50,15 +44,13 @@ import com.ocwvar.darkpurple.Services.AudioService;
 import com.ocwvar.darkpurple.Services.AudioStatus;
 import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
-import com.ocwvar.darkpurple.Units.FastBlur;
+import com.ocwvar.darkpurple.Units.Cover.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.SurfaceViewController;
 import com.ocwvar.darkpurple.widgets.CoverShowerViewPager;
 import com.ocwvar.darkpurple.widgets.CoverSpectrum;
 import com.ocwvar.darkpurple.widgets.LineSlider;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -119,7 +111,7 @@ public class PlayingActivity
     //音频服务
     private AudioService audioService;
     //背景模糊图片弱引用
-    private WeakReference<Bitmap> blurBG = new WeakReference<>(null);
+    private WeakReference<Drawable> blurBG = new WeakReference<>(null);
     //背景模糊图片处理线程弱引用
     private WeakReference<BlurCoverThread> blurCoverThreadObject = new WeakReference<>(null);
     //动画Drawable弱引用
@@ -403,8 +395,26 @@ public class PlayingActivity
             //先获取当前播放的数据
             final SongItem playingSong = playingList.get(audioService.getPlayingIndex());
 
-            //读取可用的封面. 如果当前没有加载相同TAG的封面, 则进行加载
-            if (!backGround.getTag().equals(CoverManager.INSTANCE.getValidColor(playingSong.getCoverID()))) {
+            //此歌曲没有封面，显示默认背景
+            if (TextUtils.isEmpty(CoverManager.INSTANCE.getValidSource(playingSong.getCoverID()))) {
+
+                //获取当前背景图像
+                final Drawable prevDrawable = (backGround.getBackground() != null) ? backGround.getBackground() : new ColorDrawable(Color.TRANSPARENT);
+                //默认图像，作为切换
+                final Drawable nextDrawable = (Build.VERSION.SDK_INT >= 21) ? getResources().getDrawable(R.drawable.blur) : getResources().getDrawable(R.drawable.blur);
+
+                //设置空的TAG
+                backGround.setTag(-1L);
+
+                //切换背景
+                TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
+                backGround.setBackground(transitionDrawable);
+                transitionDrawable.startTransition(1500);
+                return;
+            }
+
+            //此歌曲存在可用封面，并且与当前的背景不相同，则进行加载
+            if (!backGround.getTag().equals(CoverManager.INSTANCE.getValidSource(playingSong.getCoverID()))) {
 
                 if (blurCoverThreadObject != null && blurCoverThreadObject.get() != null && blurCoverThreadObject.get().getStatus() != AsyncTask.Status.FINISHED) {
                     //如果当前还在处理上一个封面模糊效果 , 则先中断了
@@ -413,38 +423,12 @@ public class PlayingActivity
                     blurCoverThreadObject = null;
                 }
                 //设置当前背景图片ID
-                backGround.setTag(CoverManager.INSTANCE.getValidColor(playingSong.getCoverID()));
+                backGround.setTag(CoverManager.INSTANCE.getValidSource(playingSong.getCoverID()));
 
                 //开始执行模糊背景处理
                 blurCoverThreadObject = new WeakReference<>(new BlurCoverThread(playingSong));
                 blurCoverThreadObject.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-
-            } else {
-                //封面不存在的时候 , 显示默认的背景
-                Drawable prevDrawable;
-                Drawable nextDrawable;
-
-                backGround.setTag(-1L);
-
-                //先设置淡出图像
-                if (backGround.getBackground() != null) {
-                    //如果能从当前背景中获取到图像
-                    prevDrawable = backGround.getBackground();
-                } else {
-                    //如果获取不到 , 则直接使用透明色
-                    prevDrawable = new ColorDrawable(Color.TRANSPARENT);
-                }
-
-                //设置淡入图像
-                if (Build.VERSION.SDK_INT >= 23) {
-                    nextDrawable = new ColorDrawable(getColor(R.color.backgroundColor_Dark));
-                } else {
-                    nextDrawable = new ColorDrawable(getResources().getColor(R.color.backgroundColor_Dark));
-                }
-
-                TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
-                backGround.setBackground(transitionDrawable);
-                transitionDrawable.startTransition(1500);
+                return;
             }
         }
     }
@@ -706,7 +690,7 @@ public class PlayingActivity
     /**
      * 处理封面图片背景效果线程
      */
-    private class BlurCoverThread extends AsyncTask<Integer, Void, Bitmap> {
+    private class BlurCoverThread extends AsyncTask<Integer, Void, Drawable> {
 
         private SongItem songItem;
 
@@ -715,87 +699,45 @@ public class PlayingActivity
         }
 
         @Override
-        protected Bitmap doInBackground(Integer... integers) {
-            //可用图像资源路径
-            final String coverPath = CoverManager.INSTANCE.getValidSource(songItem.getCoverID());
-            //缓存图像位图声明
-            Bitmap coverImage = null;
-            try {
-
-                if (!TextUtils.isEmpty(coverPath)) {
-                    //有可用封面数据
-                    coverImage = Picasso.with(AppConfigs.ApplicationContext).load(CoverManager.INSTANCE.getAbsoluteSource(coverPath)).get();
+        protected Drawable doInBackground(Integer... integers) {
+            final String coverID = songItem.getCoverID();
+            int timeoutCount = 5;
+            while (!CoverProcesser.INSTANCE.getLastCompletedCoverID().equals(coverID)) {
+                try {
+                    Thread.sleep(100);
+                    timeoutCount--;
+                } catch (InterruptedException ignore) {
                 }
 
-            } catch (IOException ignored) {
+                if (timeoutCount <= 0) {
+                    //等待超时
+                    return null;
+                }
             }
-
-            if (coverImage != null) {
-
-                //将图像进行一个缩放 , 以得到一个模糊程度很高的图像
-                final Matrix matrix = new Matrix();
-                matrix.postScale(0.2f, 0.2f);
-                coverImage = Bitmap.createBitmap(coverImage, 0, 0, coverImage.getWidth(), coverImage.getHeight(), matrix, true);
-
-                //创建一个空的对象 , 用于存放模糊图像
-                Bitmap bluredImage = Bitmap.createBitmap(coverImage.getWidth(), coverImage.getHeight(), Bitmap.Config.ARGB_8888);
-
-                if (Build.VERSION.SDK_INT >= 17) {
-                    RenderScript renderScript = RenderScript.create(getApplicationContext());
-                    Allocation in = Allocation.createFromBitmap(renderScript, coverImage);
-                    Allocation out = Allocation.createFromBitmap(renderScript, bluredImage);
-                    ScriptIntrinsicBlur scriptIntrinsicBlur = ScriptIntrinsicBlur.create(renderScript, in.getElement());
-                    scriptIntrinsicBlur.setInput(in);
-                    scriptIntrinsicBlur.setRadius(25);
-                    scriptIntrinsicBlur.forEach(out);
-                    out.copyTo(bluredImage);
-
-                    scriptIntrinsicBlur.destroy();
-                    renderScript.destroy();
-                } else {
-                    try {
-                        bluredImage = FastBlur.doBlur(coverImage, 25, false);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                }
-
-                if (bluredImage != null) {
-                    final Canvas canvas = new Canvas(bluredImage);
-                    canvas.drawColor(Color.argb(60, 0, 0, 0));
-                }
-                return bluredImage;
-            } else {
-                return null;
-            }
+            return CoverProcesser.INSTANCE.getBlur();
         }
 
         @SuppressWarnings("deprecation")
         @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            blurBG = new WeakReference<>(bitmap);
-            if (bitmap != null) {
-                Drawable prevDrawable;
-
-                if (backGround.getBackground() == null) {
-
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        prevDrawable = new ColorDrawable(getColor(R.color.backgroundColor_Dark));
-                    } else {
-                        prevDrawable = new ColorDrawable(getResources().getColor(R.color.backgroundColor_Dark));
-                    }
-
-                } else {
-                    prevDrawable = backGround.getBackground();
-                }
-
-                Drawable nextDrawable = new BitmapDrawable(getResources(), bitmap);
-                TransitionDrawable transitionDrawable = new TransitionDrawable(
-                        new Drawable[]{prevDrawable, nextDrawable});
-                backGround.setBackground(transitionDrawable);
-                transitionDrawable.startTransition(1500);
+        protected void onPostExecute(final Drawable result) {
+            super.onPostExecute(result);
+            if (blurBG != null) {
+                blurBG.clear();
             }
+            blurBG = new WeakReference<>(result);
+
+            //获取当前背景图像
+            final Drawable prevDrawable = (backGround.getBackground() != null) ? backGround.getBackground() : new ColorDrawable(Color.TRANSPARENT);
+
+            //生成下一个背景内容Drawable
+            final Drawable nextDrawable = (result == null) ? ((Build.VERSION.SDK_INT >= 21) ? getResources().getDrawable(R.drawable.blur) : getResources().getDrawable(R.drawable.blur)) : result;
+
+            //生成动画Drawable
+            TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
+
+            //执行动画切换背景
+            backGround.setBackground(transitionDrawable);
+            transitionDrawable.startTransition(1500);
         }
 
     }

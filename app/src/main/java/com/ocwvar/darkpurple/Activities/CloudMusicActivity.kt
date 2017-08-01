@@ -146,7 +146,7 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
         private val progressDialog: ProgressDialog = ProgressDialog(context)
 
         init {
-            progressDialog.setTitle(R.string.text_cloudMusic_download_status_title);
+            progressDialog.setTitle(R.string.text_cloudMusic_download_status_title)
             progressDialog.setMessage(musicObject.name)
             progressDialog.setCanceledOnTouchOutside(false)
             progressDialog.progress = 0
@@ -195,7 +195,7 @@ class CloudMusicActivity : BaseBlurActivity(), OnGetUploadedFilesCallback, Cloud
                 outStream.close()
 
                 val intent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                intent.data = FileProvider.getUriForFile(context, AppConfigs.ApplicationContext.packageName + ".provider", downloadFile)
+                intent.data = FileProvider.getUriForFile(context, "FProvider", downloadFile)
 
                 AppConfigs.ApplicationContext.sendBroadcast(intent)
                 return true

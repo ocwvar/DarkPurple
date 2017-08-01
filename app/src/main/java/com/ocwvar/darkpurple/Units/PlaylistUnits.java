@@ -54,8 +54,8 @@ public class PlaylistUnits {
                 //逐个从SP中获取播放列表数据
                 Logger.warnning(TAG, "正在获取基本数据  " + playlistName);
                 String[] playlistValues = loadStringArray(sp, playlistName);
-                if (playlistValues != null && playlistValues.length == 3) {
-                    //如果字符集合有效 , 同时数量为3
+                if (playlistValues != null && playlistValues.length == 2) {
+                    //如果字符集合有效 , 同时数量为2
                     this.playlistSet.add(new PlaylistItem(playlistName, playlistValues));
                 }
             }
@@ -101,7 +101,7 @@ public class PlaylistUnits {
         Set<String> values = new LinkedHashSet<>();
         values.add("cID_" + playlistItem.getFirstAudioCoverID());     //储存播放列表第一个对象的封面ID
         values.add("count_" + Integer.toString(playlist.size()));      //储存列表的总体大小
-        editor.remove(name).putStringSet(name, values).putStringSet("names", keys).commit();    //异步操作 : 删除旧的数据 , 添加新的数据
+        editor.remove(name).putStringSet(name, values).putStringSet("names", keys).apply();    //异步操作 : 删除旧的数据 , 添加新的数据
 
         //异步储存到本地文件
         new Thread(new Runnable() {

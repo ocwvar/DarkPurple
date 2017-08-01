@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Build
@@ -34,14 +33,12 @@ object CoverProcesser {
     private var original: Drawable? = null
     //模糊封面Drawable对象储存容器
     private var blurd: Drawable? = null
-    //储存最后一次完成的任务图像路径，供弱引用图像失效时重新生成使用
+    //储存最后一次完成的任务图像路径
     private var lastCompletedCoverID: String? = null
     //储存当前正在处理的图像ID，供新的任务请求时检查使用
     private var handlingCoverID: String? = null
     //模糊任务线程
     private var jobThread: BlurThread? = null
-    //任务回调接口
-    private var callback: Callback? = null
 
     /**
      * 生成模糊图像
@@ -65,10 +62,11 @@ object CoverProcesser {
             } else if (blurd != null) {
                 //上次生成的图像仍可以使用，直接通过回调接口返回
                 Logger.warnning(javaClass.simpleName, "请求图像与现有图像相同：" + coverID)
-                callback?.onCompleted(blurd!!)
+                AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATED))
             } else {
                 //封面ID无效
                 Logger.error(javaClass.simpleName, "无效封面ID：" + coverID)
+                AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATE_FAILED))
             }
 
         } else if (!TextUtils.isEmpty(CoverManager.getValidSource(coverID))) {
@@ -84,8 +82,14 @@ object CoverProcesser {
             //无法执行任务
 
             Logger.error(javaClass.simpleName, "封面图像文件缺失，不执行此次任务：" + coverID)
+            AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATE_FAILED))
         }
     }
+
+    /**
+     * @return  上一次完成处理的封面ID
+     */
+    fun getLastCompletedCoverID(): String = this.lastCompletedCoverID ?: ""
 
     /**
      * 获取上一次的模糊结果
@@ -100,13 +104,6 @@ object CoverProcesser {
     fun getOriginal(): Drawable? = original
 
     /**
-     * @param   callback    结果回调接口
-     */
-    fun setCallback(callback: Callback) {
-        CoverProcesser.callback = callback
-    }
-
-    /**
      * 释放所有数据
      */
     fun release() {
@@ -115,11 +112,6 @@ object CoverProcesser {
         handlingCoverID = null
         blurd = null
         original = null
-    }
-
-    interface Callback {
-        fun onCompleted(drawable: Drawable)
-        fun onFailed(drawable: Drawable = ColorDrawable(AppConfigs.Color.WindowBackground_Color))
     }
 
     /**
@@ -133,24 +125,23 @@ object CoverProcesser {
 
             //获取原始图像，获取失败则直接判断这次操作为失败
             val originalBitmap: Bitmap = BitmapFactory.decodeFile(CoverManager.getValidSource(coverID)) ?: return null
-            //先尝试获取已缓存的模糊数据
-            val cachedBlurBitmap: Bitmap? = BitmapFactory.decodeFile(CoverManager.getSource(CoverType.BLUR, coverID))
-
-            if (cachedBlurBitmap != null) {
-                //储存模糊图像
-                blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, cachedBlurBitmap)
-            }
 
             //缩放处理原始图像
             val matrix: Matrix = Matrix()
             matrix.postScale(scaleSize, scaleSize)
+
             //得到缩小指定倍数后的原始图像
             val scaledBitmap: Bitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
+            originalBitmap.recycle()
+
             //储存原始图像
             original = BitmapDrawable(AppConfigs.ApplicationContext.resources, scaledBitmap)
 
-            if (blurd != null) {
+            //尝试获取已缓存的模糊数据
+            val cachedBlurBitmap: Bitmap? = BitmapFactory.decodeFile(CoverManager.getSource(CoverType.BLUR, coverID))
+            if (cachedBlurBitmap != null) {
                 //如果此时已经获取到了模糊图像，则不需要进行下一步模糊处理
+                blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, cachedBlurBitmap)
                 return blurd
             }
 
@@ -203,12 +194,10 @@ object CoverProcesser {
             if (result != null) {
                 lastCompletedCoverID = coverID
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATED))
-                callback?.onCompleted(result)
             } else {
                 //封面无效，删除缓存数据
                 CoverManager.removeSource(CoverType.BLUR, coverID)
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATE_FAILED))
-                callback?.onFailed()
             }
         }
     }

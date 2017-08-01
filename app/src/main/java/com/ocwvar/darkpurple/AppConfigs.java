@@ -230,11 +230,11 @@ public class AppConfigs {
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
 
-            isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", true);
-
             isTabColorByImage = preferences.getBoolean("isTabColorByImage", true);
 
-            isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", true);
+            isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", false);
+
+            isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", false);
 
             isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
 

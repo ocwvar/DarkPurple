@@ -1,6 +1,7 @@
 package com.ocwvar.darkpurple.Units.Cover
 
 import com.ocwvar.darkpurple.AppConfigs
+import com.ocwvar.darkpurple.Units.JSONHandler
 import java.io.File
 
 /**
@@ -27,6 +28,36 @@ object CoverManager {
     //自定义封面颜色库(音频路径，封面颜色)
     private val customCoverColorLibrary: LinkedHashMap<String, Int> = LinkedHashMap()
 
+    /**
+     * 从文件读取所有数据
+     */
+    fun initData() {
+        //读取封面
+        putSource(CoverType.NORMAL, JSONHandler.getCoverLibrary(CoverType.NORMAL), true)
+        putSource(CoverType.CUSTOM, JSONHandler.getCoverLibrary(CoverType.CUSTOM), true)
+        putSource(CoverType.BLUR, JSONHandler.getCoverLibrary(CoverType.BLUR), true)
+
+        //读取颜色
+        putColorSource(ColorType.NORMAL, JSONHandler.getColorLibrary(ColorType.NORMAL), true)
+        putColorSource(ColorType.CUSTOM, JSONHandler.getColorLibrary(ColorType.CUSTOM), true)
+    }
+
+    /**
+     * 异步保存所有数据
+     */
+    fun asyncUpdateFileCache() {
+        //直接创建线程，不需要关心结果
+        Thread(Runnable {
+            //保存封面
+            JSONHandler.saveCoverLibrary(coverLibrary, CoverType.NORMAL)
+            JSONHandler.saveCoverLibrary(customCoverLibrary, CoverType.CUSTOM)
+            JSONHandler.saveCoverLibrary(blurLibrary, CoverType.BLUR)
+
+            //保存颜色
+            JSONHandler.saveColorLibrary(coverColorLibrary, ColorType.NORMAL)
+            JSONHandler.saveColorLibrary(customCoverColorLibrary, ColorType.CUSTOM)
+        }).start()
+    }
 
     /**
      * 导入已有数据
@@ -35,7 +66,9 @@ object CoverManager {
      * @param   source  数据源
      * @param   clearBeforePut  是否在导入之前清除已有数据
      */
-    fun putSource(type: CoverType, source: LinkedHashMap<String, String>, clearBeforePut: Boolean) {
+    fun putSource(type: CoverType, source: LinkedHashMap<String, String>?, clearBeforePut: Boolean) {
+        source ?: return
+
         when (type) {
             CoverType.NORMAL -> {
                 if (clearBeforePut) {
@@ -67,7 +100,9 @@ object CoverManager {
      * @param   source  数据源
      * @param   clearBeforePut  是否在导入之前清除已有数据
      */
-    fun putColorSource(type: ColorType, source: LinkedHashMap<String, Int>, clearBeforePut: Boolean) {
+    fun putColorSource(type: ColorType, source: LinkedHashMap<String, Int>?, clearBeforePut: Boolean) {
+        source ?: return
+
         when (type) {
             ColorType.NORMAL -> {
                 if (clearBeforePut) {
@@ -301,23 +336,6 @@ object CoverManager {
         } else {
             return "file:///" + source
         }
-    }
-
-    /**
-     * @param   source  数据源
-     * @return  数据源是否为 URI
-     */
-    fun sourceIsURI(source: String?): Boolean = source?.startsWith("content:") ?: false
-
-    /**
-     * 对应的Key是否有封面存在
-     *
-     * @param key   查询的Key
-     * @return  是否存在封面数据
-     */
-    fun hasCover(key: String?): Boolean {
-        key ?: return false
-        return coverLibrary.containsKey(key) || customCoverLibrary.containsKey(key)
     }
 
 }

@@ -236,7 +236,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
         try {
             val fileObject = File(filePath)
             if (fileObject.exists() && fileObject.canRead()) {
-                return FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".provider", fileObject)
+                return FileProvider.getUriForFile(applicationContext, "FProvider", fileObject)
             }
             throw FileNotFoundException("没有找到文件：$filePath")
         } catch(e: Exception) {

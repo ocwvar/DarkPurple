@@ -1,15 +1,19 @@
 package com.ocwvar.darkpurple.Units;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
+import com.ocwvar.darkpurple.Units.Cover.ColorType;
+import com.ocwvar.darkpurple.Units.Cover.CoverType;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * Created by 区成伟
@@ -27,7 +33,8 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * JSON 数据处理
  */
-public class JSONHandler {
+@SuppressWarnings("ConstantConditions")
+public final class JSONHandler {
 
     //储存读取与储存使用到的Key
     private final static String[] mediaMetadataKeys = new String[]{
@@ -50,25 +57,13 @@ public class JSONHandler {
      * @return 执行结果
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    static boolean savePlaylist(String name, ArrayList<SongItem> playlist) {
+    static boolean savePlaylist(final @NonNull String name, final @NonNull ArrayList<SongItem> playlist) {
         final String TAG = "JSON播放列表  储存";
         if (TextUtils.isEmpty(name) || playlist == null || playlist.size() == 0) {
             //如果是无效数据 , 则执行失败
             Logger.error(TAG, "无效请求数据");
             return false;
         } else {
-            File dataFile = new File(AppConfigs.PlaylistFolder);
-            dataFile.mkdirs();
-            dataFile = new File(AppConfigs.PlaylistFolder + name + ".pl");
-            if (!dataFile.exists()) {
-                try {
-                    dataFile.createNewFile();
-                } catch (IOException e) {
-                    //文件创建失败 , 则保存失败
-                    Logger.error(TAG, "文件创建失败");
-                    return false;
-                }
-            }
 
             //创建一个JsonArray用于存放整个数据
             JsonArray jsonArray = new JsonArray();
@@ -88,7 +83,8 @@ public class JSONHandler {
                 jsonArray.add(object);
             }
 
-            return jsonArray2File(jsonArray, dataFile);
+            //进行文件储存
+            return jsonArray2File(jsonArray, new File(AppConfigs.PlaylistFolder + name + ".pl"));
         }
     }
 
@@ -100,54 +96,48 @@ public class JSONHandler {
      */
     static
     @Nullable
-    ArrayList<SongItem> loadPlaylist(String name) {
+    ArrayList<SongItem> loadPlaylist(final @NonNull String name) {
         final String TAG = "JSON播放列表  读取";
         if (TextUtils.isEmpty(name)) {
+
             Logger.error(TAG, "请求数据无效");
             return null;
         } else {
-            //创建文件对象
-            File dataFile = new File(AppConfigs.PlaylistFolder + name + ".pl");
-            if (dataFile.exists() && dataFile.canRead() && dataFile.length() > 0) {
-                //如果文件合法 , 则开始读取
 
-                //获取对应的文件数据
-                final JsonArray jsonArray = file2JsonArray(dataFile.getPath());
-                if (jsonArray == null || jsonArray.size() <= 0) {
-                    //获取数据失败或数据为空
-                    return null;
-                }
-
-                //歌曲数据储存列表容器
-                final ArrayList<SongItem> playlist = new ArrayList<>();
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    final JsonObject object = jsonArray.get(i).getAsJsonObject();
-                    final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
-
-                    //逐个Key进行获取
-                    for (final String key : mediaMetadataKeys) {
-                        if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
-                            metadataBuilder.putLong(key, object.get(key).getAsLong());
-                        } else {
-                            metadataBuilder.putString(key, object.get(key).getAsString());
-                        }
-                    }
-
-                    final MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
-                    playlist.add(new SongItem(mediaMetadataCompat.getString(SongItem.SONGITEM_KEY_FILE_PATH), mediaMetadataCompat));
-                }
-
-                if (playlist.size() == 0) {
-                    Logger.error(TAG, "列表无数据储存");
-                    return null;
-                } else {
-                    Logger.warnning(TAG, "读取播放列表成功");
-                    return playlist;
-                }
-
-            } else {
-                Logger.error(TAG, "播放列表文件不存在");
+            //获取对应的文件数据
+            final JsonArray jsonArray = file2JsonArray(AppConfigs.PlaylistFolder + name + ".pl");
+            if (jsonArray == null || jsonArray.size() <= 0) {
+                //获取数据失败或数据为空
                 return null;
+            }
+
+            //歌曲数据储存列表容器
+            final ArrayList<SongItem> playlist = new ArrayList<>();
+            for (int i = 0; i < jsonArray.size(); i++) {
+                final JsonObject object = jsonArray.get(i).getAsJsonObject();
+                final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+
+                //逐个Key进行获取
+                for (final String key : mediaMetadataKeys) {
+                    if (key.equals(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+                        metadataBuilder.putLong(key, object.get(key).getAsLong());
+                    } else {
+                        metadataBuilder.putString(key, object.get(key).getAsString());
+                    }
+                }
+
+                final MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
+                playlist.add(new SongItem(mediaMetadataCompat.getString(SongItem.SONGITEM_KEY_FILE_PATH), mediaMetadataCompat));
+            }
+
+            if (playlist.size() == 0) {
+
+                Logger.error(TAG, "列表无数据储存");
+                return null;
+            } else {
+
+                Logger.warnning(TAG, "读取播放列表成功");
+                return playlist;
             }
         }
     }
@@ -158,24 +148,11 @@ public class JSONHandler {
      * @param playlist 搜索得到的数据
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    static void cacheSearchResult(ArrayList<SongItem> playlist) {
+    static void cacheSearchResult(final @NonNull ArrayList<SongItem> playlist) {
         final String TAG = "搜索记录缓存";
         if (playlist == null) {
             Logger.error(TAG, "缓存列表为 NULL , 不进行缓存");
             return;
-        }
-
-        File dataFile = new File(AppConfigs.PlaylistFolder);
-        dataFile.mkdirs();
-        dataFile = new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl");
-        if (!dataFile.exists()) {
-            try {
-                dataFile.createNewFile();
-            } catch (IOException e) {
-                //文件创建失败 , 则保存失败
-                Logger.error(TAG, "文件创建失败");
-                return;
-            }
         }
 
         //创建一个JsonArray用于存放整个数据
@@ -196,7 +173,8 @@ public class JSONHandler {
             jsonArray.add(object);
         }
 
-        jsonArray2File(jsonArray, dataFile);
+        //进行文件储存
+        jsonArray2File(jsonArray, new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl"));
     }
 
     /**
@@ -205,7 +183,7 @@ public class JSONHandler {
      * @param jsonData 获取到的Json数据
      * @return 封面数据集合
      */
-    public static ArrayList<CoverPreviewBean> loadCoverPreviewList(String jsonData) {
+    public static ArrayList<CoverPreviewBean> loadCoverPreviewList(final @NonNull String jsonData) {
         final String TAG = "解析封面Json数据";
 
         if (TextUtils.isEmpty(jsonData)) {
@@ -258,13 +236,121 @@ public class JSONHandler {
     }
 
     /**
+     * 获取封面库
+     *
+     * @param coverType 封面类型
+     * @return 封面库的Map，获取失败返回 NULL
+     */
+    public static synchronized
+    @Nullable
+    LinkedHashMap<String, String> getCoverLibrary(final @NonNull CoverType coverType) {
+        final JsonArray jsonArray = file2JsonArray(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data");
+        if (jsonArray == null || jsonArray.size() <= 0) {
+            return null;
+        }
+
+        final LinkedHashMap<String, String> result = new LinkedHashMap<>();
+        final Iterator<JsonElement> objects = jsonArray.iterator();
+        while (objects.hasNext()) {
+            final JsonObject jsonObject = objects.next().getAsJsonObject();
+            final String key = jsonObject.get("Key").getAsString();
+            final String value = jsonObject.get("Value").getAsString();
+            if (!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
+                result.put(key, value);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取封面颜色库
+     *
+     * @param colorType 颜色类型
+     * @return 封面颜色库的Map，获取失败返回 NULL
+     */
+    public static synchronized
+    @Nullable
+    LinkedHashMap<String, Integer> getColorLibrary(final @NonNull ColorType colorType) {
+        final JsonArray jsonArray = file2JsonArray(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data");
+        if (jsonArray == null || jsonArray.size() <= 0) {
+            return null;
+        }
+
+        final LinkedHashMap<String, Integer> result = new LinkedHashMap<>();
+        final Iterator<JsonElement> objects = jsonArray.iterator();
+
+        while (objects.hasNext()) {
+            final JsonObject jsonObject = objects.next().getAsJsonObject();
+            final String key = jsonObject.get("Key").getAsString();
+            final int value = jsonObject.get("Value").getAsInt();
+            if (!TextUtils.isEmpty(key)) {
+                result.put(key, value);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 保存封面库
+     *
+     * @param library   封面库
+     * @param coverType 封面类型
+     */
+    public synchronized static void saveCoverLibrary(final @NonNull LinkedHashMap<String, String> library, final @NonNull CoverType coverType) {
+        if (library != null && library.size() <= 0) {
+            return;
+        }
+
+        final JsonArray jsonArray = new JsonArray();
+        final Iterator<String> keys = library.keySet().iterator();
+        final Iterator<String> values = library.values().iterator();
+
+        while (keys.hasNext() && values.hasNext()) {
+            final JsonObject jsonObject = new JsonObject();
+            final String value = values.next();
+            final String key = keys.next();
+
+            jsonObject.addProperty("Key", key);
+            jsonObject.addProperty("Value", value);
+            jsonArray.add(jsonObject);
+        }
+
+        jsonArray2File(jsonArray, new File(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data"));
+    }
+
+    /**
+     * 保存封面颜色库
+     *
+     * @param colorType 颜色类型
+     */
+    public synchronized static void saveColorLibrary(final @NonNull LinkedHashMap<String, Integer> library, final @NonNull ColorType colorType) {
+        final JsonArray jsonArray = new JsonArray();
+        final Iterator<String> keys = library.keySet().iterator();
+        final Iterator<Integer> values = library.values().iterator();
+
+        while (keys.hasNext() && values.hasNext()) {
+            final JsonObject jsonObject = new JsonObject();
+            final int value = values.next();
+            final String key = keys.next();
+
+            jsonObject.addProperty("Key", key);
+            jsonObject.addProperty("Value", value);
+            jsonArray.add(jsonObject);
+        }
+
+        jsonArray2File(jsonArray, new File(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data"));
+    }
+
+    /**
      * 检测要获取的字段是否合法
      *
      * @param object 要检测的JsonObject
      * @param key    要获取的key
      * @return 是否合法
      */
-    private static boolean isJsonObjectValid(JsonObject object, String key) {
+    private static boolean isJsonObjectValid(final @NonNull JsonObject object, final @NonNull String key) {
         return object != null && !TextUtils.isEmpty(key) && object.has(key) && object.get(key) != null;
     }
 
@@ -276,20 +362,45 @@ public class JSONHandler {
      * @return 执行结果
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static boolean jsonArray2File(final JsonArray jsonArray, final File target) {
+    private static boolean jsonArray2File(final @NonNull JsonArray jsonArray, final @NonNull File target) {
         //创建字节缓冲数组
         final byte[] buffer = new byte[512];
         //创建字符串字节数组
         byte[] jsonArrayByteArray;
         try {
-            jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
-            if (!target.exists()) {
-                target.createNewFile();
+            //开始检查文件目录的可用性
+            final String parentDirPath = target.getParent();
+
+            //生成文件的父目录路径存在
+            if (!TextUtils.isEmpty(parentDirPath)) {
+
+                final File parentDir = new File(parentDirPath);
+
+                if (parentDir.exists() || parentDir.mkdirs()) {
+                    //只有当父目录存在或创建成功才进行下一步
+                    if (!target.exists()) {
+                        //如果要储存的文件不存在，则创建一个空文件
+                        target.createNewFile();
+                    }
+
+                    //所有需求都满足后读取 JsonArray 的字节
+                    //默认采取 UTF8 编码
+                    jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
+
+                } else {
+                    Logger.error("JsonArray2File", "文件目录不可用");
+                    return false;
+                }
+            } else {
+                Logger.error("JsonArray2File", "文件目录不可用");
+                return false;
             }
         } catch (UnsupportedEncodingException e) {
+
             Logger.error("JsonArray2File", "保存搜索结果数据时UTF-8转码出现异常 , 使用默认编码");
             jsonArrayByteArray = jsonArray.toString().getBytes();
         } catch (IOException e) {
+
             Logger.error("JsonArray2File", "写入文件不存在 且 无法创建写入文件");
             return false;
         }
@@ -322,7 +433,7 @@ public class JSONHandler {
      */
     private static
     @Nullable
-    JsonArray file2JsonArray(final String targetPath) {
+    JsonArray file2JsonArray(final @NonNull String targetPath) {
 
         final File target = new File(targetPath);
         if (!target.exists() || !target.canRead()) {

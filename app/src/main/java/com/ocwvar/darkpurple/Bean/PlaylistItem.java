@@ -27,7 +27,7 @@ public class PlaylistItem {
         this.name = name;
         for (String value : simpleValues) {
             if (value.startsWith("cID_")) {
-                this.firstAudioCoverID = value.replaceFirst("fap_", "");
+                this.firstAudioCoverID = value.replaceFirst("cID_", "");
             } else if (value.startsWith("count_")) {
                 this.count = Integer.parseInt(value.replaceFirst("count_", ""));
             }

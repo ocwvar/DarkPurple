@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
@@ -178,20 +179,25 @@ public class MediaScanner {
         final String source = CoverManager.INSTANCE.getSource(coverType, coverID);
 
         //封面位图对象声明
-        Bitmap coverBitmap;
+        Bitmap coverBitmap = null;
 
         //第一步：
-        //通过使用 Picasso来加载数据源 检查已有的缓存
-        if (source == null) {
-            //当前没有数据源
+        //通过使用 Picasso来加载数据源 检查已有的缓存，如果是从文件解析(coverBytes != null)，则此时 source(缓存位置) 是空的，直接跳到第二步
+        if (TextUtils.isEmpty(source) && coverBytes == null) {
+            //当前没有数据源 并且 没有封面数据
             return;
-        } else if (source.startsWith("content:")) {
+        } else if (!TextUtils.isEmpty(source) && source.startsWith("content:")) {
             //数据源为Uri
-            coverBitmap = Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(source)).get();
-        } else if (source.startsWith("/")) {
+            try {
+                coverBitmap = Picasso.with(AppConfigs.ApplicationContext).load(Uri.parse(source)).get();
+            } catch (Exception ignore) {
+                //Uri获取对应文件失败
+                coverBitmap = null;
+            }
+        } else if (!TextUtils.isEmpty(source) && source.startsWith("/")) {
             //数据源为String路径，需要使用绝对路径
             coverBitmap = Picasso.with(AppConfigs.ApplicationContext).load(CoverManager.INSTANCE.getAbsoluteSource(source)).get();
-        } else {
+        } else if (coverBytes == null) {
             //不支持的数据源类型
             CoverManager.INSTANCE.removeSource(coverType, coverID);
             return;
@@ -203,26 +209,32 @@ public class MediaScanner {
             //先清除原始路径，准备添加缓存路径
             CoverManager.INSTANCE.removeSource(coverType, coverID);
 
-            if (source.startsWith("content:")) {
+            if (!TextUtils.isEmpty(source) && source.startsWith("content:")) {
                 //封面存在于媒体库中
-                coverBitmap = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(), Uri.parse(source));
-            } else if (coverBytes != null && source.startsWith("/")) {
+                try {
+                    coverBitmap = MediaStore.Images.Media.getBitmap(AppConfigs.ApplicationContext.getContentResolver(), Uri.parse(source));
+                } catch (Exception ignore) {
+                    //Uri获取对应文件失败
+                    coverBitmap = null;
+                }
+            } else if (coverBytes != null) {
                 //从字节数组中加载
                 coverBitmap = BitmapFactory.decodeByteArray(coverBytes, 0, coverBytes.length);
             } else {
                 //不支持的数据源类型
                 return;
             }
-
-            //封面缓存，内部已判断位图是否有效
-            final File cachedFile = CoverImage2File.getInstance().makeImage2File(coverType, coverBitmap, coverID);
-            if (cachedFile != null) {
-                //缓存成功，重新设置ID数据
-                CoverManager.INSTANCE.setSource(coverType, coverID, cachedFile.getPath(), true);
-            }
         }
 
         //第三步
+        //封面缓存，内部已判断位图是否有效
+        final File cachedFile = CoverImage2File.getInstance().makeImage2File(coverType, coverBitmap, coverID);
+        if (cachedFile != null) {
+            //缓存成功，重新设置ID数据
+            CoverManager.INSTANCE.setSource(coverType, coverID, cachedFile.getPath(), true);
+        }
+
+        //第四步
         //如果封面位图成功获取，则进行封面颜色计算
         if (coverBitmap != null) {
             //先根据当前封面操作类型来确定操作的颜色类型
@@ -276,8 +288,14 @@ public class MediaScanner {
             ArrayList<SongItem> arrayList = null;
 
             try {
+                //读取所有歌曲数据
                 arrayList = core();
-            } catch (Exception ignored) {
+
+                //保存所有封面数据
+                CoverManager.INSTANCE.asyncUpdateFileCache();
+
+            } catch (Exception e) {
+                Logger.error(TAG, "在从媒体库中获取数据时发生异常：\n" + e);
             }
 
             if (callback == null) {
@@ -349,17 +367,23 @@ public class MediaScanner {
                         //封面ID
                         metadataBuilder.putString(SongItem.SONGITEM_KEY_COVER_ID, filePath);
 
+                        //媒体ID
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, filePath);
+
+                        //媒体Uri
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, FileProvider.getUriForFile(AppConfigs.ApplicationContext, "FProvider", new File(filePath)).toString());
+
                         //标题
                         final String musicTitle = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicTitle) ? fileName : musicTitle);
 
                         //专辑名
                         final String musicAlbum = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicAlbum) ? AppConfigs.UNKNOWN : musicTitle);
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, TextUtils.isEmpty(musicAlbum) ? AppConfigs.UNKNOWN : musicAlbum);
 
                         //作者
                         final String musicArtist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, TextUtils.isEmpty(musicArtist) ? AppConfigs.UNKNOWN : musicTitle);
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, TextUtils.isEmpty(musicArtist) ? AppConfigs.UNKNOWN : musicArtist);
 
                         //封面Uri路径字符串
                         final long albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
@@ -486,7 +510,12 @@ public class MediaScanner {
                 ArrayList<SongItem> arrayList = null;
 
                 try {
+                    //读取所有歌曲数据
                     arrayList = core();
+
+                    //保存所有封面数据
+                    CoverManager.INSTANCE.asyncUpdateFileCache();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -643,6 +672,12 @@ public class MediaScanner {
 
                     //封面ID
                     metadataBuilder.putString(SongItem.SONGITEM_KEY_COVER_ID, filePath);
+
+                    //媒体ID
+                    metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, filePath);
+
+                    //媒体Uri
+                    metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, FileProvider.getUriForFile(AppConfigs.ApplicationContext, "FProvider", new File(filePath)).toString());
 
                     //标题
                     final String musicTitle = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);

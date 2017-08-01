@@ -191,20 +191,32 @@ class MainFrameworkActivity : BaseActivity() {
         } else if (AppConfigs.OS_6_UP && requestPermission.isShown) {
             requestPermission.dismiss()
         }
+
+        val playingSong: SongItem? = ServiceHolder.getInstance().service?.playingSong
+
         //更新当前的头部图像
-        updateHeaderDrawable(CoverProcesser.getBlur(), CoverProcesser.getOriginal())
+        if (CoverProcesser.getLastCompletedCoverID().equals(playingSong?.coverID)) {
+            //当前生成的图像与当前相同
+            updateHeaderDrawable(CoverProcesser.getBlur(), CoverProcesser.getOriginal())
+        } else {
+            updateHeaderDrawable(null, null)
+        }
+
+        //更新当前的播放曲目文字
+        updateHeaderMessage(ServiceHolder.getInstance().service?.playingSong)
+
         //检查封面处理广播接收器
         if (!blurCoverUpdateReceiver.isRegistered) {
             blurCoverUpdateReceiver.isRegistered = true
             registerReceiver(blurCoverUpdateReceiver, blurCoverUpdateReceiver.intentFilter)
         }
-        //更新当前的播放曲目图像
-        updateHeaderMessage(ServiceHolder.getInstance().service?.playingSong)
+
         //检查数据广播接收器
         if (!playingDataUpdateReceiver.isRegistered) {
             playingDataUpdateReceiver.isRegistered = true
             registerReceiver(playingDataUpdateReceiver, playingDataUpdateReceiver.intentFilter)
         }
+
         //获取当前的播放状态，来确定是否显示浮动按钮
         val currentStatus: AudioStatus? = ServiceHolder.getInstance().service?.audioStatus
         if (currentStatus != null && currentStatus != AudioStatus.Error && currentStatus != AudioStatus.Empty) {
