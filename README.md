@@ -18,7 +18,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 - 可自定义均衡器配置 (暂时去掉，等服务完成后重新加入)
 - UI 设计采用 Material Design
 - 可在线搜索设置封面数据 (请阅读下方说明)
-- 有两种频谱动画 , 您也可以自定义频谱动画的柱状粗细与颜色 (下方有预览图)
+- 有两种频谱动画 , 您也可以自定义频谱动画的柱状粗细与颜色 (下方有预览图) 频谱元素有柱状、点状、线状，可以单独开启或关闭
 - **可以进行云端音频的上传、下载、删除 WebAPI服务器项目地址：https://github.com/ocwvar/DarkPurpleService**
 
 ## 关于封面获取功能
