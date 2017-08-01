@@ -1,4 +1,4 @@
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/logo-nv.png) 
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
 # 应用下载 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
 Github：https://github.com/ocwvar/DarkPurple/releases
@@ -95,7 +95,7 @@ CoverBox 的作者为 Henry Hu
 
 ### 频谱动画 (风格1)<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/sp.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/sp1.gif)
 
 ### 频谱动画 (风格2)<p></p>
 
