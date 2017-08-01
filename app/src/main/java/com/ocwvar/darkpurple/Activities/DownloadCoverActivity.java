@@ -26,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ocwvar.darkpurple.Adapters.CoverPreviewAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
@@ -39,6 +38,7 @@ import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverType;
 import com.ocwvar.darkpurple.Units.JSONHandler;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.ocwvar.darkpurple.Units.ToastMaker;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -84,7 +84,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
         if (getIntent().getExtras() != null) {
             songItem = getIntent().getExtras().getParcelable("item");
         } else {
-            Toast.makeText(DownloadCoverActivity.this, R.string.ERROR_songitem, Toast.LENGTH_SHORT).show();
+            ToastMaker.INSTANCE.show(R.string.ERROR_songitem);
             return false;
         }
 
@@ -223,9 +223,12 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
             new File(AppConfigs.DownloadCoversFolder + songItem.getFileName() + ".jpg").delete();
             //清空自定义数据 和 Picasso的缓存
             Picasso.with(DownloadCoverActivity.this).invalidate(CoverManager.INSTANCE.getSource(CoverType.CUSTOM, songItem.getCoverID()));
+            //移除封面库中的数据
             CoverManager.INSTANCE.removeSource(CoverType.CUSTOM, songItem.getCoverID());
+            //异步保存封面设置到文件
+            CoverManager.INSTANCE.asyncUpdateFileCache();
 
-            Toast.makeText(DownloadCoverActivity.this, R.string.recover_successful, Toast.LENGTH_SHORT).show();
+            ToastMaker.INSTANCE.show(R.string.recover_successful);
 
             //设置返回页面结束传递的数据
             Intent intent = new Intent();
@@ -236,6 +239,16 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
             Snackbar.make(findViewById(android.R.id.content), R.string.recover_failed, Snackbar.LENGTH_LONG).show();
         }
 
+    }
+
+    /**
+     * 点击封面预览图
+     *
+     * @param coverPreviewBean 预览图信息Bean
+     */
+    @Override
+    public void onPreviewClick(CoverPreviewBean coverPreviewBean) {
+        new LoadSizesTask(coverPreviewBean).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     /**
@@ -250,19 +263,9 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     }
 
     /**
-     * 点击封面预览图
-     *
-     * @param coverPreviewBean 预览图信息Bean
-     */
-    @Override
-    public void onPreviewClick(CoverPreviewBean coverPreviewBean) {
-        new LoadSizesTask(coverPreviewBean).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-    }
-
-    /**
      * 获取歌曲封面预览图任务
      */
-    final class LoadAllPreviewTask extends AsyncTask<Integer, Integer, ArrayList<CoverPreviewBean>> {
+    private final class LoadAllPreviewTask extends AsyncTask<Integer, Integer, ArrayList<CoverPreviewBean>> {
         final String TAG = "封面搜索任务";
         final String searchText;
 
@@ -668,6 +671,8 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                         CoverManager.INSTANCE.setColorSource(ColorType.CUSTOM, songItem.getCoverID(), getAlbumCoverColor(bitmap), true);
                         //设置自定义封面路径
                         CoverManager.INSTANCE.setSource(CoverType.CUSTOM, songItem.getCoverID(), file.getPath(), true);
+                        //异步保存封面设置到文件
+                        CoverManager.INSTANCE.asyncUpdateFileCache();
                         bitmap.recycle();
                         bitmap = null;
                     }
@@ -699,7 +704,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                 Intent intent = new Intent();
                 intent.putExtra("item", songItem);
                 setResult(DATA_CHANGED, intent);
-                Toast.makeText(DownloadCoverActivity.this, R.string.simple_download_completed, Toast.LENGTH_SHORT).show();
+                ToastMaker.INSTANCE.show(R.string.simple_download_completed);
                 finish();
             }
         }
