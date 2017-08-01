@@ -45,7 +45,7 @@ CoverBox 的作者为 Henry Hu
 - 将现有的音频服务改用 MediaBrowserService →
 - EXO均衡器功能 X
 
-# 截图展示 (2017/6/11 01:04)
+# 截图展示 (2017/8/01 00：52)
 ##### *截图无法展示所有应用的细节*
 
 ### 主界面<p></p>
@@ -79,6 +79,11 @@ CoverBox 的作者为 Henry Hu
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/folder_1.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/folder_2.png)
+
+### 在线浏览下载<p></p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/cloud_list.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/cloud_download.jpg)
 
 ### 封面下载<p></p>
 
