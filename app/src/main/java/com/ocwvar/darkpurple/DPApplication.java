@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple;
 
 import android.app.Application;
 
+import com.netease.nis.bugrpt.CrashHandler;
 import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.EqualizerUnits;
@@ -19,7 +20,7 @@ public class DPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //CrashHandler.init(getApplicationContext());
+        CrashHandler.init(getApplicationContext());
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());
         //Thread.setDefaultUncaughtExceptionHandler(new OCExceptionHandler(this));
 
