@@ -212,36 +212,6 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
     }
 
     /**
-     * 恢复原本的封面
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Override
-    public void onRecoverCover() {
-
-        if (!TextUtils.isEmpty(CoverManager.INSTANCE.getSource(CoverType.CUSTOM, songItem.getCoverID()))) {
-            //删除下载的封面
-            new File(AppConfigs.DownloadCoversFolder + songItem.getFileName() + ".jpg").delete();
-            //清空自定义数据 和 Picasso的缓存
-            Picasso.with(DownloadCoverActivity.this).invalidate(CoverManager.INSTANCE.getSource(CoverType.CUSTOM, songItem.getCoverID()));
-            //移除封面库中的数据
-            CoverManager.INSTANCE.removeSource(CoverType.CUSTOM, songItem.getCoverID());
-            //异步保存封面设置到文件
-            CoverManager.INSTANCE.asyncUpdateFileCache();
-
-            ToastMaker.INSTANCE.show(R.string.recover_successful);
-
-            //设置返回页面结束传递的数据
-            Intent intent = new Intent();
-            intent.putExtra("item", songItem);
-            setResult(DATA_CHANGED, intent);
-            finish();
-        } else {
-            Snackbar.make(findViewById(android.R.id.content), R.string.recover_failed, Snackbar.LENGTH_LONG).show();
-        }
-
-    }
-
-    /**
      * 点击封面预览图
      *
      * @param coverPreviewBean 预览图信息Bean
@@ -673,6 +643,8 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
                         CoverManager.INSTANCE.setSource(CoverType.CUSTOM, songItem.getCoverID(), file.getPath(), true);
                         //异步保存封面设置到文件
                         CoverManager.INSTANCE.asyncUpdateFileCache();
+
+                        //回收位图数据
                         bitmap.recycle();
                         bitmap = null;
                     }

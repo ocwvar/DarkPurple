@@ -47,6 +47,19 @@
         android:textColor="#fff" />
 
     <TextView
+        android:id="@+id/menu_music_cover_remove"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="10dp"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/ic_action_online_cover"
+        android:foreground="?android:selectableItemBackground"
+        android:padding="10dp"
+        android:text="@string/dialog_button_cover_remove"
+        android:textColor="#fff" />
+
+    <TextView
         android:id="@+id/menu_music_online_cover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

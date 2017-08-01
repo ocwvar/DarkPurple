@@ -228,10 +228,14 @@ public class MediaScanner {
 
         //第三步
         //封面缓存，内部已判断位图是否有效
-        final File cachedFile = CoverImage2File.getInstance().makeImage2File(coverType, coverBitmap, coverID);
-        if (cachedFile != null) {
-            //缓存成功，重新设置ID数据
-            CoverManager.INSTANCE.setSource(coverType, coverID, cachedFile.getPath(), true);
+        if (coverBitmap != null && coverType != CoverType.CUSTOM) {
+            //如果是自定义封面则不需要再另外设置缓存，直接使用原有图像路径即可
+
+            final File cachedFile = CoverImage2File.getInstance().makeImage2File(coverType, coverBitmap, coverID);
+            if (cachedFile != null) {
+                //缓存成功，重新设置ID数据
+                CoverManager.INSTANCE.setSource(coverType, coverID, cachedFile.getPath(), true);
+            }
         }
 
         //第四步
@@ -288,6 +292,9 @@ public class MediaScanner {
             ArrayList<SongItem> arrayList = null;
 
             try {
+                //操作前删除所有数据
+                CoverManager.INSTANCE.clearAllLibrary();
+
                 //读取所有歌曲数据
                 arrayList = core();
 
@@ -510,6 +517,9 @@ public class MediaScanner {
                 ArrayList<SongItem> arrayList = null;
 
                 try {
+                    //操作前删除所有数据
+                    CoverManager.INSTANCE.clearAllLibrary();
+
                     //读取所有歌曲数据
                     arrayList = core();
 
@@ -692,7 +702,7 @@ public class MediaScanner {
                     metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, TextUtils.isEmpty(musicArtist) ? AppConfigs.UNKNOWN : musicArtist);
 
                     //检查是否有自定义封面
-                    final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + filePath + ".jpg");
+                    final File customCoverFile = new File(AppConfigs.DownloadCoversFolder + fileName + ".jpg");
                     if (customCoverFile.exists() && customCoverFile.length() > 0) {
                         CoverManager.INSTANCE.setSource(CoverType.CUSTOM, filePath, customCoverFile.getPath(), true);
                     } else {

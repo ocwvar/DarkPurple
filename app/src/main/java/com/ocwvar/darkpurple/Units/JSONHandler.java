@@ -300,6 +300,8 @@ public final class JSONHandler {
      */
     public synchronized static void saveCoverLibrary(final @NonNull LinkedHashMap<String, String> library, final @NonNull CoverType coverType) {
         if (library != null && library.size() <= 0) {
+            //库为空，直接删除数据文件
+            new File(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data").delete();
             return;
         }
 
@@ -326,6 +328,12 @@ public final class JSONHandler {
      * @param colorType 颜色类型
      */
     public synchronized static void saveColorLibrary(final @NonNull LinkedHashMap<String, Integer> library, final @NonNull ColorType colorType) {
+        if (library != null && library.size() <= 0) {
+            //库为空，直接删除数据文件
+            new File(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data").delete();
+            return;
+        }
+
         final JsonArray jsonArray = new JsonArray();
         final Iterator<String> keys = library.keySet().iterator();
         final Iterator<Integer> values = library.values().iterator();

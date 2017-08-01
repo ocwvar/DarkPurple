@@ -36,10 +36,12 @@ import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.Cover.CoverManager
+import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
 import com.ocwvar.darkpurple.Units.Cover.CoverType
 import com.ocwvar.darkpurple.Units.MediaScanner
 import com.ocwvar.darkpurple.Units.PlaylistUnits
 import com.ocwvar.darkpurple.Units.ToastMaker
+import com.squareup.picasso.Picasso
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
@@ -280,8 +282,25 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 view.findViewById<View>(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById<View>(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById<View>(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
-                view.findViewById<View>(R.id.menu_music_online_cover).setOnClickListener(this@ItemMoreDialog)
                 view.findViewById<View>(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
+
+                val removeCover: View = view.findViewById<View>(R.id.menu_music_cover_remove).let {
+                    it.visibility = View.GONE
+                    it.setOnClickListener(this@ItemMoreDialog)
+                    it
+                }
+                val downloadCover: View = view.findViewById<View>(R.id.menu_music_online_cover).let {
+                    it.visibility = View.GONE
+                    it.setOnClickListener(this@ItemMoreDialog)
+                    it
+                }
+                if (!TextUtils.isEmpty(CoverManager.getSource(CoverType.CUSTOM, songData.coverID))) {
+                    //如果当前有自定义封面，则显示移除按钮，否则显示下载按钮
+                    removeCover.visibility = View.VISIBLE
+                } else {
+                    downloadCover.visibility = View.VISIBLE
+                }
+
                 dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
                 dialogKeeper = WeakReference(dialog)
             }
@@ -361,14 +380,47 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                     add2PlaylistDialog?.show(songData)
                     hide()
                 }
+                R.id.menu_music_cover_remove -> {
+                    //恢复原来的封面
+
+                    //删除下载的封面
+                    File(CoverManager.getSource(CoverType.CUSTOM, songData.coverID)!!).delete()
+
+                    //清空自定义数据 和 Picasso的缓存
+                    Picasso.with(fragmentView.context).invalidate(File(CoverManager.getSource(CoverType.CUSTOM, songData.coverID)!!))
+
+                    //移除封面库中的数据
+                    CoverManager.removeSource(CoverType.CUSTOM, songData.coverID)
+                    CoverManager.removeSource(CoverType.BLUR, songData.coverID)
+
+                    //异步保存封面设置到文件
+                    CoverManager.asyncUpdateFileCache()
+
+                    //如果当前正在播放的数据就是当前曲目，需要更新缓存的模糊图像
+                    if (CoverProcesser.getLastCompletedCoverID() == songData.coverID) {
+                        CoverProcesser.handleThis(songData.coverID)
+                    }
+
+                    hide()
+                    //清除对话框缓存，防止按钮不随封面状态变化
+                    dialogKeeper.clear()
+
+                    //重新刷新
+                    recycleView.alpha = 0.3f
+                    recycleView.setOnTouchListener({ _, _ -> true })
+                    MediaScanner.getInstance().start()
+                }
                 R.id.menu_music_online_cover -> {
                     //打开在线封面获取界面
+
                     val bundle: Bundle = Bundle().let {
                         it.putParcelable("item", songData)
                         it
                     }
                     DownloadCoverActivity.startBlurActivityForResultByFragment(10, Color.argb(100, 0, 0, 0), false, this@MusicListFragment, DownloadCoverActivity::class.java, bundle, 10)
                     hide()
+                    //清除对话框缓存，防止按钮不随封面状态变化
+                    dialogKeeper.clear()
                 }
             }
         }

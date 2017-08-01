@@ -41,6 +41,7 @@
     <string name="dialog_button_add2">添加到现有播放列表</string>
     <string name="dialog_button_delete">删除音频</string>
     <string name="dialog_button_cover">从网络获取封面图像</string>
+    <string name="dialog_button_cover_remove">恢复原始封面</string>
     <string name="dialog_button_upload">将歌曲上传至我的云</string>
     <string name="text_dialog_add2_title">选择要存入的列表中</string>
 

@@ -43,20 +43,38 @@ object CoverManager {
     }
 
     /**
+     * 清空库
+     */
+    fun clearAllLibrary() {
+        coverLibrary.clear()
+        customCoverLibrary.clear()
+        blurLibrary.clear()
+        coverColorLibrary.clear()
+        customCoverColorLibrary.clear()
+        File(AppConfigs.DataFolder + "CoverLibrary_" + CoverType.NORMAL.name + ".data").delete()
+        File(AppConfigs.DataFolder + "CoverLibrary_" + CoverType.CUSTOM.name + ".data").delete()
+        File(AppConfigs.DataFolder + "CoverLibrary_" + CoverType.BLUR.name + ".data").delete()
+        File(AppConfigs.DataFolder + "ColorLibrary_" + ColorType.NORMAL.name + ".data").delete()
+        File(AppConfigs.DataFolder + "ColorLibrary_" + ColorType.CUSTOM.name + ".data").delete()
+    }
+
+    /**
      * 异步保存所有数据
      */
     fun asyncUpdateFileCache() {
-        //直接创建线程，不需要关心结果
-        Thread(Runnable {
-            //保存封面
-            JSONHandler.saveCoverLibrary(coverLibrary, CoverType.NORMAL)
-            JSONHandler.saveCoverLibrary(customCoverLibrary, CoverType.CUSTOM)
-            JSONHandler.saveCoverLibrary(blurLibrary, CoverType.BLUR)
+        synchronized(this@CoverManager, {
+            //直接创建线程，不需要关心结果
+            Thread(Runnable {
+                //保存封面
+                JSONHandler.saveCoverLibrary(coverLibrary, CoverType.NORMAL)
+                JSONHandler.saveCoverLibrary(customCoverLibrary, CoverType.CUSTOM)
+                JSONHandler.saveCoverLibrary(blurLibrary, CoverType.BLUR)
 
-            //保存颜色
-            JSONHandler.saveColorLibrary(coverColorLibrary, ColorType.NORMAL)
-            JSONHandler.saveColorLibrary(customCoverColorLibrary, ColorType.CUSTOM)
-        }).start()
+                //保存颜色
+                JSONHandler.saveColorLibrary(coverColorLibrary, ColorType.NORMAL)
+                JSONHandler.saveColorLibrary(customCoverColorLibrary, ColorType.CUSTOM)
+            }).start()
+        })
     }
 
     /**
@@ -140,13 +158,13 @@ object CoverManager {
             CoverType.CUSTOM -> {
                 if (customCoverLibrary.containsKey(key)) {
                     customCoverLibrary.remove(key)
-                    customCoverLibrary.remove(key)
+                    customCoverColorLibrary.remove(key)
                 }
             }
 
             CoverType.BLUR -> {
-                if (coverLibrary.containsKey(key)) {
-                    coverLibrary.remove(key)
+                if (blurLibrary.containsKey(key)) {
+                    blurLibrary.remove(key)
                 }
             }
         }
@@ -242,9 +260,9 @@ object CoverManager {
      * @return  存在则返回对应的颜色，否则返回默认封面颜色
      */
     fun getValidColor(key: String?): Int {
-        val color: Int = getColor(ColorType.NORMAL, key)
+        val color: Int = getColor(ColorType.CUSTOM, key)
         if (color == AppConfigs.Color.DefaultCoverColor) {
-            return getColor(ColorType.CUSTOM, key)
+            return getColor(ColorType.NORMAL, key)
         } else {
             return color
         }
