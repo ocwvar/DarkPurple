@@ -77,24 +77,24 @@ CoverBox 的作者为 Henry Hu
 
 ### 扫描目录设置<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/folder_1.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/folder_2.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/folder_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/folder_2.png)
 
 ### 封面下载<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/cover.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/cover.jpg)
 
 ### 均衡器设置<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/eq.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/eq.png)
 
 ### 频谱动画 (风格1)<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/sp.gif)
 
 ### 频谱动画 (风格2)<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/sp2.gif)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/sp2.gif)
 
 ---
 
