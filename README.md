@@ -21,7 +21,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 - 有两种频谱动画 , 您也可以自定义频谱动画的柱状粗细与颜色 (下方有预览图)
 - **可以进行云端音频的上传、下载、删除 WebAPI服务器项目地址：https://github.com/ocwvar/DarkPurpleService**
 
-##### 关于封面获取功能
+## 关于封面获取功能
 封面数据源自:coverbox.sinaapp.com , DarkPurple 的封面获取功能就是解析自此网站
 
 CoverBox 的作者为 Henry Hu
@@ -45,7 +45,7 @@ CoverBox 的作者为 Henry Hu
 - 将现有的音频服务改用 MediaBrowserService →
 - EXO均衡器功能 X
 
-##### APP截图 (2017/6/11 01:04)
+# 截图展示 (2017/6/11 01:04)
 ##### *截图无法展示所有应用的细节*
 
 ### 主界面<p></p>
