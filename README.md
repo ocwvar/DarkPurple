@@ -50,32 +50,35 @@ CoverBox 的作者为 Henry Hu
 
 ### 主界面<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_1.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_2.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_3.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_4.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/musiclist_5.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/main_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/main_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/main_3.png)
 
 ### 播放列表<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_1.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_2.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_detail.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_3.jpg)
 
 ### 播放界面<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_1.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_3.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_5.png)
 
-### 基础设置<p></p>
+### 设置<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_1.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_3.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_4.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_5.png)
 
 ### 扫描目录设置<p></p>
 
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/scan.jpg)
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/scan_2.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/folder_1.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/folder_2.jpg)
 
 ### 封面下载<p></p>
 
@@ -84,14 +87,6 @@ CoverBox 的作者为 Henry Hu
 ### 均衡器设置<p></p>
 
 ![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/eq.jpg)
-
-### 主题设置功能<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_theme.jpg)
-
-### 频谱设置<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/master/app/showcase/screenshots/setting_sp.jpg)
 
 ### 频谱动画 (风格1)<p></p>
 
