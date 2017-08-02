@@ -98,7 +98,7 @@ class PlayerController : IController {
      * 播放指定媒体数据
      *
      * @param   source  媒体数据
-     * @param   isPlayWhenReady 是否缓冲好数据好就进行播放
+     * @param   isPlayWhenReady 是否缓冲好数据好就进行播放，默认=True
      */
     override fun play(source: SongItem?, isPlayWhenReady: Boolean) {
         source ?: return
@@ -109,11 +109,12 @@ class PlayerController : IController {
      * 播放媒体库指定的位置
      *
      * @param   index   要播放的位置，位置无效无法播放
+     * @param   isPlayWhenReady 是否缓冲好数据好就进行播放，默认=True
      */
-    override fun play(index: Int) {
+    override fun play(index: Int, isPlayWhenReady: Boolean) {
         if (this.usingLibrary.size > 0 && index < 0 || index >= this.usingLibrary.size) {
             //播放的位置有效
-            play(this.usingLibrary[index])
+            play(this.usingLibrary[index], isPlayWhenReady)
         }
     }
 

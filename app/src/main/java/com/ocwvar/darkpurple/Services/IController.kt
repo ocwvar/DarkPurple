@@ -46,7 +46,7 @@ interface IController {
      * 播放指定媒体数据
      *
      * @param   source  媒体数据
-     * @param   isPlayWhenReady 是否缓冲好数据好就进行播放
+     * @param   isPlayWhenReady 是否缓冲好数据好就进行播放，默认=True
      */
     fun play(source: SongItem?, isPlayWhenReady: Boolean = true)
 
@@ -54,8 +54,9 @@ interface IController {
      * 播放媒体库指定的位置
      *
      * @param   index   要播放的位置，位置无效无法播放
+     * @param   isPlayWhenReady 是否缓冲好数据好就进行播放，默认=True
      */
-    fun play(index: Int)
+    fun play(index: Int, isPlayWhenReady: Boolean = true)
 
     /**
      * 1.播放已缓冲好的媒体数据
