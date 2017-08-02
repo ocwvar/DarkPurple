@@ -16,6 +16,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.AudioStatus
@@ -33,7 +34,7 @@ import java.nio.ByteBuffer
  * File Location com.ocwvar.darkpurple.Services.Core
  * This file use to :   Google ExoPlayer2 播放方案
  */
-class EXOCORE(val applicationContext: Context) : IPlayer {
+class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) : IPlayer {
 
     private val TAG: String = "EXO_CORE"
     private val exoPlayer: SimpleExoPlayer
@@ -88,7 +89,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
      * @return 执行结果
      */
     override fun resume(): Boolean {
-        if (exoPlayer.playbackState == ExoPlayer.STATE_READY) {
+        if (exoPlayer.playbackState == Player.STATE_READY) {
             //如果当前core已经装载有音频数据，则开始播放
             exoPlayer.playWhenReady = true
             applicationContext.sendBroadcast(Intent(AudioService.AUDIO_RESUMED))
@@ -103,7 +104,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
      * @return 执行结果
      */
     override fun pause(): Boolean {
-        if (exoPlayer.playbackState == ExoPlayer.STATE_READY) {
+        if (exoPlayer.playbackState == Player.STATE_READY) {
             //如果当前core已经装载有音频数据，则可以执行暂停操作
             exoPlayer.playWhenReady = false
             applicationContext.sendBroadcast(Intent(AudioService.AUDIO_PAUSED))
@@ -120,7 +121,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
     override fun release(): Boolean {
         exoPlayer.stop()
         //执行完成后如果状态为静止，则表明释放成功
-        return exoPlayer.playbackState == ExoPlayer.STATE_IDLE
+        return exoPlayer.playbackState == Player.STATE_IDLE
     }
 
     /**
@@ -128,7 +129,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
      * @return 当前位置，异常返回 0
      */
     override fun playingPosition(): Double {
-        if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
+        if (exoPlayer.playbackState != Player.STATE_IDLE) {
             //当前音频资源不为空，则可以返回数据
             return exoPlayer.currentPosition / 1000.0
         } else {
@@ -141,7 +142,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
      * @return 执行结果
      */
     override fun seekPosition(position: Long): Boolean {
-        if (exoPlayer.playbackState != ExoPlayer.STATE_IDLE) {
+        if (exoPlayer.playbackState != Player.STATE_IDLE) {
             //当前音频资源不为空，可以进行播放位置调整
             exoPlayer.seekTo(position * 1000)
             return true
@@ -362,7 +363,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
     /**
      * 播放器状态回调
      */
-    private inner class ExoPlayerCallback : ExoPlayer.EventListener, ExtractorMediaSource.EventListener {
+    private inner class ExoPlayerCallback : Player.EventListener, ExtractorMediaSource.EventListener {
 
         override fun onRepeatModeChanged(repeatMode: Int) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -390,7 +391,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
             val need2UpdateNotification: Boolean
 
             when (playbackState) {
-                ExoPlayer.STATE_ENDED -> {
+                Player.STATE_ENDED -> {
                     need2UpdateNotification = false
                     currentAudioStatus = AudioStatus.Buffering
                     if (playWhenReady) {
@@ -400,7 +401,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
                     }
                 }
 
-                ExoPlayer.STATE_READY -> {
+                Player.STATE_READY -> {
                     need2UpdateNotification = true
                     Logger.warnning(TAG, "状态变更：音频加载完成")
                     //更新状态
@@ -416,7 +417,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
                     Logger.warnning(TAG, "音频长度：$loadedSourceDuration")
                 }
 
-                ExoPlayer.STATE_BUFFERING -> {
+                Player.STATE_BUFFERING -> {
                     need2UpdateNotification = false
                     Logger.warnning(TAG, "状态变更：音频正在缓冲")
                     //更新状态
@@ -427,7 +428,7 @@ class EXOCORE(val applicationContext: Context) : IPlayer {
                     loadedSourceDuration = 0L
                 }
 
-                ExoPlayer.STATE_IDLE -> {
+                Player.STATE_IDLE -> {
                     need2UpdateNotification = false
                     //更新状态
                     currentAudioStatus = AudioStatus.Empty
