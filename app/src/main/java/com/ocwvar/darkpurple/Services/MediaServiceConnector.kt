@@ -94,6 +94,11 @@ class MediaServiceConnector(val activity: Activity, val callback: Callbacks? = n
     }
 
     /**
+     * @return 当前音频播放状态，无效为：PlaybackStateCompat.STATE_ERROR
+     */
+    fun currentState(): Int = MediaControllerCompat.getMediaController(activity)?.playbackState?.state ?: PlaybackStateCompat.STATE_ERROR
+
+    /**
      * 发送指令到媒体服务
      * @param   commandAction   服务的Action
      * @param   extra   附带的数据

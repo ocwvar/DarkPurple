@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Units.MediaLibrary
 
+import android.text.TextUtils
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Bean.SongItem
 
@@ -17,6 +18,34 @@ object MediaLibrary {
 
     //播放列表媒体库
     private val playlistLibrary: ArrayList<PlaylistItem> = ArrayList()
+
+    //当前使用的媒体库TAG，主媒体库=MAIN，播放列表媒体库=播放列表名称
+    private var usingLibraryTAG: String = ""
+
+    //当前正在使用的媒体索引编号
+    private var usingIndex: Int = -1
+
+    /**
+     * 更新当前正在使用的媒体库TAG
+     *
+     * @param   libraryTAG  要更新的媒体库TAG
+     */
+    fun updateUsingLibraryTAG(libraryTAG: String) {
+        if (this.usingLibraryTAG != libraryTAG) {
+            this.usingLibraryTAG = libraryTAG
+        }
+    }
+
+    /**
+     * 更新正在使用的媒体索引编号
+     *
+     * @param   usingIndex  正在使用的媒体索引编号
+     */
+    fun updateUsingIndex(usingIndex: Int) {
+        if (this.usingIndex != usingIndex) {
+            this.usingIndex = usingIndex
+        }
+    }
 
     /**
      * 更新主媒体库内容
@@ -45,6 +74,36 @@ object MediaLibrary {
     }
 
     /**
+     * 获取当前正在使用的媒体数据
+     * @return  媒体数据，不可用时返回 NULL
+     */
+    fun getUsingMedia(): SongItem? {
+        if (TextUtils.isEmpty(this.usingLibraryTAG) || this.usingIndex < 0) {
+            //没有有效的查询数据
+            return null
+        }
+        //结果数组声明
+        val usingLibrary: ArrayList<SongItem>?
+
+        if (this.usingLibraryTAG == "MAIN") {
+            //主媒体库
+            usingLibrary = mainLibrary
+        } else {
+            //查找对应的播放列表
+            usingLibrary = playlistLibrary.find { it.name == this.usingLibraryTAG }?.playlist
+        }
+
+        usingLibrary?.let {
+            if (it.size > 0 && this.usingIndex >= 0 && this.usingIndex < it.size) {
+                //在有效范围内
+                return it[this.usingIndex]
+            }
+        }
+
+        return null
+    }
+
+    /**
      * @return  主媒体库
      */
     fun getMainLibrary(): ArrayList<SongItem> = this.mainLibrary
@@ -53,5 +112,10 @@ object MediaLibrary {
      * @return  播放列表媒体库
      */
     fun getPlaylistLibrary(): ArrayList<PlaylistItem> = this.playlistLibrary
+
+    /**
+     * @return  当前正在使用的媒体库TAG
+     */
+    fun getUsingLibraryTAG(): String = this.usingLibraryTAG
 
 }

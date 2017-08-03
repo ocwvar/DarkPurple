@@ -2,19 +2,23 @@ package com.ocwvar.darkpurple.Activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.os.PersistableBundle
 import android.provider.Settings
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
+import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -27,13 +31,11 @@ import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
 import com.ocwvar.darkpurple.FragmentPages.PlaylistFragment
 import com.ocwvar.darkpurple.FragmentPages.UserFragment
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Services.AudioService
-import com.ocwvar.darkpurple.Services.AudioStatus
+import com.ocwvar.darkpurple.Services.AudioCore.ICore
 import com.ocwvar.darkpurple.Services.MediaServiceConnector
-import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.BaseActivity
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
-import com.ocwvar.darkpurple.Units.ToastMaker
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 import java.lang.ref.WeakReference
 
 /**
@@ -123,14 +125,12 @@ class MainFrameworkActivity : BaseActivity() {
 
         this.floatingActionButton.setOnClickListener {
             //点击主界面上的Floating Action Button事件
-            if (ServiceHolder.getInstance().service?.audioStatus != AudioStatus.Empty) {
+            val currentState: Int = serviceConnector.currentState()
+            if (currentState != PlaybackStateCompat.STATE_NONE && currentState != PlaybackStateCompat.STATE_ERROR) {
                 //转跳到播放界面
                 startActivity(Intent(this@MainFrameworkActivity, PlayingActivity::class.java))
             }
         }
-
-        //初始化音频服务
-        onSetupService()
 
         //尝试获取上一次的页面位置
         val lastPage: String? = savedInstanceState?.getString("LastPage", null)
@@ -153,43 +153,6 @@ class MainFrameworkActivity : BaseActivity() {
         }
     }
 
-    /**
-     * 启动音频服务
-     */
-    private fun onSetupService() {
-        if (ServiceHolder.getInstance().service == null) {
-            //如果当前没有获取到服务对象 , 则创建一个保存
-            val serviceConnection = object : ServiceConnection {
-                override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder?) {
-                    //当服务连接上的时候
-                    if (iBinder != null) {
-                        //获取服务对象
-                        val service = (iBinder as AudioService.ServiceObject).service
-                        if (service != null) {
-                            //如果获取服务成功 , 则保存到全局储存器中 , 然后解除绑定
-                            ServiceHolder.getInstance().service = service
-                            ToastMaker.show(R.string.message_service_ok)
-                        } else {
-                            //否则提示用户
-                            ToastMaker.show(R.string.ERROR_SERVICE_CREATE)
-                        }
-                        unbindService(this)
-                    }
-                }
-
-                override fun onServiceDisconnected(componentName: ComponentName) {
-                    //当服务断开连接的时候 , 将全局储存器中的对象置为 NULL
-                    ServiceHolder.getInstance().service = null
-                }
-            }
-
-            //开始连接服务
-            val intent = Intent(this@MainFrameworkActivity, AudioService::class.java)
-            startService(intent)
-            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         //检查文件读写权限
@@ -200,12 +163,13 @@ class MainFrameworkActivity : BaseActivity() {
         }
 
         //// 测试——连接媒体服务
-        //this.serviceConnector.connect()
+        this.serviceConnector.connect()
 
-        val playingSong: SongItem? = ServiceHolder.getInstance().service?.playingSong
+        //获取当前正在使用的媒体数据
+        val playingSong: SongItem? = MediaLibrary.getUsingMedia()
 
         //更新当前的头部图像
-        if (CoverProcesser.getLastCompletedCoverID().equals(playingSong?.coverID)) {
+        if (CoverProcesser.getLastCompletedCoverID() == playingSong?.coverID) {
             //当前生成的图像与当前相同
             updateHeaderDrawable(CoverProcesser.getBlur(), CoverProcesser.getOriginal())
         } else {
@@ -213,7 +177,7 @@ class MainFrameworkActivity : BaseActivity() {
         }
 
         //更新当前的播放曲目文字
-        updateHeaderMessage(ServiceHolder.getInstance().service?.playingSong)
+        updateHeaderMessage(playingSong)
 
         //检查封面处理广播接收器
         if (!blurCoverUpdateReceiver.isRegistered) {
@@ -228,8 +192,8 @@ class MainFrameworkActivity : BaseActivity() {
         }
 
         //获取当前的播放状态，来确定是否显示浮动按钮
-        val currentStatus: AudioStatus? = ServiceHolder.getInstance().service?.audioStatus
-        if (currentStatus != null && currentStatus != AudioStatus.Error && currentStatus != AudioStatus.Empty) {
+        val currentState: Int = serviceConnector.currentState()
+        if (currentState != PlaybackStateCompat.STATE_ERROR && currentState != PlaybackStateCompat.STATE_NONE) {
             floatingActionButton.show()
         } else {
             floatingActionButton.hide()
@@ -239,7 +203,7 @@ class MainFrameworkActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
         //// 测试 —— 断开媒体服务
-        //this.serviceConnector.disConnect()
+        this.serviceConnector.disConnect()
     }
 
     override fun onPause() {
@@ -347,7 +311,12 @@ class MainFrameworkActivity : BaseActivity() {
         //处理头部模糊背景部分的图像加载
         val animeDrawable: TransitionDrawable
         if (blurDrawable == null) {
-            animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, this@MainFrameworkActivity.resources.getDrawable(R.drawable.blur)))
+            if (Build.VERSION.SDK_INT >= 22) {
+                animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, this@MainFrameworkActivity.getDrawable(R.drawable.blur)))
+            } else {
+                @Suppress("DEPRECATION")
+                animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, this@MainFrameworkActivity.resources.getDrawable(R.drawable.blur)))
+            }
         } else {
             animeDrawable = TransitionDrawable(arrayOf(headShower.drawable, blurDrawable))
         }
@@ -386,6 +355,7 @@ class MainFrameworkActivity : BaseActivity() {
      * 更新首页头部歌曲信息
      * @param   songData    要更新的音频数据，如果没有数据则传入NULL
      */
+    @SuppressLint("SetTextI18n")
     private fun updateHeaderMessage(songData: SongItem?) {
         if (songData == null) {
             //显示默认数据
@@ -434,14 +404,14 @@ class MainFrameworkActivity : BaseActivity() {
      */
     private inner class PlayingDataUpdateReceiver : BroadcastReceiver() {
 
-        val intentFilter: IntentFilter = IntentFilter(AudioService.NOTIFICATION_UPDATE)
+        val intentFilter: IntentFilter = IntentFilter(ICore.ACTIONS.CORE_ACTION_READY)
         var isRegistered: Boolean = false
 
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
             when (intent.action) {
-                AudioService.NOTIFICATION_UPDATE -> {
-                    updateHeaderMessage(ServiceHolder.getInstance().service?.playingSong)
+                ICore.ACTIONS.CORE_ACTION_READY -> {
+                    updateHeaderMessage(MediaLibrary.getUsingMedia())
                     if (!floatingActionButton.isShown) {
                         floatingActionButton.show()
                     }

@@ -86,6 +86,10 @@ class PlayerController : IController {
         this.currentLibraryTAG = libraryTAG
         this.currentIndex = 0
 
+        //更新当前使用的数据
+        MediaLibrary.updateUsingLibraryTAG(this.currentLibraryTAG)
+        MediaLibrary.updateUsingIndex(this.currentIndex)
+
         return true
     }
 
@@ -120,6 +124,9 @@ class PlayerController : IController {
         if (this.usingLibrary.size > 0 && (index == 0 || index < this.usingLibrary.size)) {
             //播放的位置有效
             this.currentIndex = index
+            //更新使用位置
+            MediaLibrary.updateUsingIndex(this.currentIndex)
+
             play(this.usingLibrary[index], isPlayWhenReady)
         }
     }

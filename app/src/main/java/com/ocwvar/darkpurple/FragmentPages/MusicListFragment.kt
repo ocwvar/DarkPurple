@@ -23,7 +23,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ListView
 import com.ocwvar.darkpurple.Activities.DownloadCoverActivity
-import com.ocwvar.darkpurple.Activities.PlayingActivity
 import com.ocwvar.darkpurple.Adapters.MusicListAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
@@ -35,6 +34,7 @@ import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
+import com.ocwvar.darkpurple.Services.MediaPlayerService
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.Cover.CoverManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
@@ -205,15 +205,15 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      * @param   itemView    条目的View对象
      */
     override fun onListClick(songData: SongItem, position: Int, itemView: View) {
-        ServiceHolder.getInstance().service?.let {
-            ////测试 —— 使用媒体服务播放
-            /* sendCommand(MediaPlayerService.COMMAND.COMMAND_PLAY_LIBRARY, Bundle().let {
-                 it.putString(MediaPlayerService.COMMAND_EXTRA.ARG_STRING_LIBRARY_NAME, "MAIN")
-                 it.putInt(MediaPlayerService.COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, position)
-                 it
-             })*/
+        ////测试 —— 使用媒体服务播放
+        sendCommand(MediaPlayerService.COMMAND.COMMAND_PLAY_LIBRARY, Bundle().let {
+            it.putString(MediaPlayerService.COMMAND_EXTRA.ARG_STRING_LIBRARY_NAME, "MAIN")
+            it.putInt(MediaPlayerService.COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, position)
+            it
+        })
 
-            if (it.play(adapter.source(), position)) {
+        ServiceHolder.getInstance().service?.let {
+            /*if (it.play(adapter.source(), position)) {
                 //播放成功
                 if (AppConfigs.isAutoSwitchPlaying) {
                     //如果设置为自动跳转到播放界面，则进行跳转
@@ -222,7 +222,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             } else {
                 //播放失败
                 ToastMaker.show(R.string.message_play_error)
-            }
+            }*/
         }
     }
 

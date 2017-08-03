@@ -15,6 +15,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.view.KeyEvent
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
 
 /**
  * Project DarkPurple
@@ -152,6 +153,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private fun updateMediaMetadata() {
         //设置当前MediaSession使用中的媒体数据
         this.mediaSession.setMetadata(this.iController.usingLibrary()[this.iController.currentIndex()].mediaMetadata)
+
+        //更新封面效果
+        CoverProcesser.handleThis(this.iController.usingLibrary()[this.iController.currentIndex()].coverID)
 
         //根据当前状态设置MediaSession是否已激活
         val state: Int = this.iController.currentState()
