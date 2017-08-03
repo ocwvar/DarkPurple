@@ -129,7 +129,7 @@ public class SongItem implements Parcelable {
         return TextUtils.isEmpty(result) ? AppConfigs.UNKNOWN : result;
     }
 
-    public long getLength() {
+    public long getDuration() {
         return this.mediaMetadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
     }
 

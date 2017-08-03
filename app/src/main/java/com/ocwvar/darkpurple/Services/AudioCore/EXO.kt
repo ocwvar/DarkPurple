@@ -221,9 +221,10 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
                     exoPlayer.playWhenReady = false
                     currentState = PlaybackStateCompat.STATE_PAUSED
                 }
-            } else if (isMediaReady && playbackState == Player.STATE_ENDED) {
+            } else if (isMediaReady && ((playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE))) {
                 //媒体播放完成
 
+                currentState = PlaybackStateCompat.STATE_NONE
                 sendBroadcast(ICore.ACTIONS.CORE_ACTION_COMPLETED)
             }
         }

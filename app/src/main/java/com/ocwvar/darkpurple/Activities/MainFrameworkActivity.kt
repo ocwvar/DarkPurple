@@ -203,7 +203,7 @@ class MainFrameworkActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
         //// 测试 —— 断开媒体服务
-        this.serviceConnector.disConnect()
+
     }
 
     override fun onPause() {

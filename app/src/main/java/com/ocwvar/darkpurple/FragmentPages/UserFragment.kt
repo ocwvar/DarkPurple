@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.FragmentPages
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -81,6 +82,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
     fun showSortDialog() {
         val sp = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext)
         val position: Int = sp.getString("scanner_sort_type", "0").toInt()
+        @SuppressLint("CommitPrefEdits")
         val dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
                 .setSingleChoiceItems(R.array.sort_types_name, position) { dialog, which ->
                     //更新SP文件数据

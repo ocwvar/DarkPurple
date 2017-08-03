@@ -248,6 +248,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         override fun onSeekTo(pos: Long) {
             iController.seek2(pos)
+            updateMediaMetadata()
         }
 
         //////////////////其他指令////////////////////
@@ -342,6 +343,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //播放完成
                 ICore.ACTIONS.CORE_ACTION_COMPLETED -> {
                     updateMediaMetadata()
+                    mediaSessionCallback.onSkipToNext()
                 }
 
             //媒体资源被 停止

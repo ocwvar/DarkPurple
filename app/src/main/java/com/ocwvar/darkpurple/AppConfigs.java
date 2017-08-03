@@ -46,7 +46,7 @@ public class AppConfigs {
     public final static String CACHE_NAME = ".cached";
 
     //通过封面轮播切换歌曲等待时间
-    public static final long switchPending = 600;
+    public static final long switchPending = 500;
 
     //未知文字占位资源
     public static String UNKNOWN = "未知";

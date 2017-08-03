@@ -3,6 +3,8 @@ package com.ocwvar.darkpurple.Services
 import android.app.Activity
 import android.content.ComponentName
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -77,11 +79,21 @@ class MediaServiceConnector(val activity: Activity, val callback: Callbacks? = n
 
     /**
      * 连接媒体服务
+     *
+     * @return  是否在 500ms 内连接成功
      */
-    fun connect() {
+    fun connect(): Boolean {
         if (!this.mediaService.isConnected) {
             this.mediaService.connect()
+            var timeoutCount: Int = 5
+            while (!this.mediaService.isConnected && --timeoutCount > 0) {
+                //等待服务连接结果
+                Thread.sleep(100)
+            }
+
+            return mediaService.isConnected
         }
+        return true
     }
 
     /**
@@ -92,6 +104,11 @@ class MediaServiceConnector(val activity: Activity, val callback: Callbacks? = n
             this.mediaService.disconnect()
         }
     }
+
+    /**
+     * @return  当前媒体服务是否已经处于连接状态
+     */
+    fun isServiceConnected(): Boolean = this.mediaService.isConnected
 
     /**
      * @return 当前音频播放状态，无效为：PlaybackStateCompat.STATE_ERROR
@@ -167,7 +184,7 @@ class MediaServiceConnector(val activity: Activity, val callback: Callbacks? = n
             //开始订阅服务
             mediaService.subscribe(ROOT_ID, serviceSubscription)
 
-            callback?.onServiceConnected()
+            callback?.let { Handler(Looper.getMainLooper()).postDelayed({ callback.onServiceConnected() }, 500) }
         }
 
         //当服务断开连接

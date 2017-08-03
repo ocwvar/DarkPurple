@@ -16,8 +16,13 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -40,12 +45,13 @@ import com.ocwvar.darkpurple.Adapters.SlidingListAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Services.AudioService;
-import com.ocwvar.darkpurple.Services.AudioStatus;
-import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Services.AudioCore.ICore;
+import com.ocwvar.darkpurple.Services.MediaPlayerService;
+import com.ocwvar.darkpurple.Services.MediaServiceConnector;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 import com.ocwvar.darkpurple.Units.SurfaceViewController;
 import com.ocwvar.darkpurple.widgets.CoverShowerViewPager;
 import com.ocwvar.darkpurple.widgets.CoverSpectrum;
@@ -55,6 +61,7 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -108,8 +115,8 @@ public class PlayingActivity
     Date date;
     //当前播放的歌曲信息列表
     ArrayList<SongItem> playingList;
-    //音频服务
-    private AudioService audioService;
+    //媒体服务连接器
+    private MediaServiceConnector serviceConnector;
     //背景模糊图片弱引用
     private WeakReference<Drawable> blurBG = new WeakReference<>(null);
     //背景模糊图片处理线程弱引用
@@ -118,6 +125,10 @@ public class PlayingActivity
     private WeakReference<TransitionDrawable> weakAnimDrawable = new WeakReference<>(null);
     //主按钮动画Drawable弱引用
     private WeakReference<TransitionDrawable> mainButtonAnimDrawable = new WeakReference<>(null);
+
+    // TODO: 17-8-4 1.最后一个媒体数据完成时有异常
+    // TODO: 17-8-4 2.暂停按钮的触摸逻辑改善
+    // TODO: 17-8-4 3.添加频谱
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -146,6 +157,7 @@ public class PlayingActivity
 
         //初始化对象
         seekBarController = new SeekBarController();
+        serviceConnector = new MediaServiceConnector(PlayingActivity.this, new ServiceCallback());
         date = new Date();
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
         audioChangeReceiver = new AudioChangeReceiver();
@@ -178,6 +190,7 @@ public class PlayingActivity
 
         //设置频谱的控制器
         spectrumSwitch.setOnClickListener(this);
+        spectrumSwitch.setTag("off");
         coverSpectrum.setZOrderOnTop(true);
         coverSpectrum.getHolder().addCallback(surfaceViewController);
 
@@ -210,12 +223,11 @@ public class PlayingActivity
         //设置滚动条的相关操作
         musicSeekBar.setOnSlidingCallback(seekBarController);
 
-        //获取服务对象
-        audioService = ServiceHolder.getInstance().getService();
-
-        if (audioService != null && audioService.getPlayingList() != null) {
+        //添加正在使用的媒体库数据到侧滑菜单中
+        final ArrayList<SongItem> usingLibrary = MediaLibrary.INSTANCE.getUsingLibrary();
+        if (usingLibrary != null) {
             this.playingList.clear();
-            this.playingList.addAll(audioService.getPlayingList());
+            this.playingList.addAll(usingLibrary);
             showerAdapter.notifyDataSetChanged();
 
             slidingListAdapter.setSongItems(this.playingList);
@@ -244,13 +256,22 @@ public class PlayingActivity
     @Override
     protected void onResume() {
         super.onResume();
-        updateInformation(audioService == null);
+        serviceConnector.connect();
+
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
-        if (audioService.getAudioStatus() == AudioStatus.Paused) {
-            //如果一切换回当前页面，音频状态是暂停，则显示黑色背景
+
+        //如果一切换回当前页面，音频状态是暂停，则显示黑色背景
+        final int currentState = serviceConnector.currentState();
+        if (currentState == PlaybackStateCompat.STATE_PAUSED || currentState == PlaybackStateCompat.STATE_STOPPED) {
             switchDarkAnime(true);
             switchMainButtonAnim(true);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        serviceConnector.disConnect();
     }
 
     /**
@@ -264,6 +285,7 @@ public class PlayingActivity
     protected void onPause() {
         super.onPause();
         unregisterReceiver(audioChangeReceiver);
+
         if (updatingTimerThread != null) {
             updatingTimerThread.interrupt();
             updatingTimerThread = null;
@@ -342,16 +364,31 @@ public class PlayingActivity
 
         } else {
             //否则显示歌曲信息
-            if (audioService != null && audioService.getPlayingIndex() >= 0) {
-                //如果当前有播放数据
+
+            final boolean state = serviceConnector.isServiceConnected();
+            System.out.println(state);
+
+            //获取当前正在显示的媒体位置索引
+            final int usingIndex = MediaLibrary.INSTANCE.getUsingIndex();
+
+            if (usingIndex >= 0 && serviceConnector.isServiceConnected()) {
+                //如果当前有播放数据，并且服务已经连接
 
                 //设置Toolbar上的数据
-                setTitle("当前播放序列: " + (audioService.getPlayingIndex() + 1) + " / " + audioService.getPlayingList().size());
+                setTitle("当前播放序列: " + (usingIndex + 1) + " / " + this.playingList.size());
 
                 //设置当前封面
-                coverShower.setCurrentItem(audioService.getPlayingIndex());
+                coverShower.setCurrentItem(usingIndex);
 
-                SongItem playingSong = playingList.get(audioService.getPlayingIndex());
+                //从本地缓存的媒体库中获取当前要显示的媒体数据
+                final SongItem playingSong = this.playingList.get(usingIndex);
+                //当前播放状态
+                final int currentState = serviceConnector.currentState();
+                //当前的播放位置
+                final long currentPosition = MediaControllerCompat.getMediaController(PlayingActivity.this).getPlaybackState().getPosition();
+                //媒体长度
+                final long mediaDuration = playingSong.getDuration();
+
                 //设置歌曲名称显示
                 title.setText(String.format("%s %s", getString(R.string.main_header_title), playingSong.getTitle()));
                 //设置歌手名称显示
@@ -363,15 +400,15 @@ public class PlayingActivity
                 //设置需要重置歌曲长度标记
                 musicSeekBar.setTag(true);
                 //设置当前播放的时间
-                currentTime.setText(time2String(audioService.getPlayingPosition()));
+                currentTime.setText(time2String(currentPosition));
                 //设置当前剩余时间
-                restTime.setText(time2String(audioService.getAudioLength() - audioService.getPlayingPosition()));
+                restTime.setText(time2String(mediaDuration - currentPosition));
                 //执行封面模糊风格处理
                 if (!AppConfigs.isUseSimplePlayingScreen) {
                     generateBlurBackGround();
                 }
                 //如果歌曲播放了 , 就开始更新界面, 更新之前中断旧的更新线程
-                if (audioService.getAudioStatus() == AudioStatus.Playing || audioService.getAudioStatus() == AudioStatus.Buffering) {
+                if (currentState == PlaybackStateCompat.STATE_PLAYING) {
                     if (updatingTimerThread != null) {
                         updatingTimerThread.interrupt();
                         updatingTimerThread = null;
@@ -391,9 +428,9 @@ public class PlayingActivity
      */
     @SuppressWarnings("deprecation")
     private void generateBlurBackGround() {
-        if (audioService != null) {
+        if (serviceConnector.isServiceConnected()) {
             //先获取当前播放的数据
-            final SongItem playingSong = playingList.get(audioService.getPlayingIndex());
+            final SongItem playingSong = playingList.get(MediaLibrary.INSTANCE.getUsingIndex());
 
             //此歌曲没有封面，显示默认背景
             if (TextUtils.isEmpty(CoverManager.INSTANCE.getValidSource(playingSong.getCoverID()))) {
@@ -428,7 +465,6 @@ public class PlayingActivity
                 //开始执行模糊背景处理
                 blurCoverThreadObject = new WeakReference<>(new BlurCoverThread(playingSong));
                 blurCoverThreadObject.get().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-                return;
             }
         }
     }
@@ -443,9 +479,12 @@ public class PlayingActivity
 
     }
 
+    /**
+     * 滚动封面轮播控件 切换媒体数据
+     */
     @Override
     public void onPageScrollStateChanged(int state) {
-        if (audioService != null && state == ViewPager.SCROLL_STATE_IDLE && coverShower.getCurrentItem() != audioService.getPlayingIndex()) {
+        if (serviceConnector.isServiceConnected() && state == ViewPager.SCROLL_STATE_IDLE && coverShower.getCurrentItem() != MediaLibrary.INSTANCE.getUsingIndex()) {
             //如果当前音频服务已启动 , 同时滚动动作已完成并且位置发生了变动
 
             if (pendingStartThread != null && pendingStartThread.getStatus() != AsyncTask.Status.FINISHED) {
@@ -480,11 +519,12 @@ public class PlayingActivity
                 break;
             case R.id.shower_mainButton:
                 //主按钮点击事件
-                if (audioService != null) {
-                    switch (audioService.getAudioStatus()) {
-                        case Playing:
+                if (serviceConnector.isServiceConnected()) {
+                    final int currentState = serviceConnector.currentState();
+                    switch (currentState) {
+                        case PlaybackStateCompat.STATE_PLAYING:
                             //当前是播放状态 , 则执行暂停操作
-                            audioService.pause(true);
+                            MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().pause();
                             if (coverSpectrum.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新
                                 if (surfaceViewController.isDrawing()) {
@@ -492,9 +532,10 @@ public class PlayingActivity
                                 }
                             }
                             break;
-                        case Paused:
+                        case PlaybackStateCompat.STATE_PAUSED:
+                        case PlaybackStateCompat.STATE_STOPPED:
                             //当前是暂停/停止状态 , 则执行继续播放操作
-                            audioService.resume();
+                            MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().play();
                             if (coverSpectrum.isShown()) {
                                 //如果当前正在显示频谱 , 则开始
                                 if (!surfaceViewController.isDrawing()) {
@@ -508,6 +549,9 @@ public class PlayingActivity
         }
     }
 
+    /**
+     * 点击左上角 home 的事件 -> 展开侧滑菜单
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -523,6 +567,9 @@ public class PlayingActivity
         return true;
     }
 
+    /**
+     * 处理 BACK 事件
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -541,16 +588,15 @@ public class PlayingActivity
     /**
      * 时间长度转换为文本类型
      *
-     * @param time 时间长度
+     * @param time 时间长度，单位：ms
      * @return 文本
      */
-    private String time2String(double time) {
+    private String time2String(long time) {
         if (date == null || time < 0d) {
             return "00:00";
         } else {
-            long timeL = (long) time * 1000;
-            date.setTime(timeL);
-            if (timeL >= 3600000) {
+            date.setTime(time);
+            if (time >= 3600000) {
                 dateFormat.applyPattern("hh:mm:ss");
             } else {
                 dateFormat.applyPattern("mm:ss");
@@ -621,9 +667,14 @@ public class PlayingActivity
      */
     @Override
     public void onSlidingMenuClick(SongItem songItem, int position) {
-        audioService.play(playingList, position);
-        updateInformation(false);
-        if (!surfaceViewController.isDrawing()) {
+        final Bundle bundle = new Bundle();
+        bundle.putInt(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_INT_LIBRARY_INDEX(), position);
+        bundle.putString(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_STRING_LIBRARY_NAME(), MediaLibrary.INSTANCE.getUsingLibraryTAG());
+        serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_PLAY_LIBRARY(), bundle);
+
+        updateInformation(!serviceConnector.isServiceConnected());
+
+        if (spectrumSwitch.getTag().toString().equals("on") && !surfaceViewController.isDrawing()) {
             surfaceViewController.start();
         }
     }
@@ -631,7 +682,6 @@ public class PlayingActivity
     /**
      * 切换频谱效果开关
      */
-
     @SuppressLint("NewApi")
     private void switchSpectrumEffect() {
 
@@ -659,10 +709,10 @@ public class PlayingActivity
 
             coverSpectrum.setVisibility(View.VISIBLE);
 
-            //EXO需要手动调用频谱数据接收器
-            audioService.exo2_Visualizer_SwitchOn();
+            // TODO: 17-8-3 打开频谱接收器
 
-            if (audioService.getAudioStatus() == AudioStatus.Playing) {
+            final int currentState = serviceConnector.currentState();
+            if (currentState == PlaybackStateCompat.STATE_PLAYING) {
                 //如果当前是正在播放 , 才执行动画
                 surfaceViewController.start();
             }
@@ -679,12 +729,81 @@ public class PlayingActivity
             //先关闭频谱输出动画（EXO2需求）
             surfaceViewController.stop();
 
-            //EXO需要手动调用频谱数据接收器
-            audioService.exo2_Visualizer_SwitchOff();
+            // TODO: 17-8-3 关闭频谱接收器
 
             coverSpectrum.setVisibility(View.GONE);
         }
 
+    }
+
+    /**
+     * 媒体服务连接状态回调处理器
+     */
+    private class ServiceCallback implements MediaServiceConnector.Callbacks {
+
+        /**
+         * 媒体服务连接成功
+         */
+        @Override
+        public void onServiceConnected() {
+            final boolean state = serviceConnector.isServiceConnected();
+            System.out.println(state);
+            updateInformation(!serviceConnector.isServiceConnected());
+        }
+
+        /**
+         * 媒体服务连接断开
+         */
+        @Override
+        public void onServiceDisconnected() {
+            finish();
+        }
+
+        /**
+         * 无法连接媒体服务
+         */
+        @Override
+        public void onServiceConnectionError() {
+            finish();
+        }
+
+        /**
+         * 媒体数据发生更改
+         *
+         * @param metadata
+         */
+        @Override
+        public void onMediaChanged(MediaMetadataCompat metadata) {
+
+        }
+
+        /**
+         * 媒体播放状态发生改变
+         *
+         * @param state
+         */
+        @Override
+        public void onMediaStateChanged(PlaybackStateCompat state) {
+
+        }
+
+        /**
+         * 媒体服务返回当前正在使用的媒体数据列表回调
+         *
+         * @param data 数据列表
+         */
+        @Override
+        public void onGotUsingLibraryData(List<MediaBrowserCompat.MediaItem> data) {
+
+        }
+
+        /**
+         * 无法获取媒体服务返回的媒体数据
+         */
+        @Override
+        public void onGetUsingLibraryDataError() {
+
+        }
     }
 
     /**
@@ -760,15 +879,24 @@ public class PlayingActivity
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
-            //如果当前是正在播放状态 , 则直接播放
-            if (audioService.getAudioStatus() == AudioStatus.Playing) {
-                audioService.play(playingList, coverShower.getCurrentItem());
+            final int currentState = serviceConnector.currentState();
+            if (currentState == PlaybackStateCompat.STATE_PLAYING) {
+
+                //如果当前是正在播放状态, 则直接播放
+                final Bundle bundle = new Bundle();
+                bundle.putInt(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_INT_LIBRARY_INDEX(), coverShower.getCurrentItem());
+                bundle.putString(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_STRING_LIBRARY_NAME(), MediaLibrary.INSTANCE.getUsingLibraryTAG());
+                serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_PLAY_LIBRARY(), bundle);
             } else {
-                //否则仅仅加载音频数据 , 同时通知状态栏数据更新
-                audioService.initAudio(playingList, coverShower.getCurrentItem());
+
+                //否则仅加载媒体数据
+                final Bundle bundle = new Bundle();
+                bundle.putInt(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_INT_LIBRARY_INDEX(), coverShower.getCurrentItem());
+                bundle.putString(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_STRING_LIBRARY_NAME(), MediaLibrary.INSTANCE.getUsingLibraryTAG());
+                bundle.putBoolean(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_BOOLEAN_PLAY_WHEN_READY(), false);
+                serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_PLAY_LIBRARY(), bundle);
             }
 
-            updateInformation(false);
         }
     }
 
@@ -782,28 +910,42 @@ public class PlayingActivity
         @Override
         public void run() {
             Logger.warnning(TAG, "开始更新");
-            while (!isInterrupted() && seekBarController != null && audioService != null && musicSeekBar != null && audioService.getAudioStatus() != AudioStatus.Empty) {
-                if (audioService.getAudioStatus() == AudioStatus.Playing) {
-                    //如果当前不为正在缓冲，则可以读取正确的歌曲长度和当前位置（EXO核心特性）
+
+            while (!isInterrupted() && seekBarController != null && serviceConnector.isServiceConnected() && musicSeekBar != null && serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
+                if (serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
+                    //如果当前不为正在缓冲，则可以读取正确的歌曲长度和当前位置
                     Logger.warnning(TAG, "已更新进度条");
-                    final double length = audioService.getAudioLength();
-                    final double currentPosition = audioService.getPlayingPosition();
-                    if (length > 0.0d && currentPosition >= 0.0d) {
+
+                    //获取媒体状态数据合集
+                    final PlaybackStateCompat playbackState = MediaControllerCompat.getMediaController(PlayingActivity.this).getPlaybackState();
+
+                    //获取媒体长度
+                    final long duration = playingList.get(MediaLibrary.INSTANCE.getUsingIndex()).getDuration();
+
+                    //获取最后更新时的位置
+                    final long lastPosition = playbackState.getPosition();
+
+                    //当前的时间为：最后更新的位置 + （（当前时间 - 最后更新时间 = 间隔时间）× 播放速度）
+                    final long currentPosition = lastPosition + (long) ((SystemClock.elapsedRealtime() - playbackState.getLastPositionUpdateTime()) * playbackState.getPlaybackSpeed());
+
+                    if (duration > 0L && currentPosition >= 0L) {
                         //如果当前时间数据都合法，则进行更新
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 //更新进度文字数据
                                 currentTime.setText(time2String(currentPosition));
-                                restTime.setText(time2String(length - currentPosition));
+                                restTime.setText(time2String(duration - currentPosition));
+
                                 //如果进度条需要重置歌曲长度标记，则更新歌曲长度
                                 if (musicSeekBar.getTag() != null && (boolean) musicSeekBar.getTag()) {
-                                    musicSeekBar.setMax((int) length);
+                                    musicSeekBar.setMax((int) (duration / 1000L));
                                     musicSeekBar.setTag(false);
                                 }
+
                                 //如果当前没有用户在调整进度条 , 则更新当前播放位置
                                 if (!seekBarController.isUserTorching) {
-                                    musicSeekBar.setProgress((int) currentPosition);
+                                    musicSeekBar.setProgress((int) (currentPosition / 1000L));
                                 }
                             }
                         });
@@ -844,8 +986,8 @@ public class PlayingActivity
         @Override
         public void onStopSliding(int progress, int max) {
             isUserTorching = false;
-            if (audioService != null) {
-                audioService.seek2Position(progress);
+            if (serviceConnector.isServiceConnected()) {
+                MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().seekTo(progress * 1000);
             }
         }
 
@@ -854,23 +996,27 @@ public class PlayingActivity
     /**
      * 音频变化接收器
      */
-    class AudioChangeReceiver extends BroadcastReceiver {
+    private class AudioChangeReceiver extends BroadcastReceiver {
 
         private IntentFilter filter;
 
         public AudioChangeReceiver() {
             filter = new IntentFilter();
-            filter.addAction(AudioService.AUDIO_PLAY);
-            filter.addAction(AudioService.AUDIO_PAUSED);
-            filter.addAction(AudioService.AUDIO_RESUMED);
-            filter.addAction(AudioService.AUDIO_SWITCH);
+            filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_PAUSED());
+            filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING());
+            filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_STOPPED());
+            filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_READY());
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            //由于Java不能在 case 中使用 Kotlin 的 Object 中的字符串，所以这里直接使用值
             switch (intent.getAction()) {
-                case AudioService.AUDIO_PLAY:
+
+                //播放
+                //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING
+                case "ca_3":
                     switchMainButtonAnim(false);
                     switchDarkAnime(false);
                     if (updatingTimerThread != null) {
@@ -880,7 +1026,11 @@ public class PlayingActivity
                     updatingTimerThread = new UpdatingTimerThread();
                     updatingTimerThread.start();
                     break;
-                case AudioService.AUDIO_PAUSED:
+
+                //暂停 和 停止
+                //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PAUSED 和 ICore.ACTIONS.INSTANCE.getCORE_ACTION_STOPPED
+                case "ca_2":
+                case "ca_1":
                     switchMainButtonAnim(true);
                     switchDarkAnime(true);
                     if (updatingTimerThread != null) {
@@ -888,18 +1038,11 @@ public class PlayingActivity
                         updatingTimerThread = null;
                     }
                     break;
-                case AudioService.AUDIO_RESUMED:
-                    switchMainButtonAnim(false);
-                    switchDarkAnime(false);
-                    if (updatingTimerThread != null) {
-                        updatingTimerThread.interrupt();
-                        updatingTimerThread = null;
-                    }
-                    updatingTimerThread = new UpdatingTimerThread();
-                    updatingTimerThread.start();
-                    break;
-                case AudioService.AUDIO_SWITCH:
-                    updateInformation(false);
+
+                //新的媒体数据
+                //ICore.ACTIONS.INSTANCE.getCORE_ACTION_READY
+                case "ca_5":
+                    updateInformation(!serviceConnector.isServiceConnected());
                     break;
             }
 

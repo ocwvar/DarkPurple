@@ -104,6 +104,19 @@ object MediaLibrary {
     }
 
     /**
+     * @return  当前正在使用的媒体库
+     */
+    fun getUsingLibrary(): ArrayList<SongItem>? {
+        if (TextUtils.isEmpty(this.usingLibraryTAG)) {
+            return null
+        } else if (this.usingLibraryTAG == "MAIN") {
+            return this.mainLibrary
+        } else {
+            return this.playlistLibrary.find { it.name == this.usingLibraryTAG }?.playlist
+        }
+    }
+
+    /**
      * @return  主媒体库
      */
     fun getMainLibrary(): ArrayList<SongItem> = this.mainLibrary
@@ -117,5 +130,10 @@ object MediaLibrary {
      * @return  当前正在使用的媒体库TAG
      */
     fun getUsingLibraryTAG(): String = this.usingLibraryTAG
+
+    /**
+     * @return  当前正在使用的媒体索引编号
+     */
+    fun getUsingIndex(): Int = this.usingIndex
 
 }
