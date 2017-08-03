@@ -90,11 +90,13 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         //设置核心广播监听器
         if (!this.coreStateBroadcastReceiver.registered) {
+            this.coreStateBroadcastReceiver.registered = true
             registerReceiver(this.coreStateBroadcastReceiver, this.coreStateBroadcastReceiver.intentFilter)
         }
 
         //设置Notification按钮广播监听器
         if (!this.notificationBroadcastReceiver.registered) {
+            this.notificationBroadcastReceiver.registered = true
             registerReceiver(this.notificationBroadcastReceiver, this.notificationBroadcastReceiver.intentFilter)
         }
     }
@@ -103,11 +105,13 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         super.onDestroy()
         //注销核心广播监听器
         if (this.coreStateBroadcastReceiver.registered) {
+            this.coreStateBroadcastReceiver.registered = false
             unregisterReceiver(this.coreStateBroadcastReceiver)
         }
 
         //注销Notification按钮广播监听器
         if (this.notificationBroadcastReceiver.registered) {
+            this.notificationBroadcastReceiver.registered = false
             unregisterReceiver(this.notificationBroadcastReceiver)
         }
 
@@ -127,6 +131,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 usingMedias.add(MediaBrowserCompat.MediaItem(it.mediaMetadata.description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE))
             }
 
+            //发送结果
             result.sendResult(usingMedias)
         }
     }

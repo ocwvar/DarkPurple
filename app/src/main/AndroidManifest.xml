@@ -90,6 +90,14 @@
 
         <service android:name=".Services.AudioService" />
 
+        <service
+            android:name=".Services.MediaPlayerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
         <receiver android:name=".Services.HeadsetButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
