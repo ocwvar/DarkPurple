@@ -66,42 +66,62 @@ class MediaNotification {
         //创建Notification构造器
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(appContext)
         builder
-                //创建MediaStyle
+                //设置MediaSession
                 .setStyle(NotificationCompat.MediaStyle()
                         //设置MediaSession的Token
                         .setMediaSession(mediaSession.sessionToken)
-                        //设置显示Action按钮的数量
-                        .setShowActionsInCompactView(3))
+                        //设置显示的Action数量
+                        .setShowActionsInCompactView(2)
+                )
                 //不显示Notification时间
                 .setShowWhen(false)
+                //状态栏上的图标
+                .setSmallIcon(R.drawable.ic_action_small_icon)
                 //设置最低隐私程度，允许在锁屏界面操作
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 //设置默认优先度
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 //主标题
-                .setContentTitle(mediaMetadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE))
+                .setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
                 //副标题
-                .setContentText(mediaMetadata.getText(MediaMetadataCompat.METADATA_KEY_ARTIST))
+                .setContentText(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST))
                 //添加 上一个 媒体数据按钮
-                .addAction(R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 100, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
+                .addAction(R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
+
         if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
 
             //当前是播放状态，添加 暂停播放 媒体按钮
-            builder.addAction(R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 100, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
+            builder.addAction(R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
         } else if (playbackState.state == PlaybackStateCompat.STATE_PAUSED || playbackState.state == PlaybackStateCompat.STATE_STOPPED) {
 
             //当前是暂停或停止状态，添加 开始播放 媒体按钮
-            builder.addAction(R.drawable.ic_media_play, "Previous", PendingIntent.getBroadcast(appContext, 100, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))
+            builder.addAction(R.drawable.ic_media_play, "Play", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))
         }
         //添加 下一个 媒体数据按钮
-        builder.addAction(R.drawable.ic_media_next, "Previous", PendingIntent.getBroadcast(appContext, 100, Intent(ACTIONS.NOTIFICATION_ACTION_NEXT), PendingIntent.FLAG_CANCEL_CURRENT))
+        builder.addAction(R.drawable.ic_media_next, "Next", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_NEXT), PendingIntent.FLAG_CANCEL_CURRENT))
 
         //尝试获取有效封面图像
         BitmapFactory.decodeFile(CoverManager.getValidSource(mediaMetadata.getString(SONGITEM_KEY_COVER_ID)))?.let {
             builder.setLargeIcon(it)
         }
 
+
         return builder.build()
     }
 
 }
+/**
+//添加 上一个 媒体数据按钮
+.addAction(android.R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
+if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
+
+//当前是播放状态，添加 暂停播放 媒体按钮
+builder.addAction(android.R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
+} else if (playbackState.state == PlaybackStateCompat.STATE_PAUSED || playbackState.state == PlaybackStateCompat.STATE_STOPPED) {
+
+//当前是暂停或停止状态，添加 开始播放 媒体按钮
+builder.addAction(android.R.drawable.ic_media_play, "Play", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))
+}
+//添加 下一个 媒体数据按钮
+builder.addAction(android.R.drawable.ic_media_next, "Next", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_NEXT), PendingIntent.FLAG_CANCEL_CURRENT))
+ **/

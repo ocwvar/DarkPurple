@@ -43,6 +43,9 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     //是否缓冲完成后播放媒体
     private var isPlayWhenReady: Boolean = false
 
+    //当前是否已经缓冲完毕媒体资源
+    private var isMediaReady: Boolean = false
+
     //当前媒体长度
     private var currentDuration: Long = -1
 
@@ -131,6 +134,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
      */
     override fun release() {
         this.exoPlayer.stop()
+        this.isMediaReady = false
         this.currentDuration = -1L
         this.currentState = PlaybackStateCompat.STATE_NONE
     }
@@ -196,8 +200,10 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         }
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            if (playbackState == Player.STATE_READY) {
+            if (!isMediaReady && playbackState == Player.STATE_READY) {
                 //媒体缓冲完成
+
+                isMediaReady = true
 
                 //更新媒体数据
                 currentDuration = exoPlayer.duration
@@ -215,7 +221,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
                     exoPlayer.playWhenReady = false
                     currentState = PlaybackStateCompat.STATE_PAUSED
                 }
-            } else if (playbackState == Player.STATE_ENDED) {
+            } else if (isMediaReady && playbackState == Player.STATE_ENDED) {
                 //媒体播放完成
 
                 sendBroadcast(ICore.ACTIONS.CORE_ACTION_COMPLETED)

@@ -24,6 +24,7 @@ import com.ocwvar.darkpurple.Units.Cover.ColorType;
 import com.ocwvar.darkpurple.Units.Cover.CoverImage2File;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverType;
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -301,6 +302,9 @@ public class MediaScanner {
                 //保存所有封面数据
                 CoverManager.INSTANCE.asyncUpdateFileCache();
 
+                //更新主媒体库
+                MediaLibrary.INSTANCE.updateMainSource(arrayList);
+
             } catch (Exception e) {
                 Logger.error(TAG, "在从媒体库中获取数据时发生异常：\n" + e);
             }
@@ -525,6 +529,9 @@ public class MediaScanner {
 
                     //保存所有封面数据
                     CoverManager.INSTANCE.asyncUpdateFileCache();
+
+                    //更新主媒体库
+                    MediaLibrary.INSTANCE.updateMainSource(arrayList);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -759,6 +766,9 @@ public class MediaScanner {
                         Collections.sort(cachedList, new ComparatorByName());
                         break;
                 }
+
+                //更新主媒体库
+                MediaLibrary.INSTANCE.updateMainSource(cachedList);
             }
 
             if (callback == null) {

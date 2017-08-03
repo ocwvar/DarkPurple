@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
+import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
@@ -162,6 +163,15 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
     }
 
     /**
+     * 发送指令到媒体服务
+     * @param   commandAction   服务的Action
+     * @param   extra   附带的数据
+     */
+    fun sendCommand(commandAction: String, extra: Bundle?) {
+        MediaControllerCompat.getMediaController(this.activity)?.sendCommand(commandAction, extra, null)
+    }
+
+    /**
      * 当前Fragment被暂停时
      * 退出多选模式
      * 注销接收器
@@ -196,6 +206,13 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      */
     override fun onListClick(songData: SongItem, position: Int, itemView: View) {
         ServiceHolder.getInstance().service?.let {
+            ////测试 —— 使用媒体服务播放
+            /*sendCommand(MediaPlayerService.COMMAND.COMMAND_PLAY_LIBRARY, Bundle().let {
+                it.putString(MediaPlayerService.COMMAND_EXTRA.ARG_STRING_LIBRARY_NAME, "MAIN")
+                it.putInt(MediaPlayerService.COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, position)
+                it
+            })*/
+
             if (it.play(adapter.source(), position)) {
                 //播放成功
                 if (AppConfigs.isAutoSwitchPlaying) {

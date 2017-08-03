@@ -117,7 +117,7 @@ class PlayerController : IController {
      * @param   isPlayWhenReady 是否缓冲好数据好就进行播放，默认=True
      */
     override fun play(index: Int, isPlayWhenReady: Boolean) {
-        if (this.usingLibrary.size > 0 && index < 0 || index >= this.usingLibrary.size) {
+        if (this.usingLibrary.size > 0 && (index == 0 || index < this.usingLibrary.size)) {
             //播放的位置有效
             this.currentIndex = index
             play(this.usingLibrary[index], isPlayWhenReady)

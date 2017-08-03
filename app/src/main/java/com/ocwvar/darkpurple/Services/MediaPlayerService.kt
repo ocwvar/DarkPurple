@@ -340,6 +340,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
             //媒体资源被 暂停
                 ICore.ACTIONS.CORE_ACTION_PAUSED -> {
+                    updateNotification()
                     dismissNotification(false)
                 }
 

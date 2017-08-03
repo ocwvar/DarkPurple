@@ -29,6 +29,7 @@ import com.ocwvar.darkpurple.FragmentPages.UserFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioService
 import com.ocwvar.darkpurple.Services.AudioStatus
+import com.ocwvar.darkpurple.Services.MediaServiceConnector
 import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.BaseActivity
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
@@ -66,6 +67,9 @@ class MainFrameworkActivity : BaseActivity() {
     //请求权限用的Snackbar
     private lateinit var requestPermission: Snackbar
 
+    //服务连接器
+    private lateinit var serviceConnector: MediaServiceConnector
+
     override fun onPreSetup(): Boolean {
         if (AppConfigs.OS_5_UP) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
@@ -86,7 +90,8 @@ class MainFrameworkActivity : BaseActivity() {
     }
 
     override fun onSetupViews(savedInstanceState: Bundle?) {
-        requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
+
+        this.requestPermission = Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_Permission, Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(AppConfigs.Color.getColor(R.color.colorSecond))
                 .setAction(R.string.text_snackbar_request_permission_button, {
                     if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -100,21 +105,23 @@ class MainFrameworkActivity : BaseActivity() {
                     }
                 })
 
-        headShower = findViewById(R.id.MainMusic_headShower) as ImageView
-        headCoverShower = findViewById(R.id.MainMusic_coverShower) as ImageView
-        headMusicTitle = findViewById(R.id.MainMusic_title) as TextView
-        headMusicArtist = findViewById(R.id.MainMusic_artist) as TextView
-        headMusicAlbum = findViewById(R.id.MainMusic_album) as TextView
-        floatingActionButton = findViewById(R.id.fab) as FloatingActionButton
-        songButton = findViewById(R.id.button_song)
-        playlistButton = findViewById(R.id.button_playlist)
-        userButton = findViewById(R.id.button_user)
+        this.serviceConnector = MediaServiceConnector(this@MainFrameworkActivity)
 
-        songButton.setOnClickListener(this@MainFrameworkActivity)
-        playlistButton.setOnClickListener(this@MainFrameworkActivity)
-        userButton.setOnClickListener(this@MainFrameworkActivity)
+        this.headShower = findViewById(R.id.MainMusic_headShower) as ImageView
+        this.headCoverShower = findViewById(R.id.MainMusic_coverShower) as ImageView
+        this.headMusicTitle = findViewById(R.id.MainMusic_title) as TextView
+        this.headMusicArtist = findViewById(R.id.MainMusic_artist) as TextView
+        this.headMusicAlbum = findViewById(R.id.MainMusic_album) as TextView
+        this.floatingActionButton = findViewById(R.id.fab) as FloatingActionButton
+        this.songButton = findViewById(R.id.button_song)
+        this.playlistButton = findViewById(R.id.button_playlist)
+        this.userButton = findViewById(R.id.button_user)
 
-        floatingActionButton.setOnClickListener {
+        this.songButton.setOnClickListener(this@MainFrameworkActivity)
+        this.playlistButton.setOnClickListener(this@MainFrameworkActivity)
+        this.userButton.setOnClickListener(this@MainFrameworkActivity)
+
+        this.floatingActionButton.setOnClickListener {
             //点击主界面上的Floating Action Button事件
             if (ServiceHolder.getInstance().service?.audioStatus != AudioStatus.Empty) {
                 //转跳到播放界面
@@ -192,6 +199,9 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
 
+        //// 测试——连接媒体服务
+        //this.serviceConnector.connect()
+
         val playingSong: SongItem? = ServiceHolder.getInstance().service?.playingSong
 
         //更新当前的头部图像
@@ -224,6 +234,12 @@ class MainFrameworkActivity : BaseActivity() {
         } else {
             floatingActionButton.hide()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        //// 测试 —— 断开媒体服务
+        //this.serviceConnector.disConnect()
     }
 
     override fun onPause() {
