@@ -81,6 +81,10 @@ class MediaNotification {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 //设置默认优先度
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                //设置当Notification被移除时的广播（歌曲暂停时可以被移除）
+                .setDeleteIntent(PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_CLOSE), PendingIntent.FLAG_CANCEL_CURRENT))
+                //开始显示时状态栏显示的文字： 艺术家 - 歌曲标题
+                .setTicker(String.format("%s - %s", mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST), mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)))
                 //主标题
                 .setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
                 //副标题
@@ -110,18 +114,3 @@ class MediaNotification {
     }
 
 }
-/**
-//添加 上一个 媒体数据按钮
-.addAction(android.R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
-if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
-
-//当前是播放状态，添加 暂停播放 媒体按钮
-builder.addAction(android.R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
-} else if (playbackState.state == PlaybackStateCompat.STATE_PAUSED || playbackState.state == PlaybackStateCompat.STATE_STOPPED) {
-
-//当前是暂停或停止状态，添加 开始播放 媒体按钮
-builder.addAction(android.R.drawable.ic_media_play, "Play", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))
-}
-//添加 下一个 媒体数据按钮
-builder.addAction(android.R.drawable.ic_media_next, "Next", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_NEXT), PendingIntent.FLAG_CANCEL_CURRENT))
- **/

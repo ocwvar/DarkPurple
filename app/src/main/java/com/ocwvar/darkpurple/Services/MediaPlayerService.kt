@@ -28,6 +28,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val ROOT_ID_OK: String = "_1"
     private val ROOT_ID_DENIED: String = "no"
 
+    //服务是否正在运行标记
+    private var isServiceStarted: Boolean = false
     //媒体播放调配控制器
     private val iController: IController = PlayerController()
     //Notification 生成器
@@ -186,6 +188,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         updateMediaMetadata()
         val notification: Notification? = this.notificationHelper.createNotification(this.mediaSession, this@MediaPlayerService)
         notification?.let {
+            if (!this.isServiceStarted) {
+                startService(Intent(this@MediaPlayerService, MediaPlayerService::class.java))
+                this.isServiceStarted = true
+            }
             startForeground(this.notificationHelper.NOTIFICATION_ID, it)
         }
     }
@@ -194,10 +200,15 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
      * 取消显示当前的 Notification
      *
      * 退出保持前台模式
-     * @param   removeNotification  是否移除正在显示的 Notification
+     * @param   removeNotification  是否移除正在显示的 Notification。同时，在APP返回桌面时，服务将会中断
      */
     private fun dismissNotification(removeNotification: Boolean = false) {
         stopForeground(removeNotification)
+
+        if (removeNotification && this.isServiceStarted) {
+            this.isServiceStarted = false
+            stopSelf()
+        }
     }
 
     /**
@@ -292,6 +303,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                         if (iController.changeLibrary(libraryTAG)) {
                             //切换媒体库成功，进行播放
                             iController.play(playIndex, isPlayWhenReady)
+
                         }
                     }
                 }
@@ -331,6 +343,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //媒体资源被 停止
                 ICore.ACTIONS.CORE_ACTION_STOPPED -> {
                     updateNotification()
+                    dismissNotification(true)
                 }
 
             //媒体资源被 播放
@@ -396,7 +409,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     mediaSessionCallback.onSkipToNext()
                 }
 
-            //停止播放
+            //终止服务
                 MediaNotification.ACTIONS.NOTIFICATION_ACTION_CLOSE -> {
                     iController.stop()
                     dismissNotification(true)
