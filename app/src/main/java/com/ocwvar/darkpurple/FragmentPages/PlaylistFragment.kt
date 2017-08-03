@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.media.session.MediaControllerCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -16,13 +17,11 @@ import com.ocwvar.darkpurple.Activities.PlaylistDetailActivity
 import com.ocwvar.darkpurple.Adapters.PlaylistAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
-import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Services.ServiceHolder
+import com.ocwvar.darkpurple.Services.MediaPlayerService
 import com.ocwvar.darkpurple.Units.PlaylistUnits
 import com.ocwvar.darkpurple.Units.ToastMaker
 import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * Project DarkPurple
@@ -72,53 +71,15 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
     override fun onListClick(data: PlaylistItem, position: Int, itemView: View) {
         if (data.playlist != null && data.playlist.size > 0) {
             //如果已经有有效的歌曲列表数据，则可以直接进行播放
-            val result: Boolean = ServiceHolder.getInstance().service?.play(data.playlist, 0) ?: false
-            if (!result) {
-                //播放失败
-                ToastMaker.show(R.string.message_playlist_play_failed)
-            } else if (AppConfigs.isAutoSwitchPlaying) {
+            sendCommand(MediaPlayerService.COMMAND.COMMAND_PLAY_LIBRARY, Bundle().let {
+                it.putString(MediaPlayerService.COMMAND_EXTRA.ARG_STRING_LIBRARY_NAME, data.name)
+                it.putInt(MediaPlayerService.COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, 0)
+                it
+            })
+            if (AppConfigs.isAutoSwitchPlaying) {
                 //播放成功，同时需要转跳至播放界面
                 startActivity(Intent(activity, PlayingActivity::class.java))
             }
-        } else {
-            //列表内没有歌曲数据，需要重新加载
-            PlaylistUnits.getInstance().loadPlaylistAudiosData(object : PlaylistUnits.PlaylistLoadingCallbacks {
-
-                /**
-                 * 准备读取列表数据
-                 */
-                override fun onPreLoad() {
-                    ToastMaker.show(R.string.message_playlist_loading)
-                }
-
-                /**
-                 * 读取播放列表数据成功
-                 * @param playlistItem  读取的播放列表数据
-                 * *
-                 * @param dataObject  对应的歌曲列表
-                 */
-                override fun onLoadCompleted(playlistItem: PlaylistItem, dataObject: ArrayList<SongItem>?) {
-                    if (dataObject != null && dataObject.size > 0) {
-                        //如果已经有有效的歌曲列表数据，则可以直接进行播放
-                        val result: Boolean = ServiceHolder.getInstance().service?.play(dataObject, 0) ?: false
-                        if (!result) {
-                            //播放失败
-                            ToastMaker.show(R.string.message_playlist_play_failed)
-                        } else if (AppConfigs.isAutoSwitchPlaying) {
-                            //播放成功，同时需要转跳至播放界面
-                            startActivity(Intent(activity, PlayingActivity::class.java))
-                        }
-                    }
-                }
-
-                /**
-                 * 读取播放列表数据失败
-                 */
-                override fun onLoadFailed() {
-                    ToastMaker.show(R.string.message_playlist_load_failed)
-                }
-
-            }, data)
         }
     }
 
@@ -170,6 +131,15 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
     }
 
     /**
+     * 发送指令到媒体服务
+     * @param   commandAction   服务的Action
+     * @param   extra   附带的数据
+     */
+    private fun sendCommand(commandAction: String, extra: Bundle?) {
+        MediaControllerCompat.getMediaController(this.activity)?.sendCommand(commandAction, extra, null)
+    }
+
+    /**
      * 播放列表长按菜单处理类
      */
     private inner class PlaylistMenuDialog : View.OnClickListener {
@@ -217,41 +187,6 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                             it
                         }
                         PlaylistDetailActivity.startBlurActivityForResultByFragment(10, Color.argb(50, 0, 0, 0), false, this@PlaylistFragment, PlaylistDetailActivity::class.java, bundle, 9)
-                    } else {
-                        PlaylistUnits.getInstance().loadPlaylistAudiosData(object : PlaylistUnits.PlaylistLoadingCallbacks {
-
-                            /**
-                             * 准备读取列表数据
-                             */
-                            override fun onPreLoad() {
-                                ToastMaker.show(R.string.message_playlist_loading)
-                            }
-
-                            /**
-                             * 读取播放列表数据成功
-                             * @param playlistItem  读取的播放列表数据
-                             * *
-                             * @param dataObject  对应的歌曲列表
-                             */
-                            override fun onLoadCompleted(playlistItem: PlaylistItem, dataObject: ArrayList<SongItem>?) {
-                                if (dataObject != null && dataObject.size > 0) {
-                                    //成功获取数据
-                                    val bundle: Bundle = Bundle().let {
-                                        it.putInt("position", position)
-                                        it
-                                    }
-                                    PlaylistDetailActivity.startBlurActivityForResultByFragment(10, Color.argb(50, 0, 0, 0), false, this@PlaylistFragment, PlaylistDetailActivity::class.java, bundle, 9)
-                                }
-                            }
-
-                            /**
-                             * 读取播放列表数据失败
-                             */
-                            override fun onLoadFailed() {
-                                ToastMaker.show(R.string.message_playlist_load_failed)
-                            }
-
-                        }, data)
                     }
                     hide()
                 }

@@ -121,7 +121,7 @@ class PlayerController : IController {
      * @param   isPlayWhenReady 是否缓冲好数据好就进行播放，默认=True
      */
     override fun play(index: Int, isPlayWhenReady: Boolean) {
-        if (this.usingLibrary.size > 0 && (index == 0 || index < this.usingLibrary.size)) {
+        if (this.usingLibrary.size > 0 && index >= 0 && index < this.usingLibrary.size) {
             //播放的位置有效
             this.currentIndex = index
             //更新使用位置
@@ -180,7 +180,7 @@ class PlayerController : IController {
 
         //根据 OPTIONS.LOOP_LIBRARY 来处理结果 index
         if (index != -1 && IController.OPTIONS.RANDOM_LIBRARY) {
-            index = this.randomIndex[index]
+            index = this.randomIndex[Random(System.currentTimeMillis()).nextInt(this.randomIndex.size)]
         }
 
         //执行结果

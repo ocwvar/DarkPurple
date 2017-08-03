@@ -34,34 +34,57 @@ public class PlaylistItem {
         }
     }
 
+    /**
+     * @return 播放列表名称
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name 播放列表名称
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return 列表第一个媒体资源的封面ID
+     */
     public String getFirstAudioCoverID() {
         return firstAudioCoverID;
     }
 
+    /**
+     * @param firstAudioCoverID 列表第一个媒体资源的封面ID
+     */
     public void setFirstAudioCoverID(String firstAudioCoverID) {
         this.firstAudioCoverID = firstAudioCoverID;
     }
 
+    /**
+     * @return 内部数据列表数量
+     */
     public int getCounts() {
         if (playlist == null) {
-            return count;
+            return this.count;
         } else {
-            return playlist.size();
+            return this.playlist.size();
         }
     }
 
+    /**
+     * @return 播放列表内部媒体资源列表，未初始化则为 NULL
+     */
     public ArrayList<SongItem> getPlaylist() {
         return playlist;
     }
 
+    /**
+     * 设置列表内的媒体列表数据
+     *
+     * @param playlist 媒体列表数据
+     */
     public void setPlaylist(ArrayList<SongItem> playlist) {
         this.playlist = playlist;
     }

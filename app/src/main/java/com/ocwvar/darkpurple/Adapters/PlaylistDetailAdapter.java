@@ -11,7 +11,6 @@ import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -25,11 +24,9 @@ import java.util.Collections;
 public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDragChangedCallback {
 
     private ArrayList<SongItem> songItems;
-    private OnPlayButtonClickCallback clickCallback;
 
-    public PlaylistDetailAdapter(ArrayList<SongItem> songItems, OnPlayButtonClickCallback clickCallback) {
+    public PlaylistDetailAdapter(ArrayList<SongItem> songItems) {
         this.songItems = songItems;
-        this.clickCallback = clickCallback;
     }
 
     @Override
@@ -43,14 +40,6 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
         SongItem songItem = songItems.get(position);
         viewHolder.title.setText(songItem.getTitle());
         viewHolder.artist.setText(songItem.getArtist());
-        if (new File((songItem.getPath())).exists()) {
-            //如果文件的确存在 , 则显示播放按钮
-            viewHolder.playButton.setTag("Available");
-            viewHolder.playButton.setImageResource(R.drawable.ic_action_playlist_inner_play);
-        } else {
-            viewHolder.playButton.setTag("NotAvailable");
-            viewHolder.playButton.setImageResource(R.drawable.ic_action_notava);
-        }
     }
 
     @Override
@@ -74,13 +63,7 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
         notifyItemRemoved(position);
     }
 
-    public interface OnPlayButtonClickCallback {
-
-        void onPlayButtonClick(int position);
-
-    }
-
-    private class SimpleDetailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class SimpleDetailViewHolder extends RecyclerView.ViewHolder {
 
         TextView title, artist;
         ImageButton playButton;
@@ -91,19 +74,6 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
             artist = itemView.findViewById(R.id.textView_artist);
             playButton = itemView.findViewById(R.id.imageButton_play);
 
-            playButton.setOnClickListener(this);
         }
-
-        @Override
-        public void onClick(View view) {
-            if (clickCallback != null) {
-                if (playButton.getTag().equals("Available")) {
-                    clickCallback.onPlayButtonClick(getAdapterPosition());
-                } else {
-                    clickCallback.onPlayButtonClick(-1);
-                }
-            }
-        }
-
     }
 }

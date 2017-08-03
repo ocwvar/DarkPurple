@@ -2,13 +2,13 @@ package com.ocwvar.darkpurple.Units;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Bean.SongItem;
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ public class PlaylistUnits {
     private final String playlistSPName = "playlistSet";
     private final String TAG = "PlaylistUnits";
     private ArrayList<PlaylistItem> playlistSet;
-    private GetPlaylistAudiosThread audioesThread = null;
 
     private PlaylistUnits() {
         this.playlistSet = new ArrayList<>();
@@ -41,28 +40,28 @@ public class PlaylistUnits {
     }
 
     /**
-     * 从 SharedPreferences 读取播放列表的基本信息
+     * 加载所有播放列表数据
      */
-    public void initSPData() {
-        Logger.warnning(TAG, "正在获取已储存的播放列表基本数据");
-        SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
-        //先获取所有播放列表的名称
-        String[] names = loadStringArray(sp, "names");
+    public void init() {
 
-        if (names != null) {
-            for (String playlistName : names) {
-                //逐个从SP中获取播放列表数据
-                Logger.warnning(TAG, "正在获取基本数据  " + playlistName);
-                String[] playlistValues = loadStringArray(sp, playlistName);
-                if (playlistValues != null && playlistValues.length == 2) {
-                    //如果字符集合有效 , 同时数量为2
-                    this.playlistSet.add(new PlaylistItem(playlistName, playlistValues));
-                }
-            }
-            Logger.warnning(TAG, "基本数据获取完毕.  总计: " + playlistSet.size());
-        } else {
-            Logger.error(TAG, "无法获取. 原因: 没有已保存的数据");
+        //先获取所有播放列表基础数据
+        initSPData();
+
+        if (this.playlistSet == null || this.playlistSet.size() <= 0) {
+            //没有列表数据，不进行下一步
+            return;
         }
+
+        //开始读取所有播放列表的内部列表数据
+        for (final PlaylistItem playListItem : this.playlistSet) {
+            if (playListItem.getPlaylist() == null) {
+                //找到未初始化的播放列表，进行读取加载
+                playListItem.setPlaylist(JSONHandler.loadPlaylist(playListItem.getName()));
+            }
+        }
+
+        //更新媒体库数据
+        MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
 
     }
 
@@ -111,6 +110,9 @@ public class PlaylistUnits {
             }
         }).start();
 
+        //更新媒体库数据
+        MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
+
         return true;
     }
 
@@ -142,6 +144,9 @@ public class PlaylistUnits {
         editor.commit();
         //移除播放列表Json数据文件
         new File(AppConfigs.PlaylistFolder + playlistItem.getName() + ".pl").delete();
+
+        //更新媒体库数据
+        MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
     }
 
     /**
@@ -155,10 +160,12 @@ public class PlaylistUnits {
     public boolean renamePlaylist(@NonNull String oldName, @NonNull final String newName) {
         if (playlistSet.contains(new PlaylistItem(oldName)) && !playlistSet.contains(new PlaylistItem(newName))) {
             //如果旧的列表的确存在 同时不存在与新名字相同的列表 , 则可以执行
+
             //获取名字集合 , 更改后重新保存到SP中
             final SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
             final Set<String> newKeys = new LinkedHashSet<>();
-            String[] names = loadStringArray(sp, "names");
+            final String[] names = loadStringArray(sp, "names");
+
             if (names != null && names.length >= 1) {
                 for (String name : names) {
                     if (name.equals(oldName)) {
@@ -166,7 +173,6 @@ public class PlaylistUnits {
                     }
                     newKeys.add(name);
                 }
-                names = null;
                 sp.edit().putStringSet("names", newKeys).commit();
             } else {
                 Logger.error(TAG, "当前SP内没有播放列表数据 , 无法更改不存在的数据");
@@ -182,12 +188,19 @@ public class PlaylistUnits {
                 return false;
             }
 
-            //获取要改名的对象 , 更改名字
+            //获取要改名的对象, 更改名字
             final PlaylistItem playlistItem = playlistSet.get(playlistSet.indexOf(new PlaylistItem(oldName)));
             playlistItem.setName(newName);
 
+            //移除列表中的旧数据，添加新数据
+            this.playlistSet.remove(new PlaylistItem(oldName));
+            this.playlistSet.add(playlistItem);
+
+            //更新媒体库数据
+            MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
+
             //更改本地播放列表音频数据储存文件
-            File plFile = new File(AppConfigs.PlaylistFolder + oldName + ".pl");
+            final File plFile = new File(AppConfigs.PlaylistFolder + oldName + ".pl");
             if (plFile.exists()) {
                 //先删除与新名字相同的残留文件
                 if (new File(AppConfigs.PlaylistFolder + newName + ".pl").delete()) {
@@ -195,7 +208,6 @@ public class PlaylistUnits {
                 }
                 //如果文件存在 , 则进行重命名操作
                 boolean result = plFile.renameTo(new File(AppConfigs.PlaylistFolder + newName + ".pl"));
-                plFile = null;
                 if (result) {
                     Logger.warnning(TAG, "播放列表名称成功修改.  " + oldName + " --> " + newName);
                     return true;
@@ -242,21 +254,6 @@ public class PlaylistUnits {
     }
 
     /**
-     * 异步读取播放列表内的音频数据列表
-     *
-     * @param callbacks    读取回调
-     * @param playlistItem 播放列表对象
-     */
-    public void loadPlaylistAudiosData(PlaylistLoadingCallbacks callbacks, PlaylistItem playlistItem) {
-        if (audioesThread != null && audioesThread.getStatus() != AsyncTask.Status.FINISHED) {
-            audioesThread.cancel(true);
-            audioesThread = null;
-        }
-        audioesThread = new GetPlaylistAudiosThread(playlistItem, callbacks);
-        audioesThread.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-    }
-
-    /**
      * 检测是否已经存在相同的播放列表
      *
      * @param name 播放列表名字
@@ -292,6 +289,32 @@ public class PlaylistUnits {
         }
     }
 
+    /**
+     * 从 SharedPreferences 读取播放列表的基本信息
+     */
+    private void initSPData() {
+        Logger.warnning(TAG, "正在获取已储存的播放列表基本数据");
+        SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
+        //先获取所有播放列表的名称
+        String[] names = loadStringArray(sp, "names");
+
+        if (names != null) {
+            for (String playlistName : names) {
+                //逐个从SP中获取播放列表数据
+                Logger.warnning(TAG, "正在获取基本数据  " + playlistName);
+                String[] playlistValues = loadStringArray(sp, playlistName);
+                if (playlistValues != null && playlistValues.length == 2) {
+                    //如果字符集合有效 , 同时数量为2
+                    this.playlistSet.add(new PlaylistItem(playlistName, playlistValues));
+                }
+            }
+            Logger.warnning(TAG, "基本数据获取完毕.  总计: " + playlistSet.size());
+        } else {
+            Logger.error(TAG, "无法获取. 原因: 没有已保存的数据");
+        }
+
+    }
+
     public ArrayList<PlaylistItem> getPlaylistSet() {
         return playlistSet;
     }
@@ -303,66 +326,5 @@ public class PlaylistUnits {
             return null;
         }
     }
-
-    public interface PlaylistLoadingCallbacks {
-
-        /**
-         * 准备读取列表数据
-         */
-        void onPreLoad();
-
-        /**
-         * 读取播放列表数据成功
-         *
-         * @param playlistItem 读取的播放列表数据
-         * @param dataObject   对应的歌曲列表
-         */
-        void onLoadCompleted(@NonNull final PlaylistItem playlistItem, @Nullable final ArrayList<SongItem> dataObject);
-
-        /**
-         * 读取播放列表数据失败
-         */
-        void onLoadFailed();
-
-    }
-
-    private final class GetPlaylistAudiosThread extends AsyncTask<Integer, Void, ArrayList<SongItem>> {
-
-        private PlaylistItem playlistItem;
-        private PlaylistLoadingCallbacks callbacks;
-
-        GetPlaylistAudiosThread(PlaylistItem playlistItem, PlaylistLoadingCallbacks callbacks) {
-            this.playlistItem = playlistItem;
-            this.callbacks = callbacks;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (callbacks != null) {
-                callbacks.onPreLoad();
-            }
-        }
-
-        @Override
-        protected ArrayList<SongItem> doInBackground(Integer... integers) {
-            return JSONHandler.loadPlaylist(playlistItem.getName());
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<SongItem> songItems) {
-            super.onPostExecute(songItems);
-            if (callbacks != null) {
-                if (songItems == null) {
-                    callbacks.onLoadFailed();
-                } else {
-                    playlistItem.setPlaylist(songItems);
-                    callbacks.onLoadCompleted(playlistItem, songItems);
-                }
-            }
-        }
-
-    }
-
 
 }

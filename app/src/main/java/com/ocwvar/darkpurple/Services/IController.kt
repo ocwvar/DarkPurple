@@ -24,7 +24,7 @@ interface IController {
         /**
          * 随机播放媒体库
          */
-        val RANDOM_LIBRARY: Boolean = false
+        val RANDOM_LIBRARY: Boolean = true
     }
 
     /**

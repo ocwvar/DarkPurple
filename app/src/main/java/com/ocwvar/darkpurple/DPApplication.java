@@ -27,7 +27,7 @@ public class DPApplication extends Application {
         AppConfigs.initDefaultValue(getApplicationContext());
 
         //加载所有保存的播放列表
-        PlaylistUnits.getInstance().initSPData();
+        PlaylistUnits.getInstance().init();
 
         //加载所有保存的均衡器参数
         EqualizerUnits.getInstance().init(getApplicationContext());

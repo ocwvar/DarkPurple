@@ -25,7 +25,6 @@ import android.widget.ListView
 import com.ocwvar.darkpurple.Activities.DownloadCoverActivity
 import com.ocwvar.darkpurple.Adapters.MusicListAdapter
 import com.ocwvar.darkpurple.AppConfigs
-import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback
 import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnUploadFileCallback
@@ -33,12 +32,12 @@ import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Services.AudioService
+import com.ocwvar.darkpurple.Services.AudioCore.ICore
 import com.ocwvar.darkpurple.Services.MediaPlayerService
-import com.ocwvar.darkpurple.Services.ServiceHolder
 import com.ocwvar.darkpurple.Units.Cover.CoverManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
 import com.ocwvar.darkpurple.Units.Cover.CoverType
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 import com.ocwvar.darkpurple.Units.MediaScanner
 import com.ocwvar.darkpurple.Units.PlaylistUnits
 import com.ocwvar.darkpurple.Units.ToastMaker
@@ -150,7 +149,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         }
 
         //恢复后先更新当前播放状态
-        adapter.updatePlayingPath(ServiceHolder.getInstance().service?.playingSong?.path)
+        adapter.updatePlayingPath(MediaLibrary.getUsingMedia()?.path)
         //注册歌曲切换接收器
         if (playingDataUpdateReceive == null || !playingDataUpdateReceive!!.isRegistered) {
             if (playingDataUpdateReceive == null) {
@@ -167,7 +166,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      * @param   commandAction   服务的Action
      * @param   extra   附带的数据
      */
-    fun sendCommand(commandAction: String, extra: Bundle?) {
+    private fun sendCommand(commandAction: String, extra: Bundle?) {
         MediaControllerCompat.getMediaController(this.activity)?.sendCommand(commandAction, extra, null)
     }
 
@@ -205,25 +204,11 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      * @param   itemView    条目的View对象
      */
     override fun onListClick(songData: SongItem, position: Int, itemView: View) {
-        ////测试 —— 使用媒体服务播放
         sendCommand(MediaPlayerService.COMMAND.COMMAND_PLAY_LIBRARY, Bundle().let {
             it.putString(MediaPlayerService.COMMAND_EXTRA.ARG_STRING_LIBRARY_NAME, "MAIN")
             it.putInt(MediaPlayerService.COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, position)
             it
         })
-
-        ServiceHolder.getInstance().service?.let {
-            /*if (it.play(adapter.source(), position)) {
-                //播放成功
-                if (AppConfigs.isAutoSwitchPlaying) {
-                    //如果设置为自动跳转到播放界面，则进行跳转
-                    activity.startActivity(Intent(activity, PlayingActivity::class.java))
-                }
-            } else {
-                //播放失败
-                ToastMaker.show(R.string.message_play_error)
-            }*/
-        }
     }
 
     /**
@@ -317,7 +302,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 downloadCover.visibility = View.VISIBLE
             }
 
-            var dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
+            val dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
             dialogKeeper = WeakReference(dialog)
             dialog.show()
         }
@@ -475,47 +460,14 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         }
 
         override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            if (PlaylistUnits.getInstance().playlistSet[position].playlist == null) {
-                //如果要添加到的列表还没加载 , 则先加载
-                PlaylistUnits.getInstance().loadPlaylistAudiosData(object : PlaylistUnits.PlaylistLoadingCallbacks {
+            //选择了要添加到的播放列表后，进行添加操作
 
-                    /**
-                     * 准备读取列表数据
-                     */
-                    override fun onPreLoad() {
-                        ToastMaker.show(R.string.message_playlist_loading)
-                    }
-
-                    /**
-                     * 读取播放列表数据成功
-                     * @param playlistItem  读取的播放列表数据
-                     * *
-                     * @param dataObject  对应的歌曲列表
-                     */
-                    override fun onLoadCompleted(playlistItem: PlaylistItem, dataObject: ArrayList<SongItem>?) {
-                        if (PlaylistUnits.getInstance().addAudio(playlistItem, songData)) {
-                            ToastMaker.show(R.string.message_playlist_add_done_item)
-                        } else {
-                            ToastMaker.show(R.string.message_playlist_add_error_existed)
-                        }
-                    }
-
-                    /**
-                     * 读取播放列表数据失败
-                     */
-                    override fun onLoadFailed() {
-                        ToastMaker.show(R.string.text_playlist_loadFailed)
-                    }
-
-                }, PlaylistUnits.getInstance().playlistSet[position])
+            if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().playlistSet[position], songData)) {
+                ToastMaker.show(R.string.message_playlist_add_done_item)
+                dialogKeeper.get()?.dismiss()
             } else {
-                //如果已经加载了 , 则直接添加进去
-                if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().playlistSet[position], songData)) {
-                    ToastMaker.show(R.string.message_playlist_add_done_item)
-                    dialogKeeper.get()?.dismiss()
-                } else {
-                    ToastMaker.show(R.string.message_playlist_add_error_existed)
-                }
+                //无法添加，存在相同的歌曲
+                ToastMaker.show(R.string.message_playlist_add_error_existed)
             }
         }
 
@@ -586,14 +538,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             }
             dialogKeeper.get()?.show()
         }
-
-        /**
-         * 隐藏对话框
-         */
-        fun hide() {
-            dialogKeeper.get()?.dismiss()
-        }
-
     }
 
     /**
@@ -601,15 +545,15 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
      */
     private inner class PlayingDataUpdateReceiver : BroadcastReceiver() {
 
-        val intentFilter: IntentFilter = IntentFilter(AudioService.NOTIFICATION_UPDATE)
+        val intentFilter: IntentFilter = IntentFilter(ICore.ACTIONS.CORE_ACTION_READY)
         var isRegistered: Boolean = false
 
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
             when (intent.action) {
-                AudioService.NOTIFICATION_UPDATE -> {
+                ICore.ACTIONS.CORE_ACTION_READY -> {
                     //用正在播放的曲目路径与适配器内的曲目路径比较，确定当前正在播放的曲目，从而能设置正在播放样式
-                    adapter.updatePlayingPath(ServiceHolder.getInstance().service.playingSong?.path)
+                    adapter.updatePlayingPath(MediaLibrary.getUsingMedia()?.path)
                 }
             }
         }

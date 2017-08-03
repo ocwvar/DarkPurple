@@ -22,7 +22,6 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.PlaylistItem;
 import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
@@ -35,7 +34,7 @@ import java.lang.ref.WeakReference;
  * Project: DarkPurple
  * 播放列表详情界面
  */
-public class PlaylistDetailActivity extends BaseBlurActivity implements PlaylistDetailAdapter.OnPlayButtonClickCallback {
+public class PlaylistDetailActivity extends BaseBlurActivity {
 
     public static final int LIST_CHANGED = 1;
     public static final int LIST_UNCHANGED = 2;
@@ -88,7 +87,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
 
         setTitle(this.selectPlaylistItem.getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        adapter = new PlaylistDetailAdapter(this.selectPlaylistItem.getPlaylist(), this);
+        adapter = new PlaylistDetailAdapter(this.selectPlaylistItem.getPlaylist());
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         recyclerView.setAdapter(adapter);
@@ -181,34 +180,6 @@ public class PlaylistDetailActivity extends BaseBlurActivity implements Playlist
         }
         getNewname.setText(selectPlaylistItem.getName());
         renameDialog.get().show();
-    }
-
-    /**
-     * 点击了播放列表中的播放按钮
-     * <p/>
-     * PS: 当前界面 finish() 之后 , 会返回上一个界面 , 如果页面结束的时候 result 为 LIST_CHANGED , 则会触发保存
-     * 如果上一个界面被回收了 , 则不会被保存. 所以应该在转跳到播放界面 结束当前界面 之前进行保存操作. 并
-     * 设置 result 为 LIST_UNCHANGED
-     *
-     * @param position 点击播放的音频位置
-     */
-    @Override
-    public void onPlayButtonClick(int position) {
-        if (position == -1) {
-            Snackbar.make(findViewById(android.R.id.content), R.string.text_playlist_play_Failed, Snackbar.LENGTH_SHORT).show();
-        } else {
-            //保存数据
-            PlaylistUnits.getInstance().savePlaylist(selectPlaylistItem.getName(), selectPlaylistItem.getPlaylist());
-            //设置结果
-            setResult(LIST_UNCHANGED);
-            //播放音频
-            ServiceHolder.getInstance().getService().play(this.selectPlaylistItem.getPlaylist(), position);
-            //转跳到播放界面
-            if (AppConfigs.isAutoSwitchPlaying) {
-                startActivity(new Intent(PlaylistDetailActivity.this, PlayingActivity.class));
-                finish();
-            }
-        }
     }
 
     /**
