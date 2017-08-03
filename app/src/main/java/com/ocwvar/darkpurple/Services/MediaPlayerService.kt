@@ -1,14 +1,17 @@
 package com.ocwvar.darkpurple.Services
 
+import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.ResultReceiver
+import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserServiceCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.view.KeyEvent
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
@@ -27,8 +30,12 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
     //媒体播放调配控制器
     private val iController: IController = PlayerController()
+    //Notification 生成器
+    private val notificationHelper: MediaNotification = MediaNotification()
     //播放核心状态广播监听器
     private val coreStateBroadcastReceiver: CoreStateBroadcastReceiver = CoreStateBroadcastReceiver()
+    //Notification按钮广播监听器
+    private val notificationBroadcastReceiver: NotificationBroadcastReceiver = NotificationBroadcastReceiver()
 
     //MediaSession状态回调处理器
     private val mediaSessionCallback: MediaSessionCallback = MediaSessionCallback()
@@ -85,6 +92,29 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         if (!this.coreStateBroadcastReceiver.registered) {
             registerReceiver(this.coreStateBroadcastReceiver, this.coreStateBroadcastReceiver.intentFilter)
         }
+
+        //设置Notification按钮广播监听器
+        if (!this.notificationBroadcastReceiver.registered) {
+            registerReceiver(this.notificationBroadcastReceiver, this.notificationBroadcastReceiver.intentFilter)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //注销核心广播监听器
+        if (this.coreStateBroadcastReceiver.registered) {
+            unregisterReceiver(this.coreStateBroadcastReceiver)
+        }
+
+        //注销Notification按钮广播监听器
+        if (this.notificationBroadcastReceiver.registered) {
+            unregisterReceiver(this.notificationBroadcastReceiver)
+        }
+
+        //销毁所有媒体活动
+        this.iController.release()
+        this.mediaSession.isActive = false
+        this.mediaSession.release()
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
@@ -113,7 +143,32 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
      * 从 IController 中更新当前的媒体数据以及对应的状态
      */
     private fun updateMediaMetadata() {
+        //设置当前MediaSession使用中的媒体数据
+        this.mediaSession.setMetadata(this.iController.usingLibrary()[this.iController.currentIndex()].mediaMetadata)
 
+        //根据当前状态设置MediaSession是否已激活
+        val state: Int = this.iController.currentState()
+        this.mediaSession.isActive = state != PlaybackStateCompat.STATE_NONE
+
+        //创建状态构造器
+        val playbackStateBuilder: PlaybackStateCompat.Builder = PlaybackStateCompat.Builder()
+
+        //创建当前Session可用的Action
+        val playbackActions = PlaybackStateCompat.ACTION_PLAY and PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID and
+                if (this.iController.currentState() == PlaybackStateCompat.STATE_PLAYING) {
+                    PlaybackStateCompat.ACTION_PAUSE and PlaybackStateCompat.ACTION_STOP
+                } else {
+                    0
+                }
+
+        //设置当前的状态和播放位置
+        playbackStateBuilder.setState(this.iController.currentState(), this.iController.currentPosition(), 1.0f, SystemClock.elapsedRealtime())
+
+        //设置当前的可用Action
+        playbackStateBuilder.setActions(playbackActions)
+
+        //设置MediaSession的状态
+        this.mediaSession.setPlaybackState(playbackStateBuilder.build())
     }
 
     /**
@@ -123,16 +178,21 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
      * @see updateMediaMetadata
      */
     private fun updateNotification() {
-
+        updateMediaMetadata()
+        val notification: Notification? = this.notificationHelper.createNotification(this.mediaSession, this@MediaPlayerService)
+        notification?.let {
+            startForeground(this.notificationHelper.NOTIFICATION_ID, it)
+        }
     }
 
     /**
      * 取消显示当前的 Notification
      *
      * 退出保持前台模式
+     * @param   removeNotification  是否移除正在显示的 Notification
      */
-    private fun dismissNotification() {
-        stopForeground(false)
+    private fun dismissNotification(removeNotification: Boolean = false) {
+        stopForeground(removeNotification)
     }
 
     /**
@@ -258,24 +318,82 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
             when (intent.action) {
 
+            //播放完成
                 ICore.ACTIONS.CORE_ACTION_COMPLETED -> {
                     updateMediaMetadata()
                 }
 
+            //媒体资源被 停止
                 ICore.ACTIONS.CORE_ACTION_STOPPED -> {
                     updateNotification()
                 }
 
+            //媒体资源被 播放
                 ICore.ACTIONS.CORE_ACTION_PLAYING -> {
                     updateNotification()
                 }
 
+            //媒体资源被 暂停
                 ICore.ACTIONS.CORE_ACTION_PAUSED -> {
-                    dismissNotification()
+                    dismissNotification(false)
                 }
 
+            //媒体资源 缓冲完成
                 ICore.ACTIONS.CORE_ACTION_READY -> {
                     updateMediaMetadata()
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Notification按钮广播监听器
+     */
+    private inner class NotificationBroadcastReceiver : BroadcastReceiver() {
+
+        var registered: Boolean = false
+
+        val intentFilter: IntentFilter = IntentFilter().let {
+            it.addAction(MediaNotification.ACTIONS.NOTIFICATION_ACTION_PREVIOUS)
+            it.addAction(MediaNotification.ACTIONS.NOTIFICATION_ACTION_PAUSE)
+            it.addAction(MediaNotification.ACTIONS.NOTIFICATION_ACTION_PLAY)
+            it.addAction(MediaNotification.ACTIONS.NOTIFICATION_ACTION_NEXT)
+            it.addAction(MediaNotification.ACTIONS.NOTIFICATION_ACTION_CLOSE)
+            it
+        }
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
+
+            when (intent.action) {
+
+            //上一个媒体资源
+                MediaNotification.ACTIONS.NOTIFICATION_ACTION_PREVIOUS -> {
+                    mediaSessionCallback.onSkipToPrevious()
+                }
+
+            //暂停媒体资源
+                MediaNotification.ACTIONS.NOTIFICATION_ACTION_PAUSE -> {
+                    mediaSessionCallback.onPause()
+                }
+
+            //播放媒体资源
+                MediaNotification.ACTIONS.NOTIFICATION_ACTION_PLAY -> {
+                    mediaSessionCallback.onPlay()
+                }
+
+            //下一个媒体资源
+                MediaNotification.ACTIONS.NOTIFICATION_ACTION_NEXT -> {
+                    mediaSessionCallback.onSkipToNext()
+                }
+
+            //停止播放
+                MediaNotification.ACTIONS.NOTIFICATION_ACTION_CLOSE -> {
+                    iController.stop()
+                    dismissNotification(true)
                 }
 
             }

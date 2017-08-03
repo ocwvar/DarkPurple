@@ -95,6 +95,11 @@ class PlayerController : IController {
     override fun usingLibrary(): ArrayList<SongItem> = this.usingLibrary
 
     /**
+     * @return  当前的媒体位置
+     */
+    override fun currentIndex(): Int = this.currentIndex
+
+    /**
      * 播放指定媒体数据
      *
      * @param   source  媒体数据
@@ -114,6 +119,7 @@ class PlayerController : IController {
     override fun play(index: Int, isPlayWhenReady: Boolean) {
         if (this.usingLibrary.size > 0 && index < 0 || index >= this.usingLibrary.size) {
             //播放的位置有效
+            this.currentIndex = index
             play(this.usingLibrary[index], isPlayWhenReady)
         }
     }

@@ -43,6 +43,11 @@ interface IController {
     fun usingLibrary(): ArrayList<SongItem>
 
     /**
+     * @return  当前的媒体位置
+     */
+    fun currentIndex(): Int
+
+    /**
      * 播放指定媒体数据
      *
      * @param   source  媒体数据
