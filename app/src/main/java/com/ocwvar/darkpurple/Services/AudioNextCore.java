@@ -145,7 +145,7 @@ class AudioNextCore {
                 //如果读取成功 , 则记录当前数据和列表
                 this.playingIndex = playIndex;
                 if (this.songList == null || !this.songList.equals(songList)) {
-                    Logger.warnning(TAG, "播放列表已更新!");
+                    Logger.warning(TAG, "播放列表已更新!");
                     this.songList = songList;
                 }
                 return true;
@@ -173,7 +173,7 @@ class AudioNextCore {
                 //如果播放成功 , 则记录当前数据和列表
                 this.playingIndex = playIndex;
                 if (this.songList == null || !this.songList.equals(songList)) {
-                    Logger.warnning(TAG, "播放列表已更新!");
+                    Logger.warning(TAG, "播放列表已更新!");
                     this.songList = songList;
                 }
                 //更新封面效果

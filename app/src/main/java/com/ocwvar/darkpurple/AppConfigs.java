@@ -202,9 +202,6 @@ public class AppConfigs {
                 case "1":
                     spectrumStyle = SpectrumStyles.OSU;
                     break;
-                default:
-                    spectrumStyle = SpectrumStyles.Circle;
-                    break;
             }
 
         } else {
@@ -273,9 +270,6 @@ public class AppConfigs {
                 case "1":
                     spectrumStyle = SpectrumStyles.OSU;
                     break;
-                default:
-                    spectrumStyle = SpectrumStyles.Circle;
-                    break;
             }
         }
     }
@@ -341,7 +335,7 @@ public class AppConfigs {
 
     public enum LayoutDataType {StatusBarHeight, NevBarHeight}
 
-    public enum SpectrumStyles {Normal, OSU, Circle}
+    public enum SpectrumStyles {Normal, OSU}
 
     /**
      * APP 颜色资源
@@ -543,6 +537,7 @@ public class AppConfigs {
          * @param resInt 资源地址
          * @return 颜色
          */
+        @SuppressLint("NewApi")
         public static int getColor(int resInt) {
             if (OS_6_UP) {
                 //noinspection ResourceType

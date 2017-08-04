@@ -15,6 +15,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.view.KeyEvent
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Units.ActivityManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
 
 /**
@@ -51,6 +52,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
          * 播放一个媒体库
          */
         val COMMAND_PLAY_LIBRARY: String = "c1"
+
+        /**
+         * 更新 Audio Session ID
+         */
+        val COMMAND_UPDATE_AUDIO_SESSION_ID: String = "c2"
 
     }
 
@@ -293,12 +299,13 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         //自定义指令接收
         override fun onCommand(command: String?, extras: Bundle?, cb: ResultReceiver?) {
             command ?: return
-            extras ?: return
 
             when (command) {
 
             //播放媒体库指令
                 COMMAND.COMMAND_PLAY_LIBRARY -> {
+                    extras ?: return
+
                     val isPlayWhenReady: Boolean = extras.getBoolean(COMMAND_EXTRA.ARG_BOOLEAN_PLAY_WHEN_READY, true)
                     val libraryTAG: String = extras.getString(COMMAND_EXTRA.ARG_STRING_LIBRARY_NAME, "")
                     val playIndex: Int = extras.getInt(COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, 0)
@@ -311,6 +318,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
                         }
                     }
+                }
+
+            //更新AudioSession ID
+                COMMAND.COMMAND_UPDATE_AUDIO_SESSION_ID -> {
+                    iController.updateAudioSessionID()
                 }
 
             }
@@ -427,6 +439,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 MediaNotification.ACTIONS.NOTIFICATION_ACTION_CLOSE -> {
                     iController.stop()
                     dismissNotification(true)
+                    ActivityManager.getInstance().release()
                 }
 
             }

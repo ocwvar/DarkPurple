@@ -80,7 +80,7 @@ public class ActivityManager implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
-        Logger.warnning(" Activity生命周期监听 ", "发生创建    " + activity.getClass().getSimpleName());
+        Logger.warning(" Activity生命周期监听 ", "发生创建    " + activity.getClass().getSimpleName());
         add(activity);
     }
 
@@ -111,7 +111,7 @@ public class ActivityManager implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        Logger.warnning(" Activity生命周期监听 ", "发生销毁    " + activity.getClass().getSimpleName());
+        Logger.warning(" Activity生命周期监听 ", "发生销毁    " + activity.getClass().getSimpleName());
         remove(activity);
     }
 

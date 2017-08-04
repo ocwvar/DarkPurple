@@ -80,6 +80,11 @@ interface ICore {
     fun seek2(position: Long)
 
     /**
+     * 更新 AudioSession ID
+     */
+    fun updateAudioSessionID()
+
+    /**
      * @return  当前媒体的长度，无效长度：-1
      */
     fun mediaDuration(): Long

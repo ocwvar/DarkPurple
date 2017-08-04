@@ -3,6 +3,7 @@ package com.ocwvar.darkpurple.Units.MediaLibrary
 import android.text.TextUtils
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Bean.SongItem
+import com.ocwvar.darkpurple.Units.Logger
 
 /**
  * Project DarkPurple
@@ -12,6 +13,7 @@ import com.ocwvar.darkpurple.Bean.SongItem
  * This file use to :   媒体库
  */
 object MediaLibrary {
+    private val TAG: String = "媒体库"
 
     //主媒体库
     private val mainLibrary: ArrayList<SongItem> = ArrayList()
@@ -24,6 +26,9 @@ object MediaLibrary {
 
     //当前正在使用的媒体索引编号
     private var usingIndex: Int = -1
+
+    //当前正在使用此媒体库的音频Session ID
+    private var usingAudioSession: Int = 0
 
     /**
      * 更新当前正在使用的媒体库TAG
@@ -45,6 +50,16 @@ object MediaLibrary {
         if (this.usingIndex != usingIndex) {
             this.usingIndex = usingIndex
         }
+    }
+
+    /**
+     * 更新正在使用此媒体库的音频Session ID
+     *
+     * @param   audioSessionID  音频Session ID
+     */
+    fun updateAudioSessionID(audioSessionID: Int) {
+        Logger.warning(TAG, "AudioSession ID: " + this.usingAudioSession + " -> " + audioSessionID)
+        this.usingAudioSession = audioSessionID
     }
 
     /**
@@ -125,6 +140,11 @@ object MediaLibrary {
      * @return  播放列表媒体库
      */
     fun getPlaylistLibrary(): ArrayList<PlaylistItem> = this.playlistLibrary
+
+    /**
+     * @return  媒体库的音频Session ID
+     */
+    fun getUsingAudioSessionID(): Int = this.usingAudioSession
 
     /**
      * @return  当前正在使用的媒体库TAG

@@ -125,7 +125,7 @@ class MediaNotificationCompact {
             normalRemoteViews.setTextViewText(R.id.notification_artist, "");
         }
 
-        Logger.warnning(TAG, "通知栏生成时音频播放状态：" + audioStatus.name());
+        Logger.warning(TAG, "通知栏生成时音频播放状态：" + audioStatus.name());
         switch (audioStatus) {
             case Paused:
                 bigRemoteViews.setImageViewResource(R.id.notification_main, R.drawable.ic_media_play);
@@ -213,7 +213,7 @@ class MediaNotificationCompact {
             final String action = intent.getAction();
             final Intent toService = new Intent();
 
-            Logger.warnning(TAG, "接收到的事件: " + action);
+            Logger.warning(TAG, "接收到的事件: " + action);
 
             switch (action) {
                 case BUTTON_MAIN_N:

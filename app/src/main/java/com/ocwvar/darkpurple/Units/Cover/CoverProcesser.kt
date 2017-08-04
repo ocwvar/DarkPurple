@@ -54,14 +54,14 @@ object CoverProcesser {
 
             if (blurd == null && !TextUtils.isEmpty(CoverManager.getValidSource(coverID))) {
                 //如果上次生成的图像已经失效，则重新进行生成操作
-                Logger.warnning(javaClass.simpleName, "上次图像已失效，进行重新生成：" + coverID)
+                Logger.warning(javaClass.simpleName, "上次图像已失效，进行重新生成：" + coverID)
                 handlingCoverID = coverID
                 jobThread?.cancel(true)
                 jobThread = BlurThread(coverID)
                 jobThread?.execute()
             } else if (blurd != null) {
                 //上次生成的图像仍可以使用，直接通过回调接口返回
-                Logger.warnning(javaClass.simpleName, "请求图像与现有图像相同：" + coverID)
+                Logger.warning(javaClass.simpleName, "请求图像与现有图像相同：" + coverID)
                 AppConfigs.ApplicationContext.sendBroadcast(Intent(ACTION_BLUR_UPDATED))
             } else {
                 //封面ID无效
@@ -72,7 +72,7 @@ object CoverProcesser {
         } else if (!TextUtils.isEmpty(CoverManager.getValidSource(coverID))) {
             //开始执行新的任务
 
-            Logger.warnning(javaClass.simpleName, "开始执行新的模糊处理：" + coverID)
+            Logger.warning(javaClass.simpleName, "开始执行新的模糊处理：" + coverID)
             handlingCoverID = coverID
             jobThread?.cancel(true)
             jobThread = BlurThread(coverID)

@@ -55,7 +55,7 @@ import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
-import com.ocwvar.darkpurple.Units.SurfaceViewController;
+import com.ocwvar.darkpurple.Units.SpectrumAnimDisplay;
 import com.ocwvar.darkpurple.widgets.CoverShowerViewPager;
 import com.ocwvar.darkpurple.widgets.CoverSpectrum;
 import com.ocwvar.darkpurple.widgets.LineSlider;
@@ -106,7 +106,7 @@ public class PlayingActivity
     RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
     CoverSpectrum coverSpectrum;
-    SurfaceViewController surfaceViewController;
+    SpectrumAnimDisplay spectrumAnimDisplay;
     //动画Drawable显示View
     View backGround, darkAnime, mainButton, waitForService;
     //侧滑菜单适配器
@@ -164,7 +164,7 @@ public class PlayingActivity
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
         audioChangeReceiver = new AudioChangeReceiver();
         playingList = new ArrayList<>();
-        surfaceViewController = new SurfaceViewController();
+        spectrumAnimDisplay = new SpectrumAnimDisplay();
         showerAdapter = new CoverShowerAdapter(playingList);
 
         //加载View对象
@@ -194,7 +194,7 @@ public class PlayingActivity
         //设置频谱的控制器
         spectrumSwitch.setOnClickListener(this);
         coverSpectrum.setZOrderOnTop(true);
-        coverSpectrum.getHolder().addCallback(surfaceViewController);
+        coverSpectrum.getHolder().addCallback(spectrumAnimDisplay);
 
         //Toolbar属性设置
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -275,6 +275,9 @@ public class PlayingActivity
             switchDarkAnime(true);
             switchMainButtonAnim(true);
         }
+
+        //通知更新AudioSession ID
+        serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
     }
 
     @Override
@@ -312,7 +315,7 @@ public class PlayingActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Logger.warnning("播放界面", "开始释放内存");
+        Logger.warning("播放界面", "开始释放内存");
         blurBG.clear();
         blurCoverThreadObject.clear();
         weakAnimDrawable.clear();
@@ -550,8 +553,8 @@ public class PlayingActivity
                             MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().pause();
                             if (coverSpectrum.isShown()) {
                                 //如果当前正在显示频谱 , 则停止刷新
-                                if (surfaceViewController.isDrawing()) {
-                                    surfaceViewController.stop();
+                                if (spectrumAnimDisplay.isDrawing()) {
+                                    spectrumAnimDisplay.stop();
                                 }
                             }
                             break;
@@ -561,8 +564,8 @@ public class PlayingActivity
                             MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().play();
                             if (coverSpectrum.isShown()) {
                                 //如果当前正在显示频谱 , 则开始
-                                if (!surfaceViewController.isDrawing()) {
-                                    surfaceViewController.start();
+                                if (!spectrumAnimDisplay.isDrawing()) {
+                                    spectrumAnimDisplay.start();
                                 }
                             }
                             break;
@@ -768,8 +771,8 @@ public class PlayingActivity
 
         updateInformation(!serviceConnector.isServiceConnected());
 
-        if (spectrumSwitch.getTag().toString().equals("on") && !surfaceViewController.isDrawing()) {
-            surfaceViewController.start();
+        if (spectrumSwitch.getTag().toString().equals("on") && !spectrumAnimDisplay.isDrawing()) {
+            spectrumAnimDisplay.start();
         }
     }
 
@@ -786,8 +789,7 @@ public class PlayingActivity
         //判断用户是要显示还是隐藏动画
         if (spectrumSwitch.getTag().toString().equals("off")) {
             //显示频谱动画的时候 , 先执行背景淡入动画 , 动画结束后显示SurfaceView , 然后开始绘制频谱动画
-            //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
-            spectrumSwitch.setEnabled(true);
+            //设置按钮的样式
             spectrumSwitch.setAlpha(1f);
 
             if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -796,6 +798,7 @@ public class PlayingActivity
                 return;
             }
 
+            //更换按钮图标
             spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
 
             //设置状态到TAG中
@@ -803,12 +806,10 @@ public class PlayingActivity
 
             coverSpectrum.setVisibility(View.VISIBLE);
 
-            // TODO: 17-8-3 打开频谱接收器
-
             final int currentState = serviceConnector.currentState();
             if (currentState == PlaybackStateCompat.STATE_PLAYING) {
-                //如果当前是正在播放 , 才执行动画
-                surfaceViewController.start();
+                spectrumSwitch.setEnabled(true);
+                spectrumAnimDisplay.start();
             }
         } else {
             //不显示频谱动画的时候 , 隐藏SurfaceView 和 SurfaceView BG , 然后停止动画刷新
@@ -820,10 +821,8 @@ public class PlayingActivity
             //设置状态到TAG中
             spectrumSwitch.setTag("off");
 
-            //先关闭频谱输出动画（EXO2需求）
-            surfaceViewController.stop();
-
-            // TODO: 17-8-3 关闭频谱接收器
+            //先关闭频谱输出动画
+            spectrumAnimDisplay.stop();
 
             coverSpectrum.setVisibility(View.GONE);
         }
@@ -1003,12 +1002,11 @@ public class PlayingActivity
 
         @Override
         public void run() {
-            Logger.warnning(TAG, "开始更新");
+            Logger.warning(TAG, "开始更新");
 
             while (!isInterrupted() && seekBarController != null && serviceConnector.isServiceConnected() && musicSeekBar != null && serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
                 if (serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
                     //如果当前不为正在缓冲，则可以读取正确的歌曲长度和当前位置
-                    Logger.warnning(TAG, "已更新进度条");
 
                     //获取媒体状态数据合集
                     final PlaybackStateCompat playbackState = MediaControllerCompat.getMediaController(PlayingActivity.this).getPlaybackState();
@@ -1045,7 +1043,7 @@ public class PlayingActivity
                         });
                     }
                 } else {
-                    Logger.warnning(TAG, "缓冲中...");
+                    Logger.warning(TAG, "缓冲中...");
                 }
 
                 try {
@@ -1056,7 +1054,7 @@ public class PlayingActivity
 
             }
 
-            Logger.warnning(TAG, "更新中断");
+            Logger.warning(TAG, "更新中断");
         }
 
     }
@@ -1124,6 +1122,9 @@ public class PlayingActivity
                 //播放
                 //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING
                 case "ca_3":
+                    //通知更新AudioSession ID
+                    serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
+
                     switchMainButtonAnim(false);
                     switchDarkAnime(false);
                     if (updatingTimerThread != null) {

@@ -18,7 +18,7 @@ import java.io.FileOutputStream;
  */
 public class CoverImage2File {
 
-    private static final String TAG = "CoverImage2File";
+    private static final String TAG = "图像文件缓存";
     private static CoverImage2File imageCacher;
 
     public static CoverImage2File getInstance() {
@@ -66,15 +66,15 @@ public class CoverImage2File {
         if (imageFile.exists() && imageFile.length() <= 0) {
             //图像文件虽然存在 , 但是图像文件无效 , 所以需要删除
 
-            Logger.warnning(TAG, "图像文件已损坏 , 已删除 , 进行重新缓存.");
+            Logger.warning(TAG, "图像文件已损坏 , 已删除 , 进行重新缓存.");
             imageFile.delete();
         } else if (imageFile.exists() && imageFile.length() >= 1) {
             //图像文件已存在 , 并且有效 , 取消缓存
 
-            Logger.warnning(TAG, "图像已缓存 , 跳过操作.");
+            Logger.warning(TAG, "图像已缓存 , 跳过操作.");
             return imageFile;
         }
-        Logger.warnning(TAG, "图像文件缓存中.");
+        Logger.warning(TAG, "图像文件缓存中.");
 
         FileOutputStream fileOutputStream;
 
@@ -84,7 +84,7 @@ public class CoverImage2File {
             }
             fileOutputStream = new FileOutputStream(imageFile, false);
         } catch (Exception e) {
-            Logger.warnning(TAG, "图像文件缓存失败.  开启文件输出流失败. 原因: " + e.getCause());
+            Logger.warning(TAG, "图像文件缓存失败.  开启文件输出流失败. 原因: " + e.getCause());
             return null;
         }
 
@@ -92,12 +92,12 @@ public class CoverImage2File {
 
         if (result) {
             //图像缓存成功
-            Logger.warnning(TAG, "图像缓存并更新缓存列表  成功");
+            Logger.warning(TAG, "图像缓存并更新缓存列表  成功");
             CoverManager.INSTANCE.setSource(coverType, coverID, imageFile.getPath(), true);
             return imageFile;
         } else {
             //图像缓存失败
-            Logger.warnning(TAG, "图像缓存  失败");
+            Logger.warning(TAG, "图像缓存  失败");
             return null;
         }
     }

@@ -243,6 +243,13 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
     }
 
     /**
+     * 通知核心更新 AudioSession ID
+     */
+    override fun updateAudioSessionID() {
+        iCore.updateAudioSessionID()
+    }
+
+    /**
      * @return  当前媒体的长度
      */
     override fun mediaDuration(): Long = this.iCore.mediaDuration()

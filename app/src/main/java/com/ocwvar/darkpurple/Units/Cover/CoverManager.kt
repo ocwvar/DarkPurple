@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Units.Cover
 
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Units.JSONHandler
+import com.ocwvar.darkpurple.Units.Logger
 import java.io.File
 
 /**
@@ -12,6 +13,8 @@ import java.io.File
  * This file use to :   封面以及封面颜色 统一管理器
  */
 object CoverManager {
+
+    private val TAG: String = "封面管理器"
 
     //自定义封面库(音频路径，封面路径)
     private val customCoverLibrary: LinkedHashMap<String, String> = LinkedHashMap()
@@ -40,6 +43,8 @@ object CoverManager {
         //读取颜色
         putColorSource(ColorType.NORMAL, JSONHandler.getColorLibrary(ColorType.NORMAL), true)
         putColorSource(ColorType.CUSTOM, JSONHandler.getColorLibrary(ColorType.CUSTOM), true)
+
+        Logger.normal(TAG, "已加载所有数据。 封面库：" + this.coverLibrary.size + " 自定义封面库：" + this.customCoverLibrary.size + " 颜色库：" + this.coverColorLibrary.size + " 自定义颜色库：" + this.customCoverColorLibrary.size)
     }
 
     /**
@@ -56,6 +61,8 @@ object CoverManager {
         File(AppConfigs.DataFolder + "CoverLibrary_" + CoverType.BLUR.name + ".data").delete()
         File(AppConfigs.DataFolder + "ColorLibrary_" + ColorType.NORMAL.name + ".data").delete()
         File(AppConfigs.DataFolder + "ColorLibrary_" + ColorType.CUSTOM.name + ".data").delete()
+
+        Logger.normal(TAG, "已清空所有数据")
     }
 
     /**
@@ -73,6 +80,8 @@ object CoverManager {
                 //保存颜色
                 JSONHandler.saveColorLibrary(coverColorLibrary, ColorType.NORMAL)
                 JSONHandler.saveColorLibrary(customCoverColorLibrary, ColorType.CUSTOM)
+
+                Logger.normal(TAG, "所有数据已保存至文件")
             }).start()
         })
     }

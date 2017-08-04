@@ -17,7 +17,7 @@ class RMThreadPool(poolName: String, corePoolSize: Int = 1, maximumPoolSize: Int
     private val taskHashMap: HashMap<String, FutureTask<Any>> = HashMap()
 
     init {
-        Logger.warnning(POOL_TAG, "线程池：$POOL_TAG  已创建 ！")
+        Logger.warning(POOL_TAG, "线程池：$POOL_TAG  已创建 ！")
     }
 
     fun debug() {
@@ -49,7 +49,7 @@ class RMThreadPool(poolName: String, corePoolSize: Int = 1, maximumPoolSize: Int
      */
     fun onTaskEnd(taskTAG: String) {
         if (taskHashMap.remove(taskTAG) != null) {
-            Logger.warnning(POOL_TAG, "线程TAG：$taskTAG，已移除成功")
+            Logger.warning(POOL_TAG, "线程TAG：$taskTAG，已移除成功")
         } else {
             Logger.error(POOL_TAG, "线程TAG：$taskTAG，移除失败，没有相同TAG的条目")
         }
@@ -62,7 +62,7 @@ class RMThreadPool(poolName: String, corePoolSize: Int = 1, maximumPoolSize: Int
     fun destroyTask(taskTAG: String) {
         if (taskHashMap.containsKey(taskTAG)) {
             if (taskHashMap[taskTAG]?.cancel(true) ?: false) {
-                Logger.warnning(POOL_TAG, "线程TAG：$taskTAG，已销毁")
+                Logger.warning(POOL_TAG, "线程TAG：$taskTAG，已销毁")
             } else {
                 Logger.error(POOL_TAG, "线程TAG：$taskTAG，销毁失败，线程终止失败")
             }

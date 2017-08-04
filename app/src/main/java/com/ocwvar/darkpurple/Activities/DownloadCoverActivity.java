@@ -267,7 +267,7 @@ public class DownloadCoverActivity extends BaseBlurActivity implements CoverPrev
 
         @Override
         protected ArrayList<CoverPreviewBean> doInBackground(Integer... integers) {
-            Logger.warnning(TAG, "搜索关键字: " + searchText);
+            Logger.warning(TAG, "搜索关键字: " + searchText);
             return JSONHandler.loadCoverPreviewList(decodeSearchPage(searchCover(searchText)));
         }
 

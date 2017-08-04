@@ -32,6 +32,7 @@ import com.ocwvar.darkpurple.FragmentPages.PlaylistFragment
 import com.ocwvar.darkpurple.FragmentPages.UserFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Services.MediaPlayerService
 import com.ocwvar.darkpurple.Services.MediaServiceConnector
 import com.ocwvar.darkpurple.Units.BaseActivity
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
@@ -162,7 +163,7 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
 
-        //// 测试——连接媒体服务
+        //连接媒体服务
         this.serviceConnector.connect()
 
         //获取当前正在使用的媒体数据
@@ -202,8 +203,8 @@ class MainFrameworkActivity : BaseActivity() {
 
     override fun onStop() {
         super.onStop()
-        //// 测试 —— 断开媒体服务
-
+        //断开媒体服务
+        serviceConnector.disConnect()
     }
 
     override fun onPause() {
@@ -404,17 +405,27 @@ class MainFrameworkActivity : BaseActivity() {
      */
     private inner class PlayingDataUpdateReceiver : BroadcastReceiver() {
 
-        val intentFilter: IntentFilter = IntentFilter(ICore.ACTIONS.CORE_ACTION_READY)
+        val intentFilter: IntentFilter = IntentFilter().let {
+            it.addAction(ICore.ACTIONS.CORE_ACTION_READY)
+            it.addAction(ICore.ACTIONS.CORE_ACTION_PLAYING)
+            it
+        }
         var isRegistered: Boolean = false
 
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
             when (intent.action) {
+
                 ICore.ACTIONS.CORE_ACTION_READY -> {
                     updateHeaderMessage(MediaLibrary.getUsingMedia())
                     if (!floatingActionButton.isShown) {
                         floatingActionButton.show()
                     }
+                }
+
+                ICore.ACTIONS.CORE_ACTION_PLAYING -> {
+                    //通知更新AudioSession ID
+                    serviceConnector.sendCommand(MediaPlayerService.COMMAND.COMMAND_UPDATE_AUDIO_SESSION_ID, null)
                 }
             }
         }

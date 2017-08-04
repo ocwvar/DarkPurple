@@ -798,7 +798,7 @@ public class MediaScanner {
     final private class ComparatorByData implements Comparator<SongItem> {
 
         ComparatorByData() {
-            Logger.warnning("ComparatorByData", "正在按照日期排序");
+            Logger.warning("ComparatorByData", "正在按照日期排序");
         }
 
         @Override
@@ -820,7 +820,7 @@ public class MediaScanner {
     final private class ComparatorByName implements Comparator<SongItem> {
 
         ComparatorByName() {
-            Logger.warnning("ComparatorByName", "正在按照名称排序");
+            Logger.warning("ComparatorByName", "正在按照名称排序");
         }
 
         @Override

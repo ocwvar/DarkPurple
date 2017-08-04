@@ -6,13 +6,14 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.media.audiofx.Visualizer;
+import android.support.annotation.Nullable;
 import android.view.SurfaceHolder;
 
 import com.ocwvar.darkpurple.AppConfigs;
-import com.ocwvar.darkpurple.Services.AudioService;
-import com.ocwvar.darkpurple.Services.AudioStatus;
-import com.ocwvar.darkpurple.Services.ServiceHolder;
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
@@ -22,12 +23,17 @@ import java.util.ArrayList;
  * File Location com.ocwvar.darkpurple.Units
  * 显示频谱的SurfaceView控制器
  */
-public class SurfaceViewController implements SurfaceHolder.Callback {
+public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
 
+    private final SpectrumDataController spectrumDataController;
     private SPShowerThread updateThread;
     private SurfaceHolder surfaceHolder;
     private int sfWidth = 0, sfHeight = 0;
     private boolean isDrawing = false;
+
+    public SpectrumAnimDisplay() {
+        this.spectrumDataController = new SpectrumDataController();
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -77,6 +83,168 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
             updateThread.interrupt();
             updateThread = null;
         }
+
+        //释放频谱解析器
+        spectrumDataController.release();
+    }
+
+    /**
+     * 频谱数据控制器，通过此控制器来获取频谱数据
+     */
+    private final class SpectrumDataController {
+        private final String TAG = "频谱数据控制器";
+
+        private Visualizer visualizer = null;
+
+        private boolean isRelease = false;
+
+        private int usingAudioSessionID = 0;
+
+        /**
+         * 更新并启动频谱解析器
+         */
+        void updateVisualizer() {
+
+            final int sessionID = MediaLibrary.INSTANCE.getUsingAudioSessionID();
+
+            if (sessionID == 0) return;
+
+            //记录正在使用的ID
+            this.usingAudioSessionID = sessionID;
+            release();
+
+            this.visualizer = new Visualizer(sessionID);
+            this.visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+            this.isRelease = false;
+
+            Logger.normal(TAG, "已创建解析器实例，ID：" + sessionID);
+        }
+
+        /**
+         * 释放并停止频谱解析器
+         */
+        void release() {
+            if (!this.isRelease && this.visualizer != null) {
+                this.visualizer.setEnabled(false);
+                this.visualizer.release();
+                this.isRelease = true;
+                this.visualizer = null;
+            }
+        }
+
+        /**
+         * 启动频谱解析
+         */
+        void enable() {
+            if (!this.isRelease && this.visualizer != null) {
+                this.visualizer.setEnabled(true);
+            }
+        }
+
+        /**
+         * @return 频谱解析器是否已启动
+         */
+        boolean isEnabled() {
+            return !this.isRelease && this.visualizer != null && this.visualizer.getEnabled();
+        }
+
+        /**
+         * 获取频谱数据
+         *
+         * @return 频谱数据数组，无法获取时返回 NULL
+         */
+        @Nullable
+        float[] get() {
+            final int currentSessionID = MediaLibrary.INSTANCE.getUsingAudioSessionID();
+            if (this.isRelease || this.visualizer == null || (currentSessionID != 0 && currentSessionID != this.usingAudioSessionID)) {
+                //以下三种情况需要重新创建频谱解析器：
+                //1.已释放资源
+                //2.解析器还未创建
+                //3.当前使用的AudioSession ID与核心的AudioSession ID不符
+                updateVisualizer();
+                if (this.visualizer != null) {
+                    Logger.warning(TAG, "已创建新的解析器对象");
+                    this.visualizer.setEnabled(true);
+                } else {
+                    Logger.error(TAG, "解析器对象创建失败！");
+                }
+            }
+
+            if (this.visualizer != null && this.visualizer.getEnabled()) {
+                final byte[] bytes = new byte[1024];
+                this.visualizer.getFft(bytes);
+                return ints2floats(bytes2ints(bytes), 0.0f, 128);
+            }
+            return null;
+        }
+
+        /**
+         * 将原生FFT数据转换为IntArray的格式
+         *
+         * @param bytes 原生FFT数据
+         * @return 转换得到的数据，如果转换失败则返回NULL
+         */
+        private
+        @Nullable
+        int[] bytes2ints(final byte[] bytes) {
+            if (bytes == null || bytes.length == 0) {
+                return null;
+            }
+            final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+
+            //必须先创建一个对应大小的 Integer数组 容器
+            final int[] result = new int[byteBuffer.asIntBuffer().limit()];
+
+            try {
+                //获取Integer数组 数据
+                byteBuffer.asIntBuffer().get(result);
+                return result;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        /**
+         * 将原生FFT Int数组转换为 0 ~ 限制大小 区间内的Float数组
+         *
+         * @param source          要用于转换的IntArray
+         * @param sourceItemLimit 限制每个Float数值的最大值 <=0 则不限制
+         * @param resultLimit     输出数组的长度 <=0 则不限制
+         * @return 转换得到的数据，如果转换失败则返回NULL
+         */
+        private
+        @Nullable
+        float[] ints2floats(final int[] source, final float sourceItemLimit, final int resultLimit) {
+            if (source == null || source.length == 0) {
+                return null;
+            }
+
+            //根据条件创建数组长度
+            final float[] result = (resultLimit <= 0) ? new float[source.length] : new float[resultLimit];
+            for (int i = 0; i < result.length; i++) {
+                //获取转换后的数值
+                float floatData = (float) source[i];
+                if (floatData == 0.0f) {
+                    //原本数据就是 0f 不需要重新设置
+                    continue;
+                }
+                if (floatData < 0.0f) {
+                    //数据为负数，转为正数
+                    floatData *= -1;
+                }
+
+                //处理频谱数值大小
+                floatData *= 0.000000001f;
+
+                if (sourceItemLimit > 0 && sourceItemLimit < floatData) {
+                    //如果大于限制数，则将数字设为最大数值
+                    floatData = sourceItemLimit;
+                }
+                result[i] = floatData;
+            }
+            return result;
+        }
+
     }
 
     /**
@@ -84,7 +252,6 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
      */
     private final class SPShowerThread extends Thread {
 
-        private final AudioService service;                         //音频服务
         private final Paint outlinePainter, linePaint, nodePaint;   //线条，柱条，node点 的画笔
         private int spectrumCount;                                  //绘制的条目数量
         private float spectrumRadio;                                //频谱扩展值
@@ -101,7 +268,6 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
          */
         SPShowerThread(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
-            this.service = ServiceHolder.getInstance().getService();
 
             spectrumCount = (AppConfigs.spectrumCounts < 4) ? 4 : AppConfigs.spectrumCounts;
             spectrumCount = (AppConfigs.spectrumCounts > 100) ? 100 : AppConfigs.spectrumCounts;
@@ -137,13 +303,16 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                 linePaint = null;
             }
 
+            //启动频谱解析器
+            spectrumDataController.updateVisualizer();
+            spectrumDataController.enable();
         }
 
         @Override
         public void run() {
 
             //当音频处于已经加载的状态才进行显示
-            if (service.getAudioStatus() != AudioStatus.Empty) {
+            if (spectrumDataController.isEnabled()) {
 
                 //先自动计算好各类必须的数据
                 computeResourceSize();
@@ -151,7 +320,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                 final ArrayList<Point> points;
                 //不同的动画绘制类型
                 try {
-                    Logger.warnning("频谱绘制", "开始绘制频谱图像...");
+                    Logger.warning("频谱绘制", "开始绘制频谱图像...");
                     switch (AppConfigs.spectrumStyle) {
                         case Normal:
                             //根据计算得出的 r 半径 与设置的角度等分，计算圆圈上所有点的坐标
@@ -162,9 +331,6 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                             //根据计算得出的 r 半径 与设置的角度等分，计算圆圈上所有点的坐标
                             points = splitCircle(centerX, centerY, r, spectrumCount);
                             OSUThread(surfaceHolder, points);
-                            break;
-                        case Circle:
-                            CIRCLEThread(surfaceHolder);
                             break;
                     }
                 } catch (Exception ignore) {
@@ -314,7 +480,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
             while (surfaceHolder != null && !isInterrupted()) {
 
                 //获取频谱数据
-                final float[] fftDataSet = service.getSpectrum();
+                final float[] fftDataSet = spectrumDataController.get();
                 //获取画布
                 final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
 
@@ -409,7 +575,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
             while (surfaceHolder != null && !isInterrupted()) {
 
                 //获取频谱数据
-                final float[] fftDataSet = service.getSpectrum();
+                final float[] fftDataSet = spectrumDataController.get();
                 //获取画布
                 final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
 
@@ -491,7 +657,7 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
 
                     //更新画布
                     surfaceHolder.unlockCanvasAndPost(canvas);
-
+                    System.out.println("!");
                     try {
                         Thread.sleep(20);
                     } catch (InterruptedException ignore) {
@@ -502,67 +668,6 @@ public class SurfaceViewController implements SurfaceHolder.Callback {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ignore) {
-                    }
-                }
-            }
-
-        }
-
-        /**
-         * 绘制动态圆形动画线程主方法
-         *
-         * @param surfaceHolder 要绘制图形的 SurfaceHolder
-         */
-        private void CIRCLEThread(SurfaceHolder surfaceHolder) {
-
-            //画笔颜色
-            final int circleColor = Color.rgb(255, 255, 255);
-            //圆形的画笔
-            final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            circlePaint.setStyle(Paint.Style.FILL);
-            circlePaint.setColor(circleColor);
-            //圆圈半径
-            final float R = drawArea.width() / 3;
-            float targetR;
-            float finalR = R;
-
-            while (surfaceHolder != null && !isInterrupted()) {
-                //获取频谱数据
-                final float[] fftDataSet = service.getSpectrum();
-                //设置最终的长度
-                targetR = R + fftDataSet[3] * spectrumRadio;
-
-                if (targetR <= 0 || targetR == finalR) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                } else if (finalR > targetR) {
-                    //如果长度大于目标长度 , 则要减少长度
-                    for (; finalR > targetR; finalR -= 5.0f) {
-                        final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
-                        if (canvas == null) return;
-
-                        //清屏
-                        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                        canvas.drawColor(Color.rgb(36, 44, 54));
-
-                        canvas.drawCircle(centerX, centerY, finalR, circlePaint);
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                    }
-                } else if (finalR < targetR) {
-                    //如果长度小于目标长度 , 则要减少长度
-                    for (; finalR < targetR; finalR += 5.0f) {
-                        final Canvas canvas = surfaceHolder.lockCanvas(drawArea);
-                        if (canvas == null) return;
-
-                        //清屏
-                        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                        canvas.drawColor(Color.rgb(36, 44, 54));
-
-                        canvas.drawCircle(centerX, centerY, finalR, circlePaint);
-                        surfaceHolder.unlockCanvasAndPost(canvas);
                     }
                 }
             }

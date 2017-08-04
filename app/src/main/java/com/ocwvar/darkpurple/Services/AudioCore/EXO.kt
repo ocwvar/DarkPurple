@@ -17,6 +17,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 import java.io.IOException
 
 /**
@@ -151,6 +152,13 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     }
 
     /**
+     * 更新 AudioSession ID
+     */
+    override fun updateAudioSessionID() {
+        MediaLibrary.updateAudioSessionID(this.exoPlayer.audioSessionId)
+    }
+
+    /**
      * @return  当前媒体的长度，无效长度：-1，单位ms
      */
     override fun mediaDuration(): Long = this.currentDuration
@@ -202,7 +210,6 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             if (!isMediaReady && playbackState == Player.STATE_READY) {
                 //媒体缓冲完成
-
                 isMediaReady = true
 
                 //更新媒体数据
@@ -221,10 +228,12 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
                     exoPlayer.playWhenReady = false
                     currentState = PlaybackStateCompat.STATE_PAUSED
                 }
+
             } else if (isMediaReady && ((playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE))) {
                 //媒体播放完成
 
                 currentState = PlaybackStateCompat.STATE_NONE
+                MediaLibrary.updateAudioSessionID(0)
                 sendBroadcast(ICore.ACTIONS.CORE_ACTION_COMPLETED)
             }
         }

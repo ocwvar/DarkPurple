@@ -204,12 +204,12 @@ public class PlaylistUnits {
             if (plFile.exists()) {
                 //先删除与新名字相同的残留文件
                 if (new File(AppConfigs.PlaylistFolder + newName + ".pl").delete()) {
-                    Logger.warnning(TAG, "发现残留文件 , 已删除");
+                    Logger.warning(TAG, "发现残留文件 , 已删除");
                 }
                 //如果文件存在 , 则进行重命名操作
                 boolean result = plFile.renameTo(new File(AppConfigs.PlaylistFolder + newName + ".pl"));
                 if (result) {
-                    Logger.warnning(TAG, "播放列表名称成功修改.  " + oldName + " --> " + newName);
+                    Logger.warning(TAG, "播放列表名称成功修改.  " + oldName + " --> " + newName);
                     return true;
                 } else {
                     Logger.error(TAG, "播放列表名称修改失败.  无法重命名本地数据文件.");
@@ -223,7 +223,7 @@ public class PlaylistUnits {
                         JSONHandler.savePlaylist(newName, playlistItem.getPlaylist());
                     }
                 }).start();
-                Logger.warnning(TAG, "播放列表数据原始文件不存在 , 重新创建数据列表.");
+                Logger.warning(TAG, "播放列表数据原始文件不存在 , 重新创建数据列表.");
                 return true;
             }
         } else {
@@ -293,7 +293,7 @@ public class PlaylistUnits {
      * 从 SharedPreferences 读取播放列表的基本信息
      */
     private void initSPData() {
-        Logger.warnning(TAG, "正在获取已储存的播放列表基本数据");
+        Logger.warning(TAG, "正在获取已储存的播放列表基本数据");
         SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
         //先获取所有播放列表的名称
         String[] names = loadStringArray(sp, "names");
@@ -301,14 +301,14 @@ public class PlaylistUnits {
         if (names != null) {
             for (String playlistName : names) {
                 //逐个从SP中获取播放列表数据
-                Logger.warnning(TAG, "正在获取基本数据  " + playlistName);
+                Logger.warning(TAG, "正在获取基本数据  " + playlistName);
                 String[] playlistValues = loadStringArray(sp, playlistName);
                 if (playlistValues != null && playlistValues.length == 2) {
                     //如果字符集合有效 , 同时数量为2
                     this.playlistSet.add(new PlaylistItem(playlistName, playlistValues));
                 }
             }
-            Logger.warnning(TAG, "基本数据获取完毕.  总计: " + playlistSet.size());
+            Logger.warning(TAG, "基本数据获取完毕.  总计: " + playlistSet.size());
         } else {
             Logger.error(TAG, "无法获取. 原因: 没有已保存的数据");
         }

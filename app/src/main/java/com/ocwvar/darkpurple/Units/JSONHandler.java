@@ -136,7 +136,7 @@ public final class JSONHandler {
                 return null;
             } else {
 
-                Logger.warnning(TAG, "读取播放列表成功");
+                Logger.warning(TAG, "读取播放列表成功");
                 return playlist;
             }
         }
@@ -424,7 +424,7 @@ public final class JSONHandler {
             byteArrayInputStream.close();
             fileOutputStream.flush();
             fileOutputStream.close();
-            Logger.warnning("JsonArray2File", "文件保存成功：" + target.getName());
+            Logger.warning("JsonArray2File", "文件保存成功：" + target.getName());
             return true;
         } catch (Exception e) {
             //无法创建数据输出流
@@ -469,7 +469,7 @@ public final class JSONHandler {
             byteArrayOutputStream.reset();
 
             //返回数据
-            Logger.warnning("file2JsonArray", "文件读取成功：" + targetPath);
+            Logger.warning("file2JsonArray", "文件读取成功：" + targetPath);
             return jsonArray;
         } catch (Exception e) {
             Logger.error("file2JsonArray", "创建文件输入流 或 转换JsonArray失败\n" + e);

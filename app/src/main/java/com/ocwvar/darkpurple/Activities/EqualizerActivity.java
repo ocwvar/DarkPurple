@@ -163,10 +163,10 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
             //设置曲线变化
             bezierView.setLevel(eqIndex, seekBar.getProgress());
 
-            Logger.warnning(TAG, "发生调节   位置: " + eqIndex + "   数值: " + eqParameter);
+            Logger.warning(TAG, "发生调节   位置: " + eqIndex + "   数值: " + eqParameter);
 
             if (service != null) {
-                Logger.warnning(TAG, "修改结果: " + service.updateEqParameter(eqParameter, eqIndex));
+                Logger.warning(TAG, "修改结果: " + service.updateEqParameter(eqParameter, eqIndex));
             }
         }
         return false;

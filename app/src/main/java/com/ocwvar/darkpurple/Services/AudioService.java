@@ -107,7 +107,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     @Override
     public void onCreate() {
         super.onCreate();
-        Logger.warnning(TAG, "onCreate");
+        Logger.warning(TAG, "onCreate");
 
         //创建对象
         core = new AudioNextCore(getApplicationContext());
@@ -139,7 +139,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Logger.warnning(TAG, "onBind");
+        Logger.warning(TAG, "onBind");
         return new ServiceObject();
     }
 
@@ -156,7 +156,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Logger.warnning(TAG, "onDestroy");
+        Logger.warning(TAG, "onDestroy");
         if (core.getCurrentStatus() != AudioStatus.Empty) {
             core.releaseAudio();
         }
@@ -199,7 +199,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                         KeyEvent event = keyIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
                         if (event.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK && event.getAction() == KeyEvent.ACTION_DOWN) {
                             //当用户按下耳机按钮的时候
-                            Logger.warnning(TAG, "耳机按钮事件");
+                            Logger.warning(TAG, "耳机按钮事件");
                             //增加按键次数计数
                             mediaButtonPressCount += 1;
                             if (countingThread != null && countingThread.getState() != Thread.State.TERMINATED) {
@@ -238,7 +238,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
     private void hideNotification() {
         stopForeground(true);
         isRunningForeground = false;
-        Logger.warnning(TAG, "音频服务已停止后台运行");
+        Logger.warning(TAG, "音频服务已停止后台运行");
     }
 
     /**
@@ -308,7 +308,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
      */
     public boolean resume() {
 
-        Logger.warnning(TAG, "恢复焦点变化影响");
+        Logger.warning(TAG, "恢复焦点变化影响");
         needAutoChanged = true;
         requestAudioFocus();
 
@@ -329,7 +329,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         if (isPauseByUser) {
             //如果是由用户主动暂停的音频，则之后忽略焦点变化
             needAutoChanged = false;
-            Logger.warnning(TAG, "忽略焦点变化影响");
+            Logger.warning(TAG, "忽略焦点变化影响");
         }
 
         final boolean result = core.pauseAudio();
@@ -737,7 +737,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
             isMediaButtonHandling = true;
 
-            Logger.warnning(TAG, "此次按键次数为: " + mediaButtonPressCount);
+            Logger.warning(TAG, "此次按键次数为: " + mediaButtonPressCount);
 
             switch (mediaButtonPressCount) {
                 case 1:

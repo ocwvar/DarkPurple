@@ -279,7 +279,7 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
          */
         fun switchOn() {
             if (!isRelease) {
-                Logger.warnning(TAG, "开始接收数据")
+                Logger.warning(TAG, "开始接收数据")
                 visualizer.enabled = true
             }
         }
@@ -289,7 +289,7 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
          */
         fun switchOff() {
             if (!isRelease) {
-                Logger.warnning(TAG, "停止接收数据")
+                Logger.warning(TAG, "停止接收数据")
                 visualizer.enabled = false
             }
         }
@@ -299,7 +299,7 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
          * 调用此功能后不能再调用 "visualizer.enabled = true" 否则会出现 "error status = 0"
          */
         fun release() {
-            Logger.warnning(TAG, "释放频谱资源")
+            Logger.warning(TAG, "释放频谱资源")
             this.isRelease = true
             visualizer.release()
         }
@@ -377,7 +377,7 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
 
         override fun onPlayerError(error: ExoPlaybackException?) {
             //音频播放失败，则直接播放下一首
-            Logger.warnning(TAG, "音频播放失败！ 原因：$error")
+            Logger.warning(TAG, "音频播放失败！ 原因：$error")
             applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
         }
 
@@ -396,14 +396,14 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
                     currentAudioStatus = AudioStatus.Buffering
                     if (playWhenReady) {
                         //播放完成后，需要播放下一首歌曲
-                        Logger.warnning(TAG, "状态变更：播放结束")
+                        Logger.warning(TAG, "状态变更：播放结束")
                         applicationContext.sendBroadcast(Intent(AudioService.NOTIFICATION_NEXT))
                     }
                 }
 
                 Player.STATE_READY -> {
                     need2UpdateNotification = true
-                    Logger.warnning(TAG, "状态变更：音频加载完成")
+                    Logger.warning(TAG, "状态变更：音频加载完成")
                     //更新状态
                     if (playWhenReady) {
                         currentAudioStatus = AudioStatus.Playing
@@ -414,12 +414,12 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
                     isMusicLoaded = true
                     //当读取完成后，设置音频的长度
                     loadedSourceDuration = exoPlayer.duration / 1000
-                    Logger.warnning(TAG, "音频长度：$loadedSourceDuration")
+                    Logger.warning(TAG, "音频长度：$loadedSourceDuration")
                 }
 
                 Player.STATE_BUFFERING -> {
                     need2UpdateNotification = false
-                    Logger.warnning(TAG, "状态变更：音频正在缓冲")
+                    Logger.warning(TAG, "状态变更：音频正在缓冲")
                     //更新状态
                     currentAudioStatus = AudioStatus.Buffering
                     //设置标记
@@ -462,7 +462,7 @@ class EXOCORE(val applicationContext: Context = AppConfigs.ApplicationContext) :
 
         override fun onLoadError(error: IOException?) {
             //音频加载失败，则直接播放下一首
-            Logger.warnning(TAG, "音频加载失败！ 原因：$error")
+            Logger.warning(TAG, "音频加载失败！ 原因：$error")
         }
     }
 
