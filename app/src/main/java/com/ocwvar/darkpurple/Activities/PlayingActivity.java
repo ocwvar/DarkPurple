@@ -36,6 +36,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -106,7 +108,7 @@ public class PlayingActivity
     CoverSpectrum coverSpectrum;
     SurfaceViewController surfaceViewController;
     //动画Drawable显示View
-    View backGround, darkAnime, mainButton;
+    View backGround, darkAnime, mainButton, waitForService;
     //侧滑菜单适配器
     SlidingListAdapter slidingListAdapter;
     //封面轮播适配器
@@ -168,6 +170,7 @@ public class PlayingActivity
         //加载View对象
         backGround = findViewById(R.id.contener);
         darkAnime = findViewById(R.id.darkBG);
+        waitForService = findViewById(R.id.waitForService);
         spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
         equalizerPage = (ImageButton) findViewById(R.id.equalizer);
         coverSpectrum = (CoverSpectrum) findViewById(R.id.surfaceView);
@@ -190,7 +193,6 @@ public class PlayingActivity
 
         //设置频谱的控制器
         spectrumSwitch.setOnClickListener(this);
-        spectrumSwitch.setTag("off");
         coverSpectrum.setZOrderOnTop(true);
         coverSpectrum.getHolder().addCallback(surfaceViewController);
 
@@ -215,7 +217,9 @@ public class PlayingActivity
         //设置动画显示View的默认TAG
         backGround.setTag(-1L);    //-1为无背景ID
         darkAnime.setTag(false);    //false为不显示，true为已显示
-        mainButton.setTag(false);   //false为不显示，true为已显示
+        mainButton.setTag(false);
+        waitForService.setTag(false);
+        spectrumSwitch.setTag("off");   //off表示关闭状态
 
         //设置主按钮的按键回调
         mainButton.setOnClickListener(this);
@@ -256,8 +260,13 @@ public class PlayingActivity
     @Override
     protected void onResume() {
         super.onResume();
+        //显示等待服务连接动画
+        switchWaitForService(true);
+
+        //开始连接服务
         serviceConnector.connect();
 
+        //注册音频变化广播接收器
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
 
         //如果一切换回当前页面，音频状态是暂停，则显示黑色背景
@@ -681,6 +690,70 @@ public class PlayingActivity
     }
 
     /**
+     * 切换显示等待服务动画
+     *
+     * @param show True：显示，False：隐藏
+     */
+    private void switchWaitForService(boolean show) {
+        if (show && !(boolean) waitForService.getTag()) {
+            //显示等待动画
+            //设置View可见性
+            waitForService.setVisibility(View.VISIBLE);
+
+            //加载动画
+            final Animation animation = AnimationUtils.loadAnimation(PlayingActivity.this, R.anim.wait_for_service_show);
+            animation.setDuration(500L);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    waitForService.setAnimation(null);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            //执行动画
+            waitForService.setAnimation(animation);
+            waitForService.startAnimation(animation);
+            waitForService.setTag(true);
+        } else if (!show && (boolean) waitForService.getTag()) {
+            //隐藏等待动画
+            waitForService.setVisibility(View.GONE);
+
+            final Animation animation = AnimationUtils.loadAnimation(PlayingActivity.this, R.anim.wait_for_service_hide);
+            animation.setDuration(500L);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    waitForService.setAnimation(null);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            waitForService.setAnimation(animation);
+            waitForService.startAnimation(animation);
+            waitForService.setTag(false);
+        }
+    }
+
+    /**
      * 侧滑菜单点击事件回调
      *
      * @param songItem 选择中的歌曲数据集合
@@ -767,6 +840,8 @@ public class PlayingActivity
          */
         @Override
         public void onServiceConnected() {
+            switchWaitForService(false);
+
             updateInformation(!serviceConnector.isServiceConnected());
         }
 

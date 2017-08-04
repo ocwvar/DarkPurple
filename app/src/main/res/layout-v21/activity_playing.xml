@@ -169,15 +169,18 @@
             android:background="@color/backgroundColor_Dark">
 
             <ProgressBar
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:indeterminateOnly="true"
+                android:indeterminateTint="@color/pureWhite" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:text="@string/waitForService"
                 android:textColor="@color/pureWhite" />

@@ -8,4 +8,8 @@
         <item name="android:navigationBarColor">@color/NavBar_Color</item>
     </style>
 
+    <style name="Withe_ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressTint">@color/pureWhite</item>
+    </style>
+
 </resources>
