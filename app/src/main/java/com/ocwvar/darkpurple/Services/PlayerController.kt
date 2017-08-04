@@ -1,6 +1,9 @@
 package com.ocwvar.darkpurple.Services
 
+import android.content.Context
+import android.content.Intent
 import android.text.TextUtils
+import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.Services.AudioCore.EXO
@@ -17,7 +20,7 @@ import kotlin.collections.ArrayList
  * File Location com.ocwvar.darkpurple.Services
  * This file use to :   媒体播放控制器，负责调配当前使用的播放资源
  */
-class PlayerController : IController {
+class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) : IController {
 
     //当前使用的媒体库，默认是指向主媒体库
     private var usingLibrary: ArrayList<SongItem> = MediaLibrary.getMainLibrary()
@@ -171,7 +174,8 @@ class PlayerController : IController {
                 //循环则置于列表头部
                 index = 0
             } else {
-                //不循环，则不进行播放
+                //不循环，则不进行播放，发送播放序列完成广播
+                this.appContext.sendBroadcast(Intent(IController.ACTIONS.ACTION_QUEUE_FINISH))
                 index = -1
             }
         } else {
@@ -205,7 +209,8 @@ class PlayerController : IController {
                 //循环则置于列表尾部
                 index = this.usingLibrary.size - 1
             } else {
-                //不循环，则不进行播放
+                //不循环，则不进行播放，发送播放序列完成广播
+                this.appContext.sendBroadcast(Intent(IController.ACTIONS.ACTION_QUEUE_FINISH))
                 index = -1
             }
         } else {

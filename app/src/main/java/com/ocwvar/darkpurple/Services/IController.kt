@@ -28,6 +28,18 @@ interface IController {
     }
 
     /**
+     * 广播 Action
+     */
+    object ACTIONS {
+
+        /**
+         * 播放序列完成
+         */
+        val ACTION_QUEUE_FINISH: String = "aqf"
+
+    }
+
+    /**
      * 切换播放的媒体库
      *
      * 此操作将会终止当前正在播放的音频

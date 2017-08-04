@@ -332,6 +332,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             it.addAction(ICore.ACTIONS.CORE_ACTION_PLAYING)
             it.addAction(ICore.ACTIONS.CORE_ACTION_PAUSED)
             it.addAction(ICore.ACTIONS.CORE_ACTION_READY)
+            it.addAction(IController.ACTIONS.ACTION_QUEUE_FINISH)
             it
         }
 
@@ -339,6 +340,13 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             intent ?: return
 
             when (intent.action) {
+
+            //播放序列完成
+                IController.ACTIONS.ACTION_QUEUE_FINISH -> {
+                    updateMediaMetadata()
+                    dismissNotification(true)
+                    iController.release()
+                }
 
             //播放完成
                 ICore.ACTIONS.CORE_ACTION_COMPLETED -> {

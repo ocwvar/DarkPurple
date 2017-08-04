@@ -46,6 +46,7 @@ import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Services.AudioCore.ICore;
+import com.ocwvar.darkpurple.Services.IController;
 import com.ocwvar.darkpurple.Services.MediaPlayerService;
 import com.ocwvar.darkpurple.Services.MediaServiceConnector;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
@@ -126,7 +127,6 @@ public class PlayingActivity
     //主按钮动画Drawable弱引用
     private WeakReference<TransitionDrawable> mainButtonAnimDrawable = new WeakReference<>(null);
 
-    // TODO: 17-8-4 1.最后一个媒体数据完成时有异常
     // TODO: 17-8-4 2.暂停按钮的触摸逻辑改善
     // TODO: 17-8-4 3.添加频谱
 
@@ -365,9 +365,6 @@ public class PlayingActivity
         } else {
             //否则显示歌曲信息
 
-            final boolean state = serviceConnector.isServiceConnected();
-            System.out.println(state);
-
             //获取当前正在显示的媒体位置索引
             final int usingIndex = MediaLibrary.INSTANCE.getUsingIndex();
 
@@ -389,6 +386,9 @@ public class PlayingActivity
                 //媒体长度
                 final long mediaDuration = playingSong.getDuration();
 
+
+                //滑动条是否可用
+                musicSeekBar.setEnabled(currentState != PlaybackStateCompat.STATE_NONE);
                 //设置歌曲名称显示
                 title.setText(String.format("%s %s", getString(R.string.main_header_title), playingSong.getTitle()));
                 //设置歌手名称显示
@@ -407,14 +407,28 @@ public class PlayingActivity
                 if (!AppConfigs.isUseSimplePlayingScreen) {
                     generateBlurBackGround();
                 }
-                //如果歌曲播放了 , 就开始更新界面, 更新之前中断旧的更新线程
-                if (currentState == PlaybackStateCompat.STATE_PLAYING) {
-                    if (updatingTimerThread != null) {
-                        updatingTimerThread.interrupt();
-                        updatingTimerThread = null;
-                    }
-                    updatingTimerThread = new UpdatingTimerThread();
-                    updatingTimerThread.start();
+
+                //根据音频服务当前的状态来更新UI
+                switch (currentState) {
+
+                    case PlaybackStateCompat.STATE_PLAYING:
+                        switchMainButtonAnim(false);
+                        switchDarkAnime(false);
+
+                        if (updatingTimerThread != null) {
+                            updatingTimerThread.interrupt();
+                            updatingTimerThread = null;
+                        }
+                        updatingTimerThread = new UpdatingTimerThread();
+                        updatingTimerThread.start();
+                        break;
+
+                    case PlaybackStateCompat.STATE_NONE:
+                    case PlaybackStateCompat.STATE_PAUSED:
+                    case PlaybackStateCompat.STATE_STOPPED:
+                        switchMainButtonAnim(true);
+                        switchDarkAnime(true);
+                        break;
                 }
             } else {
                 //当前没有播放数据，则显示空界面
@@ -542,6 +556,13 @@ public class PlayingActivity
                                     surfaceViewController.start();
                                 }
                             }
+                            break;
+                        case PlaybackStateCompat.STATE_NONE:
+                            //当前服务没有加载资源，直接使用当前已缓存的数据
+                            final Bundle bundle = new Bundle();
+                            bundle.putInt(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_INT_LIBRARY_INDEX(), coverShower.getCurrentItem());
+                            bundle.putString(MediaPlayerService.COMMAND_EXTRA.INSTANCE.getARG_STRING_LIBRARY_NAME(), MediaLibrary.INSTANCE.getUsingLibraryTAG());
+                            serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_PLAY_LIBRARY(), bundle);
                             break;
                     }
                 }
@@ -746,8 +767,6 @@ public class PlayingActivity
          */
         @Override
         public void onServiceConnected() {
-            final boolean state = serviceConnector.isServiceConnected();
-            System.out.println(state);
             updateInformation(!serviceConnector.isServiceConnected());
         }
 
@@ -1006,6 +1025,7 @@ public class PlayingActivity
             filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING());
             filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_STOPPED());
             filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_READY());
+            filter.addAction(IController.ACTIONS.INSTANCE.getACTION_QUEUE_FINISH());
         }
 
         @Override
@@ -1013,6 +1033,18 @@ public class PlayingActivity
 
             //由于Java不能在 case 中使用 Kotlin 的 Object 中的字符串，所以这里直接使用值
             switch (intent.getAction()) {
+
+                //播放序列完成
+                //IController.ACTIONS.INSTANCE.getACTION_QUEUE_FINISH()
+                case "aqf":
+                    switchDarkAnime(true);
+                    switchMainButtonAnim(true);
+                    musicSeekBar.setEnabled(false);
+                    if (updatingTimerThread != null) {
+                        updatingTimerThread.interrupt();
+                        updatingTimerThread = null;
+                    }
+                    break;
 
                 //播放
                 //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING
