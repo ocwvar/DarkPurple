@@ -242,6 +242,13 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
     }
 
     /**
+     * @param   volume 音频音量 0.0 ~ 1.0
+     */
+    override fun setVolume(volume: Float) {
+        this.iCore.setVolume(volume)
+    }
+
+    /**
      * 通知核心更新 AudioSession ID
      */
     override fun updateAudioSessionID() {

@@ -114,6 +114,11 @@ interface IController {
     fun seek2(position: Long)
 
     /**
+     * @param   volume 音频音量 0.0 ~ 1.0
+     */
+    fun setVolume(volume: Float)
+
+    /**
      * 通知核心更新 AudioSession ID
      */
     fun updateAudioSessionID()

@@ -81,14 +81,14 @@ public class AppConfigs {
     //是否在耳机重新插入/连接之后继续播放
     public static boolean isResumeAudioWhenPlugin = true;
 
+    //是否在暂时丢失音频焦点时降低音量
+    public static boolean autoAdjustVolumeWhenTemperatelyLoss = true;
+
     //是否使用简易模式的播放界面
     public static boolean isUseSimplePlayingScreen = false;
 
     //是否自动跳转到播放界面
     public static boolean isAutoSwitchPlaying = true;
-
-    //首页图像影响TabLayout颜色
-    public static boolean isTabColorByImage = true;
 
     //频谱项 - 是否显示Node
     public static SpectrumStyles spectrumStyle = SpectrumStyles.Normal;
@@ -153,6 +153,8 @@ public class AppConfigs {
 
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
 
+            autoAdjustVolumeWhenTemperatelyLoss = preferences.getBoolean("autoAdjustVolumeWhenTemperatelyLoss", true);
+
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
@@ -162,8 +164,6 @@ public class AppConfigs {
             isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", false);
 
             isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
-
-            isTabColorByImage = preferences.getBoolean("isTabColorByImage", true);
 
             spectrumNodeWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "5.0"));
 
@@ -223,11 +223,11 @@ public class AppConfigs {
 
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
 
+            autoAdjustVolumeWhenTemperatelyLoss = preferences.getBoolean("autoAdjustVolumeWhenTemperatelyLoss", true);
+
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
-
-            isTabColorByImage = preferences.getBoolean("isTabColorByImage", true);
 
             isSpectrumShowNode = preferences.getBoolean("isSpectrumShowNode", false);
 

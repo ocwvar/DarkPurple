@@ -63,6 +63,13 @@ class MediaNotification {
             return null
         }
 
+        //先检测当前的状态
+        val state: Int = playbackState.state
+        if (state == PlaybackStateCompat.STATE_ERROR || state == PlaybackStateCompat.STATE_NONE) {
+            //不支持的状态
+            return null
+        }
+
         //创建Notification构造器
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(appContext)
         builder
@@ -92,11 +99,11 @@ class MediaNotification {
                 //添加 上一个 媒体数据按钮
                 .addAction(R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
 
-        if (playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (state == PlaybackStateCompat.STATE_PLAYING) {
 
             //当前是播放状态，添加 暂停播放 媒体按钮
             builder.addAction(R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
-        } else if (playbackState.state == PlaybackStateCompat.STATE_PAUSED || playbackState.state == PlaybackStateCompat.STATE_STOPPED) {
+        } else if (state == PlaybackStateCompat.STATE_PAUSED || state == PlaybackStateCompat.STATE_STOPPED) {
 
             //当前是暂停或停止状态，添加 开始播放 媒体按钮
             builder.addAction(R.drawable.ic_media_play, "Play", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))

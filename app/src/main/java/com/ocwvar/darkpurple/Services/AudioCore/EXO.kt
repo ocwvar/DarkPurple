@@ -152,6 +152,19 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     }
 
     /**
+     * @param   volume 音频音量 0.0 ~ 1.0
+     */
+    override fun setVolume(volume: Float) {
+        if (volume > 1.0f) {
+            this.exoPlayer.volume = 1.0f
+        } else if (volume < 0.0f) {
+            this.exoPlayer.volume = 0.0f
+        } else {
+            this.exoPlayer.volume = volume
+        }
+    }
+
+    /**
      * 更新 AudioSession ID
      */
     override fun updateAudioSessionID() {

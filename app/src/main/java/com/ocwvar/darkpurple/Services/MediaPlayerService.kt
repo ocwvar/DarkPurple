@@ -1,10 +1,14 @@
 package com.ocwvar.darkpurple.Services
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.os.ResultReceiver
 import android.os.SystemClock
@@ -14,6 +18,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.view.KeyEvent
+import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
 import com.ocwvar.darkpurple.Units.ActivityManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
@@ -30,12 +35,16 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val ROOT_ID_OK: String = "_1"
     private val ROOT_ID_DENIED: String = "no"
 
-    //服务是否正在运行标记
-    private var isServiceStarted: Boolean = false
     //媒体播放调配控制器
     private val iController: IController = PlayerController()
     //Notification 生成器
     private val notificationHelper: MediaNotification = MediaNotification()
+    //音频焦点变化回调
+    private val audioFocusCallback: AudioFocusCallback = AudioFocusCallback()
+    //媒体播放设备 断开连接 广播接收器
+    private val deviceDisconnectReceiver: MediaDeviceDisconnectedReceiver = MediaDeviceDisconnectedReceiver()
+    //媒体播放设备 连接 广播接收器
+    private val deviceConnectReceiver: MediaDeviceConnectedReceiver = MediaDeviceConnectedReceiver()
     //播放核心状态广播监听器
     private val coreStateBroadcastReceiver: CoreStateBroadcastReceiver = CoreStateBroadcastReceiver()
     //Notification按钮广播监听器
@@ -45,6 +54,23 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val mediaSessionCallback: MediaSessionCallback = MediaSessionCallback()
     //MediaSession对象
     private lateinit var mediaSession: MediaSessionCompat
+    //系统音频服务
+    private lateinit var audioManager: AudioManager
+    //音频焦点请求任务
+    private lateinit var audioFocusRequest: AudioFocusRequest
+
+    //服务是否正在运行标记
+    private var isServiceStarted: Boolean = false
+    //当前是否有媒体设备连接
+    private var isDeviceConnected: Boolean = false
+    /**
+     * 耳机状态记录标识。 当耳机处于插入状态的时候，如果先后发生了振铃和耳机拔出
+     * 会导致无法监听到耳机拔出的广播 ACTION_AUDIO_BECOMING_NOISY
+     * 所以需要先了解焦点变化前耳机是否处于插入状态，如果在焦点重新获取到后耳机处于已经拔出
+     * 则不重新开始播放。
+     */
+    private var isDeviceConnectedBeforeFocusLoss: Boolean = false
+
 
     object COMMAND {
 
@@ -89,6 +115,15 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
+        if (Build.VERSION.SDK_INT >= 26) {
+            //Android O 使用的音频焦点请求
+            audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).setOnAudioFocusChangeListener(audioFocusCallback).build()
+        }
+
+        //获取音频服务
+        this.audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+
         //创建MediaSession对象，以及它自身的属性
         this.mediaSession = MediaSessionCompat(this@MediaPlayerService, this::class.java.simpleName).let {
             it.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS and MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
@@ -108,6 +143,18 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             this.notificationBroadcastReceiver.registered = true
             registerReceiver(this.notificationBroadcastReceiver, this.notificationBroadcastReceiver.intentFilter)
         }
+
+        //设置媒体播放设备 连接 广播接收器
+        if (!this.deviceConnectReceiver.registered) {
+            this.deviceConnectReceiver.registered = true
+            registerReceiver(this.deviceConnectReceiver, this.deviceConnectReceiver.intentFilter)
+        }
+
+        //设置媒体播放设备 断开连接 广播接收器
+        if (!this.deviceDisconnectReceiver.registered) {
+            this.deviceDisconnectReceiver.registered = true
+            registerReceiver(this.deviceDisconnectReceiver, this.deviceDisconnectReceiver.intentFilter)
+        }
     }
 
     override fun onDestroy() {
@@ -122,6 +169,18 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         if (this.notificationBroadcastReceiver.registered) {
             this.notificationBroadcastReceiver.registered = false
             unregisterReceiver(this.notificationBroadcastReceiver)
+        }
+
+        //注销媒体播放设备 连接 广播接收器
+        if (this.deviceConnectReceiver.registered) {
+            this.deviceConnectReceiver.registered = false
+            unregisterReceiver(this.deviceConnectReceiver)
+        }
+
+        //注销媒体播放设备 断开连接 广播接收器
+        if (this.deviceDisconnectReceiver.registered) {
+            this.deviceDisconnectReceiver.registered = false
+            unregisterReceiver(this.deviceDisconnectReceiver)
         }
 
         //销毁所有媒体活动
@@ -150,6 +209,42 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             return BrowserRoot(this.ROOT_ID_OK, null)
         } else {
             return BrowserRoot(this.ROOT_ID_DENIED, null)
+        }
+    }
+
+    /**
+     * 请求获取音频焦点
+     *
+     * @return  请求结果
+     */
+    private fun requireAudioFocus(): Boolean {
+        if (this.audioFocusCallback.currentAudioFocusState != AudioManager.AUDIOFOCUS_GAIN) {
+            val result: Int
+            if (Build.VERSION.SDK_INT >= 26) {
+                result = this.audioManager.requestAudioFocus(audioFocusRequest)
+            } else {
+                @Suppress("DEPRECATION")
+                result = this.audioManager.requestAudioFocus(audioFocusCallback, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+            }
+            return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        }
+
+        return true
+    }
+
+    /**
+     * 放弃音频焦点
+     */
+    private fun giveAwayAudioFocus() {
+        if (this.audioFocusCallback.currentAudioFocusState == AudioManager.AUDIOFOCUS_LOSS) {
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            this.audioManager.abandonAudioFocusRequest(this.audioFocusRequest)
+        } else {
+            @Suppress("DEPRECATION")
+            this.audioManager.abandonAudioFocus(this.audioFocusCallback)
         }
     }
 
@@ -221,6 +316,74 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         }
     }
 
+
+    /**
+     * 音频焦点变化回调控制器
+     */
+    private inner class AudioFocusCallback : AudioManager.OnAudioFocusChangeListener {
+
+        //当前是否有音频的焦点
+        var currentAudioFocusState: Int = AudioManager.AUDIOFOCUS_LOSS
+
+        override fun onAudioFocusChange(focusChange: Int) {
+
+            when (focusChange) {
+
+            //成功获取到音频焦点
+                AudioManager.AUDIOFOCUS_GAIN -> {
+                    if (this.currentAudioFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK && !AppConfigs.autoAdjustVolumeWhenTemperatelyLoss) {
+                        //如果用户不允许 低音量播放，则需要进行恢复播放处理
+                        this.currentAudioFocusState = AudioManager.AUDIOFOCUS_GAIN
+                        mediaSessionCallback.onPlay()
+                    } else if (this.currentAudioFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && isDeviceConnectedBeforeFocusLoss && !isDeviceConnected) {
+                        //此状态，查看 isDeviceConnectedBeforeFocusLoss 的变量说明
+                        mediaSessionCallback.onPause()
+                    }
+
+                    this.currentAudioFocusState = AudioManager.AUDIOFOCUS_GAIN
+                    iController.setVolume(1.0f)
+                }
+
+            //暂时丢失音频焦点，但是可以以低音量播放（短信提示音、Notification 提示音）
+            //如果用户不允许 低音量播放，则需要进行恢复播放处理
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                    this.currentAudioFocusState = AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
+
+                    //允许暂时丢失焦点时将音频降低音量
+                    if (AppConfigs.autoAdjustVolumeWhenTemperatelyLoss) {
+                        iController.setVolume(0.2f)
+                    } else {
+                        //不允许则暂停播放
+                        mediaSessionCallback.onPause()
+                    }
+                }
+
+            //暂时丢失音频焦点，不可以进行播放打扰（拨打电话、QQ语音录制播放 等）
+            //需要进行恢复播放处理
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                    this.currentAudioFocusState = AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
+
+                    //这里需要记录下是否连接着耳机
+                    isDeviceConnectedBeforeFocusLoss = isDeviceConnected
+
+                    mediaSessionCallback.onPause()
+                }
+
+            //音频焦点永久丢失（其他播放器开始播放）
+            //不做恢复播放处理
+                AudioManager.AUDIOFOCUS_LOSS -> {
+                    this.currentAudioFocusState = AudioManager.AUDIOFOCUS_LOSS
+                    //丢失时记录是否连接着媒体
+                    isDeviceConnectedBeforeFocusLoss = isDeviceConnected
+
+                    mediaSessionCallback.onStop()
+                }
+            }
+
+        }
+
+    }
+
     /**
      * MediaSession 状态回调控制器
      */
@@ -229,7 +392,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         //////////////////播放控制////////////////////
 
         override fun onPlay() {
-            iController.resume()
+            if (requireAudioFocus()) {
+                //只有请求音频焦点成功才执行操作
+                iController.resume()
+            }
         }
 
         override fun onPause() {
@@ -243,11 +409,17 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         //////////////////顺序控制////////////////////
 
         override fun onSkipToPrevious() {
-            iController.previous()
+            if (requireAudioFocus()) {
+                //只有请求音频焦点成功才执行操作
+                iController.previous()
+            }
         }
 
         override fun onSkipToNext() {
-            iController.next()
+            if (requireAudioFocus()) {
+                //只有请求音频焦点成功才执行操作
+                iController.next()
+            }
         }
 
         //////////////////数据控制////////////////////
@@ -279,12 +451,12 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
                     //多媒体播放按钮
                         KeyEvent.KEYCODE_MEDIA_PLAY -> {
-                            iController.resume()
+                            this.onPlay()
                         }
 
                     //多媒体暂停按钮
                         KeyEvent.KEYCODE_MEDIA_PAUSE -> {
-                            iController.pause()
+                            this.onPause()
                         }
 
                     }
@@ -314,7 +486,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                         //如果媒体库TAG不为空，则进行媒体库切换
                         if (iController.changeLibrary(libraryTAG)) {
                             //切换媒体库成功，进行播放
-                            iController.play(playIndex, isPlayWhenReady)
+                            if (requireAudioFocus()) {
+                                //只有请求音频焦点成功才执行操作
+                                iController.play(playIndex, isPlayWhenReady)
+                            }
 
                         }
                     }
@@ -357,6 +532,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 IController.ACTIONS.ACTION_QUEUE_FINISH -> {
                     updateMediaMetadata()
                     dismissNotification(true)
+                    giveAwayAudioFocus()
                     iController.release()
                 }
 
@@ -370,6 +546,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 ICore.ACTIONS.CORE_ACTION_STOPPED -> {
                     updateNotification()
                     dismissNotification(true)
+                    giveAwayAudioFocus()
                 }
 
             //媒体资源被 播放
@@ -381,6 +558,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 ICore.ACTIONS.CORE_ACTION_PAUSED -> {
                     updateNotification()
                     dismissNotification(false)
+                    giveAwayAudioFocus()
                 }
 
             //媒体资源 缓冲完成
@@ -442,6 +620,77 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     ActivityManager.getInstance().release()
                 }
 
+            }
+
+        }
+
+    }
+
+    /**
+     * 媒体播放设备 断开连接 广播接收器
+     */
+    private inner class MediaDeviceDisconnectedReceiver : BroadcastReceiver() {
+
+        var registered: Boolean = false
+
+        val intentFilter: IntentFilter = IntentFilter().let {
+            it.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+            it
+        }
+
+        override fun onReceive(p0: Context?, intent: Intent?) {
+            intent ?: return
+
+            when (intent.action) {
+
+            //播放设备断开连接广播通知
+                AudioManager.ACTION_AUDIO_BECOMING_NOISY -> {
+                    isDeviceConnected = false
+                    mediaSessionCallback.onPause()
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * 媒体播放设备 连接 广播接收器
+     */
+    private inner class MediaDeviceConnectedReceiver : BroadcastReceiver() {
+
+        var registered: Boolean = false
+
+        @SuppressLint("InlinedApi")
+        val intentFilter: IntentFilter = IntentFilter().let {
+            if (AppConfigs.OS_5_UP) {
+                it.addAction(AudioManager.ACTION_HEADSET_PLUG)
+            } else {
+                it.addAction(Intent.ACTION_HEADSET_PLUG)
+            }
+            it
+        }
+
+        override fun onReceive(p0: Context?, intent: Intent?) {
+            intent ?: return
+            intent.extras ?: return
+
+            if (intent.action == Intent.ACTION_HEADSET_PLUG || intent.action == AudioManager.ACTION_HEADSET_PLUG) {
+                when (intent.extras.getInt("state", -1)) {
+                //断开连接
+                    0 -> {
+                        //这里不做处理，由优先度更高的 AudioManager.ACTION_AUDIO_BECOMING_NOISY 来处理
+                        isDeviceConnected = false
+                    }
+
+                //连接
+                    1 -> {
+                        isDeviceConnected = true
+                        if (AppConfigs.isResumeAudioWhenPlugin) {
+                            mediaSessionCallback.onPlay()
+                        }
+                    }
+                }
             }
 
         }

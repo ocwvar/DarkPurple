@@ -88,8 +88,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".Services.AudioService" />
-
         <service
             android:name=".Services.MediaPlayerService"
             android:exported="true">
@@ -98,10 +96,9 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".Services.HeadsetButtonReceiver">
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
-                <action android:name="compat" />
             </intent-filter>
         </receiver>
 
