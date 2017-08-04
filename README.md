@@ -42,7 +42,7 @@ CoverBox 的作者为 Henry Hu
 - 新的播放列表界面 √
 - 用户选项界面 √
 - EXO频谱动画 √
-- 将现有的音频服务改用 MediaBrowserService →
+- 将现有的音频服务改用 MediaBrowserService → 适配已完成! 正在添加控制性功能
 - EXO均衡器功能 X
 
 # 截图展示 (2017/8/02 00：40)
