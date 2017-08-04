@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
@@ -9,20 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|top"
-        android:maxLength="15"
         android:maxLines="1"
-        android:paddingLeft="5dp"
-        android:paddingStart="5dp"
+        android:padding="5dp"
+        android:singleLine="true"
         android:textColor="#fff"
         android:textSize="15sp" />
-
-    <ImageButton
-        android:id="@+id/imageButton_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|center_vertical"
-        android:background="@null"
-        android:padding="10dp" />
 
     <TextView
         android:id="@+id/textView_artist"
@@ -35,4 +27,4 @@
         android:textColor="#c133b2"
         android:textSize="12sp" />
 
-</FrameLayout>
+</LinearLayout>

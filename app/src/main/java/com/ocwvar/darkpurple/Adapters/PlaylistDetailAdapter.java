@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ocwvar.darkpurple.Bean.SongItem;
@@ -66,13 +65,11 @@ public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDra
     private class SimpleDetailViewHolder extends RecyclerView.ViewHolder {
 
         TextView title, artist;
-        ImageButton playButton;
 
         SimpleDetailViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.textView_title);
             artist = itemView.findViewById(R.id.textView_artist);
-            playButton = itemView.findViewById(R.id.imageButton_play);
 
         }
     }
