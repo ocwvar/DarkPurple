@@ -50,8 +50,6 @@ public class MediaScanner {
     private OCThreadExecutor threadExecutor;
     //扫描器的回调接口
     private MediaScannerCallback callback;
-    //用于临时存放扫描结果的数据列表
-    private ArrayList<SongItem> cachedList;
     //用于处理UI界面的数据
     private Handler handler;
     //数据是否更新标识
@@ -60,7 +58,6 @@ public class MediaScanner {
     private MediaScanner() {
         threadExecutor = new OCThreadExecutor(1, "Scanner");
         handler = new Handler(Looper.getMainLooper());
-        cachedList = new ArrayList<>();
     }
 
     public static synchronized MediaScanner getInstance() {
@@ -93,29 +90,6 @@ public class MediaScanner {
     }
 
     /**
-     * 缓存数据结果
-     *
-     * @param datas 要缓存的数据
-     */
-    private void cacheDatas(ArrayList<SongItem> datas) {
-        isUpdated = true;
-        cachedList.clear();
-        if (datas != null) {
-            cachedList.addAll(datas);
-        } //如果就算没扫描到结果 , 也当作是扫描结果
-    }
-
-    /**
-     * 得到缓存之后的数据
-     *
-     * @return 缓存数据
-     */
-    public ArrayList<SongItem> getCachedDatas() {
-        isUpdated = false;
-        return cachedList;
-    }
-
-    /**
      * 数据是否有更新
      */
     public boolean isUpdated() {
@@ -127,7 +101,7 @@ public class MediaScanner {
      */
     public void start() {
         if (isUpdated && callback != null) {
-            callback.onScanCompleted(cachedList, false);
+            callback.onScanCompleted(MediaLibrary.INSTANCE.getMainLibrary(), false);
         } else {
             if (AppConfigs.MusicFolders == null) {
                 //如果没有设置音乐文件夹 , 则从媒体数据库中获取
@@ -309,10 +283,7 @@ public class MediaScanner {
                 Logger.error(TAG, "在从媒体库中获取数据时发生异常：\n" + e);
             }
 
-            if (callback == null) {
-                //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
-                cacheDatas(arrayList);
-            } else {
+            if (callback != null) {
                 JSONHandler.cacheSearchResult(arrayList);
                 onCompleted(arrayList);
             }
@@ -537,10 +508,7 @@ public class MediaScanner {
                     e.printStackTrace();
                 }
 
-                if (callback == null) {
-                    //如果没有设置回调接口 , 则吧扫描到的数据放入临时列表中
-                    cacheDatas(arrayList);
-                } else {
+                if (callback != null) {
                     JSONHandler.cacheSearchResult(arrayList);
                     onCompleted(arrayList);
                 }
@@ -771,9 +739,7 @@ public class MediaScanner {
                 MediaLibrary.INSTANCE.updateMainSource(cachedList);
             }
 
-            if (callback == null) {
-                cacheDatas(cachedList);
-            } else {
+            if (callback != null) {
                 onCompleted(cachedList);
             }
 

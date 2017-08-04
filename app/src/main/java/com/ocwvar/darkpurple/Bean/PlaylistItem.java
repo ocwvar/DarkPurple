@@ -94,9 +94,7 @@ public class PlaylistItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PlaylistItem that = (PlaylistItem) o;
-
-        return name.equals(that.name);
+        return this.hashCode() == o.hashCode();
 
     }
 

@@ -11,7 +11,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Units.Cover.BaseCoverAdapter
-import com.ocwvar.darkpurple.Units.PlaylistUnits
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 
 /**
  * Project DarkPurple
@@ -22,7 +22,7 @@ import com.ocwvar.darkpurple.Units.PlaylistUnits
  */
 class PlaylistAdapter(val callback: Callback) : BaseCoverAdapter() {
 
-    private val array: ArrayList<PlaylistItem> = PlaylistUnits.getInstance().playlistSet
+    private val array: ArrayList<PlaylistItem> = MediaLibrary.getPlaylistLibrary()
 
     override fun getItemCount(): Int = array.size + 1
 

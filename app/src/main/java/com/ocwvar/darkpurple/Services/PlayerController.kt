@@ -9,7 +9,6 @@ import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.Services.AudioCore.EXO
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
-import com.ocwvar.darkpurple.Units.PlaylistUnits
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -59,7 +58,7 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
             library = MediaLibrary.getMainLibrary()
         } else {
             //要切换为播放列表库
-            val playlist: PlaylistItem? = PlaylistUnits.getInstance().playlistSet.find { it.name == libraryTAG }
+            val playlist: PlaylistItem? = MediaLibrary.getPlaylistLibrary().find { it.name == libraryTAG }
 
             if (playlist == null || playlist.playlist.size == 0) {
                 //无法使用此播放列表

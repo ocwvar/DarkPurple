@@ -126,7 +126,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             ToastMaker.show(R.string.message_scan_result_empty)
         } else {
             adapter.changeSource(songItems)
-            ToastMaker.show(R.string.message_scan_result_done)
         }
     }
 
@@ -142,7 +141,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             MediaScanner.getInstance().getLastTimeCachedData()
         } else if (MediaScanner.getInstance().isUpdated) {
             //检查是否有最近的扫描缓存
-            adapter.changeSource(MediaScanner.getInstance().cachedDatas)
+            adapter.changeSource(MediaLibrary.getMainLibrary())
         } else {
             //新的扫描
             MediaScanner.getInstance().start()
@@ -447,7 +446,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_addto_playlist, null)
                 val listView: ListView = view.findViewById(R.id.listView)
                 val adapter: ArrayAdapter<String> = ArrayAdapter(fragmentView.context, R.layout.simple_textview)
-                PlaylistUnits.getInstance().playlistSet.forEach {
+                MediaLibrary.getPlaylistLibrary().forEach {
                     adapter.add(it.name)
                 }
 
@@ -462,7 +461,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             //选择了要添加到的播放列表后，进行添加操作
 
-            if (PlaylistUnits.getInstance().addAudio(PlaylistUnits.getInstance().playlistSet[position], songData)) {
+            if (PlaylistUnits.getInstance().addAudio(MediaLibrary.getPlaylistLibrary()[position], songData)) {
                 ToastMaker.show(R.string.message_playlist_add_done_item)
                 dialogKeeper.get()?.dismiss()
             } else {

@@ -26,11 +26,6 @@ public class PlaylistUnits {
     private static PlaylistUnits playlistUnits;
     private final String playlistSPName = "playlistSet";
     private final String TAG = "PlaylistUnits";
-    private ArrayList<PlaylistItem> playlistSet;
-
-    private PlaylistUnits() {
-        this.playlistSet = new ArrayList<>();
-    }
 
     public static PlaylistUnits getInstance() {
         if (playlistUnits == null) {
@@ -45,15 +40,15 @@ public class PlaylistUnits {
     public void init() {
 
         //先获取所有播放列表基础数据
-        initSPData();
+        final ArrayList<PlaylistItem> result = initSPData();
 
-        if (this.playlistSet == null || this.playlistSet.size() <= 0) {
+        if (result == null || result.size() <= 0) {
             //没有列表数据，不进行下一步
             return;
         }
 
         //开始读取所有播放列表的内部列表数据
-        for (final PlaylistItem playListItem : this.playlistSet) {
+        for (final PlaylistItem playListItem : result) {
             if (playListItem.getPlaylist() == null) {
                 //找到未初始化的播放列表，进行读取加载
                 playListItem.setPlaylist(JSONHandler.loadPlaylist(playListItem.getName()));
@@ -61,7 +56,7 @@ public class PlaylistUnits {
         }
 
         //更新媒体库数据
-        MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
+        MediaLibrary.INSTANCE.updatePlaylistSource(result);
 
     }
 
@@ -85,8 +80,8 @@ public class PlaylistUnits {
         playlistItem.setPlaylist(playlist);
 
         //移除旧的数据 , 添加新的数据
-        this.playlistSet.remove(playlistItem);
-        this.playlistSet.add(playlistItem);
+        MediaLibrary.INSTANCE.getPlaylistLibrary().remove(playlistItem);
+        MediaLibrary.INSTANCE.getPlaylistLibrary().add(playlistItem);
 
         //异步储存基本数据到 SharedPreferences 中
         SharedPreferences sharedPreferences = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
@@ -110,9 +105,6 @@ public class PlaylistUnits {
             }
         }).start();
 
-        //更新媒体库数据
-        MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
-
         return true;
     }
 
@@ -128,9 +120,7 @@ public class PlaylistUnits {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         //移除列表内的数据对象
-        if (playlistSet.contains(playlistItem)) {
-            playlistSet.remove(playlistItem);
-        }
+        MediaLibrary.INSTANCE.getPlaylistLibrary().remove(playlistItem);
 
         //获取播放列表名称合集 , 移除请求的关键字
         Set<String> names = sharedPreferences.getStringSet("names", new LinkedHashSet<String>());
@@ -145,8 +135,6 @@ public class PlaylistUnits {
         //移除播放列表Json数据文件
         new File(AppConfigs.PlaylistFolder + playlistItem.getName() + ".pl").delete();
 
-        //更新媒体库数据
-        MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
     }
 
     /**
@@ -158,7 +146,7 @@ public class PlaylistUnits {
      */
     @SuppressLint("CommitPrefEdits")
     public boolean renamePlaylist(@NonNull String oldName, @NonNull final String newName) {
-        if (playlistSet.contains(new PlaylistItem(oldName)) && !playlistSet.contains(new PlaylistItem(newName))) {
+        if (MediaLibrary.INSTANCE.getPlaylistLibrary().contains(new PlaylistItem(oldName)) && !MediaLibrary.INSTANCE.getPlaylistLibrary().contains(new PlaylistItem(newName))) {
             //如果旧的列表的确存在 同时不存在与新名字相同的列表 , 则可以执行
 
             //获取名字集合 , 更改后重新保存到SP中
@@ -189,15 +177,17 @@ public class PlaylistUnits {
             }
 
             //获取要改名的对象, 更改名字
-            final PlaylistItem playlistItem = playlistSet.get(playlistSet.indexOf(new PlaylistItem(oldName)));
+            final PlaylistItem playlistItem = MediaLibrary.INSTANCE.getPlaylistLibrary().get(MediaLibrary.INSTANCE.getPlaylistLibrary().indexOf(new PlaylistItem(oldName)));
+            if (playlistItem == null) {
+                //无法获取到数据
+                return false;
+            }
+
             playlistItem.setName(newName);
 
             //移除列表中的旧数据，添加新数据
-            this.playlistSet.remove(new PlaylistItem(oldName));
-            this.playlistSet.add(playlistItem);
-
-            //更新媒体库数据
-            MediaLibrary.INSTANCE.updatePlaylistSource(this.playlistSet);
+            MediaLibrary.INSTANCE.getPlaylistLibrary().remove(new PlaylistItem(oldName));
+            MediaLibrary.INSTANCE.getPlaylistLibrary().add(playlistItem);
 
             //更改本地播放列表音频数据储存文件
             final File plFile = new File(AppConfigs.PlaylistFolder + oldName + ".pl");
@@ -262,7 +252,7 @@ public class PlaylistUnits {
     public boolean isPlaylistExisted(String name) {
         PlaylistItem playlistItem = new PlaylistItem();
         playlistItem.setName(name);
-        boolean result = playlistSet.contains(playlistItem);
+        boolean result = MediaLibrary.INSTANCE.getPlaylistLibrary().contains(playlistItem);
         playlistItem = null;
         return result;
     }
@@ -291,37 +281,39 @@ public class PlaylistUnits {
 
     /**
      * 从 SharedPreferences 读取播放列表的基本信息
+     *
+     * @return 读取得到的基本信息列表，读取失败返回 NULL
      */
-    private void initSPData() {
+    private
+    @Nullable
+    ArrayList<PlaylistItem> initSPData() {
         Logger.warning(TAG, "正在获取已储存的播放列表基本数据");
         SharedPreferences sp = AppConfigs.ApplicationContext.getSharedPreferences(playlistSPName, 0);
         //先获取所有播放列表的名称
         String[] names = loadStringArray(sp, "names");
 
         if (names != null) {
+            final ArrayList<PlaylistItem> result = new ArrayList<>();
             for (String playlistName : names) {
                 //逐个从SP中获取播放列表数据
                 Logger.warning(TAG, "正在获取基本数据  " + playlistName);
                 String[] playlistValues = loadStringArray(sp, playlistName);
                 if (playlistValues != null && playlistValues.length == 2) {
                     //如果字符集合有效 , 同时数量为2
-                    this.playlistSet.add(new PlaylistItem(playlistName, playlistValues));
+                    result.add(new PlaylistItem(playlistName, playlistValues));
                 }
             }
-            Logger.warning(TAG, "基本数据获取完毕.  总计: " + playlistSet.size());
+            Logger.warning(TAG, "基本数据获取完毕.  总计: " + result.size());
+            return result;
         } else {
             Logger.error(TAG, "无法获取. 原因: 没有已保存的数据");
         }
-
-    }
-
-    public ArrayList<PlaylistItem> getPlaylistSet() {
-        return playlistSet;
+        return null;
     }
 
     public PlaylistItem getPlaylistItem(int position) {
-        if (playlistSet != null && position >= 0 && position < playlistSet.size()) {
-            return playlistSet.get(position);
+        if (MediaLibrary.INSTANCE.getPlaylistLibrary() != null && position >= 0 && position < MediaLibrary.INSTANCE.getPlaylistLibrary().size()) {
+            return MediaLibrary.INSTANCE.getPlaylistLibrary().get(position);
         } else {
             return null;
         }
