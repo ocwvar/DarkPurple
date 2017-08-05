@@ -36,29 +36,34 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val ROOT_ID_OK: String = "_1"
     private val ROOT_ID_DENIED: String = "no"
 
+
     //媒体播放调配控制器
     private val iController: IController = PlayerController()
+    //二合一类型媒体按钮次数统计线程
+    private var hookPressCounter: MediaHookPressCounter? = null
     //Notification 生成器
     private val notificationHelper: MediaNotification = MediaNotification()
     //音频焦点变化回调
     private val audioFocusCallback: AudioFocusCallback = AudioFocusCallback()
-    //媒体播放设备 断开连接 广播接收器
-    private val deviceDisconnectReceiver: MediaDeviceDisconnectedReceiver = MediaDeviceDisconnectedReceiver()
     //媒体播放设备 连接 广播接收器
     private val deviceConnectReceiver: MediaDeviceConnectedReceiver = MediaDeviceConnectedReceiver()
     //播放核心状态广播监听器
     private val coreStateBroadcastReceiver: CoreStateBroadcastReceiver = CoreStateBroadcastReceiver()
+    //媒体播放设备 断开连接 广播接收器
+    private val deviceDisconnectReceiver: MediaDeviceDisconnectedReceiver = MediaDeviceDisconnectedReceiver()
     //Notification按钮广播监听器
     private val notificationBroadcastReceiver: NotificationBroadcastReceiver = NotificationBroadcastReceiver()
 
-    //MediaSession状态回调处理器
-    private val mediaSessionCallback: MediaSessionCallback = MediaSessionCallback()
-    //MediaSession对象
-    private lateinit var mediaSession: MediaSessionCompat
+
     //系统音频服务
     private lateinit var audioManager: AudioManager
+    //MediaSession对象
+    private lateinit var mediaSession: MediaSessionCompat
     //音频焦点请求任务
     private lateinit var audioFocusRequest: AudioFocusRequest
+    //MediaSession状态回调处理器
+    private val mediaSessionCallback: MediaSessionCallback = MediaSessionCallback()
+
 
     //服务是否正在运行标记
     private var isServiceStarted: Boolean = false
@@ -71,6 +76,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
      * 则不重新开始播放。
      */
     private var isDeviceConnectedBeforeFocusLoss: Boolean = false
+    //二合一类型媒体按钮次数临时变量
+    private var hookMediaButtonCount: Int = 0
+    //当前是否拒绝二合一类型媒体按钮事件。当正在处理上一个二合一类型媒体按钮事件时，拒绝执行新的二合一类型媒体事件
+    private var isDeniedHookEvent: Boolean = false
 
 
     object COMMAND {
@@ -449,25 +458,43 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             mediaButtonEvent ?: return false
 
             val action: String = mediaButtonEvent.action
-            val keyEvent: KeyEvent? = mediaButtonEvent.extras.getParcelable("EXTRA_KEY_EVENT")
+            val keyEvent: KeyEvent? = mediaButtonEvent.extras.getParcelable(Intent.EXTRA_KEY_EVENT)
+            keyEvent ?: return false
+
+            Logger.normal("媒体按钮事件", "IntentAction：" + action + " KeyEventAction：" + keyEvent.action + " KeyEventCode：" + keyEvent.keyCode)
+
+            if (keyEvent.action == KeyEvent.ACTION_DOWN) {
+                //不处理 ACTION_DOWN 事件，只处理 ACTION_UP 事件
+                return true
+            }
+
             when (action) {
 
                 Intent.ACTION_MEDIA_BUTTON -> {
 
-                    keyEvent ?: return false
-                    when (keyEvent.action) {
 
-                    //播放暂停二合一按钮
-                        KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                    when (keyEvent.keyCode) {
 
+                    //播放暂停二合一按钮 KEYCODE_HEADSETHOOK = 79 KEYCODE_MEDIA_PLAY_PAUSE=85
+                        KeyEvent.KEYCODE_HEADSETHOOK, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                            if (!isDeniedHookEvent) {
+                                //增加按钮次数
+                                hookMediaButtonCount += 1
+
+                                if (hookPressCounter == null || hookPressCounter?.state == Thread.State.TERMINATED) {
+                                    //当前没有统计线程在运行，进行创建
+                                    hookPressCounter = MediaHookPressCounter()
+                                    hookPressCounter?.start()
+                                }
+                            }
                         }
 
-                    //多媒体播放按钮
+                    //多媒体播放按钮 code=126
                         KeyEvent.KEYCODE_MEDIA_PLAY -> {
                             this.onPlay()
                         }
 
-                    //多媒体暂停按钮
+                    //多媒体暂停按钮 code=127
                         KeyEvent.KEYCODE_MEDIA_PAUSE -> {
                             this.onPause()
                         }
@@ -629,9 +656,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //终止服务
                 MediaNotification.ACTIONS.NOTIFICATION_ACTION_CLOSE -> {
                     iController.release()
-                    dismissNotification(true)
                     ActivityManager.getInstance().release()
-                    stopSelf()
+                    dismissNotification(true)
                 }
 
             }
@@ -708,6 +734,54 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 }
             }
 
+        }
+
+    }
+
+    /**
+     * 二合一按键次数统计线程
+     *
+     * 只统计 KeyEvent.KEYCODE_HEADSETHOOK 和 KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE 这两个按钮事件的次数
+     */
+    private inner class MediaHookPressCounter : Thread() {
+
+        private val TAG: String = "二合一按键"
+
+        override fun run() {
+            super.run()
+            //等待用户一秒内的按键次数
+            Thread.sleep(1000)
+
+            //开始执行对应按键数量的媒体事件
+            Logger.normal(TAG, "次数：" + hookMediaButtonCount)
+            isDeniedHookEvent = true
+
+            when (hookMediaButtonCount) {
+
+            //切换播放、暂停
+                1 -> {
+                    if (iController.currentState() == PlaybackStateCompat.STATE_PAUSED || iController.currentState() == PlaybackStateCompat.STATE_STOPPED) {
+                        mediaSessionCallback.onPlay()
+                    } else if (iController.currentState() == PlaybackStateCompat.STATE_PLAYING) {
+                        mediaSessionCallback.onPause()
+                    }
+                }
+
+            //下一首
+                2 -> {
+                    mediaSessionCallback.onSkipToNext()
+                }
+
+            //上一首
+                3 -> {
+                    mediaSessionCallback.onSkipToPrevious()
+                }
+
+            }
+
+            //重置标记变量
+            hookMediaButtonCount = 0
+            isDeniedHookEvent = false
         }
 
     }
