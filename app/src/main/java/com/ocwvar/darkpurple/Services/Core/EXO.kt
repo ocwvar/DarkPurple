@@ -110,6 +110,10 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
      * 暂停媒体
      */
     override fun pause() {
+        if (this.currentState != PlaybackStateCompat.STATE_PLAYING) {
+            return
+        }
+
         //暂停播放
         this.exoPlayer.playWhenReady = false
         //设置状态
@@ -122,6 +126,10 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
      * 停止媒体
      */
     override fun stop() {
+        if (this.currentState != PlaybackStateCompat.STATE_PLAYING) {
+            return
+        }
+
         //暂停播放
         this.exoPlayer.playWhenReady = false
         //设置状态

@@ -420,21 +420,19 @@ class MainFrameworkActivity : BaseActivity() {
             when (intent.action) {
 
                 ICore.ACTIONS.CORE_ACTION_STOPPED, ICore.ACTIONS.CORE_ACTION_PAUSED -> {
-                    if (floatingActionButton.isShown) {
-                        floatingActionButton.hide()
-                    }
+                    floatingActionButton.hide()
                 }
 
                 ICore.ACTIONS.CORE_ACTION_READY -> {
                     updateHeaderMessage(MediaLibrary.getUsingMedia())
-                    if (!floatingActionButton.isShown) {
-                        floatingActionButton.show()
-                    }
+                    floatingActionButton.hide()
                 }
 
                 ICore.ACTIONS.CORE_ACTION_PLAYING -> {
                     //通知更新AudioSession ID
                     serviceConnector.sendCommand(MediaPlayerService.COMMAND.COMMAND_UPDATE_AUDIO_SESSION_ID, null)
+                    updateHeaderMessage(MediaLibrary.getUsingMedia())
+                    floatingActionButton.show()
                 }
             }
         }

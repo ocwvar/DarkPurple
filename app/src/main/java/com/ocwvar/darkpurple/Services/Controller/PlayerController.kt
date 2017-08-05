@@ -21,8 +21,8 @@ import kotlin.collections.ArrayList
  */
 class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) : IController {
 
-    //当前使用的媒体库，默认是指向主媒体库
-    private var usingLibrary: ArrayList<SongItem> = MediaLibrary.getMainLibrary()
+    //当前使用的媒体库
+    private var usingLibrary: ArrayList<SongItem> = ArrayList()
 
     //当前使用的媒体库 TAG  主媒体库TAG = MAIN ，播放列表TAG = 列表名称
     private var currentLibraryTAG: String = ""
