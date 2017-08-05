@@ -246,7 +246,7 @@ public final class JSONHandler {
         final String usingLibraryTAG = MediaLibrary.INSTANCE.getUsingLibraryTAG();
         final SongItem mediaItem = MediaLibrary.INSTANCE.getUsingMedia();
 
-        if (TextUtils.isEmpty(usingLibraryTAG) || mediaItem != null) {
+        if (TextUtils.isEmpty(usingLibraryTAG) || mediaItem == null) {
             //不可用的数据
             return;
         }
