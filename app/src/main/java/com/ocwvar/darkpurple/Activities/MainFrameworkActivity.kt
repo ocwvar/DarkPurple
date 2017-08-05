@@ -386,6 +386,7 @@ class MainFrameworkActivity : BaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             //无效Intent，不做任何处理
             intent ?: return
+
             when (intent.action) {
             //有新的封面模糊图像产生
                 CoverProcesser.ACTION_BLUR_UPDATED -> {
@@ -408,6 +409,8 @@ class MainFrameworkActivity : BaseActivity() {
         val intentFilter: IntentFilter = IntentFilter().let {
             it.addAction(ICore.ACTIONS.CORE_ACTION_READY)
             it.addAction(ICore.ACTIONS.CORE_ACTION_PLAYING)
+            it.addAction(ICore.ACTIONS.CORE_ACTION_PAUSED)
+            it.addAction(ICore.ACTIONS.CORE_ACTION_STOPPED)
             it
         }
         var isRegistered: Boolean = false
@@ -415,6 +418,12 @@ class MainFrameworkActivity : BaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
             when (intent.action) {
+
+                ICore.ACTIONS.CORE_ACTION_STOPPED, ICore.ACTIONS.CORE_ACTION_PAUSED -> {
+                    if (floatingActionButton.isShown) {
+                        floatingActionButton.hide()
+                    }
+                }
 
                 ICore.ACTIONS.CORE_ACTION_READY -> {
                     updateHeaderMessage(MediaLibrary.getUsingMedia())

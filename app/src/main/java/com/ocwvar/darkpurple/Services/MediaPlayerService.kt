@@ -613,7 +613,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     }
 
     /**
-     * Notification按钮广播监听器
+     * Notification 广播监听器
      */
     private inner class NotificationBroadcastReceiver : BroadcastReceiver() {
 
@@ -658,6 +658,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     iController.release()
                     ActivityManager.getInstance().release()
                     dismissNotification(true)
+                    CoverProcesser.release()
                 }
 
             }

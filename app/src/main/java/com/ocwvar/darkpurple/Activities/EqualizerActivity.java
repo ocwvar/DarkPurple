@@ -11,12 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.ocwvar.darkpurple.Adapters.EqualizerSavedAdapter;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Services.AudioService;
-import com.ocwvar.darkpurple.Services.ServiceHolder;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.EqualizerUnits;
 import com.ocwvar.darkpurple.Units.Logger;
@@ -38,7 +35,6 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
     final String TAG = "均衡器";
 
     VerticalSeekBar equ1, equ2, equ3, equ4, equ5, equ6, equ7, equ8, equ9, equ10;
-    AudioService service;
     BezierView bezierView;
     EqualizerSavedAdapter adapter;
     RecyclerView recyclerView;
@@ -54,15 +50,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
             getWindow().setStatusBarColor(Color.argb(0, 0, 0, 0));
         }
 
-        //先从音频服务获取当前的均衡器参数
-        service = ServiceHolder.getInstance().getService();
-        eqParameters = service.getEqParameters();
-        if (service == null) {
-            Toast.makeText(EqualizerActivity.this, R.string.ERROR_EQ_setup, Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            return true;
-        }
+        return false;
     }
 
     @Override
@@ -165,9 +153,7 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
 
             Logger.warning(TAG, "发生调节   位置: " + eqIndex + "   数值: " + eqParameter);
 
-            if (service != null) {
-                Logger.warning(TAG, "修改结果: " + service.updateEqParameter(eqParameter, eqIndex));
-            }
+
         }
         return false;
     }
@@ -176,23 +162,8 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
      * 重置均衡器
      */
     private void resetEqualizer() {
-        if (service != null) {
-            equ1.setProgress(10);
-            equ2.setProgress(10);
-            equ3.setProgress(10);
-            equ4.setProgress(10);
-            equ5.setProgress(10);
-            equ6.setProgress(10);
-            equ7.setProgress(10);
-            equ8.setProgress(10);
-            equ9.setProgress(10);
-            equ10.setProgress(10);
-            service.resetEqualizer();
-            bezierView.resetLevel();
-            Snackbar.make(findViewById(android.R.id.content), R.string.eq_reset_successful, Snackbar.LENGTH_SHORT).show();
-        } else {
-            Snackbar.make(findViewById(android.R.id.content), R.string.eq_reset_failed, Snackbar.LENGTH_SHORT).show();
-        }
+        Snackbar.make(findViewById(android.R.id.content), R.string.eq_reset_successful, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(android.R.id.content), R.string.eq_reset_failed, Snackbar.LENGTH_SHORT).show();
     }
 
     /**
@@ -236,45 +207,6 @@ public class EqualizerActivity extends BaseBlurActivity implements View.OnTouchL
      */
     private void useEqualizerSetting(int[] values) {
 
-        equ1.setProgress(values[0] + 10);
-        bezierView.setLevel(0, equ1.getProgress());
-        service.updateEqParameter(values[0], 0);
-
-        equ2.setProgress(values[1] + 10);
-        bezierView.setLevel(1, equ2.getProgress());
-        service.updateEqParameter(values[1], 1);
-
-        equ3.setProgress(values[2] + 10);
-        bezierView.setLevel(2, equ3.getProgress());
-        service.updateEqParameter(values[2], 2);
-
-        equ4.setProgress(values[3] + 10);
-        bezierView.setLevel(3, equ4.getProgress());
-        service.updateEqParameter(values[3], 3);
-
-        equ5.setProgress(values[4] + 10);
-        bezierView.setLevel(4, equ5.getProgress());
-        service.updateEqParameter(values[4], 4);
-
-        equ6.setProgress(values[5] + 10);
-        bezierView.setLevel(5, equ6.getProgress());
-        service.updateEqParameter(values[5], 5);
-
-        equ7.setProgress(values[6] + 10);
-        bezierView.setLevel(6, equ7.getProgress());
-        service.updateEqParameter(values[6], 6);
-
-        equ8.setProgress(values[7] + 10);
-        bezierView.setLevel(7, equ8.getProgress());
-        service.updateEqParameter(values[7], 7);
-
-        equ9.setProgress(values[8] + 10);
-        bezierView.setLevel(8, equ9.getProgress());
-        service.updateEqParameter(values[8], 8);
-
-        equ10.setProgress(values[9] + 10);
-        bezierView.setLevel(9, equ10.getProgress());
-        service.updateEqParameter(values[9], 9);
 
     }
 
