@@ -244,13 +244,14 @@ public final class JSONHandler {
      */
     public static void saveLastMediaState() {
         final String usingLibraryTAG = MediaLibrary.INSTANCE.getUsingLibraryTAG();
-        final String mediaPath = MediaLibrary.INSTANCE.getUsingMedia().getPath();
+        final SongItem mediaItem = MediaLibrary.INSTANCE.getUsingMedia();
 
-        if (TextUtils.isEmpty(usingLibraryTAG) || TextUtils.isEmpty(mediaPath)) {
+        if (TextUtils.isEmpty(usingLibraryTAG) || mediaItem != null) {
             //不可用的数据
             return;
         }
 
+        final String mediaPath = mediaItem.getPath();
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("usingLibraryTAG", usingLibraryTAG);
         jsonObject.addProperty("mediaPath", mediaPath);
