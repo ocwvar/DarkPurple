@@ -19,7 +19,9 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.view.KeyEvent
 import com.ocwvar.darkpurple.AppConfigs
-import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Services.Controller.IController
+import com.ocwvar.darkpurple.Services.Controller.PlayerController
+import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Units.ActivityManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
 import com.ocwvar.darkpurple.Units.Logger

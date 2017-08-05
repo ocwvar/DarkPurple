@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.Services
+package com.ocwvar.darkpurple.Services.Controller
 
 import android.content.Context
 import android.content.Intent
@@ -6,8 +6,8 @@ import android.text.TextUtils
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Bean.SongItem
-import com.ocwvar.darkpurple.Services.AudioCore.EXO
-import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Services.Core.EXO
+import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 import java.util.*
 import kotlin.collections.ArrayList

@@ -31,7 +31,7 @@ import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
 import com.ocwvar.darkpurple.FragmentPages.PlaylistFragment
 import com.ocwvar.darkpurple.FragmentPages.UserFragment
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Services.MediaPlayerService
 import com.ocwvar.darkpurple.Services.MediaServiceConnector
 import com.ocwvar.darkpurple.Units.BaseActivity

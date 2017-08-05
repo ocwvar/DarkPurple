@@ -1,4 +1,4 @@
-package com.ocwvar.darkpurple.Services.AudioCore
+package com.ocwvar.darkpurple.Services.Core
 
 import com.ocwvar.darkpurple.Bean.SongItem
 

@@ -32,7 +32,7 @@ import com.ocwvar.darkpurple.Network.Keys
 import com.ocwvar.darkpurple.Network.NetworkRequest
 import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
-import com.ocwvar.darkpurple.Services.AudioCore.ICore
+import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Services.MediaPlayerService
 import com.ocwvar.darkpurple.Units.Cover.CoverManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
