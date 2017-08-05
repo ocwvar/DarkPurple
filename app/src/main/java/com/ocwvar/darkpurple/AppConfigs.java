@@ -81,6 +81,9 @@ public class AppConfigs {
     //是否在耳机重新插入/连接之后继续播放
     public static boolean isResumeAudioWhenPlugin = true;
 
+    //是否在暂时失去焦点，然后重新获取到焦点时重新播放
+    public static boolean isResumeAudioGainFocus_ByTemperatelyLoss = true;
+
     //是否在暂时丢失音频焦点时降低音量
     public static boolean autoAdjustVolumeWhenTemperatelyLoss = true;
 
@@ -155,6 +158,8 @@ public class AppConfigs {
 
             autoAdjustVolumeWhenTemperatelyLoss = preferences.getBoolean("autoAdjustVolumeWhenTemperatelyLoss", true);
 
+            isResumeAudioGainFocus_ByTemperatelyLoss = preferences.getBoolean("isResumeAudioGainFocus_ByTemperatelyLoss", true);
+
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
@@ -224,6 +229,8 @@ public class AppConfigs {
             isResumeAudioWhenPlugin = preferences.getBoolean("isResumeAudioWhenPlugin", true);
 
             autoAdjustVolumeWhenTemperatelyLoss = preferences.getBoolean("autoAdjustVolumeWhenTemperatelyLoss", true);
+
+            isResumeAudioGainFocus_ByTemperatelyLoss = preferences.getBoolean("isResumeAudioGainFocus_ByTemperatelyLoss", true);
 
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 

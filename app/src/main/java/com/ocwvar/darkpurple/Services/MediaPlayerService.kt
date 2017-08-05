@@ -22,6 +22,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Services.AudioCore.ICore
 import com.ocwvar.darkpurple.Units.ActivityManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
+import com.ocwvar.darkpurple.Units.Logger
 
 /**
  * Project DarkPurple
@@ -322,31 +323,42 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
      */
     private inner class AudioFocusCallback : AudioManager.OnAudioFocusChangeListener {
 
+        val TAG: String = "音频焦点监听"
+
         //当前是否有音频的焦点
         var currentAudioFocusState: Int = AudioManager.AUDIOFOCUS_LOSS
 
         override fun onAudioFocusChange(focusChange: Int) {
+            Logger.normal(TAG, "发生变化！状态序号：" + focusChange)
 
             when (focusChange) {
 
             //成功获取到音频焦点
                 AudioManager.AUDIOFOCUS_GAIN -> {
-                    if (this.currentAudioFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK && !AppConfigs.autoAdjustVolumeWhenTemperatelyLoss) {
-                        //如果用户不允许 低音量播放，则需要进行恢复播放处理
-                        this.currentAudioFocusState = AudioManager.AUDIOFOCUS_GAIN
-                        mediaSessionCallback.onPlay()
-                    } else if (this.currentAudioFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && isDeviceConnectedBeforeFocusLoss && !isDeviceConnected) {
-                        //此状态，查看 isDeviceConnectedBeforeFocusLoss 的变量说明
-                        mediaSessionCallback.onPause()
-                    }
+                    Logger.normal(TAG, "发生变化：AUDIOFOCUS_GAIN")
 
-                    this.currentAudioFocusState = AudioManager.AUDIOFOCUS_GAIN
+                    //重新设置音量
                     iController.setVolume(1.0f)
+
+                    //临时记录上一次的状态
+                    val lastFocusState: Int = currentAudioFocusState
+                    this.currentAudioFocusState = AudioManager.AUDIOFOCUS_GAIN
+
+                    if (lastFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && AppConfigs.isResumeAudioGainFocus_ByTemperatelyLoss && isDeviceConnected) {
+                        //暂时失去焦点，重新获取到焦点时重新播放。但只在有播放设备连接的情况下才有效
+                        mediaSessionCallback.onPlay()
+
+                    } else if (lastFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK && !AppConfigs.autoAdjustVolumeWhenTemperatelyLoss) {
+                        //暂时失去焦点但可以以低音量播放，但用户不允许以低音量播放，在重新获取到焦点时重新播放
+                        mediaSessionCallback.onPlay()
+
+                    }
                 }
 
             //暂时丢失音频焦点，但是可以以低音量播放（短信提示音、Notification 提示音）
             //如果用户不允许 低音量播放，则需要进行恢复播放处理
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                    Logger.normal(TAG, "发生变化：AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK")
                     this.currentAudioFocusState = AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
 
                     //允许暂时丢失焦点时将音频降低音量
@@ -361,11 +373,13 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //暂时丢失音频焦点，不可以进行播放打扰（拨打电话、QQ语音录制播放 等）
             //需要进行恢复播放处理
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                    Logger.normal(TAG, "发生变化：AUDIOFOCUS_LOSS_TRANSIENT")
                     this.currentAudioFocusState = AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
 
                     //这里需要记录下是否连接着耳机
                     isDeviceConnectedBeforeFocusLoss = isDeviceConnected
 
+                    //暂停播放媒体
                     mediaSessionCallback.onPause()
                 }
 
@@ -373,9 +387,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //不做恢复播放处理
                 AudioManager.AUDIOFOCUS_LOSS -> {
                     this.currentAudioFocusState = AudioManager.AUDIOFOCUS_LOSS
-                    //丢失时记录是否连接着媒体
-                    isDeviceConnectedBeforeFocusLoss = isDeviceConnected
 
+                    //停止播放媒体
                     mediaSessionCallback.onStop()
                 }
             }
@@ -558,7 +571,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 ICore.ACTIONS.CORE_ACTION_PAUSED -> {
                     updateNotification()
                     dismissNotification(false)
-                    giveAwayAudioFocus()
+                    //giveAwayAudioFocus()
                 }
 
             //媒体资源 缓冲完成
@@ -615,9 +628,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
             //终止服务
                 MediaNotification.ACTIONS.NOTIFICATION_ACTION_CLOSE -> {
-                    iController.stop()
+                    iController.release()
                     dismissNotification(true)
                     ActivityManager.getInstance().release()
+                    stopSelf()
                 }
 
             }
@@ -687,6 +701,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     1 -> {
                         isDeviceConnected = true
                         if (AppConfigs.isResumeAudioWhenPlugin) {
+                            //用户允许耳机连接时重新播放
                             mediaSessionCallback.onPlay()
                         }
                     }
