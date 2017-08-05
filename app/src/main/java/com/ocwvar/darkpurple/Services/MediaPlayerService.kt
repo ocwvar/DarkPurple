@@ -2,10 +2,12 @@ package com.ocwvar.darkpurple.Services
 
 import android.annotation.SuppressLint
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioDeviceInfo
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
@@ -19,12 +21,15 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.view.KeyEvent
 import com.ocwvar.darkpurple.AppConfigs
+import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Services.Controller.IController
 import com.ocwvar.darkpurple.Services.Controller.PlayerController
 import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Units.ActivityManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
+import com.ocwvar.darkpurple.Units.JSONHandler
 import com.ocwvar.darkpurple.Units.Logger
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 
 /**
  * Project DarkPurple
@@ -138,9 +143,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         //创建MediaSession对象，以及它自身的属性
         this.mediaSession = MediaSessionCompat(this@MediaPlayerService, this::class.java.simpleName).let {
-            it.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS and MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+            it.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
             this@MediaPlayerService.sessionToken = it.sessionToken
             it.setCallback(this.mediaSessionCallback)
+            //设置重新启动 MediaSession 服务的 PendingIntent
+            it.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
             it
         }
 
@@ -167,6 +174,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             this.deviceDisconnectReceiver.registered = true
             registerReceiver(this.deviceDisconnectReceiver, this.deviceDisconnectReceiver.intentFilter)
         }
+
+        //尝试恢复最后一次的状态
+        recoveryLastState()
     }
 
     override fun onDestroy() {
@@ -225,6 +235,73 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     }
 
     /**
+     * 从记录文件恢复最近一次播放位置，并在恢复成功后播放歌曲
+     *
+     * （有播放设备连接→播放，无播放设备→缓存加载）
+     */
+    private fun recoveryLastState() {
+        if (this.iController.currentState() != PlaybackStateCompat.STATE_NONE) {
+            //如果当前不是空的状态，不进行恢复
+            return
+        }
+
+        val lastState: Array<String>? = JSONHandler.getLastMediaState()
+        lastState ?: return
+
+        val index: Int
+        if (lastState[0] == "MAIN" && MediaLibrary.getMainLibrary().size > 0) {
+            //如果最后使用的是主媒体库
+            index = MediaLibrary.getMainLibrary().indexOfFirst { it.path == lastState[1] }
+        } else {
+            val playlistPosition: Int = MediaLibrary.getPlaylistLibrary().indexOf(PlaylistItem(lastState[0]))
+            if (playlistPosition == -1) {
+                index = -1
+            } else {
+                //在播放列表中查找对应的数据
+                index = MediaLibrary.getPlaylistLibrary()[playlistPosition].playlist.indexOfFirst { it.path == lastState[1] }
+            }
+        }
+
+        if (index == -1) {
+            //数据不可用
+            return
+        }
+
+        if (iController.changeLibrary(lastState[0])) {
+            //切换媒体库成功，进行播放
+            if (requireAudioFocus()) {
+                //只有请求音频焦点成功才执行操作
+                iController.play(index, isNowMediaDeviceConnected())
+            }
+        }
+
+    }
+
+    /**
+     * @return  当下是否有媒体设备连接
+     */
+    private fun isNowMediaDeviceConnected(): Boolean {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            //获取所有外放设备清单
+            val result: Array<AudioDeviceInfo> = this.audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+
+            return result.find {
+                //蓝牙耳机
+                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+                        //USB耳机
+                        || it.type == AudioDeviceInfo.TYPE_USB_HEADSET
+                        //有线耳塞
+                        || it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                        //有限耳机
+                        || it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
+            } != null
+        } else {
+            return this.audioManager.isBluetoothA2dpOn || this.audioManager.isWiredHeadsetOn
+        }
+    }
+
+    /**
      * 请求获取音频焦点
      *
      * @return  请求结果
@@ -270,6 +347,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         //更新封面效果
         CoverProcesser.handleThis(this.iController.usingLibrary()[this.iController.currentIndex()].coverID)
 
+        //储存这次的播放位置
+        JSONHandler.saveLastMediaState()
+
         //根据当前状态设置MediaSession是否已激活
         val state: Int = this.iController.currentState()
         this.mediaSession.isActive = state != PlaybackStateCompat.STATE_NONE
@@ -278,9 +358,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         val playbackStateBuilder: PlaybackStateCompat.Builder = PlaybackStateCompat.Builder()
 
         //创建当前Session可用的Action
-        val playbackActions = PlaybackStateCompat.ACTION_PLAY and PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID and
+        val playbackActions = PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
                 if (this.iController.currentState() == PlaybackStateCompat.STATE_PLAYING) {
-                    PlaybackStateCompat.ACTION_PAUSE and PlaybackStateCompat.ACTION_STOP
+                    PlaybackStateCompat.ACTION_PAUSE or PlaybackStateCompat.ACTION_STOP
                 } else {
                     0
                 }
@@ -605,7 +685,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
             //媒体资源 缓冲完成
                 ICore.ACTIONS.CORE_ACTION_READY -> {
-                    updateMediaMetadata()
+                    updateNotification()
+                    dismissNotification(false)
                 }
 
             }

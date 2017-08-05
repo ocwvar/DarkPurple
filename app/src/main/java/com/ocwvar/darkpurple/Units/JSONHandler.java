@@ -14,6 +14,7 @@ import com.ocwvar.darkpurple.Bean.CoverPreviewBean;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.Units.Cover.ColorType;
 import com.ocwvar.darkpurple.Units.Cover.CoverType;
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -84,7 +85,7 @@ public final class JSONHandler {
             }
 
             //进行文件储存
-            return jsonArray2File(jsonArray, new File(AppConfigs.PlaylistFolder + name + ".pl"));
+            return json2File(jsonArray, new File(AppConfigs.PlaylistFolder + name + ".pl"));
         }
     }
 
@@ -105,14 +106,15 @@ public final class JSONHandler {
         } else {
 
             //获取对应的文件数据
-            final JsonArray jsonArray = file2JsonArray(AppConfigs.PlaylistFolder + name + ".pl");
-            if (jsonArray == null || jsonArray.size() <= 0) {
+            final JsonElement jsonElement = file2Json(AppConfigs.PlaylistFolder + name + ".pl");
+            if (jsonElement == null) {
                 //获取数据失败或数据为空
                 return null;
             }
 
             //歌曲数据储存列表容器
             final ArrayList<SongItem> playlist = new ArrayList<>();
+            final JsonArray jsonArray = jsonElement.getAsJsonArray();
             for (int i = 0; i < jsonArray.size(); i++) {
                 final JsonObject object = jsonArray.get(i).getAsJsonObject();
                 final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
@@ -174,7 +176,7 @@ public final class JSONHandler {
         }
 
         //进行文件储存
-        jsonArray2File(jsonArray, new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl"));
+        json2File(jsonArray, new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl"));
     }
 
     /**
@@ -183,7 +185,9 @@ public final class JSONHandler {
      * @param jsonData 获取到的Json数据
      * @return 封面数据集合
      */
-    public static ArrayList<CoverPreviewBean> loadCoverPreviewList(final @NonNull String jsonData) {
+    public static
+    @Nullable
+    ArrayList<CoverPreviewBean> loadCoverPreviewList(final @NonNull String jsonData) {
         final String TAG = "解析封面Json数据";
 
         if (TextUtils.isEmpty(jsonData)) {
@@ -236,6 +240,49 @@ public final class JSONHandler {
     }
 
     /**
+     * 储存最近的媒体状态：使用的媒体库、媒体路径，到本地文件
+     */
+    public static void saveLastMediaState() {
+        final String usingLibraryTAG = MediaLibrary.INSTANCE.getUsingLibraryTAG();
+        final String mediaPath = MediaLibrary.INSTANCE.getUsingMedia().getPath();
+
+        if (TextUtils.isEmpty(usingLibraryTAG) || TextUtils.isEmpty(mediaPath)) {
+            //不可用的数据
+            return;
+        }
+
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("usingLibraryTAG", usingLibraryTAG);
+        jsonObject.addProperty("mediaPath", mediaPath);
+
+        json2File(jsonObject, new File(AppConfigs.DataFolder + "LastState.data"));
+    }
+
+    /**
+     * 获取最近的媒体状态：使用的媒体库、媒体路径
+     *
+     * @return 保存的数据，不存在则返回 NULL。 [0]：最后使用的媒体库TAG  [1]：歌曲路径
+     */
+    public static
+    @Nullable
+    String[] getLastMediaState() {
+        final JsonElement jsonElement = file2Json(AppConfigs.DataFolder + "LastState.data");
+        if (jsonElement == null) {
+            return null;
+        }
+        final JsonObject jsonObject = jsonElement.getAsJsonObject();
+        if (!isJsonObjectValid(jsonObject, "usingLibraryTAG") || !isJsonObjectValid(jsonObject, "mediaPath")) {
+            //获取到的数据不合法
+            return null;
+        }
+
+        return new String[]{
+                jsonObject.get("usingLibraryTAG").getAsString(),
+                jsonObject.get("mediaPath").getAsString()
+        };
+    }
+
+    /**
      * 获取封面库
      *
      * @param coverType 封面类型
@@ -244,11 +291,12 @@ public final class JSONHandler {
     public static synchronized
     @Nullable
     LinkedHashMap<String, String> getCoverLibrary(final @NonNull CoverType coverType) {
-        final JsonArray jsonArray = file2JsonArray(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data");
-        if (jsonArray == null || jsonArray.size() <= 0) {
+        final JsonElement jsonElement = file2Json(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data");
+        if (jsonElement == null) {
             return null;
         }
 
+        final JsonArray jsonArray = jsonElement.getAsJsonArray();
         final LinkedHashMap<String, String> result = new LinkedHashMap<>();
         final Iterator<JsonElement> objects = jsonArray.iterator();
         while (objects.hasNext()) {
@@ -272,11 +320,12 @@ public final class JSONHandler {
     public static synchronized
     @Nullable
     LinkedHashMap<String, Integer> getColorLibrary(final @NonNull ColorType colorType) {
-        final JsonArray jsonArray = file2JsonArray(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data");
-        if (jsonArray == null || jsonArray.size() <= 0) {
+        final JsonElement jsonElement = file2Json(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data");
+        if (jsonElement == null) {
             return null;
         }
 
+        final JsonArray jsonArray = jsonElement.getAsJsonArray();
         final LinkedHashMap<String, Integer> result = new LinkedHashMap<>();
         final Iterator<JsonElement> objects = jsonArray.iterator();
 
@@ -319,7 +368,7 @@ public final class JSONHandler {
             jsonArray.add(jsonObject);
         }
 
-        jsonArray2File(jsonArray, new File(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data"));
+        json2File(jsonArray, new File(AppConfigs.DataFolder + "CoverLibrary_" + coverType.name() + ".data"));
     }
 
     /**
@@ -348,7 +397,7 @@ public final class JSONHandler {
             jsonArray.add(jsonObject);
         }
 
-        jsonArray2File(jsonArray, new File(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data"));
+        json2File(jsonArray, new File(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data"));
     }
 
     /**
@@ -365,16 +414,16 @@ public final class JSONHandler {
     /**
      * 将JsonArray存入指定文件中
      *
-     * @param jsonArray JsonArray数据
-     * @param target    目标文件，文件不存在则进行创建，已存在则覆写
+     * @param jsonElement Json数据
+     * @param target      目标文件，文件不存在则进行创建，已存在则覆写
      * @return 执行结果
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static boolean jsonArray2File(final @NonNull JsonArray jsonArray, final @NonNull File target) {
+    private static boolean json2File(final @NonNull JsonElement jsonElement, final @NonNull File target) {
         //创建字节缓冲数组
         final byte[] buffer = new byte[512];
         //创建字符串字节数组
-        byte[] jsonArrayByteArray;
+        byte[] jsonElementBytes;
         try {
             //开始检查文件目录的可用性
             final String parentDirPath = target.getParent();
@@ -393,7 +442,7 @@ public final class JSONHandler {
 
                     //所有需求都满足后读取 JsonArray 的字节
                     //默认采取 UTF8 编码
-                    jsonArrayByteArray = jsonArray.toString().getBytes("UTF-8");
+                    jsonElementBytes = jsonElement.toString().getBytes("UTF-8");
 
                 } else {
                     Logger.error("JsonArray2File", "文件目录不可用");
@@ -406,7 +455,7 @@ public final class JSONHandler {
         } catch (UnsupportedEncodingException e) {
 
             Logger.error("JsonArray2File", "保存搜索结果数据时UTF-8转码出现异常 , 使用默认编码");
-            jsonArrayByteArray = jsonArray.toString().getBytes();
+            jsonElementBytes = jsonElement.toString().getBytes();
         } catch (IOException e) {
 
             Logger.error("JsonArray2File", "写入文件不存在 且 无法创建写入文件");
@@ -417,7 +466,7 @@ public final class JSONHandler {
 
         try {
             final FileOutputStream fileOutputStream = new FileOutputStream(target, false);
-            final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonArrayByteArray);
+            final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonElementBytes);
             while ((length = byteArrayInputStream.read(buffer)) != -1) {
                 fileOutputStream.write(buffer, 0, length);
             }
@@ -441,11 +490,11 @@ public final class JSONHandler {
      */
     private static
     @Nullable
-    JsonArray file2JsonArray(final @NonNull String targetPath) {
+    JsonElement file2Json(final @NonNull String targetPath) {
 
         final File target = new File(targetPath);
         if (!target.exists() || !target.canRead()) {
-            Logger.error("file2JsonArray", "文件不存在或不可读取：" + targetPath);
+            Logger.error("file2Json", "文件不存在或不可读取：" + targetPath);
             return null;
         }
 
@@ -463,16 +512,16 @@ public final class JSONHandler {
             fileInputStream.close();
 
             //将字节数组转换为字符串再将转换到的数据转化为JsonArray对象
-            final JsonArray jsonArray = new JsonParser().parse(new String(byteArrayOutputStream.toByteArray(), "UTF-8")).getAsJsonArray();
+            final JsonElement jsonElement = new JsonParser().parse(new String(byteArrayOutputStream.toByteArray(), "UTF-8"));
 
             //清空数据
             byteArrayOutputStream.reset();
 
             //返回数据
-            Logger.warning("file2JsonArray", "文件读取成功：" + targetPath);
-            return jsonArray;
+            Logger.warning("file2Json", "文件读取成功：" + targetPath);
+            return jsonElement;
         } catch (Exception e) {
-            Logger.error("file2JsonArray", "创建文件输入流 或 转换JsonArray失败\n" + e);
+            Logger.error("file2Json", "创建文件输入流 或 转换JsonElement失败\n" + e);
             return null;
         }
     }

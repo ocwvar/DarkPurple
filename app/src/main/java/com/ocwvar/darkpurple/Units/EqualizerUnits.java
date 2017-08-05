@@ -45,7 +45,7 @@ public class EqualizerUnits {
      */
     public void init(Context appContext) {
         this.appContext = appContext;
-        loadEqualizer();
+        //loadEqualizer();
     }
 
     /**

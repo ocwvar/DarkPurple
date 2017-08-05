@@ -21,7 +21,6 @@ public class DPApplication extends Application {
 
         //CrashHandler.init(getApplicationContext());
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());
-        //Thread.setDefaultUncaughtExceptionHandler(new OCExceptionHandler(this));
 
         //加载所有保存的设置
         AppConfigs.initDefaultValue(getApplicationContext());
