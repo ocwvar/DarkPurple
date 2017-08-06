@@ -26,6 +26,7 @@ proguard/
 # Intellij project files
 *.iml
 .gradle
+/.idea
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
@@ -33,3 +34,7 @@ proguard/
 /build
 /captures
 .externalNativeBuild
+
+#EXO相关的构建文件
+/extension-flac/build
+/library-core/build

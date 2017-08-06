@@ -2,6 +2,9 @@
   <dictionary name="reimu">
     <words>
       <w>albumart</w>
+      <w>flac</w>
+      <w>headsethook</w>
+      <w>pagekeeper</w>
     </words>
   </dictionary>
 </component>

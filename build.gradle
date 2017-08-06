@@ -18,6 +18,15 @@ allprojects {
     repositories {
         jcenter()
     }
+    project.ext {
+        minSdkVersion = 19
+        compileSdkVersion = 26
+        targetSdkVersion = 26
+        buildToolsVersion = '26.0.1'
+        supportLibraryVersion = '25.3.1'
+        dexmakerVersion = '1.2'
+        mockitoVersion = '1.9.5'
+    }
 }
 
 task clean(type: Delete) {

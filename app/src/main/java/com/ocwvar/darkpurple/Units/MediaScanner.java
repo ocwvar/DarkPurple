@@ -247,6 +247,40 @@ public class MediaScanner {
     }
 
     /**
+     * 判断文件是否为音乐文件
+     *
+     * @param fileName 要检查的文件名
+     * @return 有效性
+     */
+    private boolean isMusicFile(String fileName) {
+        if (TextUtils.isEmpty(fileName)) {
+            return false;
+        }
+
+        String[] temp;
+        try {
+            temp = fileName.split("\\.");
+        } catch (Exception e) {
+            //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
+            return false;
+        }
+        if (temp.length >= 1) {
+            //开始从后缀名判断是否为音频文件
+            switch (temp[temp.length - 1].toLowerCase()) {
+                case "flac":
+                case "ogg":
+                case "wav":
+                case "mp3":
+                    return true;
+                default:
+                    return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 列表排序类型枚举
      */
     public enum SortType {
@@ -411,37 +445,6 @@ public class MediaScanner {
         }
 
         /**
-         * 判断文件是否为音乐文件
-         *
-         * @param fileName 要检查的文件名
-         * @return 有效性
-         */
-        private boolean isMusicFile(String fileName) {
-            if (TextUtils.isEmpty(fileName)) {
-                return false;
-            }
-
-            String[] temp;
-            try {
-                temp = fileName.split("\\.");
-            } catch (Exception e) {
-                //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
-                return false;
-            }
-            if (temp.length >= 1) {
-                //开始从后缀名判断是否为音频文件
-                switch (temp[temp.length - 1]) {
-                    case "mp3":
-                        return true;
-                    default:
-                        return false;
-                }
-            } else {
-                return false;
-            }
-        }
-
-        /**
          * 文件是否有效
          *
          * @param path 文件路径地址
@@ -469,7 +472,7 @@ public class MediaScanner {
         private final FileFilter filter = new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return isMusicFile(file);
+                return isMusicFile(file.getName());
             }
         };
 
@@ -562,38 +565,6 @@ public class MediaScanner {
                     }
                 }
                 return true;
-            }
-        }
-
-        /**
-         * 判断文件是否为音乐文件
-         *
-         * @param file 要检查的文件
-         * @return 有效性
-         */
-        private boolean isMusicFile(File file) {
-            if (file.length() <= 0) {
-                //如果文件大小为 0 则肯定不合法
-                return false;
-            } else {
-                String[] temp;
-                try {
-                    temp = file.getName().split("\\.");
-                } catch (Exception e) {
-                    //如果解析文字失败 , 则表示文件没有后缀名 , 则不予以解析 , 当作文件非法
-                    return false;
-                }
-                if (temp.length >= 1) {
-                    //开始从后缀名判断是否为音频文件
-                    switch (temp[temp.length - 1]) {
-                        case "mp3":
-                            return true;
-                        default:
-                            return false;
-                    }
-                } else {
-                    return false;
-                }
             }
         }
 

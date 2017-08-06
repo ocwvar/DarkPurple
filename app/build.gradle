@@ -2,14 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
+
     defaultConfig {
         applicationId "com.ocwvar.darkpurple"
-        minSdkVersion 19
-        targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
+        versionCode 2
+        versionName "1.3.5"
     }
 
     signingConfigs {
@@ -65,13 +66,14 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile files('libs/bugrpt.jar')
+    compile project(':library-core')
+    compile project(':extension-flac')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.android.support:design:+'
     compile 'com.android.support:cardview-v7:+'
     compile 'com.android.support:palette-v7:+'
     compile 'com.android.support:support-v4:+'
-    compile 'com.google.android.exoplayer:exoplayer-core:+'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okio:okio:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.7.5'

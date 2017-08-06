@@ -214,7 +214,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     /**
      * 播放器状态回调处理类
      */
-    private inner class ExoPlayerCallbacks : Player.EventListener, ExtractorMediaSource.EventListener {
+    private inner class ExoPlayerCallbacks : ExoPlayer.EventListener, ExtractorMediaSource.EventListener {
 
         override fun onLoadError(error: IOException?) {
         }
@@ -230,7 +230,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         }
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            if (!isMediaReady && playbackState == Player.STATE_READY) {
+            if (!isMediaReady && playbackState == ExoPlayer.STATE_READY) {
                 //媒体缓冲完成
                 isMediaReady = true
 
@@ -251,7 +251,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
                     currentState = PlaybackStateCompat.STATE_PAUSED
                 }
 
-            } else if (isMediaReady && ((playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE))) {
+            } else if (isMediaReady && ((playbackState == ExoPlayer.STATE_ENDED || playbackState == ExoPlayer.STATE_IDLE))) {
                 //媒体播放完成
 
                 currentState = PlaybackStateCompat.STATE_NONE
@@ -264,9 +264,6 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         }
 
         override fun onPositionDiscontinuity() {
-        }
-
-        override fun onRepeatModeChanged(repeatMode: Int) {
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
