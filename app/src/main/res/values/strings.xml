@@ -182,6 +182,7 @@
     <!-- 设置版面数据 -->
     <string name="setting_header_general">基本设置</string>
     <string name="setting_header_spectrum">频谱动画设置</string>
+    <string name="setting_header_audio">音频控制设置</string>
 
     <string name="setting_header_scan">扫描器选项</string>
 
@@ -189,14 +190,24 @@
     <string name="setting_defaultValue_lengthLimit">20</string>
 
     <string name="setting_header_media">音频控制选项</string>
-    <string name="setting_title_isListenMediaButton">监听耳机按钮</string>
-    <string name="setting_info_isListenMediaButton">响应耳机按钮对应的操作: \n1次-暂停/播放 2次-下一首  3次-上一首</string>
+
+    <string name="setting_title_isListenMediaButton">监听媒体按钮</string>
+    <string name="setting_info_isListenMediaButton">响应媒体按钮对应的操作: \n1次-暂停/播放 2次-下一首  3次-上一首</string>
 
     <string name="setting_title_isResumeAudioWhenPlugin">监听耳机插入/连接</string>
     <string name="setting_info_isResumeAudioWhenPlugin">在耳机重新插入/连接上的时候继续播放上次被暂停的音频</string>
 
     <string name="setting_title_isUseSecondStyleSpectrum">使用第二种频谱动画</string>
     <string name="setting_info_isUseSecondStyleSpectrum">频谱将循环显示头部音频数据</string>
+
+    <string name="setting_title_autoAdjustVolumeWhenTemperatelyLoss">有消息提示时降低音量</string>
+    <string name="setting_info_autoAdjustVolumeWhenTemperatelyLoss">当有例如短信提示音播放时，以低音量播放。不勾选此项时将会暂停当前播放。</string>
+
+    <string name="setting_title_isResumeAudioGainFocus_ByTemperatelyLoss">重新获取焦点时恢复播放</string>
+    <string name="setting_info_isResumeAudioGainFocus_ByTemperatelyLoss">此项仅在有播放设备连接的情况下才有效</string>
+
+    <string name="setting_title_isResumeWhenRestartMediaSession">在媒体启动时播放上一次数据</string>
+    <string name="setting_info_isResumeWhenRestartMediaSession">此项仅在有播放设备连接的情况下才有效</string>
 
     <string name="setting_title_spectrum_style">频谱动画样式</string>
     <string-array name="setting_spectrum_styles">

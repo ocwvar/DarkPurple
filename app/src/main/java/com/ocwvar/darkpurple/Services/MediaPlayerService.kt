@@ -278,7 +278,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //切换媒体库成功，进行播放
             if (requireAudioFocus()) {
                 //只有请求音频焦点成功才执行操作
-                iController.play(index, isNowMediaDeviceConnected())
+                iController.play(index, isNowMediaDeviceConnected() && AppConfigs.isResumeWhenRestartMediaSession)
             }
         }
 
@@ -549,7 +549,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         //多媒体按键事件接收
         override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
-            mediaButtonEvent ?: return false
+            if (!AppConfigs.isListenMediaButton) {
+                //用户不需要监听媒体按钮
+                return true
+            }
+            mediaButtonEvent ?: return true
 
             val action: String = mediaButtonEvent.action
             val keyEvent: KeyEvent? = mediaButtonEvent.extras.getParcelable(Intent.EXTRA_KEY_EVENT)
@@ -701,7 +705,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 ICore.ACTIONS.CORE_ACTION_PAUSED -> {
                     updateNotification()
                     dismissNotification(false)
-                    //giveAwayAudioFocus()
                 }
 
             //媒体资源 缓冲完成

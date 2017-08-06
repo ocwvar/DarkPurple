@@ -78,6 +78,9 @@ public class AppConfigs {
     //是否监听耳机的多媒体按钮
     public static boolean isListenMediaButton = true;
 
+    //是否在重新启动媒体时播放上一次的音频（需要有媒体设备）
+    public static boolean isResumeWhenRestartMediaSession = true;
+
     //是否在耳机重新插入/连接之后继续播放
     public static boolean isResumeAudioWhenPlugin = true;
 
@@ -160,6 +163,8 @@ public class AppConfigs {
 
             isResumeAudioGainFocus_ByTemperatelyLoss = preferences.getBoolean("isResumeAudioGainFocus_ByTemperatelyLoss", true);
 
+            isResumeWhenRestartMediaSession = preferences.getBoolean("isResumeWhenRestartMediaSession", true);
+
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 
             isAutoSwitchPlaying = preferences.getBoolean("autoSwitchPlaying", true);
@@ -231,6 +236,8 @@ public class AppConfigs {
             autoAdjustVolumeWhenTemperatelyLoss = preferences.getBoolean("autoAdjustVolumeWhenTemperatelyLoss", true);
 
             isResumeAudioGainFocus_ByTemperatelyLoss = preferences.getBoolean("isResumeAudioGainFocus_ByTemperatelyLoss", true);
+
+            isResumeWhenRestartMediaSession = preferences.getBoolean("isResumeWhenRestartMediaSession", true);
 
             isUseSimplePlayingScreen = preferences.getBoolean("isUseSimplePlaying", false);
 

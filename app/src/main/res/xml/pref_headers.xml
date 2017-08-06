@@ -10,9 +10,8 @@
         android:fragment="com.ocwvar.darkpurple.Activities.SettingsActivity$SpectrumPreferenceFragment"
         android:title="@string/setting_header_spectrum" />
 
-    <!--<header
-        android:fragment="com.ocwvar.darkpurple.Activities.SettingsActivity$ThemePreferenceFragment"
-        android:summary="@string/setting_info_color"
-        android:title="@string/setting_title_color" />-->
+    <header
+        android:fragment="com.ocwvar.darkpurple.Activities.SettingsActivity$AudioPreferenceFragment"
+        android:title="@string/setting_header_audio" />
 
 </preference-headers>

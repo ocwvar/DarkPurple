@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isResumeAudioWhenPlugin"
+        android:summary="@string/setting_info_isResumeAudioWhenPlugin"
+        android:title="@string/setting_title_isResumeAudioWhenPlugin"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isListenMediaButton"
+        android:summary="@string/setting_info_isListenMediaButton"
+        android:title="@string/setting_title_isListenMediaButton"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="autoAdjustVolumeWhenTemperatelyLoss"
+        android:summary="@string/setting_info_autoAdjustVolumeWhenTemperatelyLoss"
+        android:title="@string/setting_title_autoAdjustVolumeWhenTemperatelyLoss"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isResumeAudioGainFocus_ByTemperatelyLoss"
+        android:summary="@string/setting_info_isResumeAudioGainFocus_ByTemperatelyLoss"
+        android:title="@string/setting_title_isResumeAudioGainFocus_ByTemperatelyLoss"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="isResumeWhenRestartMediaSession"
+        android:summary="@string/setting_info_isResumeWhenRestartMediaSession"
+        android:title="@string/setting_title_isResumeWhenRestartMediaSession"
+        android:widgetLayout="@layout/preference_checkbox" />
+
+</PreferenceScreen>

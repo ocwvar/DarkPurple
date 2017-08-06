@@ -10,17 +10,10 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.support.v7.app.ActionBar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Units.ActivityManager;
 
-import java.io.File;
 import java.util.List;
 
 
@@ -128,7 +121,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || SpectrumPreferenceFragment.class.getName().equals(fragmentName)
-                || ThemePreferenceFragment.class.getName().equals(fragmentName);
+                || AudioPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
@@ -156,48 +149,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     }
 
-    public static class ThemePreferenceFragment extends PreferenceFragment {
+    public static class AudioPreferenceFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_theme);
-            bindPreferenceSummaryToValue(findPreference("MainList_Style"));
-            setHasOptionsMenu(true);
+            addPreferencesFromResource(R.xml.pref_audio);
         }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_action_theme_apply:
-                    AppConfigs.reInitOptionValues();
-                    ActivityManager.getInstance().restartMainActivity();
-                    break;
-            }
-            return true;
-        }
-
-        @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            super.onCreateOptionsMenu(menu, inflater);
-            inflater.inflate(R.menu.menu_theme, menu);
-        }
-
-        @Override
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            //通过文字资源ID来确定点击的是哪个选项
-            switch (preference.getTitleRes()) {
-                case R.string.setting_title_theme_reset:
-                    //删除头部图像文件
-                    new File(AppConfigs.ImageCacheFolder + "headeR.jpg").delete();
-                    //重置颜色配置
-                    AppConfigs.Color.resetColor();
-                    ActivityManager.getInstance().restartMainActivity();
-                    break;
-            }
-            return true;
-        }
     }
 
 }

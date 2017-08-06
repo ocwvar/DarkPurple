@@ -19,26 +19,6 @@
 
     <PreferenceCategory
         android:layout="@layout/preference_category_textview"
-        android:title="@string/setting_header_media">
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="isResumeAudioWhenPlugin"
-            android:summary="@string/setting_info_isResumeAudioWhenPlugin"
-            android:title="@string/setting_title_isResumeAudioWhenPlugin"
-            android:widgetLayout="@layout/preference_checkbox" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="isListenMediaButton"
-            android:summary="@string/setting_info_isListenMediaButton"
-            android:title="@string/setting_title_isListenMediaButton"
-            android:widgetLayout="@layout/preference_checkbox" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:layout="@layout/preference_category_textview"
         android:title="@string/setting_header_playing">
 
         <CheckBoxPreference
