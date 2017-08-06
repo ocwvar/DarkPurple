@@ -9,14 +9,15 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 #### 支持：Android 4.4 ~ Android 7.1.2
 这是一款基于Google EXO引擎独立开发的音乐播放器。
 
-- 可通过耳机按钮和状态栏Notification来控制音乐的播放 
+- 可通过媒体按钮和 Notification 来控制媒体播放
+- 停止播放后，可通过滑动移除 Notification 来关闭应用
 - 拔出耳机自动暂停 , 插入耳机自动恢复播放
 - 用户可以通过手动输入路径或从浏览器中限定音乐文件夹或扫描所有音频
 - 提供可编辑播放列表功能
 - 可根据音频长度进行过滤
 - 可根据歌曲名字或歌曲添加时间进行排序
 - 在应用被销毁后，可以通过耳机线控来重新启动
-- 可自定义均衡器配置 (暂时去掉，等服务完成后重新加入)
+- 可自定义均衡器配置 (目前不可用)
 - UI 设计采用 Material Design
 - 可在线搜索设置封面数据 (请阅读下方说明)
 - 有两种频谱动画 , 您也可以自定义频谱动画的柱状粗细与颜色 (下方有预览图) 频谱元素有柱状、点状、线状，可以单独开启或关闭
@@ -44,7 +45,7 @@ CoverBox 的作者为 Henry Hu
 - 将现有的音频服务改用 MediaBrowserService √
 - EXO均衡器功能 →
 
-# 截图展示 (2017/8/06 18：54)
+# 截图展示 (2017/8/06 19：02)
 ##### *截图无法展示所有应用的细节*
 
 ### 主界面<p></p>
@@ -65,6 +66,10 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_2.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_3.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_5.png)
+
+## Notification 样式(Android 7.1.2)<p></p>
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/notification_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/notification_2.png)
 
 ### 设置<p></p>
 
