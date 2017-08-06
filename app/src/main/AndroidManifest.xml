@@ -9,27 +9,12 @@
     <uses-permission-sdk-23 android:name="android.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission-sdk-23 android:name="android.permission.RECORD_AUDIO" />
     <uses-permission-sdk-23 android:name="android.permission.INTERNET" />
-    <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="ndroid.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
-
-    <!-- 以下为网易云捕所需权限  Permissions required by Netease CrashCatcher -->
-    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH" />
-    <uses-permission-sdk-23 android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission-sdk-23 android:name="android.permission.READ_LOGS" />
-
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="ndroid.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".DPApplication"
@@ -37,10 +22,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <meta-data
             android:name="BUGRPT_APPID"
             android:value="A008251242" />
 
+        <!--主框架界面-->
         <activity
             android:name=".Activities.MainFrameworkActivity"
             android:launchMode="singleTask"
@@ -52,42 +39,47 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--播放界面-->
         <activity
             android:name=".Activities.PlayingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.PlayingActivity" />
+
+        <!--设置界面-->
         <activity
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme" />
+
+        <!--扫描目录设置界面-->
         <activity
             android:name=".Activities.FolderSelectorActivity"
             android:label="@string/musicFolder_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <!--播放列表编辑界面-->
         <activity
             android:name=".Activities.PlaylistDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <!--封面下载界面-->
         <activity
             android:name=".Activities.DownloadCoverActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Activities.EqualizerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Activities.CloudMusicActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!--文件夹选择界面-->
         <activity
             android:name=".Activities.FolderSelectorUI"
             android:label="@string/title_select_folder_ui"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!--媒体服务-->
         <service
             android:name=".Services.MediaPlayerService"
             android:exported="true">

@@ -9,6 +9,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -99,33 +100,40 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 9 && resultCode == PlaylistDetailActivity.LIST_CHANGED && data != null) {
-            //如果列表被进行了操作，在退出界面的时候就进行保存
-            val isRenamed = data.extras.getBoolean("renamed", false)
-            val position = data.getIntExtra("position", -1)
-            if (isRenamed) {
-                //如果更改了名称
-                adapter.notifyItemChanged(position)
+        if (requestCode == 9 && resultCode == PlaylistDetailActivity.LIST_CHANGED && data != null && data.extras != null) {
+
+            //如果列表被进行了操作，在退出界面的时候就进行保存。先获取所有参数
+            val index: Int = data.extras.getInt(PlaylistDetailActivity.KEY_POSITION, -1)
+            val oldName: String? = data.extras.getString(PlaylistDetailActivity.KEY_OLD_NAME, null)
+            val newName: String = data.extras.getString(PlaylistDetailActivity.KEY_NEW_NAME, "")
+            val changedPlaylist: PlaylistItem? = PlaylistUnits.getInstance().getPlaylistItem(index)
+
+            changedPlaylist ?: return
+            oldName ?: return
+
+            if (changedPlaylist.playlist.isEmpty()) {
+                //列表内没有数据，则删除列表
+                PlaylistUnits.getInstance().removePlaylist(changedPlaylist)
+                ToastMaker.show(R.string.message_playlist_empty_removed)
+                adapter.notifyItemRemoved(index)
+
+            } else if (!TextUtils.isEmpty(newName)) {
+                //列表更改了名称，则作为一个新的播放数据进行保存，然后删除旧的数据
+                PlaylistUnits.getInstance().removePlaylist(PlaylistItem(oldName))
+                PlaylistUnits.getInstance().savePlaylist(newName, changedPlaylist.playlist)
+
+            } else {
+                //没有更新名称，只是更改了列表数据
+                PlaylistUnits.getInstance().savePlaylist(oldName, changedPlaylist.playlist)
+
             }
-            if (position != -1) {
-                val playlistItem = PlaylistUnits.getInstance().getPlaylistItem(position)
-                if (playlistItem.playlist.size == 0) {
-                    //如果用户删除了所有的歌曲，则移除整个播放列表
-                    PlaylistUnits.getInstance().removePlaylist(playlistItem)
-                    //如果使用着当前数据，则重置数据
-                    if (MediaLibrary.getUsingLibraryTAG() == playlistItem.name) {
-                        sendCommand(MediaPlayerService.COMMAND.COMMAND_RELEASE_CURRENT_MEDIA, null)
-                    }
-                    ToastMaker.show(R.string.message_playlist_empty_removed)
-                    adapter.notifyItemRemoved(position)
-                } else {
-                    //更改了曲目顺序
-                    PlaylistUnits.getInstance().savePlaylist(playlistItem.name, playlistItem.playlist)
-                    ToastMaker.show(R.string.message_playlist_saved)
-                    adapter.notifyItemChanged(position)
-                }
-                return
-            }
+
+            //如果需要，则进行媒体重置
+            resetCurrentMedia(changedPlaylist)
+
+            //更新播放列表展示界面
+            ToastMaker.show(R.string.message_playlist_saved)
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -142,6 +150,17 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
      */
     private fun sendCommand(commandAction: String, extra: Bundle?) {
         MediaControllerCompat.getMediaController(this.activity)?.sendCommand(commandAction, extra, null)
+    }
+
+    /**
+     * 在对当前正在播放的 播放列表 进行操作后，重置当前的媒体状态
+     * @param   playlistItem    发生更改的数据
+     */
+    private fun resetCurrentMedia(playlistItem: PlaylistItem?) {
+        //如果使用着当前数据，则重置数据
+        if (playlistItem != null && MediaLibrary.getUsingLibraryTAG() == playlistItem.name) {
+            sendCommand(MediaPlayerService.COMMAND.COMMAND_RELEASE_CURRENT_MEDIA, null)
+        }
     }
 
     /**
@@ -199,10 +218,8 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                     //删除播放列表动作
                     PlaylistUnits.getInstance().removePlaylist(data)
                     adapter.notifyItemRemoved(position)
-                    //如果使用着当前数据，则重置数据
-                    if (MediaLibrary.getUsingLibraryTAG() == data.name) {
-                        sendCommand(MediaPlayerService.COMMAND.COMMAND_RELEASE_CURRENT_MEDIA, null)
-                    }
+                    //如果需要，则进行媒体重置
+                    resetCurrentMedia(data)
                     hide()
                 }
             }

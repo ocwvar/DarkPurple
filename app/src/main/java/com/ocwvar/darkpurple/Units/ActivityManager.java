@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.ocwvar.darkpurple.Activities.LoginActivity;
 import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 
@@ -56,14 +55,6 @@ public class ActivityManager implements Application.ActivityLifecycleCallbacks {
     public void restartMainActivity() {
         release();
         Intent intent = new Intent(AppConfigs.ApplicationContext, MainFrameworkActivity.class);
-        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-        AppConfigs.ApplicationContext.startActivity(intent);
-    }
-
-    public void restartLoginActivity() {
-        release();
-        Intent intent = new Intent(AppConfigs.ApplicationContext, LoginActivity.class);
-        intent.putExtra("stopAutoLogin", true);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         AppConfigs.ApplicationContext.startActivity(intent);
     }

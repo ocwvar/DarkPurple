@@ -57,6 +57,8 @@
     <string name="message_playlist_loading">正在加载数据…</string>
     <string name="message_playlist_load_failed">无法读取列表数据,可能数据已损坏</string>
     <string name="message_playlist_empty_removed">列表已无数据,将自动移除</string>
+    <string name="message_playlist_empty">列表已无数据,无法编辑</string>
+    <string name="message_playlist_position_error">无法获取此位置的播放列表数据</string>
     <string name="message_playlist_saved">已保存更改</string>
     <string name="dialog_playlist_detail_rename_title">请输入新的名称</string>
     <string name="dialog_button_playlist_edit">编辑播放列表</string>

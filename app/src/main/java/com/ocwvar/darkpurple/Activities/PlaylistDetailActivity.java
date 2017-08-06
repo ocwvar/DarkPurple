@@ -24,6 +24,7 @@ import com.ocwvar.darkpurple.Callbacks.OnDragChangedCallback;
 import com.ocwvar.darkpurple.R;
 import com.ocwvar.darkpurple.Units.BaseBlurActivity;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
+import com.ocwvar.darkpurple.Units.ToastMaker;
 
 import java.lang.ref.WeakReference;
 
@@ -38,18 +39,19 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
 
     public static final int LIST_CHANGED = 1;
     public static final int LIST_UNCHANGED = 2;
+    public static final String KEY_OLD_NAME = "KEY_OLD_NAME";
+    public static final String KEY_NEW_NAME = "KEY_NEW_NAME";
+    public static final String KEY_POSITION = "KEY_POSITION";
+    final Intent intent = new Intent();
     Snackbar info = null;
     PlaylistItem selectPlaylistItem = null;
     PlaylistDetailAdapter adapter = null;
     WeakReference<AlertDialog> renameDialog = new WeakReference<>(null);
-    EditText getNewname;
-    Intent intent = null;
+    EditText getNewName;
     int thisPosition = -1;
 
     @Override
     protected boolean onPreSetup() {
-        intent = new Intent();
-        intent.putExtra("renamed", false);
 
         setResult(LIST_UNCHANGED, null);
 
@@ -57,13 +59,20 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
             //没有传递播放列表对象位置 , 结束当前页面
             return false;
         } else {
-            thisPosition = getIntent().getExtras().getInt("position");
-            this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistItem(thisPosition);
+            //获取从上一个界面得到的索引位置
+            this.thisPosition = getIntent().getExtras().getInt("position");
+
+            //尝试获取对应索引位置的播放列表数据
+            this.selectPlaylistItem = PlaylistUnits.getInstance().getPlaylistItem(this.thisPosition);
+
             if (this.selectPlaylistItem == null) {
                 //如果无法获取到播放列表数据对象 , 结束当前页面
+                ToastMaker.INSTANCE.show(R.string.message_playlist_position_error);
+                finish();
                 return false;
             } else if (this.selectPlaylistItem.getPlaylist() == null) {
                 //如果没有获取到这播放列表数据的音频列表 , 结束当前页面
+                ToastMaker.INSTANCE.show(R.string.message_playlist_empty);
                 finish();
                 return false;
             }
@@ -100,6 +109,15 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
         info = Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_playlist_detail_tip, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.simple_done, PlaylistDetailActivity.this)
                 .setActionTextColor(AppConfigs.Color.FloatingButton_Color);
+
+        //设置播放列表的旧名称
+        intent.putExtra(KEY_OLD_NAME, this.selectPlaylistItem.getName());
+        //设置播放列表的新名称，默认为空
+        intent.putExtra(KEY_NEW_NAME, "");
+        //设置此播放列表的索引位置
+        intent.putExtra(KEY_POSITION, this.thisPosition);
+
+        setResult(LIST_UNCHANGED, intent);
     }
 
     @Override
@@ -109,12 +127,12 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
     }
 
     @Override
-    protected void onViewClick(View clickedView) {
+    protected void onViewClick(@NonNull View clickedView) {
         info.dismiss();
     }
 
     @Override
-    protected boolean onViewLongClick(View holdedView) {
+    protected boolean onViewLongClick(@NonNull View holdedView) {
         return false;
     }
 
@@ -142,34 +160,38 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
      */
     private void showRenameDialog() {
         if (renameDialog.get() == null) {
-            if (getNewname == null) {
-                getNewname = new EditText(PlaylistDetailActivity.this);
-                getNewname.setMaxLines(1);
-                getNewname.setBackgroundColor(Color.argb(120, 0, 0, 0));
-                getNewname.setTextSize(15f);
-                getNewname.setTextColor(Color.WHITE);
+            if (getNewName == null) {
+                getNewName = new EditText(PlaylistDetailActivity.this);
+                getNewName.setMaxLines(1);
+                getNewName.setBackgroundColor(Color.argb(120, 0, 0, 0));
+                getNewName.setTextSize(15f);
+                getNewName.setTextColor(Color.WHITE);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(PlaylistDetailActivity.this, R.style.FullScreen_TransparentBG);
             builder.setTitle(R.string.dialog_playlist_detail_rename_title);
-            builder.setView(getNewname);
+            builder.setView(getNewName);
             builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    if (!TextUtils.isEmpty(getNewname.getText().toString())) {
-                        if (getNewname.getText().toString().equals(selectPlaylistItem.getName())) {
+                    if (!TextUtils.isEmpty(getNewName.getText().toString())) {
+
+                        //记录输入的名称，并清空输入框
+                        final String newName = getNewName.getText().toString();
+                        getNewName.getText().clear();
+
+                        if (newName.equals(selectPlaylistItem.getName())) {
                             //输入的名字跟原本的相同
-                            getNewname.getText().clear();
                             Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_title_exist_song, Snackbar.LENGTH_SHORT).show();
-                        } else if (PlaylistUnits.getInstance().isPlaylistExisted(getNewname.getText().toString())) {
+
+                        } else if (PlaylistUnits.getInstance().isPlaylistExisted(newName)) {
                             //输入的名字和其他的播放列表名字相同
-                            getNewname.getText().clear();
                             Snackbar.make(findViewById(android.R.id.content), R.string.ERROR_title_exist_playlist_name, Snackbar.LENGTH_SHORT).show();
+
                         } else {
-                            //可以开始更改
-                            PlaylistUnits.getInstance().renamePlaylist(selectPlaylistItem.getName(), getNewname.getText().toString());
-                            getNewname.getText().clear();
-                            setTitle(selectPlaylistItem.getName());
-                            intent.putExtra("renamed", true);
+                            //名称可用，保存至Intent
+                            setTitle(newName);
+
+                            intent.putExtra(KEY_NEW_NAME, newName);
                             setResult(LIST_CHANGED, intent);
                             dialogInterface.dismiss();
                         }
@@ -178,14 +200,14 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
             });
             renameDialog = new WeakReference<>(builder.create());
         }
-        getNewname.setText(selectPlaylistItem.getName());
+        getNewName.setText(selectPlaylistItem.getName());
         renameDialog.get().show();
     }
 
     /**
      * RecyclerView 拖动实现工具
      */
-    class RecycleSwipeHelper extends ItemTouchHelper.Callback {
+    private final class RecycleSwipeHelper extends ItemTouchHelper.Callback {
 
         OnDragChangedCallback changedCallback;
 
@@ -222,7 +244,6 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
                 return false;
             } else {
                 changedCallback.onItemPositionChange(viewHolder, viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                intent.putExtra("position", thisPosition);
                 setResult(LIST_CHANGED, intent);
                 return true;
             }
@@ -234,7 +255,6 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             changedCallback.onItemDelete(viewHolder.getAdapterPosition());
-            intent.putExtra("position", thisPosition);
             setResult(LIST_CHANGED, intent);
         }
 

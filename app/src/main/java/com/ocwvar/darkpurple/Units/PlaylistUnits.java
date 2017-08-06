@@ -61,6 +61,22 @@ public class PlaylistUnits {
     }
 
     /**
+     * 根据索引位置获取播放列表数据
+     *
+     * @param position 索引位置
+     * @return 播放列表数据，无法获取则返回 NULL
+     */
+    public
+    @Nullable
+    PlaylistItem getPlaylistItem(int position) {
+        if (MediaLibrary.INSTANCE.getPlaylistLibrary() != null && position >= 0 && position < MediaLibrary.INSTANCE.getPlaylistLibrary().size()) {
+            return MediaLibrary.INSTANCE.getPlaylistLibrary().get(position);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * 储存一个播放列表 (覆盖旧数据)
      *
      * @param name     播放列表名字
@@ -309,14 +325,6 @@ public class PlaylistUnits {
             Logger.error(TAG, "无法获取. 原因: 没有已保存的数据");
         }
         return null;
-    }
-
-    public PlaylistItem getPlaylistItem(int position) {
-        if (MediaLibrary.INSTANCE.getPlaylistLibrary() != null && position >= 0 && position < MediaLibrary.INSTANCE.getPlaylistLibrary().size()) {
-            return MediaLibrary.INSTANCE.getPlaylistLibrary().get(position);
-        } else {
-            return null;
-        }
     }
 
 }
