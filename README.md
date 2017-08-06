@@ -6,7 +6,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
 
 # 介绍
-#### 支持：Android 4.2.2 ~ Android 7.1.2
+#### 支持：Android 4.4 ~ Android 7.1.2
 这是一款基于Google EXO引擎独立开发的音乐播放器。
 
 - 可通过耳机按钮和状态栏Notification来控制音乐的播放 
@@ -29,6 +29,9 @@ CoverBox 的作者为 Henry Hu
 
 封面获取功频繁使用的时候可能会出现无法获取到封面资源的情况,这是因为网址可能左右流量访问限制问题,等待一段时间后即可
 
+## 关于Android 8.0 支持
+在虚拟机下的 Android 8.0 版本中，Google v4兼容包(v26.0.0-alpha1)中的 MediaSessionCompat 会产生异常。
+在新版本发布后再进行相应的适配工作。
 
 # 开发进度
 
@@ -41,7 +44,7 @@ CoverBox 的作者为 Henry Hu
 - 将现有的音频服务改用 MediaBrowserService √
 - EXO均衡器功能 →
 
-# 截图展示 (2017/8/02 00：40)
+# 截图展示 (2017/8/06 18：54)
 ##### *截图无法展示所有应用的细节*
 
 ### 主界面<p></p>
@@ -70,6 +73,8 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_3.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_4.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_5.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_6.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/setting_7.png)
 
 ### 扫描目录设置<p></p>
 
