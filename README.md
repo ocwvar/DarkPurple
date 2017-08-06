@@ -6,7 +6,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
 
 # 介绍
-#### 支持：Android 4.2.2 ~ Android 7.1.2
+#### 支持：Android 4.4 ~ Android 7.1.2
 这是一款基于Google EXO引擎独立开发的音乐播放器。
 
 - 可通过耳机按钮和状态栏Notification来控制音乐的播放 
