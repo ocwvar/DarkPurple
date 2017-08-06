@@ -10,6 +10,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v7.app.NotificationCompat
+import com.ocwvar.darkpurple.Activities.MainFrameworkActivity
 import com.ocwvar.darkpurple.Bean.SongItem.SONGITEM_KEY_COVER_ID
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Units.Cover.CoverManager
@@ -96,6 +97,11 @@ class MediaNotification {
                 .setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
                 //副标题
                 .setContentText(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST))
+                //点击打开主界面
+                .setContentIntent(PendingIntent.getActivity(appContext, 0, Intent(appContext, MainFrameworkActivity::class.java).let {
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    it
+                }, PendingIntent.FLAG_CANCEL_CURRENT))
                 //添加 上一个 媒体数据按钮
                 .addAction(R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
 

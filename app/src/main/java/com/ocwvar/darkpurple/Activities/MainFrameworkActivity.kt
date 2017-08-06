@@ -18,6 +18,8 @@ import android.provider.Settings
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
 import android.view.WindowManager
@@ -64,6 +66,7 @@ class MainFrameworkActivity : BaseActivity() {
     private var userPagekeeper: WeakReference<UserFragment?> = WeakReference(null)
 
     private var currentPageTAG: Any? = null
+    private val serviceCallbacks: ServiceCallbacks = ServiceCallbacks()
     private var blurCoverUpdateReceiver: BlurCoverUpdateReceiver = BlurCoverUpdateReceiver()
     private var playingDataUpdateReceiver: PlayingDataUpdateReceiver = PlayingDataUpdateReceiver()
 
@@ -108,7 +111,7 @@ class MainFrameworkActivity : BaseActivity() {
                     }
                 })
 
-        this.serviceConnector = MediaServiceConnector(this@MainFrameworkActivity)
+        this.serviceConnector = MediaServiceConnector(this@MainFrameworkActivity, serviceCallbacks)
 
         this.headShower = findViewById(R.id.MainMusic_headShower) as ImageView
         this.headCoverShower = findViewById(R.id.MainMusic_coverShower) as ImageView
@@ -192,13 +195,8 @@ class MainFrameworkActivity : BaseActivity() {
             registerReceiver(playingDataUpdateReceiver, playingDataUpdateReceiver.intentFilter)
         }
 
-        //获取当前的播放状态，来确定是否显示浮动按钮
-        val currentState: Int = serviceConnector.currentState()
-        if (currentState != PlaybackStateCompat.STATE_ERROR && currentState != PlaybackStateCompat.STATE_NONE) {
-            floatingActionButton.show()
-        } else {
-            floatingActionButton.visibility = View.GONE
-        }
+        //默认不显示播放界面按钮，等待服务连接后，在进行检查播放状态
+        floatingActionButton.visibility = View.GONE
     }
 
     override fun onStop() {
@@ -445,6 +443,64 @@ class MainFrameworkActivity : BaseActivity() {
             }
         }
 
+    }
+
+    /**
+     * 媒体服务连接状态回调处理器
+     */
+    private inner class ServiceCallbacks : MediaServiceConnector.Callbacks {
+
+        /**
+         *  媒体服务连接成功
+         */
+        override fun onServiceConnected() {
+            //服务连接后检查当前播放的状态
+            if (serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
+                floatingActionButton.show()
+            } else {
+                floatingActionButton.visibility = View.GONE
+            }
+        }
+
+        /**
+         *  媒体服务连接断开
+         */
+        override fun onServiceDisconnected() {
+            floatingActionButton.visibility = View.GONE
+        }
+
+        /**
+         *  无法连接媒体服务
+         */
+        override fun onServiceConnectionError() {
+        }
+
+        /**
+         *  媒体数据发生更改
+         *  @param  metadata
+         */
+        override fun onMediaChanged(metadata: MediaMetadataCompat) {
+        }
+
+        /**
+         *  媒体播放状态发生改变
+         *  @param  state
+         */
+        override fun onMediaStateChanged(state: PlaybackStateCompat) {
+        }
+
+        /**
+         * 媒体服务返回当前正在使用的媒体数据列表回调
+         * @param   data    数据列表
+         */
+        override fun onGotUsingLibraryData(data: MutableList<MediaBrowserCompat.MediaItem>) {
+        }
+
+        /**
+         *  无法获取媒体服务返回的媒体数据
+         */
+        override fun onGetUsingLibraryDataError() {
+        }
     }
 
 }
