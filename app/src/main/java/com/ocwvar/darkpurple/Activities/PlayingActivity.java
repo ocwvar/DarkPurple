@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.media.MediaBrowserCompat;
@@ -260,11 +261,15 @@ public class PlayingActivity
     @Override
     protected void onResume() {
         super.onResume();
-        //显示等待服务连接动画
-        switchWaitForService(true);
 
-        //开始连接服务
-        serviceConnector.connect();
+        //当前没有连接媒体服务
+        if (!serviceConnector.isServiceConnected()) {
+            //显示等待服务连接动画
+            switchWaitForService(true);
+
+            //开始连接服务
+            serviceConnector.connect();
+        }
 
         //注册音频变化广播接收器
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
@@ -307,6 +312,17 @@ public class PlayingActivity
             switchSpectrumEffect();
         }
 
+    }
+
+    /**
+     * 在获取权限后，在这个回调方法中重新连接媒体服务
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (!serviceConnector.isServiceConnected()) {
+            serviceConnector.connect();
+        }
     }
 
     /**
@@ -497,12 +513,10 @@ public class PlayingActivity
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
     }
 
     @Override
     public void onPageSelected(int position) {
-
     }
 
     /**
@@ -789,33 +803,30 @@ public class PlayingActivity
         //判断用户是要显示还是隐藏动画
         if (spectrumSwitch.getTag().toString().equals("off")) {
             //显示频谱动画的时候 , 先执行背景淡入动画 , 动画结束后显示SurfaceView , 然后开始绘制频谱动画
-            //设置按钮的样式
-            spectrumSwitch.setAlpha(1f);
 
             if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 //判断是否有音频录制权限
-                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 110);
+                spectrumSwitch.setEnabled(true);
                 return;
             }
 
-            //更换按钮图标
-            spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
-
-            //设置状态到TAG中
-            spectrumSwitch.setTag("on");
-
-            coverSpectrum.setVisibility(View.VISIBLE);
-
             final int currentState = serviceConnector.currentState();
             if (currentState == PlaybackStateCompat.STATE_PLAYING) {
-                spectrumSwitch.setEnabled(true);
+                //更换按钮图标
+                spectrumSwitch.setImageResource(R.drawable.ic_action_sp_on);
+                //设置状态到TAG中
+                spectrumSwitch.setTag("on");
+                //显示频谱SurfaceView
+                coverSpectrum.setVisibility(View.VISIBLE);
                 spectrumAnimDisplay.start();
             }
+
+            spectrumSwitch.setAlpha(1f);
+            spectrumSwitch.setEnabled(true);
+
         } else {
             //不显示频谱动画的时候 , 隐藏SurfaceView 和 SurfaceView BG , 然后停止动画刷新
-            //当动画演示完成 , 恢复按钮的可点击状态 , 设置按钮的样式
-            spectrumSwitch.setEnabled(true);
-            spectrumSwitch.setAlpha(1f);
             spectrumSwitch.setImageResource(R.drawable.ic_action_sp_off);
 
             //设置状态到TAG中
@@ -825,6 +836,9 @@ public class PlayingActivity
             spectrumAnimDisplay.stop();
 
             coverSpectrum.setVisibility(View.GONE);
+
+            // 恢复按钮的可点击状态 , 设置按钮的样式
+            spectrumSwitch.setEnabled(true);
         }
 
     }
