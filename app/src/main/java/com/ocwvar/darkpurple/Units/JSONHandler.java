@@ -260,6 +260,14 @@ public final class JSONHandler {
     }
 
     /**
+     * 删除最近的媒体状态储存文件
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void removeLastMediaState() {
+        new File(AppConfigs.DataFolder + "LastState.data").delete();
+    }
+
+    /**
      * 获取最近的媒体状态：使用的媒体库、媒体路径
      *
      * @return 保存的数据，不存在则返回 NULL。 [0]：最后使用的媒体库TAG  [1]：歌曲路径

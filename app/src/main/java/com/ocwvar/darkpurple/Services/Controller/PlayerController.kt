@@ -233,6 +233,19 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
     }
 
     /**
+     * 重置媒体使用状态：当前使用的媒体库TAG、当前使用的索引、AudioSession ID
+     */
+    override fun resetState() {
+        this.currentIndex = 0
+        this.currentLibraryTAG = ""
+        this.usingLibrary = ArrayList()
+        this.randomIndex = ArrayList()
+        MediaLibrary.updateAudioSessionID(0)
+        MediaLibrary.updateUsingIndex(-1)
+        MediaLibrary.updateUsingLibraryTAG("")
+    }
+
+    /**
      * 跳转位置
      *
      * @param   position    要跳转的位置

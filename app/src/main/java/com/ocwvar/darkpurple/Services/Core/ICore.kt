@@ -41,6 +41,11 @@ interface ICore {
          */
         val CORE_ACTION_READY: String = "ca_5"
 
+        /**
+         *  释放数据
+         */
+        val CORE_ACTION_RELEASE: String = "ca_6"
+
     }
 
     /**

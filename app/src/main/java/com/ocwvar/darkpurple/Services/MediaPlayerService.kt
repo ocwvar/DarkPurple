@@ -97,9 +97,15 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         val COMMAND_PLAY_LIBRARY: String = "c1"
 
         /**
-         * 更新 Audio Session ID
+         * 更新 AudioSession ID
          */
         val COMMAND_UPDATE_AUDIO_SESSION_ID: String = "c2"
+
+        /**
+         * 清空当前的媒体数据
+         * 此命令会重置：当前使用媒体TAG、当前使用媒体库索引、AudioSession ID
+         */
+        val COMMAND_RELEASE_CURRENT_MEDIA: String = "c3"
 
     }
 
@@ -263,7 +269,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         }
 
         if (index == -1) {
-            //数据不可用
+            //数据不可用，删除无效数据文件
+            JSONHandler.removeLastMediaState()
             return
         }
 
@@ -341,6 +348,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
      * 从 IController 中更新当前的媒体数据以及对应的状态
      */
     private fun updateMediaMetadata() {
+        //先检查当前是否可以更新数据
+        if (this.iController.usingLibrary().isEmpty() || this.iController.currentIndex() < 0) {
+            return
+        }
+
         //设置当前MediaSession使用中的媒体数据
         this.mediaSession.setMetadata(this.iController.usingLibrary()[this.iController.currentIndex()].mediaMetadata)
 
@@ -620,6 +632,15 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //更新AudioSession ID
                 COMMAND.COMMAND_UPDATE_AUDIO_SESSION_ID -> {
                     iController.updateAudioSessionID()
+                }
+
+            //重置当前数据
+                COMMAND.COMMAND_RELEASE_CURRENT_MEDIA -> {
+                    iController.release()
+                    iController.resetState()
+                    JSONHandler.removeLastMediaState()
+                    updateMediaMetadata()
+                    dismissNotification(true)
                 }
 
             }

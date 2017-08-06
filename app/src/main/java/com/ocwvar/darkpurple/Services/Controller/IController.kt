@@ -107,6 +107,11 @@ interface IController {
     fun release()
 
     /**
+     * 重置媒体使用状态：当前使用的媒体库TAG、当前使用的索引、AudioSession ID
+     */
+    fun resetState()
+
+    /**
      * 跳转位置
      *
      * @param   position    要跳转的位置

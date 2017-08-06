@@ -146,6 +146,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         this.isMediaReady = false
         this.currentDuration = -1L
         this.currentState = PlaybackStateCompat.STATE_NONE
+        sendBroadcast(ICore.ACTIONS.CORE_ACTION_RELEASE)
     }
 
     /**

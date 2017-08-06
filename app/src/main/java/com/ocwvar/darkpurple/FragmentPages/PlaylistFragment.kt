@@ -19,6 +19,7 @@ import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.MediaPlayerService
+import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 import com.ocwvar.darkpurple.Units.PlaylistUnits
 import com.ocwvar.darkpurple.Units.ToastMaker
 import java.lang.ref.WeakReference
@@ -111,6 +112,10 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                 if (playlistItem.playlist.size == 0) {
                     //如果用户删除了所有的歌曲，则移除整个播放列表
                     PlaylistUnits.getInstance().removePlaylist(playlistItem)
+                    //如果使用着当前数据，则重置数据
+                    if (MediaLibrary.getUsingLibraryTAG() == playlistItem.name) {
+                        sendCommand(MediaPlayerService.COMMAND.COMMAND_RELEASE_CURRENT_MEDIA, null)
+                    }
                     ToastMaker.show(R.string.message_playlist_empty_removed)
                     adapter.notifyItemRemoved(position)
                 } else {
@@ -194,6 +199,10 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                     //删除播放列表动作
                     PlaylistUnits.getInstance().removePlaylist(data)
                     adapter.notifyItemRemoved(position)
+                    //如果使用着当前数据，则重置数据
+                    if (MediaLibrary.getUsingLibraryTAG() == data.name) {
+                        sendCommand(MediaPlayerService.COMMAND.COMMAND_RELEASE_CURRENT_MEDIA, null)
+                    }
                     hide()
                 }
             }

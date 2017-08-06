@@ -197,7 +197,7 @@ class MainFrameworkActivity : BaseActivity() {
         if (currentState != PlaybackStateCompat.STATE_ERROR && currentState != PlaybackStateCompat.STATE_NONE) {
             floatingActionButton.show()
         } else {
-            floatingActionButton.hide()
+            floatingActionButton.visibility = View.GONE
         }
     }
 
@@ -411,6 +411,7 @@ class MainFrameworkActivity : BaseActivity() {
             it.addAction(ICore.ACTIONS.CORE_ACTION_PLAYING)
             it.addAction(ICore.ACTIONS.CORE_ACTION_PAUSED)
             it.addAction(ICore.ACTIONS.CORE_ACTION_STOPPED)
+            it.addAction(ICore.ACTIONS.CORE_ACTION_RELEASE)
             it
         }
         var isRegistered: Boolean = false
@@ -420,12 +421,12 @@ class MainFrameworkActivity : BaseActivity() {
             when (intent.action) {
 
                 ICore.ACTIONS.CORE_ACTION_STOPPED, ICore.ACTIONS.CORE_ACTION_PAUSED -> {
-                    floatingActionButton.hide()
+                    floatingActionButton.visibility = View.GONE
                 }
 
                 ICore.ACTIONS.CORE_ACTION_READY -> {
                     updateHeaderMessage(MediaLibrary.getUsingMedia())
-                    floatingActionButton.hide()
+                    floatingActionButton.visibility = View.GONE
                 }
 
                 ICore.ACTIONS.CORE_ACTION_PLAYING -> {
@@ -434,6 +435,13 @@ class MainFrameworkActivity : BaseActivity() {
                     updateHeaderMessage(MediaLibrary.getUsingMedia())
                     floatingActionButton.show()
                 }
+
+                ICore.ACTIONS.CORE_ACTION_RELEASE -> {
+                    updateHeaderMessage(null)
+                    updateHeaderDrawable(null, null)
+                    floatingActionButton.visibility = View.GONE
+                }
+
             }
         }
 
