@@ -682,12 +682,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
             when (intent.action) {
 
-            //播放序列完成
+            //播放序列完成，停止播放歌曲
                 IController.ACTIONS.ACTION_QUEUE_FINISH -> {
-                    updateMediaMetadata()
-                    dismissNotification(true)
-                    giveAwayAudioFocus()
-                    iController.release()
+                    iController.stop()
                 }
 
             //播放完成
@@ -699,7 +696,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             //媒体资源被 停止
                 ICore.ACTIONS.CORE_ACTION_STOPPED -> {
                     updateNotification()
-                    dismissNotification(true)
+                    dismissNotification(false)
                     giveAwayAudioFocus()
                 }
 

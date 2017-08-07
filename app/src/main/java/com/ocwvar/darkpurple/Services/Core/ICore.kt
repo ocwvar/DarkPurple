@@ -74,8 +74,10 @@ interface ICore {
 
     /**
      * 释放媒体资源
+     *
+     * @param   sendBroadcast   是否发送结果广播
      */
-    fun release()
+    fun release(sendBroadcast: Boolean)
 
     /**
      * 跳转位置

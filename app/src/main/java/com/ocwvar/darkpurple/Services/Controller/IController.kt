@@ -19,12 +19,12 @@ interface IController {
         /**
          * 循环播放媒体库
          */
-        val LOOP_LIBRARY: Boolean = false
+        var LOOP_LIBRARY: Boolean = false
 
         /**
          * 随机播放媒体库
          */
-        val RANDOM_LIBRARY: Boolean = false
+        var RANDOM_LIBRARY: Boolean = false
     }
 
     /**
@@ -103,8 +103,10 @@ interface IController {
 
     /**
      * 释放媒体资源
+     *
+     * @param   sendBroadcast   是否发送结果广播
      */
-    fun release()
+    fun release(sendBroadcast: Boolean = true)
 
     /**
      * 重置媒体使用状态：当前使用的媒体库TAG、当前使用的索引、AudioSession ID

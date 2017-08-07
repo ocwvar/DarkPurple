@@ -39,6 +39,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -103,6 +104,8 @@ public class PlayingActivity
     ImageButton spectrumSwitch;
     //均衡器设置
     ImageButton equalizerPage;
+    //随机 和 循环 按钮
+    ImageView randomButton, loopButton;
     //侧滑快捷切歌列表
     RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
@@ -129,9 +132,6 @@ public class PlayingActivity
     private WeakReference<TransitionDrawable> weakAnimDrawable = new WeakReference<>(null);
     //主按钮动画Drawable弱引用
     private WeakReference<TransitionDrawable> mainButtonAnimDrawable = new WeakReference<>(null);
-
-    // TODO: 17-8-4 2.暂停按钮的触摸逻辑改善
-    // TODO: 17-8-4 3.添加频谱
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -174,6 +174,8 @@ public class PlayingActivity
         waitForService = findViewById(R.id.waitForService);
         spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
         equalizerPage = (ImageButton) findViewById(R.id.equalizer);
+        randomButton = (ImageView) findViewById(R.id.random);
+        loopButton = (ImageView) findViewById(R.id.loop);
         coverSpectrum = (CoverSpectrum) findViewById(R.id.surfaceView);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
@@ -185,6 +187,10 @@ public class PlayingActivity
         restTime = (TextView) findViewById(R.id.shower_rest_position);
         mainButton = findViewById(R.id.shower_mainButton);
         musicSeekBar = (LineSlider) findViewById(R.id.seekBar);
+
+        //随机、循环按钮
+        randomButton.setOnClickListener(this);
+        loopButton.setOnClickListener(this);
 
         //封面轮播默认预加载数量
         coverShower.setOffscreenPageLimit(1);
@@ -274,15 +280,18 @@ public class PlayingActivity
         //注册音频变化广播接收器
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
 
-        //如果一切换回当前页面，音频状态是暂停，则显示黑色背景
-        final int currentState = serviceConnector.currentState();
-        if (currentState == PlaybackStateCompat.STATE_PAUSED || currentState == PlaybackStateCompat.STATE_STOPPED) {
-            switchDarkAnime(true);
-            switchMainButtonAnim(true);
+        //同步随机、循环 按钮状态
+        if (IController.OPTIONS.INSTANCE.getRANDOM_LIBRARY()) {
+            randomButton.setImageResource(R.drawable.ic_action_random_on);
+        } else {
+            randomButton.setImageResource(R.drawable.ic_action_random_off);
         }
 
-        //通知更新AudioSession ID
-        serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
+        if (IController.OPTIONS.INSTANCE.getLOOP_LIBRARY()) {
+            loopButton.setImageResource(R.drawable.ic_action_loop_on);
+        } else {
+            loopButton.setImageResource(R.drawable.ic_action_loop_off);
+        }
     }
 
     @Override
@@ -409,8 +418,10 @@ public class PlayingActivity
                 final SongItem playingSong = this.playingList.get(usingIndex);
                 //当前播放状态
                 final int currentState = serviceConnector.currentState();
+                //当前的音频状态，有可能为 NULL
+                final PlaybackStateCompat playbackState = MediaControllerCompat.getMediaController(PlayingActivity.this).getPlaybackState();
                 //当前的播放位置
-                final long currentPosition = MediaControllerCompat.getMediaController(PlayingActivity.this).getPlaybackState().getPosition();
+                final long currentPosition = (playbackState == null) ? 0L : playbackState.getPosition();
                 //媒体长度
                 final long mediaDuration = playingSong.getDuration();
 
@@ -456,6 +467,10 @@ public class PlayingActivity
                     case PlaybackStateCompat.STATE_STOPPED:
                         switchMainButtonAnim(true);
                         switchDarkAnime(true);
+                        if (updatingTimerThread != null) {
+                            updatingTimerThread.interrupt();
+                            updatingTimerThread = null;
+                        }
                         break;
                 }
             } else {
@@ -543,10 +558,29 @@ public class PlayingActivity
      * 1.切换频谱动画
      * 2.打开EQ界面
      * 3.切换暂停播放主按钮
+     * 4.随机、循环 按钮
      */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.random:
+                if (IController.OPTIONS.INSTANCE.getRANDOM_LIBRARY()) {
+                    IController.OPTIONS.INSTANCE.setRANDOM_LIBRARY(false);
+                    randomButton.setImageResource(R.drawable.ic_action_random_off);
+                } else {
+                    IController.OPTIONS.INSTANCE.setRANDOM_LIBRARY(true);
+                    randomButton.setImageResource(R.drawable.ic_action_random_on);
+                }
+                break;
+            case R.id.loop:
+                if (IController.OPTIONS.INSTANCE.getLOOP_LIBRARY()) {
+                    IController.OPTIONS.INSTANCE.setLOOP_LIBRARY(false);
+                    loopButton.setImageResource(R.drawable.ic_action_loop_off);
+                } else {
+                    IController.OPTIONS.INSTANCE.setLOOP_LIBRARY(true);
+                    loopButton.setImageResource(R.drawable.ic_action_loop_on);
+                }
+                break;
             case R.id.spectrum:
                 switchSpectrumEffect();
                 break;
@@ -850,6 +884,9 @@ public class PlayingActivity
          */
         @Override
         public void onServiceConnected() {
+            //通知更新AudioSession ID
+            serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
+
             switchWaitForService(false);
 
             updateInformation(!serviceConnector.isServiceConnected());
@@ -915,6 +952,8 @@ public class PlayingActivity
      */
     private class BlurCoverThread extends AsyncTask<Integer, Void, Drawable> {
 
+        private String TAG = "播放界面Blur等待线程";
+
         private SongItem songItem;
 
         BlurCoverThread(SongItem songItem) {
@@ -924,7 +963,10 @@ public class PlayingActivity
         @Override
         protected Drawable doInBackground(Integer... integers) {
             final String coverID = songItem.getCoverID();
-            int timeoutCount = 5;
+
+            Logger.normal(TAG, "开始等待：" + coverID);
+
+            int timeoutCount = 10;
             while (!CoverProcesser.INSTANCE.getLastCompletedCoverID().equals(coverID)) {
                 try {
                     Thread.sleep(100);
@@ -934,9 +976,12 @@ public class PlayingActivity
 
                 if (timeoutCount <= 0) {
                     //等待超时
+                    Logger.normal(TAG, "等待超时：" + coverID);
                     return null;
                 }
             }
+
+            Logger.normal(TAG, "得到图像：" + coverID);
             return CoverProcesser.INSTANCE.getBlur();
         }
 
@@ -1109,26 +1154,14 @@ public class PlayingActivity
             filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING());
             filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_STOPPED());
             filter.addAction(ICore.ACTIONS.INSTANCE.getCORE_ACTION_READY());
-            filter.addAction(IController.ACTIONS.INSTANCE.getACTION_QUEUE_FINISH());
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
 
             //由于Java不能在 case 中使用 Kotlin 的 Object 中的字符串，所以这里直接使用值
+            Logger.normal("音频变化接收器", "Action：" + intent.getAction());
             switch (intent.getAction()) {
-
-                //播放序列完成
-                //IController.ACTIONS.INSTANCE.getACTION_QUEUE_FINISH()
-                case "aqf":
-                    switchDarkAnime(true);
-                    switchMainButtonAnim(true);
-                    musicSeekBar.setEnabled(false);
-                    if (updatingTimerThread != null) {
-                        updatingTimerThread.interrupt();
-                        updatingTimerThread = null;
-                    }
-                    break;
 
                 //播放
                 //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING
@@ -1136,26 +1169,14 @@ public class PlayingActivity
                     //通知更新AudioSession ID
                     serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
 
-                    switchMainButtonAnim(false);
-                    switchDarkAnime(false);
-                    if (updatingTimerThread != null) {
-                        updatingTimerThread.interrupt();
-                        updatingTimerThread = null;
-                    }
-                    updatingTimerThread = new UpdatingTimerThread();
-                    updatingTimerThread.start();
+                    updateInformation(!serviceConnector.isServiceConnected());
                     break;
 
                 //暂停 和 停止
                 //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PAUSED 和 ICore.ACTIONS.INSTANCE.getCORE_ACTION_STOPPED
                 case "ca_2":
                 case "ca_1":
-                    switchMainButtonAnim(true);
-                    switchDarkAnime(true);
-                    if (updatingTimerThread != null) {
-                        updatingTimerThread.interrupt();
-                        updatingTimerThread = null;
-                    }
+                    updateInformation(!serviceConnector.isServiceConnected());
                     break;
 
                 //新的媒体数据

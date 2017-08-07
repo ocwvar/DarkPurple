@@ -118,10 +118,14 @@ object CoverProcesser {
      * 图像模糊处理工作子线程
      */
     class BlurThread(val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
+
+        private val TAG: String = "图像模糊处理"
+
         //模糊图像缩小倍数
         val scaleSize: Float = 0.4f
 
         override fun doInBackground(vararg params: Void?): Drawable? {
+            Logger.normal(TAG, "开始处理图像：" + coverID)
 
             //获取原始图像，获取失败则直接判断这次操作为失败
             val originalBitmap: Bitmap = BitmapFactory.decodeFile(CoverManager.getValidSource(coverID)) ?: return null
@@ -176,9 +180,11 @@ object CoverProcesser {
                     }
                 }
                 blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, blurBitmap)
+                Logger.normal(TAG, "图像处理完成：" + coverID)
                 return blurd
             } catch(e: Exception) {
                 blurd = null
+                Logger.normal(TAG, "图像处理失败：" + coverID)
                 return null
             }
         }

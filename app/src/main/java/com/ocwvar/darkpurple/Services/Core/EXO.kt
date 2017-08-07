@@ -61,7 +61,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         source ?: return
         try {
             //释放当前正在使用的资源
-            release()
+            release(true)
 
             //获取媒体的URI地址
             val mediaURI: Uri = Uri.parse(source.mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI))
@@ -140,13 +140,18 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
 
     /**
      * 释放媒体资源
+     *
+     * @param   sendBroadcast   是否发送结果广播
      */
-    override fun release() {
+    override fun release(sendBroadcast: Boolean) {
         this.exoPlayer.stop()
         this.isMediaReady = false
         this.currentDuration = -1L
         this.currentState = PlaybackStateCompat.STATE_NONE
-        sendBroadcast(ICore.ACTIONS.CORE_ACTION_RELEASE)
+
+        if (sendBroadcast) {
+            sendBroadcast(ICore.ACTIONS.CORE_ACTION_RELEASE)
+        }
     }
 
     /**

@@ -184,7 +184,7 @@ class MediaServiceConnector(val activity: Activity, val callback: Callbacks? = n
             //开始订阅服务
             mediaService.subscribe(ROOT_ID, serviceSubscription)
 
-            callback?.let { Handler(Looper.getMainLooper()).postDelayed({ callback.onServiceConnected() }, 500) }
+            callback?.let { Handler(Looper.getMainLooper()).postDelayed({ callback.onServiceConnected() }, 1000) }
         }
 
         //当服务断开连接

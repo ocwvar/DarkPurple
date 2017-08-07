@@ -82,7 +82,7 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
         this.usingLibrary = library
 
         //先释放当前的资源
-        this.iCore.release()
+        this.iCore.release(true)
 
         //设置、重置相关的属性
         this.currentLibraryTAG = libraryTAG
@@ -227,9 +227,11 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
 
     /**
      * 释放媒体资源
+     *
+     * @param   sendBroadcast   是否发送结果广播
      */
-    override fun release() {
-        this.iCore.release()
+    override fun release(sendBroadcast: Boolean) {
+        this.iCore.release(sendBroadcast)
     }
 
     /**
