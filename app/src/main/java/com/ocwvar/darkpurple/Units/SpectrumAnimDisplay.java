@@ -92,6 +92,7 @@ public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
      * 频谱数据控制器，通过此控制器来获取频谱数据
      */
     private final class SpectrumDataController {
+
         private final String TAG = "频谱数据控制器";
 
         private Visualizer visualizer = null;
@@ -114,6 +115,7 @@ public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
             release();
 
             this.visualizer = new Visualizer(sessionID);
+            this.visualizer.setEnabled(false);
             this.visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
             this.isRelease = false;
 
@@ -168,6 +170,8 @@ public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
                 } else {
                     Logger.error(TAG, "解析器对象创建失败！");
                 }
+            } else {
+                enable();
             }
 
             if (this.visualizer != null && this.visualizer.getEnabled()) {

@@ -153,7 +153,14 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             this@MediaPlayerService.sessionToken = it.sessionToken
             it.setCallback(this.mediaSessionCallback)
             //设置重新启动 MediaSession 服务的 PendingIntent
-            it.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
+            try {
+                it.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
+            } catch(e: Exception) {
+                if (AppConfigs.OS_5_UP) {
+                    it.setMediaButtonReceiver(null)
+                }
+            }
+
             it
         }
 
