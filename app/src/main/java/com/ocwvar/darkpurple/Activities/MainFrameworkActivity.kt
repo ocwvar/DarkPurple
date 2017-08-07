@@ -166,6 +166,11 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
 
+        //如果服务未连接，不显示播放界面按钮，等待服务连接后，在进行检查播放状态。
+        if (!serviceConnector.isServiceConnected()) {
+            floatingActionButton.visibility = View.GONE
+        }
+
         //连接媒体服务
         this.serviceConnector.connect()
 
@@ -195,8 +200,7 @@ class MainFrameworkActivity : BaseActivity() {
             registerReceiver(playingDataUpdateReceiver, playingDataUpdateReceiver.intentFilter)
         }
 
-        //默认不显示播放界面按钮，等待服务连接后，在进行检查播放状态
-        floatingActionButton.visibility = View.GONE
+
     }
 
     override fun onStop() {
