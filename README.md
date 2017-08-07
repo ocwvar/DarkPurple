@@ -48,6 +48,7 @@ CoverBox 的作者为 Henry Hu
 - EXO频谱动画 √
 - 将现有的音频服务改用 MediaBrowserService √
 - EXO均衡器功能 →
+- 自动更新 x
 
 # 截图展示 (2017/8/06 19：02)
 ##### *截图无法展示所有应用的细节*
