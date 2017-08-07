@@ -1,3 +1,5 @@
+# 版本 1.3.5
+- 增加音频格式支持 WAV、OOG、FLAC
 # 版本 1.3
 - 采用系统组件 MediaBrowserServiceCompat 作为音频服务，提高应用兼容性
 - 采用系统组件 MediaStyle 的 Notification
