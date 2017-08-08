@@ -16,6 +16,7 @@ import android.os.ResultReceiver
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserServiceCompat
+import android.support.v4.media.session.MediaButtonReceiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
@@ -52,6 +53,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val notificationHelper: MediaNotification = MediaNotification()
     //音频焦点变化回调
     private val audioFocusCallback: AudioFocusCallback = AudioFocusCallback()
+    //Android 4.4专用媒体按钮接收器
+    private val innerMediaButtonReceiver: InnerMediaButtonReceiver = InnerMediaButtonReceiver()
     //媒体播放设备 连接 广播接收器
     private val deviceConnectReceiver: MediaDeviceConnectedReceiver = MediaDeviceConnectedReceiver()
     //播放核心状态广播监听器
@@ -148,21 +151,20 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
 
         //创建MediaSession对象，以及它自身的属性
-        this.mediaSession = MediaSessionCompat(this@MediaPlayerService, this::class.java.simpleName).let {
-            it.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
-            this@MediaPlayerService.sessionToken = it.sessionToken
-            it.setCallback(this.mediaSessionCallback)
-            //设置重新启动 MediaSession 服务的 PendingIntent
-            try {
-                it.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
-            } catch(e: Exception) {
-                if (AppConfigs.OS_5_UP) {
-                    it.setMediaButtonReceiver(null)
-                }
-            }
+        this.mediaSession = MediaSessionCompat(this@MediaPlayerService, "MDS")
+        this.mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+        this.mediaSession.setCallback(this.mediaSessionCallback)
 
-            it
+        //设置重新启动 MediaSession 服务的 PendingIntent
+        try {
+            this.mediaSession.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
+        } catch(e: Exception) {
+            if (AppConfigs.OS_5_UP) {
+                this.mediaSession.setMediaButtonReceiver(null)
+            }
         }
+
+        this@MediaPlayerService.sessionToken = this.mediaSession.sessionToken
 
         //设置核心广播监听器
         if (!this.coreStateBroadcastReceiver.registered) {
@@ -188,8 +190,19 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             registerReceiver(this.deviceDisconnectReceiver, this.deviceDisconnectReceiver.intentFilter)
         }
 
+        //设置Android 4.4专用媒体按钮 广播接收器
+        if (!this.innerMediaButtonReceiver.registered) {
+            this.innerMediaButtonReceiver.registered = true
+            registerReceiver(this.innerMediaButtonReceiver, this.innerMediaButtonReceiver.intentFilter)
+        }
+
         //尝试恢复最后一次的状态
         recoveryLastState()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        MediaButtonReceiver.handleIntent(this.mediaSession, intent)
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
@@ -216,6 +229,12 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         if (this.deviceDisconnectReceiver.registered) {
             this.deviceDisconnectReceiver.registered = false
             unregisterReceiver(this.deviceDisconnectReceiver)
+        }
+
+        //注销Android 4.4专用媒体按钮 广播接收器
+        if (this.innerMediaButtonReceiver.registered) {
+            this.innerMediaButtonReceiver.registered = false
+            unregisterReceiver(this.innerMediaButtonReceiver)
         }
 
         //销毁所有媒体活动
@@ -844,6 +863,25 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                         }
                     }
                 }
+            }
+
+        }
+
+    }
+
+    /**
+     * 内部的媒体按钮广播接收器，用于接收 Android 4.4.x 的广播中转
+     */
+    private inner class InnerMediaButtonReceiver : BroadcastReceiver() {
+
+        var registered: Boolean = false
+        val intentFilter: IntentFilter = IntentFilter("ROUTER")
+
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            p1 ?: return
+
+            if (p1.hasExtra("EXTRA")) {
+                mediaSessionCallback.onMediaButtonEvent(p1.getParcelableExtra("EXTRA"))
             }
 
         }
