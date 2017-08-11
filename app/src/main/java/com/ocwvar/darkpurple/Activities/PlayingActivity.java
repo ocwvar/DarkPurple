@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -48,7 +49,6 @@ import com.ocwvar.darkpurple.Adapters.SlidingListAdapter;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.ocwvar.darkpurple.Bean.SongItem;
 import com.ocwvar.darkpurple.R;
-import com.ocwvar.darkpurple.Services.Controller.IController;
 import com.ocwvar.darkpurple.Services.Core.ICore;
 import com.ocwvar.darkpurple.Services.MediaPlayerService;
 import com.ocwvar.darkpurple.Services.MediaServiceConnector;
@@ -281,13 +281,13 @@ public class PlayingActivity
         registerReceiver(audioChangeReceiver, audioChangeReceiver.filter);
 
         //同步随机、循环 按钮状态
-        if (IController.OPTIONS.INSTANCE.getRANDOM_LIBRARY()) {
+        if (AppConfigs.playMode_Random) {
             randomButton.setImageResource(R.drawable.ic_action_random_on);
         } else {
             randomButton.setImageResource(R.drawable.ic_action_random_off);
         }
 
-        if (IController.OPTIONS.INSTANCE.getLOOP_LIBRARY()) {
+        if (AppConfigs.playMode_Loop) {
             loopButton.setImageResource(R.drawable.ic_action_loop_on);
         } else {
             loopButton.setImageResource(R.drawable.ic_action_loop_off);
@@ -564,22 +564,25 @@ public class PlayingActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.random:
-                if (IController.OPTIONS.INSTANCE.getRANDOM_LIBRARY()) {
-                    IController.OPTIONS.INSTANCE.setRANDOM_LIBRARY(false);
+                if (AppConfigs.playMode_Random) {
+                    AppConfigs.playMode_Random = false;
                     randomButton.setImageResource(R.drawable.ic_action_random_off);
                 } else {
-                    IController.OPTIONS.INSTANCE.setRANDOM_LIBRARY(true);
+                    AppConfigs.playMode_Random = true;
                     randomButton.setImageResource(R.drawable.ic_action_random_on);
                 }
+                PreferenceManager.getDefaultSharedPreferences(PlayingActivity.this).edit().putBoolean("playMode_Random", AppConfigs.playMode_Loop).apply();
+
                 break;
             case R.id.loop:
-                if (IController.OPTIONS.INSTANCE.getLOOP_LIBRARY()) {
-                    IController.OPTIONS.INSTANCE.setLOOP_LIBRARY(false);
+                if (AppConfigs.playMode_Loop) {
+                    AppConfigs.playMode_Loop = false;
                     loopButton.setImageResource(R.drawable.ic_action_loop_off);
                 } else {
-                    IController.OPTIONS.INSTANCE.setLOOP_LIBRARY(true);
+                    AppConfigs.playMode_Loop = true;
                     loopButton.setImageResource(R.drawable.ic_action_loop_on);
                 }
+                PreferenceManager.getDefaultSharedPreferences(PlayingActivity.this).edit().putBoolean("playMode_Loop", AppConfigs.playMode_Loop).apply();
                 break;
             case R.id.spectrum:
                 switchSpectrumEffect();

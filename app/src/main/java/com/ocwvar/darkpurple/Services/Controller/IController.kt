@@ -12,22 +12,6 @@ import com.ocwvar.darkpurple.Bean.SongItem
 interface IController {
 
     /**
-     * 播放参数
-     */
-    object OPTIONS {
-
-        /**
-         * 循环播放媒体库
-         */
-        var LOOP_LIBRARY: Boolean = false
-
-        /**
-         * 随机播放媒体库
-         */
-        var RANDOM_LIBRARY: Boolean = false
-    }
-
-    /**
      * 广播 Action
      */
     object ACTIONS {
@@ -124,6 +108,11 @@ interface IController {
      * @param   volume 音频音量 0.0 ~ 1.0
      */
     fun setVolume(volume: Float)
+
+    /**
+     * @return 当前音量
+     */
+    fun currentVolume(): Float
 
     /**
      * 通知核心更新 AudioSession ID

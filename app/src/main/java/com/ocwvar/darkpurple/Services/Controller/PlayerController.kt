@@ -169,7 +169,7 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
 
         //根据 OPTIONS.LOOP_LIBRARY 来处理结果 index
         if ((this.currentIndex + 1) >= this.usingLibrary.size) {
-            if (IController.OPTIONS.LOOP_LIBRARY) {
+            if (AppConfigs.playMode_Loop) {
                 //循环则置于列表头部
                 index = 0
             } else {
@@ -182,7 +182,7 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
         }
 
         //根据 OPTIONS.LOOP_LIBRARY 来处理结果 index
-        if (index != -1 && IController.OPTIONS.RANDOM_LIBRARY) {
+        if (index != -1 && AppConfigs.playMode_Random) {
             index = this.randomIndex[Random(System.currentTimeMillis()).nextInt(this.randomIndex.size)]
         }
 
@@ -204,7 +204,7 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
 
         //根据 OPTIONS.LOOP_LIBRARY 来处理结果 index
         if ((this.currentIndex - 1) < 0) {
-            if (IController.OPTIONS.LOOP_LIBRARY) {
+            if (AppConfigs.playMode_Loop) {
                 //循环则置于列表尾部
                 index = this.usingLibrary.size - 1
             } else {
@@ -217,7 +217,7 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
         }
 
         //根据 OPTIONS.LOOP_LIBRARY 来处理结果 index
-        if (index != -1 && IController.OPTIONS.RANDOM_LIBRARY) {
+        if (index != -1 && AppConfigs.playMode_Random) {
             index = this.randomIndex[index]
         }
 
@@ -261,6 +261,13 @@ class PlayerController(val appContext: Context = AppConfigs.ApplicationContext) 
      */
     override fun setVolume(volume: Float) {
         this.iCore.setVolume(volume)
+    }
+
+    /**
+     * @return 当前音量
+     */
+    override fun currentVolume(): Float {
+        return iCore.currentVolume()
     }
 
     /**

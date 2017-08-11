@@ -92,6 +92,11 @@ interface ICore {
     fun setVolume(volume: Float)
 
     /**
+     * @return 当前音量
+     */
+    fun currentVolume(): Float
+
+    /**
      * 更新 AudioSession ID
      */
     fun updateAudioSessionID()

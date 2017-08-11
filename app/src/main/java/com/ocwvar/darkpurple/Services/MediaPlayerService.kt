@@ -930,6 +930,15 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     mediaSessionCallback.onSkipToPrevious()
                 }
 
+            //降低或回升音量
+                4 -> {
+                    if (iController.currentVolume() == 1.0f) {
+                        iController.setVolume(0.2f)
+                    } else {
+                        iController.setVolume(1.0f)
+                    }
+                }
+
             }
 
             //重置标记变量

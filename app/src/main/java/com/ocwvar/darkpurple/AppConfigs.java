@@ -96,6 +96,12 @@ public class AppConfigs {
     //是否自动跳转到播放界面
     public static boolean isAutoSwitchPlaying = true;
 
+    //播放模式 - 循环
+    public static boolean playMode_Loop = false;
+
+    //播放模式 - 随机
+    public static boolean playMode_Random = false;
+
     //频谱项 - 是否显示Node
     public static SpectrumStyles spectrumStyle = SpectrumStyles.Normal;
 
@@ -177,6 +183,10 @@ public class AppConfigs {
 
             spectrumNodeWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "5.0"));
 
+            playMode_Loop = preferences.getBoolean("playMode_Loop", false);
+
+            playMode_Random = preferences.getBoolean("playMode_Random", false);
+
             spectrumOutlineWidth = Float.valueOf(preferences.getString("spectrumOutlineWidth", "8.0"));
 
             spectrumLineWidth = Float.valueOf(preferences.getString("spectrum_line_width", "8.0"));
@@ -248,6 +258,10 @@ public class AppConfigs {
             isSpectrumShowOutLine = preferences.getBoolean("isSpectrumShowOutLine", false);
 
             isSpectrumShowLine = preferences.getBoolean("isSpectrumShowLine", true);
+
+            playMode_Loop = preferences.getBoolean("playMode_Loop", false);
+
+            playMode_Random = preferences.getBoolean("playMode_Random", false);
 
             spectrumNodeWidth = Float.valueOf(preferences.getString("spectrumNodeWidth", "5.0"));
 

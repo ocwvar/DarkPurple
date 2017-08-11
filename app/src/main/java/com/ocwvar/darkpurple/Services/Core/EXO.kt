@@ -72,6 +72,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
 
             //重置状态
             this.isPlayWhenReady = isPlayWhenReady
+            this.exoPlayer.volume = 1.0f
 
             //缓冲数据
             this.exoPlayer.prepare(mediaSource, true, true)
@@ -176,6 +177,13 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
         } else {
             this.exoPlayer.volume = volume
         }
+    }
+
+    /**
+     * @return 当前音量
+     */
+    override fun currentVolume(): Float {
+        return this.exoPlayer.volume
     }
 
     /**
