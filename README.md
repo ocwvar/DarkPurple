@@ -8,7 +8,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 
 # 介绍
 #### 系统支持：Android 4.4 ~ Android 7.1.2
-#### 音频媒体支持：MP3、WAV、FLAC、OOG
+#### 音频媒体支持：MP3、WAV、FLAC、OGG
 
 
 这是一款基于Google EXO引擎独立开发的音乐播放器。
