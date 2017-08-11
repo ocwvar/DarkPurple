@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
+import android.support.v4.media.session.MediaControllerCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -16,6 +17,8 @@ import com.ocwvar.darkpurple.Activities.SettingsActivity
 import com.ocwvar.darkpurple.Adapters.UserSettingsAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.R
+import com.ocwvar.darkpurple.Services.MediaPlayerService
+import com.ocwvar.darkpurple.Units.MediaScanner
 import java.lang.ref.WeakReference
 
 
@@ -62,7 +65,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
             }
             R.string.text_button_setting_music_scanning -> {
                 //扫描目录设置
-                startActivity(Intent(activity, MusicDirectoryActivity::class.java))
+                startActivityForResult(Intent(activity, MusicDirectoryActivity::class.java), 9)
             }
             R.string.text_button_setting_other -> {
                 //其他设置
@@ -114,8 +117,20 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 10) {
-            AppConfigs.reInitOptionValues()
+        when (requestCode) {
+
+        //更新路径
+            9 -> {
+                //更新媒体库信息
+                MediaScanner.getInstance().start()
+                MediaControllerCompat.getMediaController(activity)?.sendCommand(MediaPlayerService.COMMAND.COMMAND_RELEASE_CURRENT_MEDIA, null, null)
+            }
+
+        //更新全局设置
+            10 -> {
+                AppConfigs.reInitOptionValues()
+            }
+
         }
     }
 

@@ -376,6 +376,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private fun updateMediaMetadata() {
         //先检查当前是否可以更新数据
         if (this.iController.usingLibrary().isEmpty() || this.iController.currentIndex() < 0) {
+            this.mediaSession.setMetadata(null)
+            this.mediaSession.isActive = false
+            this.mediaSession.setPlaybackState(PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_NONE, 0, 1.0f).build())
             return
         }
 
@@ -668,8 +671,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 COMMAND.COMMAND_RELEASE_CURRENT_MEDIA -> {
                     iController.release()
                     iController.resetState()
-                    JSONHandler.removeLastMediaState()
                     updateMediaMetadata()
+                    JSONHandler.removeLastMediaState()
                     dismissNotification(true)
                 }
 

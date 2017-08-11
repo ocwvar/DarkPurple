@@ -91,6 +91,7 @@ class MusicListAdapter(val callback: Callback) : BaseCoverAdapter() {
         if (isSelecting) return
         this.array.clear()
         this.array.addAll(array)
+        this.playingPath = ""
         notifyDataSetChanged()
     }
 
