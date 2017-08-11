@@ -103,19 +103,19 @@ class MediaNotification {
                     it
                 }, PendingIntent.FLAG_CANCEL_CURRENT))
                 //添加 上一个 媒体数据按钮
-                .addAction(R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
+                .addAction(android.R.drawable.ic_media_previous, "Previous", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PREVIOUS), PendingIntent.FLAG_CANCEL_CURRENT))
 
         if (state == PlaybackStateCompat.STATE_PLAYING) {
 
             //当前是播放状态，添加 暂停播放 媒体按钮
-            builder.addAction(R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
+            builder.addAction(android.R.drawable.ic_media_pause, "Pause", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PAUSE), PendingIntent.FLAG_CANCEL_CURRENT))
         } else if (state == PlaybackStateCompat.STATE_PAUSED || state == PlaybackStateCompat.STATE_STOPPED) {
 
             //当前是暂停或停止状态，添加 开始播放 媒体按钮
-            builder.addAction(R.drawable.ic_media_play, "Play", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))
+            builder.addAction(android.R.drawable.ic_media_play, "Play", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_PLAY), PendingIntent.FLAG_CANCEL_CURRENT))
         }
         //添加 下一个 媒体数据按钮
-        builder.addAction(R.drawable.ic_media_next, "Next", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_NEXT), PendingIntent.FLAG_CANCEL_CURRENT))
+        builder.addAction(android.R.drawable.ic_media_next, "Next", PendingIntent.getBroadcast(appContext, 0, Intent(ACTIONS.NOTIFICATION_ACTION_NEXT), PendingIntent.FLAG_CANCEL_CURRENT))
 
         //尝试获取有效封面图像
         BitmapFactory.decodeFile(CoverManager.getValidSource(mediaMetadata.getString(SONGITEM_KEY_COVER_ID)))?.let {

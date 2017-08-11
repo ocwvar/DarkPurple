@@ -114,7 +114,7 @@ public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
             this.usingAudioSessionID = sessionID;
             release();
 
-            this.visualizer = new Visualizer(sessionID);
+            this.visualizer = new Visualizer(this.usingAudioSessionID);
             this.visualizer.setEnabled(false);
             this.visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
             this.isRelease = false;

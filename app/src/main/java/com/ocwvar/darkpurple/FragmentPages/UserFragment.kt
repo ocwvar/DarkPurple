@@ -11,7 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ocwvar.darkpurple.Activities.FolderSelectorActivity
+import com.ocwvar.darkpurple.Activities.MusicDirectoryActivity
 import com.ocwvar.darkpurple.Activities.SettingsActivity
 import com.ocwvar.darkpurple.Adapters.UserSettingsAdapter
 import com.ocwvar.darkpurple.AppConfigs
@@ -62,7 +62,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
             }
             R.string.text_button_setting_music_scanning -> {
                 //扫描目录设置
-                startActivity(Intent(activity, FolderSelectorActivity::class.java))
+                startActivity(Intent(activity, MusicDirectoryActivity::class.java))
             }
             R.string.text_button_setting_other -> {
                 //其他设置

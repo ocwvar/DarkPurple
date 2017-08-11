@@ -140,6 +140,12 @@
     <string name="musicFolder_name">设置扫描目录</string>
 
     <!--添加歌曲文件夹 版面信息-->
+    <string name="title_selected_directory">已选择目录</string>
+    <string name="message_no_valid_directory">这里没有可以读取的目录</string>
+    <string name="type_directory_disk_default">默认储存空间</string>
+    <string name="type_directory_disk_storage">储存挂载空间</string>
+
+    <!--添加歌曲文件夹 版面信息-->
     <string name="title_select_folder_ui">选择要扫描的音乐文件夹</string>
     <string name="title_addDialog">在此手动输入文件夹路径</string>
     <string name="info_wrongPath">请输入正确的文件夹路径</string>

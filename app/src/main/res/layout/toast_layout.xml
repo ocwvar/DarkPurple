@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/toast_layout_background"
     android:orientation="horizontal"
-    android:padding="5dp">
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/toast_message"

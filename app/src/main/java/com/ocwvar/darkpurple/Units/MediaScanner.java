@@ -348,7 +348,7 @@ public class MediaScanner {
             final Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
 
             if (cursor != null && cursor.getCount() > 0) {
-                ArrayList<SongItem> songList = new ArrayList<>();
+                final ArrayList<SongItem> songList = new ArrayList<>();
 
                 while (cursor.moveToNext()) {
 
@@ -666,7 +666,7 @@ public class MediaScanner {
             }
 
             if (songList.size() == 0) {
-                return null;
+                return songList;
             } else {
                 //进行歌曲文件的排序
                 switch (AppConfigs.SortType) {

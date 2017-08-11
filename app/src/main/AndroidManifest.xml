@@ -53,13 +53,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme" />
 
-        <!--扫描目录设置界面-->
-        <activity
-            android:name=".Activities.FolderSelectorActivity"
-            android:label="@string/musicFolder_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-
         <!--播放列表编辑界面-->
         <activity
             android:name=".Activities.PlaylistDetailActivity"
@@ -74,8 +67,14 @@
 
         <!--文件夹选择界面-->
         <activity
-            android:name=".Activities.FolderSelectorUI"
-            android:label="@string/title_select_folder_ui"
+            android:name=".Activities.MusicDirectorySelector"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!--扫描目录设置界面-->
+        <activity
+            android:name=".Activities.MusicDirectoryActivity"
+            android:label="@string/musicFolder_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 

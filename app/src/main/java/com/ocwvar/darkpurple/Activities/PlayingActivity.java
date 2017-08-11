@@ -827,6 +827,12 @@ public class PlayingActivity
     @SuppressLint("NewApi")
     private void switchSpectrumEffect() {
 
+        if (!AppConfigs.OS_5_UP) {
+            ToastMaker.INSTANCE.show(R.string.coreNotSupported);
+            return;
+            // FIXME: 17-8-11 Android KK 在加载频谱解析器时会产生 error code: -1 (未知异常)，暂时停止 KK 下的使用
+        }
+
         //先让控件不可用
         spectrumSwitch.setEnabled(false);
         spectrumSwitch.setAlpha(0.5f);
