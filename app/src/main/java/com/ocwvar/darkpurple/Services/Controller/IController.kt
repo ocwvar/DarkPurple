@@ -115,11 +115,6 @@ interface IController {
     fun currentVolume(): Float
 
     /**
-     * 通知核心更新 AudioSession ID
-     */
-    fun updateAudioSessionID()
-
-    /**
      * @return  当前媒体的长度
      */
     fun mediaDuration(): Long

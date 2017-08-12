@@ -6,6 +6,8 @@ import android.net.Uri
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.audio.AudioRendererEventListener
+import com.google.android.exoplayer2.decoder.DecoderCounters
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -35,6 +37,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     //EXO实例
     private val exoPlayer: SimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(appContext, DefaultTrackSelector()).let {
         it.addListener(exoCallbacks)
+        it.setAudioDebugListener(exoCallbacks)
         it
     }
 
@@ -187,13 +190,6 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     }
 
     /**
-     * 更新 AudioSession ID
-     */
-    override fun updateAudioSessionID() {
-        MediaLibrary.updateAudioSessionID(this.exoPlayer.audioSessionId)
-    }
-
-    /**
      * @return  当前媒体的长度，无效长度：-1，单位ms
      */
     override fun mediaDuration(): Long = this.currentDuration
@@ -227,19 +223,15 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
     /**
      * 播放器状态回调处理类
      */
-    private inner class ExoPlayerCallbacks : ExoPlayer.EventListener, ExtractorMediaSource.EventListener {
+    private inner class ExoPlayerCallbacks : ExoPlayer.EventListener, ExtractorMediaSource.EventListener, AudioRendererEventListener {
 
-        override fun onLoadError(error: IOException?) {
-        }
+        /**
+         * Called when the audio session is set.
 
-        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
-        }
-
-        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
-        }
-
-        override fun onPlayerError(error: ExoPlaybackException?) {
-
+         * @param audioSessionId The audio session id.
+         */
+        override fun onAudioSessionId(audioSessionId: Int) {
+            MediaLibrary.updateAudioSessionID(audioSessionId)
         }
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -271,6 +263,33 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
                 MediaLibrary.updateAudioSessionID(0)
                 sendBroadcast(ICore.ACTIONS.CORE_ACTION_COMPLETED)
             }
+        }
+
+        override fun onAudioEnabled(counters: DecoderCounters?) {
+        }
+
+        override fun onAudioDecoderInitialized(decoderName: String?, initializedTimestampMs: Long, initializationDurationMs: Long) {
+        }
+
+        override fun onAudioInputFormatChanged(format: Format?) {
+        }
+
+        override fun onAudioTrackUnderrun(bufferSize: Int, bufferSizeMs: Long, elapsedSinceLastFeedMs: Long) {
+        }
+
+        override fun onAudioDisabled(counters: DecoderCounters?) {
+        }
+
+        override fun onLoadError(error: IOException?) {
+        }
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+        }
+
+        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+        }
+
+        override fun onPlayerError(error: ExoPlaybackException?) {
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {

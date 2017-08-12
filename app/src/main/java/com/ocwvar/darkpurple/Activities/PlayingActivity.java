@@ -893,8 +893,6 @@ public class PlayingActivity
          */
         @Override
         public void onServiceConnected() {
-            //通知更新AudioSession ID
-            serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
 
             switchWaitForService(false);
 
@@ -1175,9 +1173,6 @@ public class PlayingActivity
                 //播放
                 //ICore.ACTIONS.INSTANCE.getCORE_ACTION_PLAYING
                 case "ca_3":
-                    //通知更新AudioSession ID
-                    serviceConnector.sendCommand(MediaPlayerService.COMMAND.INSTANCE.getCOMMAND_UPDATE_AUDIO_SESSION_ID(), null);
-
                     updateInformation(!serviceConnector.isServiceConnected());
                     break;
 

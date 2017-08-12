@@ -97,11 +97,6 @@ interface ICore {
     fun currentVolume(): Float
 
     /**
-     * 更新 AudioSession ID
-     */
-    fun updateAudioSessionID()
-
-    /**
      * @return  当前媒体的长度，无效长度：-1
      */
     fun mediaDuration(): Long

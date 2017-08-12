@@ -100,11 +100,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         val COMMAND_PLAY_LIBRARY: String = "c1"
 
         /**
-         * 更新 AudioSession ID
-         */
-        val COMMAND_UPDATE_AUDIO_SESSION_ID: String = "c2"
-
-        /**
          * 清空当前的媒体数据
          * 此命令会重置：当前使用媒体TAG、当前使用媒体库索引、AudioSession ID
          */
@@ -660,11 +655,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
                         }
                     }
-                }
-
-            //更新AudioSession ID
-                COMMAND.COMMAND_UPDATE_AUDIO_SESSION_ID -> {
-                    iController.updateAudioSessionID()
                 }
 
             //重置当前数据

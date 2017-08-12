@@ -34,7 +34,6 @@ import com.ocwvar.darkpurple.FragmentPages.PlaylistFragment
 import com.ocwvar.darkpurple.FragmentPages.UserFragment
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.Core.ICore
-import com.ocwvar.darkpurple.Services.MediaPlayerService
 import com.ocwvar.darkpurple.Services.MediaServiceConnector
 import com.ocwvar.darkpurple.Units.BaseActivity
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
@@ -432,8 +431,6 @@ class MainFrameworkActivity : BaseActivity() {
                 }
 
                 ICore.ACTIONS.CORE_ACTION_PLAYING -> {
-                    //通知更新AudioSession ID
-                    serviceConnector.sendCommand(MediaPlayerService.COMMAND.COMMAND_UPDATE_AUDIO_SESSION_ID, null)
                     updateHeaderMessage(MediaLibrary.getUsingMedia())
                     floatingActionButton.show()
                 }

@@ -27,10 +27,6 @@ import com.ocwvar.darkpurple.Adapters.MusicListAdapter
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.Callbacks.MediaScannerCallback
-import com.ocwvar.darkpurple.Callbacks.NetworkCallbacks.OnUploadFileCallback
-import com.ocwvar.darkpurple.Network.Keys
-import com.ocwvar.darkpurple.Network.NetworkRequest
-import com.ocwvar.darkpurple.Network.NetworkRequestTypes
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Services.MediaPlayerService
@@ -280,7 +276,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
 
             val view: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_music_list_menu, null)
             view.findViewById<View>(R.id.menu_music_delete).setOnClickListener(this@ItemMoreDialog)
-            view.findViewById<View>(R.id.menu_music_upload).setOnClickListener(this@ItemMoreDialog)
             view.findViewById<View>(R.id.menu_music_add2playlist).setOnClickListener(this@ItemMoreDialog)
             view.findViewById<View>(R.id.menu_music_create).setOnClickListener(this@ItemMoreDialog)
 
@@ -325,42 +320,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                         hide()
                     } else {
                         ToastMaker.show(R.string.message_song_delete_failed)
-                    }
-                }
-                R.id.menu_music_upload -> {
-                    //上传文件操作
-                    if (TextUtils.isEmpty(AppConfigs.USER.TOKEN)) {
-                        //如果当前没有Token,则认为当前为离线模式
-                        ToastMaker.show(R.string.message_upload_offline)
-                    } else {
-                        //上传音频文件
-                        val args = HashMap<String, String>()
-                        args.put(Keys.Token, AppConfigs.USER.TOKEN)
-                        args.put(Keys.FilePath, songData.path)
-                        args.put(Keys.MusicTitle, songData.title)
-                        if (!TextUtils.isEmpty(CoverManager.getSource(CoverType.NORMAL, songData.coverID))) {
-                            //有封面存在才需要传递
-                            args.put(Keys.CoverPath, CoverManager.getSource(CoverType.NORMAL, songData.coverID)!!)
-                        }
-                        val result: Boolean = NetworkRequest.newRequest(NetworkRequestTypes.上传文件, args, object : OnUploadFileCallback {
-                            override fun OnUploaded(message: String) {
-                                //上传成功回调
-                                ToastMaker.show(message)
-                            }
-
-                            override fun onError(message: String) {
-                                //上传失败回调
-                                ToastMaker.show(message)
-                            }
-                        })
-                        hide()
-                        if (result) {
-                            //成功提交任务
-                            ToastMaker.show(R.string.message_upload_started)
-                        } else {
-                            //线程池仍有相同的任务未完成
-                            ToastMaker.show(R.string.message_upload_busy)
-                        }
                     }
                 }
                 R.id.menu_music_create -> {
