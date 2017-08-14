@@ -2,10 +2,8 @@ package com.ocwvar.darkpurple;
 
 import android.app.Application;
 
-import com.netease.nis.bugrpt.CrashHandler;
 import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
-import com.ocwvar.darkpurple.Units.EqualizerUnits;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
 /**
@@ -20,7 +18,7 @@ public class DPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        CrashHandler.init(getApplicationContext());
+        //CrashHandler.init(getApplicationContext());
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());
 
         //加载所有保存的设置
@@ -28,9 +26,6 @@ public class DPApplication extends Application {
 
         //加载所有保存的播放列表
         PlaylistUnits.getInstance().init();
-
-        //加载所有保存的均衡器参数
-        EqualizerUnits.getInstance().init(getApplicationContext());
 
         //加载所有封面和颜色的数据
         CoverManager.INSTANCE.initData();

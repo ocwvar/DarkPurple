@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -49,6 +50,12 @@ public final class JSONHandler {
             SongItem.SONGITEM_KEY_FILE_NAME,
             SongItem.SONGITEM_KEY_FILE_PATH
     };
+
+
+    ////////////////////////////////////////
+    /////////////音频数据相关处理/////////////
+    ////////////////////////////////////////
+
 
     /**
      * 以Json方式储存播放列表数据
@@ -179,6 +186,12 @@ public final class JSONHandler {
         json2File(jsonArray, new File(AppConfigs.PlaylistFolder + AppConfigs.CACHE_NAME + ".pl"));
     }
 
+
+    ////////////////////////////////////////
+    ///////////////在线封面解析///////////////
+    ////////////////////////////////////////
+
+
     /**
      * 解析出封面预览的数据列表
      *
@@ -239,6 +252,12 @@ public final class JSONHandler {
 
     }
 
+
+    ////////////////////////////////////////
+    ///////////最后播放音频数据处理////////////
+    ////////////////////////////////////////
+
+
     /**
      * 储存最近的媒体状态：使用的媒体库、媒体路径，到本地文件
      */
@@ -290,6 +309,12 @@ public final class JSONHandler {
                 jsonObject.get("mediaPath").getAsString()
         };
     }
+
+
+    ////////////////////////////////////////
+    /////////封面&混合色  数据相关处理/////////
+    ////////////////////////////////////////
+
 
     /**
      * 获取封面库
@@ -408,6 +433,94 @@ public final class JSONHandler {
 
         json2File(jsonArray, new File(AppConfigs.DataFolder + "ColorLibrary_" + colorType.name() + ".data"));
     }
+
+
+    ////////////////////////////////////////
+    //////////////均衡器数据处理//////////////
+    ////////////////////////////////////////
+
+    /**
+     * 读取所有均衡器配置文件
+     *
+     * @return 已储存的数据，< 配置名称 , 配置数据 >，读取失败或无储存数据，返回 NULL
+     */
+    public static
+    @Nullable
+    LinkedHashMap<String, short[]> loadSavedEqualizerArgs() {
+
+        //获取所有 *.eqz 文件
+        final File[] eqFiles = new File(AppConfigs.DataFolder + "Equalizer/").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return s.length() > 5 && s.endsWith(".eqz");
+            }
+        });
+
+        final LinkedHashMap<String, short[]> result = new LinkedHashMap<>();
+        for (final File eqFile : eqFiles) {
+
+            //获取文件的Json数据
+            final JsonElement jsonElement = file2Json(eqFile.getPath());
+            if (jsonElement == null) {
+                break;
+            }
+
+            final JsonObject jsonObject = jsonElement.getAsJsonObject();
+            if (isJsonObjectValid(jsonObject, "name") && isJsonObjectValid(jsonObject, "data")) {
+                //如果Json数据合法，则开始解析
+
+                //获取均衡器数据
+                final JsonArray jsonArray = jsonObject.get("data").getAsJsonArray();
+                final short[] data = new short[jsonArray.size()];
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    data[i] = jsonArray.get(i).getAsShort();
+                }
+
+                //获取频谱名称
+                final String name = jsonObject.get("name").getAsString();
+
+                result.put(name, data);
+            }
+
+        }
+
+        if (result.size() <= 0) {
+            return null;
+        }
+        return result;
+    }
+
+    /**
+     * 储存均衡器配置到本地文件
+     *
+     * @param name 配置名称
+     * @param data 配置数据
+     */
+    public static void saveEqualizerArgs(final @NonNull String name, final @NonNull short[] data) {
+        if (TextUtils.isEmpty(name) || data.length <= 0) {
+            //无效数据，不进行保存
+            return;
+        }
+
+        //创建JsonObject主体，以及设置配置名称
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", name);
+
+        //储存配置数据
+        final JsonArray jsonArray = new JsonArray();
+        for (final short number : data) {
+            jsonArray.add(number);
+        }
+        jsonObject.add("data", jsonArray);
+
+        //进行文件储存
+        json2File(jsonObject, new File(AppConfigs.DataFolder + "Equalizer/"));
+    }
+
+    ////////////////////////////////////////
+    ////////////////工具方法/////////////////
+    ////////////////////////////////////////
+
 
     /**
      * 检测要获取的字段是否合法

@@ -661,7 +661,6 @@ public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
 
                     //更新画布
                     surfaceHolder.unlockCanvasAndPost(canvas);
-                    System.out.println("!");
                     try {
                         Thread.sleep(20);
                     } catch (InterruptedException ignore) {
