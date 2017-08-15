@@ -18,6 +18,7 @@ object EqualizerHandler {
 
     private var equalizer: Equalizer? = null
     private var usingAudioSessionID: Int = 0
+    private var callback: Callback? = null
 
     //最低带宽值，默认为无效值：-999
     private var lowestBandLimit: Short = -999
@@ -32,6 +33,35 @@ object EqualizerHandler {
     private var usingEqualizerArgs: ShortArray = ShortArray(1, { 0 })
     //均衡器配置参数Map
     private var equalizerArgs: LinkedHashMap<String, ShortArray> = LinkedHashMap()
+
+    interface Callback {
+
+        /**
+         * 当使用的配置文件发生变化
+         *
+         * @param name  配置文件名称
+         */
+        fun onUsingProfileChanged(name: String)
+    }
+
+    /**
+     * 设置相关的回调接口
+     *
+     * @param   callback    回调接口，传入NULL，取消回调监听
+     */
+    fun setCallback(callback: Callback?) {
+        this.callback = callback
+    }
+
+    /**
+     * @return  当前正在使用的配置名称
+     */
+    fun usingProfileName(): String = this.usingEqualizerName
+
+    /**
+     * @return  支持调整频谱带宽数量
+     */
+    fun numberOfBands(): Short = this.numberOfBands
 
     /**
      * 加载已有的均衡器配置
@@ -88,6 +118,16 @@ object EqualizerHandler {
     }
 
     /**
+     * @return  当前已保存的数据名称列表
+     */
+    fun savedProfilesName(): ArrayList<String> = ArrayList(this.equalizerArgs.keys)
+
+    /**
+     * @return  是否已经存在对应的配置文件
+     */
+    fun isProfileExisted(name: String): Boolean = this.equalizerArgs.containsKey(name)
+
+    /**
      * 初始化并启动均衡器
      * @param   audioSessionID  需要进行调音的AudioSession ID
      */
@@ -130,8 +170,9 @@ object EqualizerHandler {
      * <b> 如果均衡器没有初始化或AudioSession ID异常，则会重新初始化均衡器 </b>
      *
      * @param   argsProfile 参数配置名称，不传入数据则继续使用上一次的均衡器参数。默认配置名称为 Default
+     * @return  是否应用成功
      */
-    fun applyEqualizerArgs(argsProfile: String = this.usingEqualizerName) {
+    fun applyEqualizerArgs(argsProfile: String = this.usingEqualizerName): Boolean {
         if (!isEnabled() || usingAudioSessionID != MediaLibrary.getUsingAudioSessionID()) {
             //当前使用的AudioSession ID与最新的ID不同，需要重新创建均衡器对象
             initEqualizer()
@@ -157,16 +198,51 @@ object EqualizerHandler {
             for (i in 0..this.numberOfBands - 1) {
                 //在应用配置的时候，如果配置的长度小于可调节数量，则未被配置长度覆盖的用0设置
                 if (i in this.usingEqualizerArgs.indices) {
-                    this.equalizer?.setBandLevel(i.toShort(), this.usingEqualizerArgs[i])
+                    applyEqualizerArg(i.toShort(), this.usingEqualizerArgs[i])
                 } else {
-                    this.equalizer?.setBandLevel(i.toShort(), 0)
+                    applyEqualizerArg(i.toShort(), 0)
                 }
             }
 
+            if (this.callback != null) {
+                this.callback?.onUsingProfileChanged(this.usingEqualizerName)
+            }
+
+            return true
         } else {
             Logger.error(TAG, "均衡器未启动或 均衡器参数与可调节带宽数量不符")
         }
 
+        return false
+    }
+
+    /**
+     * 调整单个带宽的等级
+     *
+     * @param   band    带宽
+     * @param   level   等级
+     */
+    fun applyEqualizerArg(band: Short, level: Short) {
+        if (isEnabled() && band in 0..numberOfBands - 1 && level in lowestBandLimit..highestBandLimit) {
+            //调节范围合法，并条件允许调节
+            this.equalizer?.setBandLevel(band, level)
+        }
+    }
+
+    /**
+     * 更新均衡器保存的参数
+     *
+     * @param   name    参数名称
+     * @param   args    参数
+     */
+    fun updateEqualizerArgs(name: String, args: ShortArray) {
+        if (isProfileExisted(name)) {
+            //已存在数据，进行替换
+            this.equalizerArgs[name] = args
+        } else {
+            //新的配置，进行储存
+            this.equalizerArgs.put(name, args)
+        }
     }
 
     /**

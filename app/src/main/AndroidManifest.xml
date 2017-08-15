@@ -59,6 +59,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!--均衡器设置界面-->
+        <activity
+            android:name=".Activities.EqualizerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <!--封面下载界面-->
         <activity
             android:name=".Activities.DownloadCoverActivity"

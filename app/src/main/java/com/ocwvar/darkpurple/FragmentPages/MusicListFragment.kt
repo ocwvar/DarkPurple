@@ -449,7 +449,6 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 //创建输入框对象
                 val inputText: EditText = EditText(fragmentView.context)
                 inputText.maxLines = 1
-                inputText.setBackgroundColor(Color.argb(120, 0, 0, 0))
                 inputText.textSize = 15.0f
                 inputText.setTextColor(Color.WHITE)
                 inputText.setSingleLine(true)

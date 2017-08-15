@@ -90,26 +90,6 @@
     <string name="text_core_compat_info">系统自带的音频播放方案，但稳定性不能得到保证，容易崩溃以及产生异常。</string>
     <string name="text_button_core_done">确定并重启应用</string>
 
-    <!--网络基础文字-->
-    <string name="network_simple_unknown_error">应用未知异常</string>
-    <string name="network_simple_args_error">不满足必须数据参数</string>
-    <string name="network_simple_server_error">服务器异常</string>
-    <string name="network_simple_timeout_error">请求超时</string>
-
-    <!--登录界面文字-->
-    <string name="login_hint_username">请输入用户名</string>
-    <string name="login_hint_password">请输入密码</string>
-    <string name="login_start_login">登录账户</string>
-    <string name="login_start_register">注册并登录</string>
-    <string name="login_start_offline">暂不注册账户</string>
-    <string name="login_remember">记住账密自动登录</string>
-    <string name="login_failed">登录失败,请检查帐号密码</string>
-    <string name="login_input_empty">输入不能为空</string>
-    <string name="login_input_too_short">输入长度不能小于 6</string>
-    <string name="login_input_only_word">用户名仅可为字母和数字</string>
-    <string name="login_head_login">欢迎回来 </string>
-    <string name="login_head_register">注册成啦 ! 您的用户名为:</string>
-
     <!--播放列表项目文字信息-->
     <string name="text_playlist_name">播放列表名称</string>
     <string name="text_playlist_count">包含音频数量</string>
@@ -122,19 +102,6 @@
     <string name="text_playlist_addNewSong">成功添加音频</string>
     <string name="text_playlist_addNewSong_Failed">添加音频失败 , 可能存在同名音频</string>
     <string name="text_playlist_play_Failed">音频文件无法播放,可能已经失效</string>
-
-    <!--云音乐页面-->
-    <string name="text_cloudMusic_download_status_title">正在下载</string>
-    <string name="text_cloudMusic_download_status_cancel">已取消下载歌曲</string>
-    <string name="text_cloudMusic_download_status_done">下载完成</string>
-    <string name="text_cloudMusic_download_status_failed">下载失败</string>
-    <string name="text_cloudMusic_download_button_download">取回本地</string>
-    <string name="text_cloudMusic_download_button_exist">已下载</string>
-    <string name="text_cloudMusic_button_remove">移除歌曲</string>
-    <string name="text_cloudMusic_removing">正在请求删除…</string>
-    <string name="text_cloudMusic_title">我的云储存音乐</string>
-    <string name="text_cloudMusic_subTitle">云端歌曲数量:</string>
-    <string name="text_cloud_header_owner">所属者:</string>
 
     <!--扫描目录版面信息-->
     <string name="musicFolder_name">设置扫描目录</string>
@@ -261,27 +228,8 @@
     <string name="waitForService">等待媒体服务连接…</string>
 
     <!--均衡器设置界面-->
-    <string name="eq">均衡器</string>
-    <string name="eq_reset">恢复默认</string>
-    <string name="eq_save">点此保存均衡器配置</string>
-    <string name="eq_save_completed">保存配置成功</string>
-    <string name="eq_remove_completed">已清除当前配置</string>
-    <string name="eq_save_failed">保存配置失败,请重试</string>
-    <string name="eq_remove_failed">无法清除当前配置</string>
-    <string name="eq_reset_successful">重置均衡器成功</string>
-    <string name="eq_reset_failed">重置均衡器失败,请重试</string>
-    <string name="eq_dialog_title">保存均衡器设置</string>
-    <string name="eq_dialog_info">当前配置的名字</string>
-    <string name="band1">32</string>
-    <string name="band2">64</string>
-    <string name="band3">125</string>
-    <string name="band4">250</string>
-    <string name="band5">0.5k</string>
-    <string name="band6">1k</string>
-    <string name="band7">2k</string>
-    <string name="band8">4k</string>
-    <string name="band9">8k</string>
-    <string name="band10">16k</string>
+    <string name="text_equalizer_save">储存配置</string>
+    <string name="dialog_input_hint">输入配置名称</string>
 
     <!--主题设置部分-->
     <string name="setting_info_line">频谱柱状线设置</string>
