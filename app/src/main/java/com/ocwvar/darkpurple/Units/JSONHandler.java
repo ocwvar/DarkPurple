@@ -442,11 +442,13 @@ public final class JSONHandler {
     /**
      * 读取所有均衡器配置文件
      *
-     * @return 已储存的数据，< 配置名称 , 配置数据 >，读取失败或无储存数据，返回 NULL
+     * @return 已储存的数据，< 配置名称 , 配置数据 >，读取失败或无储存数据，返回 < Default , {0} >
      */
     public static
-    @Nullable
+    @NonNull
     LinkedHashMap<String, short[]> loadSavedEqualizerArgs() {
+
+        final LinkedHashMap<String, short[]> result = new LinkedHashMap<>();
 
         //获取所有 *.eqz 文件
         final File[] eqFiles = new File(AppConfigs.DataFolder + "Equalizer/").listFiles(new FilenameFilter() {
@@ -456,7 +458,12 @@ public final class JSONHandler {
             }
         });
 
-        final LinkedHashMap<String, short[]> result = new LinkedHashMap<>();
+        if (eqFiles == null || eqFiles.length <= 0) {
+            result.put("Default", new short[]{0});
+            return result;
+        }
+
+
         for (final File eqFile : eqFiles) {
 
             //获取文件的Json数据
@@ -485,8 +492,9 @@ public final class JSONHandler {
         }
 
         if (result.size() <= 0) {
-            return null;
+            result.put("Default", new short[]{0});
         }
+
         return result;
     }
 
@@ -514,7 +522,20 @@ public final class JSONHandler {
         jsonObject.add("data", jsonArray);
 
         //进行文件储存
-        json2File(jsonObject, new File(AppConfigs.DataFolder + "Equalizer/"));
+        json2File(jsonObject, new File(AppConfigs.DataFolder + "Equalizer/" + name + ".eqz"));
+    }
+
+    /**
+     * 移除均衡器配置数据
+     *
+     * @param name 配置名称
+     */
+    public static void removeEqualizerArg(final @NonNull String name) {
+        if (TextUtils.isEmpty(name)) {
+            return;
+        }
+
+        new File(AppConfigs.DataFolder + "Equalizer/" + name + ".eqz").delete();
     }
 
     ////////////////////////////////////////

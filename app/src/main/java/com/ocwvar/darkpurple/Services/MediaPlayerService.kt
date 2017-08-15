@@ -28,6 +28,7 @@ import com.ocwvar.darkpurple.Services.Controller.PlayerController
 import com.ocwvar.darkpurple.Services.Core.ICore
 import com.ocwvar.darkpurple.Units.ActivityManager
 import com.ocwvar.darkpurple.Units.Cover.CoverProcesser
+import com.ocwvar.darkpurple.Units.EqualizerHandler
 import com.ocwvar.darkpurple.Units.JSONHandler
 import com.ocwvar.darkpurple.Units.Logger
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
@@ -308,6 +309,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     /**
      * @return  当下是否有媒体设备连接
      */
+    @Suppress("DEPRECATION")
     private fun isNowMediaDeviceConnected(): Boolean {
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -685,6 +687,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             it.addAction(ICore.ACTIONS.CORE_ACTION_PLAYING)
             it.addAction(ICore.ACTIONS.CORE_ACTION_PAUSED)
             it.addAction(ICore.ACTIONS.CORE_ACTION_READY)
+            it.addAction(ICore.ACTIONS.CORE_ACTION_AUDIO_SESSION_ID_CHANGED)
             it.addAction(IController.ACTIONS.ACTION_QUEUE_FINISH)
             it
         }
@@ -727,6 +730,11 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 ICore.ACTIONS.CORE_ACTION_READY -> {
                     updateNotification()
                     dismissNotification(false)
+                }
+
+            //AudioSession ID 发生变化
+                ICore.ACTIONS.CORE_ACTION_AUDIO_SESSION_ID_CHANGED -> {
+                    EqualizerHandler.applyEqualizerArgs()
                 }
 
             }

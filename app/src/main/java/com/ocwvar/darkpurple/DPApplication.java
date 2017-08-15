@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
+import com.ocwvar.darkpurple.Units.EqualizerHandler;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
 
 /**
@@ -23,6 +24,9 @@ public class DPApplication extends Application {
 
         //加载所有保存的设置
         AppConfigs.initDefaultValue(getApplicationContext());
+
+        //加载所有均衡器配置
+        EqualizerHandler.INSTANCE.loadSavedEqualizerArgs();
 
         //加载所有保存的播放列表
         PlaylistUnits.getInstance().init();

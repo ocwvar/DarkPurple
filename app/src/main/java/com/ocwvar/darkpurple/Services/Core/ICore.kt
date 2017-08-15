@@ -46,6 +46,11 @@ interface ICore {
          */
         val CORE_ACTION_RELEASE: String = "ca_6"
 
+        /**
+         *  AudioSession ID 发生变化
+         */
+        val CORE_ACTION_AUDIO_SESSION_ID_CHANGED: String = "ca_7"
+
     }
 
     /**

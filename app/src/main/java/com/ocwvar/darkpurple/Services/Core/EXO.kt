@@ -232,6 +232,8 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
          */
         override fun onAudioSessionId(audioSessionId: Int) {
             MediaLibrary.updateAudioSessionID(audioSessionId)
+
+            sendBroadcast(ICore.ACTIONS.CORE_ACTION_AUDIO_SESSION_ID_CHANGED)
         }
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
