@@ -77,9 +77,9 @@ class EqualizerListAdapter(val callback: Callback) : RecyclerView.Adapter<Recycl
 
         //当前正在使用的配置，样式不一样
         if (source[position] == this.usingName) {
-            views.itemView.setBackgroundColor(Color.argb(100, 0, 0, 0))
+            views.name.setTextColor(Color.WHITE)
         } else {
-            views.itemView.background = null
+            views.name.setTextColor(Color.argb(120, 255, 255, 255))
         }
     }
 

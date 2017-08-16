@@ -228,6 +228,7 @@
     <string name="waitForService">等待媒体服务连接…</string>
 
     <!--均衡器设置界面-->
+    <string name="title_equalizer">均衡器调节</string>
     <string name="text_equalizer_save">储存配置</string>
     <string name="dialog_input_hint">输入配置名称</string>
 

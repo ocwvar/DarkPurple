@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 import android.text.TextUtils
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
+import java.lang.Exception
 
 /**
  * Project DarkPurple
@@ -74,13 +75,16 @@ object EqualizerHandler {
 
         //获取最后使用的均衡器配置
         val lastUsingEqualizerName: String? = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).getString("LastEqz", null)
-        if (!TextUtils.isEmpty(lastUsingEqualizerName)) {
-
+        if (!TextUtils.isEmpty(lastUsingEqualizerName) && this.equalizerArgs.containsKey(lastUsingEqualizerName)) {
+            //如果成功获取到最后一次使用的配置，并且配置有效
             this.usingEqualizerName = lastUsingEqualizerName!!
             this.equalizerArgs[lastUsingEqualizerName]?.let {
                 this.usingEqualizerArgs = it
             }
-
+        } else {
+            //获取失败，使用默认配置
+            this.usingEqualizerName = "Default"
+            this.usingEqualizerArgs = ShortArray(1, { 0 })
         }
     }
 
@@ -132,35 +136,42 @@ object EqualizerHandler {
      * @param   audioSessionID  需要进行调音的AudioSession ID
      */
     fun initEqualizer(audioSessionID: Int = MediaLibrary.getUsingAudioSessionID()) {
-        if (audioSessionID == 0) {
-            //当ID为 0 时，表明此ID是无效的，关闭并释放当前的均衡器资源
-            disableEqualizer()
-            return
-        } else if (audioSessionID == this.usingAudioSessionID) {
-            //与当前使用的ID相同，不进行操作
-            return
-        } else {
-            //进行均衡器初始化
-            this.equalizer?.release()
-            try {
-                //创建均衡器对象
-                this.equalizer = Equalizer(0, audioSessionID)
+        when (audioSessionID) {
+        //当ID为 0 时，表明此ID是无效的，关闭并释放当前的均衡器资源
+            0 -> {
 
-                this.equalizer?.let {
-                    //开启均衡器，开启后才能获取相关的参数
-                    it.enabled = true
-
-                    //获取带宽上下的极值
-                    this.lowestBandLimit = it.bandLevelRange[0]
-                    this.highestBandLimit = it.bandLevelRange[1]
-
-                    //获取可控制的带宽数量
-                    this.numberOfBands = it.numberOfBands
-                }
-            } catch(e: Exception) {
-                Logger.error(TAG, "初始化均衡器对象时发生异常：\n" + e)
+                disableEqualizer()
+                return
             }
 
+        //与当前使用的ID相同，不进行操作
+            this.usingAudioSessionID ->
+                return
+
+        //进行均衡器初始化
+            else -> {
+
+                this.equalizer?.release()
+                try {
+                    //创建均衡器对象
+                    this.equalizer = Equalizer(0, audioSessionID)
+
+                    this.equalizer?.let {
+                        //开启均衡器，开启后才能获取相关的参数
+                        it.enabled = true
+
+                        //获取带宽上下的极值
+                        this.lowestBandLimit = it.bandLevelRange[0]
+                        this.highestBandLimit = it.bandLevelRange[1]
+
+                        //获取可控制的带宽数量
+                        this.numberOfBands = it.numberOfBands
+                    }
+                } catch (e: Exception) {
+                    Logger.error(TAG, "初始化均衡器对象时发生异常：\n" + e)
+                }
+
+            }
         }
 
     }
@@ -195,7 +206,7 @@ object EqualizerHandler {
             this.usingEqualizerArgs = args
 
             //开始应用配置数据到均衡器
-            for (i in 0..this.numberOfBands - 1) {
+            for (i in 0 until this.numberOfBands) {
                 //在应用配置的时候，如果配置的长度小于可调节数量，则未被配置长度覆盖的用0设置
                 if (i in this.usingEqualizerArgs.indices) {
                     applyEqualizerArg(i.toShort(), this.usingEqualizerArgs[i])
@@ -203,6 +214,8 @@ object EqualizerHandler {
                     applyEqualizerArg(i.toShort(), 0)
                 }
             }
+
+            PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit().putString("LastEqz", this.usingEqualizerName)
 
             if (this.callback != null) {
                 this.callback?.onUsingProfileChanged(this.usingEqualizerName)

@@ -63,7 +63,8 @@
         <activity
             android:name=".Activities.EqualizerActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustNothing" />
 
         <!--封面下载界面-->
         <activity

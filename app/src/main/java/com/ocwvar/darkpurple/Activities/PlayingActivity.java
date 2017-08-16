@@ -588,7 +588,7 @@ public class PlayingActivity
                 switchSpectrumEffect();
                 break;
             case R.id.equalizer:
-                EqualizerActivity.startBlurActivity(5, Color.argb(50, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
+                EqualizerActivity.startBlurActivity(5, Color.argb(0, 0, 0, 0), false, PlayingActivity.this, EqualizerActivity.class, null);
                 break;
             case R.id.shower_mainButton:
                 //主按钮点击事件

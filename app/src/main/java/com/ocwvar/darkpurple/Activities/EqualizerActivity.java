@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 
@@ -41,7 +42,7 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
     protected boolean onPreSetup() {
 
         if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().setNavigationBarColor(Color.argb(90, 0, 0, 0));
+            getWindow().setNavigationBarColor(Color.argb(120, 127, 204, 255));
             getWindow().setStatusBarColor(Color.argb(0, 0, 0, 0));
         }
 
@@ -55,11 +56,14 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
 
     @Override
     protected int onSetToolBar() {
-        return 0;
+        return R.id.toolbar;
     }
 
     @Override
     protected void onSetupViews(Bundle savedInstanceState) {
+        getToolBar().setBackgroundColor(Color.TRANSPARENT);
+        getSupportActionBar().setTitle(R.string.title_equalizer);
+
         adapter = new EqualizerListAdapter(EqualizerActivity.this);
         adapter.putSource(EqualizerHandler.INSTANCE.savedProfilesName());
 
@@ -117,7 +121,7 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
      */
     @Override
     public void onItemClick(String name, int position) {
-        if (EqualizerHandler.INSTANCE.applyEqualizerArgs(name)) {
+        if (!this.usingEqualizerName.equals(name) && EqualizerHandler.INSTANCE.applyEqualizerArgs(name)) {
             //应用配置成功
             this.usingEqualizerName = name;
         }
@@ -134,9 +138,13 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
         if (name.equals(this.usingEqualizerName)) {
             //如果删除的是当前正在使用的配置档，则恢复到Default档
             EqualizerHandler.INSTANCE.applyEqualizerArgs("Default");
+            this.usingEqualizerName = "Default";
         }
         EqualizerHandler.INSTANCE.removeSavedEqualizerArgs(name);
+        this.adapter.removeSource(name);
         this.adapter.notifyItemRemoved(position);
+        //更新均衡器视图
+        this.equalizerImage.initLevelValues(EqualizerHandler.INSTANCE.getEqualizerArgsProfile(this.usingEqualizerName), false);
     }
 
     /**
@@ -148,6 +156,8 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
     public void onUsingProfileChanged(String name) {
         this.adapter.setUsingName(name);
         this.usingEqualizerName = name;
+        //更新均衡器视图
+        this.equalizerImage.initLevelValues(EqualizerHandler.INSTANCE.getEqualizerArgsProfile(this.usingEqualizerName), false);
     }
 
     /**
@@ -185,8 +195,10 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
             this.editText.setHint(R.string.dialog_input_hint);
             this.editText.setSingleLine(true);
             this.editText.setTextColor(Color.WHITE);
-            this.editText.setHintTextColor(Color.WHITE);
+            this.editText.setHintTextColor(Color.argb(120, 255, 255, 255));
             this.editText.setBackground(null);
+            this.editText.setGravity(Gravity.CENTER);
+
 
             this.alertDialog = new AlertDialog.Builder(context, R.style.FullScreen_TransparentBG)
                     .setView(this.editText)
@@ -194,7 +206,9 @@ public class EqualizerActivity extends BaseBlurActivity implements EqualizerList
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final String name = editText.getText().toString();
-                            if (!TextUtils.isEmpty(name)) {
+                            editText.getText().clear();
+
+                            if (!TextUtils.isEmpty(name) && !name.trim().toLowerCase().equals("default")) {
                                 //进行储存
                                 EqualizerHandler.INSTANCE.updateEqualizerArgs(name, equalizerImage.getAllLevels());
                                 //更新列表适配器

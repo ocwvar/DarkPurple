@@ -99,13 +99,15 @@ public class EqualizerImage extends View {
         this.linePaint = new Paint();
         this.linePaint.setColor(Color.argb(100, 127, 204, 255));
         this.linePaint.setStrokeWidth(2.0f);
+
+        initPaintShade();
     }
 
     /**
      * 初始化画笔Shader
      */
     private void initPaintShade() {
-        final LinearGradient linearGradient = new LinearGradient(0, 0, 0, getBottom(), Color.argb(255, 127, 204, 255), Color.argb(0, 0, 0, 0), Shader.TileMode.MIRROR);
+        final LinearGradient linearGradient = new LinearGradient(0, 0, 0, getBottom(), Color.argb(255, 127, 204, 255), Color.argb(100, 127, 204, 255), Shader.TileMode.MIRROR);
         this.imagePaint.setShader(linearGradient);
     }
 
@@ -205,7 +207,6 @@ public class EqualizerImage extends View {
 
         ////// 2.计算点的默认坐标以及最右触摸范围
         touchingPointsArea = new float[pointsCount];
-        points = new EQLevel[pointsCount];
         //每一个点的间隔
         final float perPointPadding = viewWidth / pointsCount;
 
@@ -217,7 +218,11 @@ public class EqualizerImage extends View {
             touchingPointsArea[i] = x;
             x -= x * (1.0f / ((i + 1) * 2.0f));
 
-            points[i] = new EQLevel((short) 0, x);
+            if (points[i] == null) {
+                points[i] = new EQLevel((short) 0, x);
+            } else {
+                points[i].x = x;
+            }
         }
 
         return true;
@@ -226,7 +231,7 @@ public class EqualizerImage extends View {
     /**
      * 初始化所有等级刻度
      *
-     * @param levelValues 等级数组，每个元素范围：-1500 ～ +1500
+     * @param levelValues    等级数组，每个元素范围：-1500 ～ +1500
      * @param updateCallback 是否更新回调接口
      */
     public void initLevelValues(final short[] levelValues, final boolean updateCallback) {
@@ -323,10 +328,10 @@ public class EqualizerImage extends View {
         canvas.drawColor(Color.TRANSPARENT);
 
         if (this.needReInit) {
-            initPoints((short) points.length);
-            initPaintShade();
-            initLevelValues(temp, false);
             this.needReInit = false;
+            initPaintShade();
+            initPoints((short) points.length);
+            initLevelValues(temp, false);
             temp = null;
         }
 
