@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentTransaction
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -165,6 +166,16 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
 
+        if (getSharedPreferences("firstValues", 0).getBoolean("1.3.8", true)) {
+            //如果当前是第一次进入新版本，则显示changeLog对话框
+            WeakReference<AlertDialog?>(AlertDialog.Builder(this@MainFrameworkActivity, R.style.FullScreen_TransparentBG)
+                    .setTitle(R.string.changelog)
+                    .setMessage(R.string.version_changelog_1_3_8)
+                    .setOnDismissListener { getSharedPreferences("firstValues", 0).edit().clear().putBoolean("1.3.8", false).apply() }
+                    .create())
+                    .get()?.show()
+        }
+
         //如果服务未连接，不显示播放界面按钮，等待服务连接后，在进行检查播放状态。
         if (!serviceConnector.isServiceConnected()) {
             floatingActionButton.visibility = View.GONE
@@ -230,7 +241,7 @@ class MainFrameworkActivity : BaseActivity() {
         if (outState != null && currentPageTAG != null) {
             try {
                 outState.putString("LastPage", currentPageTAG as String)
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 outState.putString("LastPage", null)
             }
         }

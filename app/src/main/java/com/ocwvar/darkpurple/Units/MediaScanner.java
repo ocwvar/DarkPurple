@@ -452,7 +452,7 @@ public class MediaScanner {
          */
         private boolean isFileValid(String path) {
             final File checkFile = new File(path);
-            return checkFile.canRead() && checkFile.canWrite() && checkFile.length() > 0;
+            return checkFile.canRead() && checkFile.length() > 0;
         }
 
     }
@@ -555,7 +555,7 @@ public class MediaScanner {
                 for (String path : paths) {
                     if (!TextUtils.isEmpty(path)) {
                         File folder = new File(path);
-                        if (!folder.isDirectory() || !folder.canWrite()) {
+                        if (!folder.isDirectory() || !folder.canRead()) {
                             folder = null;
                             return false;
                         }

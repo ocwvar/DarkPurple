@@ -447,7 +447,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             var dialog: AlertDialog? = dialogKeeper.get()
             if (dialog == null) {
                 //创建输入框对象
-                val inputText: EditText = EditText(fragmentView.context)
+                val inputText = EditText(fragmentView.context)
                 inputText.maxLines = 1
                 inputText.textSize = 15.0f
                 inputText.setTextColor(Color.WHITE)

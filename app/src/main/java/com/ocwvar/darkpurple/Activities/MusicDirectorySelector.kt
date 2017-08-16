@@ -191,15 +191,15 @@ class MusicDirectorySelector : BaseBlurActivity(), MusicDirectoryAdapter.Callbac
          * @return 当前目录下的子目录
          */
         fun currentDirectory(): ArrayList<Directory> {
-            if (this.dirStack.size == 0) {
+            return if (this.dirStack.size == 0) {
                 //如果当前目录栈是空的，则返回驱动器列表
-                return ArrayList<Directory>().let {
+                ArrayList<Directory>().let {
                     it.add(Directory(DirectoryStyle.DISK, AppConfigs.ApplicationContext.getString(R.string.type_directory_disk_default), Environment.getExternalStorageDirectory().path))
                     it.add(Directory(DirectoryStyle.DISK, AppConfigs.ApplicationContext.getString(R.string.type_directory_disk_storage), "/storage/"))
                     it
                 }
             } else {
-                return searchDirectory(this.dirStack.last())
+                searchDirectory(this.dirStack.last())
             }
         }
 
@@ -212,7 +212,7 @@ class MusicDirectorySelector : BaseBlurActivity(), MusicDirectoryAdapter.Callbac
             val result: ArrayList<Directory> = ArrayList()
 
             files.forEach {
-                if (it.isDirectory && it.canRead() && it.canWrite()) {
+                if (it.isDirectory && it.listFiles() != null) {
                     //只添加可以读取的目录
                     result.add(Directory(DirectoryStyle.DIR, it.name, it.path))
                 }

@@ -1,7 +1,7 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
 # 应用下载 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
-## 版本：1.3.7 1708120028
+## 版本：1.3.8 1708161900
 Github：https://github.com/ocwvar/DarkPurple/releases
 
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
@@ -21,7 +21,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 - 可根据音频长度进行过滤
 - 可根据歌曲名字或歌曲添加时间进行排序
 - 在应用被销毁后，可以通过耳机线控来重新启动
-- 可自定义均衡器配置 (目前不可用)
+- 可自定义均衡器配置
 - UI 设计采用 Material Design
 - 可在线搜索设置封面数据 (请阅读下方说明)
 - 有两种频谱动画 , 您也可以自定义频谱动画的柱状粗细与颜色 (下方有预览图) 频谱元素有柱状、点状、线状，可以单独开启或关闭
@@ -34,6 +34,9 @@ CoverBox 的作者为 Henry Hu
 
 封面获取功频繁使用的时候可能会出现无法获取到封面资源的情况,这是因为网址可能左右流量访问限制问题,等待一段时间后即可
 
+## 关于均衡器调节
+本APP使用的是系统的均衡器API，经测试发现在不同设备下可以调节的 Band(音频带宽) 范围数量有所不同。大多数设备为 5 个，部分三星设备为 13 个。
+
 ## 关于Android 8.0 支持
 在虚拟机下的 Android 8.0 版本中，Google v4兼容包(v26.0.0-alpha1)中的 MediaSessionCompat 会产生异常。
 在新版本发布后再进行相应的适配工作。
@@ -45,10 +48,10 @@ CoverBox 的作者为 Henry Hu
 - 新的歌曲选择主界面 √
 - 新的播放列表界面 √
 - 用户选项界面 √
-- EXO频谱动画 √
+- 频谱动画 √
 - 将现有的音频服务改用 MediaBrowserService √
-- EXO均衡器功能 →
-- 自动更新 x
+- 均衡器功能 √ 
+- 自动更新 →
 
 # 截图展示 (2017/8/06 19：02)
 ##### *截图无法展示所有应用的细节*

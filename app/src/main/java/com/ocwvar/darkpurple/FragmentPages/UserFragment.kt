@@ -82,7 +82,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
      * 排序选择对话框
      * 此对话框对象不能使用弱引用，因为每次启动的时候都需要设置选择位置
      */
-    fun showSortDialog() {
+    private fun showSortDialog() {
         val sp = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext)
         val position: Int = sp.getString("scanner_sort_type", "0").toInt()
         @SuppressLint("CommitPrefEdits")
@@ -106,7 +106,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
     /**
      * 显示关于对话框
      */
-    fun showAboutDialog() {
+    private fun showAboutDialog() {
         var dialog: AlertDialog? = aboutDialogKeeper.get()
         if (dialog == null) {
             dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(R.layout.dialog_about).create()

@@ -2,6 +2,16 @@
     <!--App 名字-->
     <string name="app_name">DarkPurple</string>
 
+    <!--ChangeLog-->
+    <string name="changelog">新版本变化 Σ(ﾟдﾟ)</string>
+    <string name="version_changelog_1.3.8">
+        1.均衡器功能已完成，在播放界面点击右上角按钮即可进入\n\n
+        2.现已支持外置SD储存卡内的音频扫描。由于Android 6.0+的限制，暂不可以进行音频的删除操作。\n\n
+        3.加了现在这个显示版本变更的玩意\n\n
+        4.依旧修正了潜在的逻辑错误\n\n
+        5.依旧Android4.4.x还未适配完成(考虑放弃 Android 5.0以下的平台 :x )
+    </string>
+
     <!--文字信息-->
     <string name="simple_unknown">未知</string>
     <string name="simple_cancel">取消</string>
@@ -33,7 +43,7 @@
     <string name="message_scan_result_empty">无歌曲</string>
     <string name="message_scan_result_done">已更新列表:D</string>
     <string name="message_song_deleted">音频已删除</string>
-    <string name="message_song_delete_failed">音频删除失败，可能文件不存在</string>
+    <string name="message_song_delete_failed">音频删除失败，可能文件不存在或为SD卡文件</string>
     <string name="message_upload_offline">当前为离线模式,暂时无法使用</string>
     <string name="message_upload_started">音频正在后台上传中…</string>
     <string name="message_upload_busy">当请等待上一个上传任务完成后再执行</string>
