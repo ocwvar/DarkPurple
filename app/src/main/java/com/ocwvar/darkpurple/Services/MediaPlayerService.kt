@@ -534,7 +534,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     .setContentTitle(jsonObject.get("title").asString)
                     .setContentText(jsonObject.get("github_message").asString)
                     .setContentIntent(PendingIntent.getActivity(this@MediaPlayerService, 0, Intent(Intent.ACTION_VIEW).let {
-                        it.data = Uri.parse("https://github.com/ocwvar/DarkPurple/releases" + jsonObject.get("version_string").asString + "/app-release.apk")
+                        it.data = Uri.parse("https://github.com/ocwvar/DarkPurple/releases/download/" + jsonObject.get("version_string").asString + "/app-release.apk")
                         it
                     }, PendingIntent.FLAG_UPDATE_CURRENT))
                     .build()
