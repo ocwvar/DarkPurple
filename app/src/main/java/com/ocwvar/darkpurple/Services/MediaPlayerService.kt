@@ -28,6 +28,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
+import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.Controller.IController
 import com.ocwvar.darkpurple.Services.Controller.PlayerController
 import com.ocwvar.darkpurple.Services.Core.ICore
@@ -529,6 +530,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
          */
         private fun updateNotification(jsonObject: JsonObject) {
             val notification: Notification = NotificationCompat.Builder(this@MediaPlayerService)
+                    .setSmallIcon(R.drawable.ic_action_info)
                     .setContentTitle(jsonObject.get("title").asString)
                     .setContentText(jsonObject.get("github_message").asString)
                     .setContentIntent(PendingIntent.getActivity(this@MediaPlayerService, 0, Intent(Intent.ACTION_VIEW).let {
