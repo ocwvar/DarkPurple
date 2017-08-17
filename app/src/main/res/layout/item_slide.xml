@@ -4,21 +4,25 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="5dp">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_music" />
-
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:singleLine="true"
-        android:textColor="#fff"
-        android:textSize="15sp" />
+        android:textColor="@color/pureWhite"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:singleLine="true"
+        android:textColor="@color/gray600"
+        android:textSize="12sp" />
 
 </LinearLayout>

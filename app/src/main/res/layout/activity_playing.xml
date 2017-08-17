@@ -213,10 +213,9 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycleView"
-        android:layout_width="230dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#9e000000"
         android:fitsSystemWindows="true"
         android:paddingTop="15dp" />
 

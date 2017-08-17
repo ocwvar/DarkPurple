@@ -38,9 +38,11 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        SlideMusicViewHolder slideMusicViewHolder = (SlideMusicViewHolder) holder;
-        SongItem songItem = songItems.get(position);
+        final SlideMusicViewHolder slideMusicViewHolder = (SlideMusicViewHolder) holder;
+        final SongItem songItem = songItems.get(position);
+
         slideMusicViewHolder.title.setText(songItem.getTitle());
+        slideMusicViewHolder.message.setText(songItem.getArtist());
     }
 
     @Override
@@ -60,11 +62,12 @@ public class SlidingListAdapter extends RecyclerView.Adapter {
 
     private class SlideMusicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView title;
+        final TextView title, message;
 
         SlideMusicViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.textView);
+            title = itemView.findViewById(R.id.title);
+            message = itemView.findViewById(R.id.message);
 
             itemView.setOnClickListener(this);
         }

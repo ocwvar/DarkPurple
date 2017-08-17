@@ -248,6 +248,7 @@ public class PlayingActivity
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setScrimColor(Color.argb(220, 0, 0, 0));
         }
 
         if (!AppConfigs.useCompatMode && AppConfigs.StatusBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

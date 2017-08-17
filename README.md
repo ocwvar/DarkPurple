@@ -1,7 +1,7 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
 # 应用下载 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
-## 版本：1.3.8 1708161900
+## 版本：1.3.9 1708171821
 Github：https://github.com/ocwvar/DarkPurple/releases
 
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
@@ -53,7 +53,7 @@ CoverBox 的作者为 Henry Hu
 - 均衡器功能 √ 
 - 自动更新 →
 
-# 截图展示 (2017/8/06 19：02)
+# 截图展示 (2017/8/17 18：21)
 ##### *截图无法展示所有应用的细节*
 
 ### 主界面<p></p>
