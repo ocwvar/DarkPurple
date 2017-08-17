@@ -2,6 +2,7 @@ package com.ocwvar.darkpurple.Services
 
 import android.annotation.SuppressLint
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -10,6 +11,7 @@ import android.content.IntentFilter
 import android.media.AudioDeviceInfo
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.ResultReceiver
@@ -19,8 +21,11 @@ import android.support.v4.media.MediaBrowserServiceCompat
 import android.support.v4.media.session.MediaButtonReceiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v7.app.NotificationCompat
 import android.text.TextUtils
 import android.view.KeyEvent
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.Services.Controller.IController
@@ -32,6 +37,11 @@ import com.ocwvar.darkpurple.Units.EqualizerHandler
 import com.ocwvar.darkpurple.Units.JSONHandler
 import com.ocwvar.darkpurple.Units.Logger
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
+import com.squareup.okhttp.Callback
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.Response
+import java.io.IOException
 
 /**
  * Project DarkPurple
@@ -45,6 +55,8 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val ROOT_ID_OK: String = "_1"
     private val ROOT_ID_DENIED: String = "no"
 
+    //更新检查器
+    private val updateChecker: UpdateChecker = UpdateChecker()
 
     //媒体播放调配控制器
     private val iController: IController = PlayerController()
@@ -154,7 +166,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         //设置重新启动 MediaSession 服务的 PendingIntent
         try {
             this.mediaSession.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             if (AppConfigs.OS_5_UP) {
                 this.mediaSession.setMediaButtonReceiver(null)
             }
@@ -194,6 +206,9 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         //尝试恢复最后一次的状态
         recoveryLastState()
+
+        //检查更新
+        updateChecker.start()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -446,6 +461,86 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         }
     }
 
+    /**
+     * 更新检查器
+     */
+    private inner class UpdateChecker {
+
+        private val TAG: String = "更新检查"
+        private val httpClient: OkHttpClient = OkHttpClient()
+        private val request: Request = Request.Builder().url("https://raw.githubusercontent.com/ocwvar/DarkPurple/dev/version.json").build()
+
+        private var isFinished: Boolean = true
+
+        fun start() {
+            if (!isFinished) {
+                return
+            }
+            isFinished = false
+
+            httpClient.newCall(request).enqueue(object : Callback {
+
+                override fun onFailure(request: Request?, e: IOException?) {
+                    isFinished = true
+
+                    Logger.error(TAG, "网络异常，检查失败")
+                }
+
+
+                override fun onResponse(response: Response?) {
+                    if (response != null) {
+                        val jsonString: String? = response.body()?.string() ?: null
+                        if (jsonString != null) {
+                            try {
+                                val jsonObject: JsonObject = JsonParser().parse(jsonString).asJsonObject
+                                if (hasNewVersion(jsonObject)) {
+                                    //如果存在新的版本
+                                    updateNotification(jsonObject)
+                                }
+                            } catch (e: Exception) {
+                                Logger.error(TAG, "解析JsonObject失败")
+                            }
+                        }
+                    } else {
+                        Logger.error(TAG, "网络异常，检查失败")
+                    }
+
+                    isFinished = true
+                }
+            })
+        }
+
+        /**
+         * 检查Json数据是否存在新的版本
+         *
+         * @param   jsonObject  信息数据
+         * @return  是否存在新版本
+         */
+        private fun hasNewVersion(jsonObject: JsonObject): Boolean {
+            val currentVersion_Code: Int = packageManager.getPackageInfo(packageName, 0)?.versionCode ?: 99999
+
+            return jsonObject.get("version_code").asInt > currentVersion_Code
+        }
+
+        /**
+         * 显示一个Notification给用户，提示有更新
+         *
+         * @param   jsonObject  信息数据
+         */
+        private fun updateNotification(jsonObject: JsonObject) {
+            val notification: Notification = NotificationCompat.Builder(this@MediaPlayerService)
+                    .setContentTitle(jsonObject.get("title").asString)
+                    .setContentText(jsonObject.get("github_message").asString)
+                    .setContentIntent(PendingIntent.getActivity(this@MediaPlayerService, 0, Intent(Intent.ACTION_VIEW).let {
+                        it.data = Uri.parse("https://github.com/ocwvar/DarkPurple/releases" + jsonObject.get("version_string").asString + "/app-release.apk")
+                        it
+                    }, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .build()
+
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(717, notification)
+        }
+
+    }
 
     /**
      * 音频焦点变化回调控制器
