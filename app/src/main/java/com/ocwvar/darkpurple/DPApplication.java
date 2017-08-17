@@ -11,7 +11,7 @@ import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by 区成伟
- * Package: com.ocwvar.surfacetest.ExceptionHandler
+ * Package: com.ocwvar.darkpurple
  * Date: 2016/5/25  9:20
  * Project: SurfaceTest
  */
@@ -21,7 +21,9 @@ public class DPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(DPApplication.this, "59950e977666134d4f000236", "Github", MobclickAgent.EScenarioType.E_UM_NORMAL));
         MobclickAgent.setCatchUncaughtExceptions(false);
+        MobclickAgent.setDebugMode(true);
 
         CrashHandler.init(getApplicationContext());
 
