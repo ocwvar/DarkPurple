@@ -498,7 +498,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                                     updateNotification(jsonObject)
                                 }
                             } catch (e: Exception) {
-                                Logger.error(TAG, "解析JsonObject失败")
+                                Logger.error(TAG, "在检查过成功发生异常：\n" + e)
                             }
                         }
                     } else {
