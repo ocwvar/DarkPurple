@@ -166,12 +166,13 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
 
-        if (getSharedPreferences("firstValues", 0).getBoolean("1.3.9", true)) {
-            //如果当前是第一次进入新版本，则显示changeLog对话框
+        val currentVersionCode: Int = packageManager.getPackageInfo(packageName, 0)?.versionCode ?: -2
+        if (getSharedPreferences("otherValues", 0).getInt("lastVersionCode", -1) < currentVersionCode) {
+            //通过检查记录中的最新版本号，如果小于当前版本号，则认为当前是第一次进入新版本，显示changeLog对话框
             WeakReference<AlertDialog?>(AlertDialog.Builder(this@MainFrameworkActivity, R.style.FullScreen_TransparentBG)
                     .setTitle(R.string.changelog)
                     .setMessage(R.string.version_changelog_1_3_8)
-                    .setOnDismissListener { getSharedPreferences("firstValues", 0).edit().clear().putBoolean("1.3.9", false).apply() }
+                    .setOnDismissListener { getSharedPreferences("otherValues", 0).edit().clear().putInt("lastVersionCode", currentVersionCode).apply() }
                     .create())
                     .get()?.show()
         }
