@@ -3,13 +3,11 @@
     <string name="app_name">DarkPurple</string>
 
     <!--ChangeLog-->
-    <string name="changelog">新版本变化 Σ(ﾟдﾟ)</string>
-    <string name="version_changelog_1.3.8">
-        1.均衡器功能已完成，在播放界面点击右上角按钮即可进入\n\n
-        2.现已支持外置SD储存卡内的音频扫描。由于Android 6.0+的限制，暂不可以进行音频的删除操作。\n\n
-        3.加了现在这个显示版本变更的玩意\n\n
-        4.依旧修正了潜在的逻辑错误\n\n
-        5.依旧Android4.4.x还未适配完成(考虑放弃 Android 5.0以下的平台 :x )
+    <string name="changelog_title">新版本变化 Σ(ﾟдﾟ)</string>
+    <string name="changelog_text">
+        1.添加新版本检查\n\n
+        2.新的播放界面侧滑版面\n\n
+        3.修正逻辑错误
     </string>
 
     <!--文字信息-->
