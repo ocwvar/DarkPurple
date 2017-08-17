@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
 import com.ocwvar.darkpurple.AppConfigs;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,12 +83,12 @@ public class ActivityManager implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityResumed(Activity activity) {
-
+        MobclickAgent.onResume(activity);
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-
+        MobclickAgent.onPause(activity);
     }
 
     @Override

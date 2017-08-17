@@ -7,6 +7,7 @@ import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.EqualizerHandler;
 import com.ocwvar.darkpurple.Units.PlaylistUnits;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by 区成伟
@@ -20,7 +21,10 @@ public class DPApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        MobclickAgent.setCatchUncaughtExceptions(false);
+
         CrashHandler.init(getApplicationContext());
+
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());
 
         //加载所有保存的设置

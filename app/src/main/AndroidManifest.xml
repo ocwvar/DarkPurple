@@ -16,6 +16,13 @@
     <uses-permission android:name="ndroid.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--友盟-->
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:name=".DPApplication"
         android:allowBackup="true"
@@ -23,6 +30,15 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
+        <!--友盟-->
+        <meta-data
+            android:name="59950e977666134d4f000236"
+            android:value="YOUR_APP_KEY" />
+        <meta-data
+            android:name="GitHub"
+            android:value="Channel ID" />
+
+        <!--网易云捕-->
         <meta-data
             android:name="BUGRPT_APPID"
             android:value="A008251242" />
