@@ -313,12 +313,14 @@ public class MediaScanner {
                 //更新主媒体库
                 MediaLibrary.INSTANCE.updateMainSource(arrayList);
 
+                //缓存数据
+                JSONHandler.cacheSearchResult(arrayList);
+
             } catch (Exception e) {
                 Logger.error(TAG, "在从媒体库中获取数据时发生异常：\n" + e);
             }
 
             if (callback != null) {
-                JSONHandler.cacheSearchResult(arrayList);
                 onCompleted(arrayList);
             }
 
@@ -507,12 +509,14 @@ public class MediaScanner {
                     //更新主媒体库
                     MediaLibrary.INSTANCE.updateMainSource(arrayList);
 
+                    //缓存数据
+                    JSONHandler.cacheSearchResult(arrayList);
+
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Logger.error(TAG, "在从媒体库中获取数据时发生异常：\n" + e);
                 }
 
                 if (callback != null) {
-                    JSONHandler.cacheSearchResult(arrayList);
                     onCompleted(arrayList);
                 }
             }
