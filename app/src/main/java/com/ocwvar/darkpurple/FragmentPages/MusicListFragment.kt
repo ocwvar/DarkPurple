@@ -90,6 +90,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         recycleView.adapter = adapter
         recycleView.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
         recycleView.setHasFixedSize(true)
+        swipeRefreshLayout.setDistanceToTriggerSync(750)
         swipeRefreshLayout.setColorSchemeColors(AppConfigs.Color.DefaultCoverColor)
         swipeRefreshLayout.setOnRefreshListener {
             itemMoreDialog?.hide()
