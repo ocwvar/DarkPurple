@@ -5,9 +5,10 @@
     <!--ChangeLog-->
     <string name="changelog_title">新版本变化 Σ(ﾟдﾟ)</string>
     <string name="changelog_text">
-        1.添加新版本检查\n\n
-        2.新的播放界面侧滑版面\n\n
-        3.修正逻辑错误
+        1.改善歌曲刷新下拉距离\n\n
+        2.修正扫描器相关异常\n\n
+        3.封面模糊效果增加混合颜色遮罩\n\n
+        ??.播放界面在下次更新时将会有新的变化喔 (大概
     </string>
 
     <!--文字信息-->

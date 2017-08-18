@@ -1,7 +1,7 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
 # 应用下载 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
-## 版本：1.3.9 1708171821
+## 版本：1.3.4 1708182252
 Github：https://github.com/ocwvar/DarkPurple/releases
 
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
