@@ -1,9 +1,7 @@
 package com.ocwvar.darkpurple.Units.Cover
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
@@ -117,7 +115,7 @@ object CoverProcesser {
     /**
      * 图像模糊处理工作子线程
      */
-    class BlurThread(val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
+    class BlurThread(private val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
 
         private val TAG: String = "图像模糊处理"
 
@@ -172,6 +170,14 @@ object CoverProcesser {
                     blurBitmap = FastBlur.doBlur(scaledBitmap, 25, false)
                 }
                 if (blurBitmap != null) {
+                    //进行图像的暗化处理
+                    val canvas = Canvas(blurBitmap)
+                    canvas.drawRect(0f, 0f, blurBitmap.width.toFloat(), blurBitmap.height.toFloat(), Paint().let {
+                        it.color = CoverManager.getValidColor(coverID)
+                        it.alpha = 60
+                        it
+                    })
+                    canvas.drawBitmap(blurBitmap, 0f, 0f, null)
                     //模糊图像生成成功，进行文件缓存
                     val cachedFile: File? = CoverImage2File.getInstance().makeImage2File(CoverType.BLUR, blurBitmap, coverID)
                     cachedFile?.let {
@@ -182,7 +188,7 @@ object CoverProcesser {
                 blurd = BitmapDrawable(AppConfigs.ApplicationContext.resources, blurBitmap)
                 Logger.normal(TAG, "图像处理完成：" + coverID)
                 return blurd
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 blurd = null
                 Logger.normal(TAG, "图像处理失败：" + coverID)
                 return null
