@@ -98,7 +98,7 @@ public class PlayingActivity
     //歌曲信息文字显示
     TextView title, album;
     //当前播放时间
-    TextView currentTime, restTime;
+    TextView currentTime;
     //频谱开关
     ImageButton spectrumSwitch;
     //均衡器设置
@@ -185,7 +185,6 @@ public class PlayingActivity
         title = (TextView) findViewById(R.id.shower_title);
         album = (TextView) findViewById(R.id.shower_album);
         currentTime = (TextView) findViewById(R.id.shower_playing_position);
-        restTime = (TextView) findViewById(R.id.shower_rest_position);
         mainButton = findViewById(R.id.shower_mainButton);
 
         //圆圈进度条
@@ -376,7 +375,11 @@ public class PlayingActivity
         title = null;
         album = null;
         currentTime = null;
-        restTime = null;
+        circleSeekBar = null;
+        loopButton = null;
+        randomButton = null;
+        dateFormat = null;
+        date = null;
         System.gc();
     }
 
@@ -423,9 +426,6 @@ public class PlayingActivity
                 final PlaybackStateCompat playbackState = MediaControllerCompat.getMediaController(PlayingActivity.this).getPlaybackState();
                 //当前的播放位置
                 final long currentPosition = (playbackState == null) ? 0L : playbackState.getPosition();
-                //媒体长度
-                final long mediaDuration = playingSong.getDuration();
-
 
                 //滑动条是否可用
                 circleSeekBar.setEnableTouch(currentState != PlaybackStateCompat.STATE_NONE);
@@ -434,14 +434,12 @@ public class PlayingActivity
                 title.setText(playingSong.getTitle());
                 //设置专辑名称显示
                 album.setText(playingSong.getAlbum());
-                //重置滚动控制条数据
-                circleSeekBar.setProgress(0);
+                //重置滚动控制条数据，如果播放状态不是暂停或正在播放，则需要重置进度。
+                circleSeekBar.setProgress((int) (currentPosition / 1000L));
                 //设置需要重置歌曲长度标记
                 circleSeekBar.setTag(true);
                 //设置当前播放的时间
                 currentTime.setText(time2String(currentPosition));
-                //设置当前剩余时间
-                restTime.setText(time2String(mediaDuration - currentPosition));
                 //执行封面模糊风格处理
                 if (!AppConfigs.isUseSimplePlayingScreen) {
                     generateBlurBackGround();
@@ -1089,7 +1087,6 @@ public class PlayingActivity
                             public void run() {
                                 //更新进度文字数据
                                 currentTime.setText(time2String(currentPosition));
-                                restTime.setText(time2String(duration - currentPosition));
 
                                 //如果进度条需要重置歌曲长度标记，则更新歌曲长度
                                 if (circleSeekBar.getTag() != null && (boolean) circleSeekBar.getTag()) {

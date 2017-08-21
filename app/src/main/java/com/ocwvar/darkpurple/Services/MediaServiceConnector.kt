@@ -83,8 +83,13 @@ class MediaServiceConnector(val activity: Activity, val callback: Callbacks? = n
      * @return  是否在 500ms 内连接成功
      */
     fun connect(): Boolean {
-        if (this.mediaService.isConnected) {
-            this.mediaService.connect()
+        if (!this.mediaService.isConnected) {
+            try {
+                this.mediaService.connect()
+            } catch (e: Exception) {
+                //服务连接状态异常，有可能当前正处于 正在连接服务，但还未连接上的状态
+                return false
+            }
             var timeoutCount = 5
             while (!this.mediaService.isConnected && --timeoutCount > 0) {
                 //等待服务连接结果
