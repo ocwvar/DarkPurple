@@ -93,6 +93,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
 
             PlaybackStateCompat.STATE_PAUSED -> {
                 this.exoPlayer.playWhenReady = true
+                this.exoPlayer.volume = 1.0f
                 this.currentState = PlaybackStateCompat.STATE_PLAYING
 
                 sendBroadcast(ICore.ACTIONS.CORE_ACTION_PLAYING)
@@ -102,6 +103,7 @@ class EXO(val appContext: Context = AppConfigs.ApplicationContext) : ICore {
                 //停止状态恢复的时候需要重置播放位置
                 seek2(0L)
                 this.exoPlayer.playWhenReady = true
+                this.exoPlayer.volume = 1.0f
                 this.currentState = PlaybackStateCompat.STATE_PLAYING
 
                 sendBroadcast(ICore.ACTIONS.CORE_ACTION_PLAYING)
