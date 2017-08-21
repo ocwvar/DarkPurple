@@ -23,74 +23,60 @@
             android:id="@+id/pendingLayout_STATUSBAR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#3c000000"
             android:orientation="vertical" />
 
+        <!--歌曲标题-->
+        <TextView
+            android:id="@+id/shower_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:background="#3c000000"
+            android:maxLines="1"
+            android:paddingStart="15dp"
+            android:singleLine="true"
+            android:textColor="#fff"
+            android:textSize="15sp" />
+
+        <!--歌曲专辑-->
+        <TextView
+            android:id="@+id/shower_album"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/shower_title"
+            android:background="#3c000000"
+            android:paddingBottom="5dp"
+            android:paddingStart="15dp"
+            android:paddingTop="3dp"
+            android:singleLine="true"
+            android:textColor="#fff"
+            android:textSize="15sp" />
+
+        <!--频谱动画 SurfaceView-->
         <com.ocwvar.darkpurple.widgets.CoverSpectrum
             android:id="@+id/surfaceView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:background="@null"
             android:visibility="invisible" />
 
+        <!--封面轮播控件-->
         <com.ocwvar.darkpurple.widgets.CoverShowerViewPager
             android:id="@+id/coverShower"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerVertical="true" />
 
-        <!--三个歌曲信息-->
-        <LinearLayout
+        <!--圆圈进度条-->
+        <com.ocwvar.darkpurple.widgets.CircleSeekBar
+            android:id="@+id/circleSeekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"
-            android:layoutAnimation="@anim/layout_anim_equalizer"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_centerVertical="true" />
 
-            <TextView
-                android:id="@+id/shower_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:maxLines="1"
-                android:shadowColor="#000"
-                android:shadowRadius="8"
-                android:singleLine="true"
-                android:textColor="#fff"
-                android:textSize="18sp"
-                android:transitionName="title" />
-
-            <TextView
-                android:id="@+id/shower_artist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:maxLines="1"
-                android:shadowColor="#000"
-                android:shadowRadius="8"
-                android:singleLine="true"
-                android:textColor="#fff"
-                android:textSize="15sp"
-                android:transitionName="artist" />
-
-            <TextView
-                android:id="@+id/shower_album"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="3dp"
-                android:maxLines="1"
-                android:shadowColor="#000"
-                android:shadowRadius="8"
-                android:singleLine="true"
-                android:textColor="#fff"
-                android:textSize="15sp" />
-
-        </LinearLayout>
-
-        <!--主控制按钮-->
+        <!--中央的主控制按钮-->
         <View
             android:id="@+id/shower_mainButton"
             android:layout_width="100dp"
@@ -98,60 +84,49 @@
             android:layout_centerInParent="true"
             android:padding="5dp" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/seekBar"
-            android:layout_marginBottom="40dp"
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/random"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:padding="20dp"
-                android:src="@drawable/ic_action_random_off" />
-
-            <ImageView
-                android:id="@+id/loop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:padding="20dp"
-                android:src="@drawable/ic_action_loop_off" />
-
-        </FrameLayout>
-
-        <com.ocwvar.darkpurple.widgets.LineSlider
-            android:id="@+id/seekBar"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_below="@id/coverShower" />
-
+        <!--开始时间-->
         <TextView
             android:id="@+id/shower_playing_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/seekBar"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="10dp"
-            android:shadowColor="#000"
-            android:shadowRadius="8"
-            android:text="@string/main_default_text"
-            android:textColor="#FFF" />
+            android:layout_below="@id/coverShower"
+            android:layout_centerHorizontal="true"
+            android:textColor="#46000000"
+            android:textSize="40sp" />
 
+        <!--结束时间-->
         <TextView
             android:id="@+id/shower_rest_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/seekBar"
             android:layout_alignParentEnd="true"
+            android:layout_below="@id/shower_album"
             android:layout_marginEnd="10dp"
             android:shadowColor="#000"
             android:shadowRadius="8"
             android:text="@string/main_default_text"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            android:visibility="gone" />
+
+        <!--循环按钮-->
+        <ImageView
+            android:id="@+id/random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/coverShower"
+            android:layout_toStartOf="@id/shower_playing_position"
+            android:padding="20dp"
+            android:src="@drawable/ic_action_random_off" />
+
+        <!--随机按钮-->
+        <ImageView
+            android:id="@+id/loop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/coverShower"
+            android:layout_toEndOf="@id/shower_playing_position"
+            android:padding="20dp"
+            android:src="@drawable/ic_action_loop_off" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -159,7 +134,7 @@
             android:layout_height="?actionBarSize"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/pendingLayout_STATUSBAR"
-            android:background="@null"
+            android:background="#3c000000"
             app:titleMarginStart="10dp"
             app:titleTextAppearance="@style/TextAppearance.AppCompat.Playing">
 
@@ -191,7 +166,8 @@
             android:id="@+id/waitForService"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/backgroundColor_Dark">
+            android:background="@color/backgroundColor_Dark"
+            android:visibility="gone">
 
             <ProgressBar
                 style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"

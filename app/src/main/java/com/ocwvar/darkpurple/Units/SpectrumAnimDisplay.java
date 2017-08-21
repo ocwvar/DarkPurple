@@ -370,18 +370,17 @@ public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
         private void computeResourceSize() {
             if (sfHeight > sfWidth) {
                 //竖屏状态屏幕尺寸
-                r = sfWidth / 3;
-                //drawArea = new Rect(0, sfHeight / 4, sfWidth, sfHeight - sfWidth / 4);
+                r = sfWidth / 3 + 30;
 
                 //现在默认使用全屏尺寸，避免因为回执范围过大而导致画像残留
                 drawArea = new Rect(0, 0, sfWidth, sfHeight);
             } else if (sfHeight < sfWidth) {
                 //横屏状态屏幕尺寸
-                r = sfHeight / 3;
+                r = sfHeight / 3 + 30;
                 drawArea = new Rect(sfWidth / 4, 0, sfWidth - sfWidth / 4, sfHeight);
             } else {
                 //正方形屏幕尺寸
-                r = sfHeight / 3;
+                r = sfHeight / 3 + 30;
                 drawArea = new Rect(0, 0, sfWidth, sfHeight);
             }
 

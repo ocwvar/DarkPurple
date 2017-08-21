@@ -25,7 +25,6 @@ public class CoverShowerViewPager extends ViewPager {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec),(int)(MeasureSpec.getSize(widthMeasureSpec)/1.5f));
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(widthMeasureSpec));
     }
 

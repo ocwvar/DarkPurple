@@ -487,7 +487,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     Logger.error(TAG, "网络异常，检查失败")
                 }
 
-
                 override fun onResponse(response: Response?) {
                     if (response != null) {
                         val jsonString: String? = response.body()?.string() ?: null

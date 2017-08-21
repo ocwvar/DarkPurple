@@ -36,16 +36,21 @@ public final class CircleSeekBar extends View {
      * 文字风格：显示百分比
      */
     public static final int TEXT_TYPE_PERCENT = 2;
+
     //绘制圆形图像的区域对象
     private final RectF drawCircleArea = new RectF();
+    //绘制外圈图像的区域对象
+    private final RectF drawOutLineArea = new RectF();
     //进度条画笔
     private final Paint circlePainter = new Paint();
+    //外圈图像画笔
+    private final Paint outLinePainter = new Paint();
     //文字画笔
     private final Paint textPainter = new Paint();
     //结束点画笔
     private final Paint pointPainter = new Paint();
-    //半径
-    private int R_LENGTH = 140;
+
+
     /**
      * 半径到边界的间隔
      * <p>
@@ -53,6 +58,8 @@ public final class CircleSeekBar extends View {
      * 2.当间隔大于控件尺寸时，将会忽略间隔，则 R = 边长/2
      */
     private int PADDING = 30;
+    //半径
+    private int R_LENGTH = 140;
     //最大值
     private int VALUE_MAX = 100;
     //当前值
@@ -65,8 +72,11 @@ public final class CircleSeekBar extends View {
     private float NUMBER_WIDTH = 0.0f;
     //数据：一半长度
     private float NUMBER_HALF_WIDTH = 0.0f;
+
     //是否允许触摸控制进度
     private boolean enableTouch = true;
+    //当前是否处于触摸控制状态，在此状态下就算触摸在非识别区域也进行计算
+    private boolean isTouching = false;
     //回调接口
     private Callback callback = null;
     //文字显示风格
@@ -104,15 +114,18 @@ public final class CircleSeekBar extends View {
         if (state == null) {
             return;
         }
-        final Bundle bundle = (Bundle) state;
-        this.textType = bundle.getInt("textType");
-        this.VALUE_MAX = bundle.getInt("VALUE_MAX");
-        this.VALUE_PROGRESS = bundle.getInt("VALUE_PROGRESS");
-        this.VALUE_PRE_PROGRESS_ANGLE = bundle.getFloat("VALUE_PRE_PROGRESS_ANGLE");
-        this.VALUE_ANGLE = bundle.getDouble("VALUE_ANGLE");
-        this.enableTouch = bundle.getBoolean("enableTouch");
-        this.R_LENGTH = bundle.getInt("R_LENGTH");
-        this.PADDING = bundle.getInt("PADDING");
+        try {
+            final Bundle bundle = (Bundle) state;
+            this.textType = bundle.getInt("textType");
+            this.VALUE_MAX = bundle.getInt("VALUE_MAX");
+            this.VALUE_PROGRESS = bundle.getInt("VALUE_PROGRESS");
+            this.VALUE_PRE_PROGRESS_ANGLE = bundle.getFloat("VALUE_PRE_PROGRESS_ANGLE");
+            this.VALUE_ANGLE = bundle.getDouble("VALUE_ANGLE");
+            this.enableTouch = bundle.getBoolean("enableTouch");
+            this.R_LENGTH = bundle.getInt("R_LENGTH");
+            this.PADDING = bundle.getInt("PADDING");
+        } catch (Exception ignore) {
+        }
     }
 
     @Override
@@ -120,12 +133,13 @@ public final class CircleSeekBar extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         //用最长的边作为边长，构成正方形
-        final int length = (MeasureSpec.getSize(widthMeasureSpec) > MeasureSpec.getSize(heightMeasureSpec)) ? MeasureSpec.getSize(widthMeasureSpec) : MeasureSpec.getSize(heightMeasureSpec);
+        final int length = MeasureSpec.getSize(widthMeasureSpec);
 
         //处理长度数据
         checkLengthData(length);
 
         //设置基础数据
+        this.R_LENGTH = length / 3;
         this.NUMBER_WIDTH = length;
         this.NUMBER_HALF_WIDTH = length >> 1;
 
@@ -135,6 +149,14 @@ public final class CircleSeekBar extends View {
                 NUMBER_HALF_WIDTH - this.R_LENGTH,
                 NUMBER_HALF_WIDTH + this.R_LENGTH,
                 NUMBER_HALF_WIDTH + this.R_LENGTH
+        );
+
+        //设置外圈绘制区域
+        this.drawOutLineArea.set(
+                NUMBER_HALF_WIDTH - this.R_LENGTH + 50,
+                NUMBER_HALF_WIDTH - this.R_LENGTH + 50,
+                NUMBER_HALF_WIDTH + this.R_LENGTH + 50,
+                NUMBER_HALF_WIDTH + this.R_LENGTH + 50
         );
 
         setMeasuredDimension(length, length);
@@ -258,6 +280,15 @@ public final class CircleSeekBar extends View {
     }
 
     /**
+     * @param color 外圈的颜色
+     */
+    public void setOutlineColor(@ColorInt final int color) {
+        this.outLinePainter.setColor(color);
+        this.outLinePainter.setAlpha(60);
+        invalidate();
+    }
+
+    /**
      * @param width 圆圈厚度，默认：5.0f
      */
     public void setCircleWidth(final float width) {
@@ -306,18 +337,24 @@ public final class CircleSeekBar extends View {
      */
     private void initPainters() {
         this.circlePainter.setAntiAlias(true);
-        this.circlePainter.setStrokeWidth(5.0f);
-        this.circlePainter.setColor(Color.DKGRAY);
+        this.circlePainter.setStrokeWidth(10.0f);
+        this.circlePainter.setColor(Color.WHITE);
         this.circlePainter.setStyle(Paint.Style.STROKE);
+
+        this.outLinePainter.setAntiAlias(true);
+        this.outLinePainter.setColor(Color.BLACK);
+        this.outLinePainter.setStrokeWidth(30.0f);
+        this.outLinePainter.setStyle(Paint.Style.STROKE);
+        this.outLinePainter.setAlpha(60);
 
         this.textPainter.setAntiAlias(true);
         this.textPainter.setTextSize(25.0f);
         this.textPainter.setTextAlign(Paint.Align.CENTER);
-        this.textPainter.setColor(Color.DKGRAY);
+        this.textPainter.setColor(Color.WHITE);
 
         this.pointPainter.setAntiAlias(true);
-        this.pointPainter.setColor(Color.DKGRAY);
-        this.pointPainter.setStrokeWidth(5.0f);
+        this.pointPainter.setColor(Color.WHITE);
+        this.pointPainter.setStrokeWidth(10.0f);
     }
 
     /**
@@ -350,7 +387,7 @@ public final class CircleSeekBar extends View {
         final float width = this.NUMBER_HALF_WIDTH - x;
         final float height = this.NUMBER_HALF_WIDTH - y;
         final float length2Center = (float) Math.sqrt(width * width + height * height);
-        return length2Center > (this.R_LENGTH - 50);    //50是指允许的误差范围
+        return length2Center > (this.R_LENGTH - 30) && length2Center < (this.R_LENGTH + 30);    //50是指允许的误差范围
     }
 
     /**
@@ -381,19 +418,26 @@ public final class CircleSeekBar extends View {
         final float touchX = event.getX(0);
         final float touchY = event.getY(0);
 
-        if (!enableTouch || !isInTouchArea(touchX, touchY)) {
+        if (!isTouching && (!enableTouch || !isInTouchArea(touchX, touchY))) {
             return false;
         }
 
         switch (action) {
 
             case MotionEvent.ACTION_DOWN:
+                isTouching = true;
+
+                if (callback != null) {
+                    callback.onTouchBegin(this.VALUE_MAX, this.VALUE_PROGRESS);
+                }
             case MotionEvent.ACTION_MOVE:
                 setProgress(getTouchAngle(touchX, touchY));
                 break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+                isTouching = false;
+
                 if (callback != null) {
                     callback.onTouchFinish(this.VALUE_MAX, this.VALUE_PROGRESS);
                 }
@@ -432,7 +476,13 @@ public final class CircleSeekBar extends View {
         super.onDraw(canvas);
         canvas.drawColor(Color.TRANSPARENT);
 
-        //尾点坐标
+        //绘制外圈图像
+        canvas.drawCircle(this.NUMBER_HALF_WIDTH, this.NUMBER_HALF_WIDTH, this.R_LENGTH + this.outLinePainter.getStrokeWidth() / 2, this.outLinePainter);
+
+        //首点
+        canvas.drawCircle(this.NUMBER_HALF_WIDTH, this.NUMBER_HALF_WIDTH - this.R_LENGTH, this.circlePainter.getStrokeWidth() / 2, this.pointPainter);
+
+        //尾点
         final float[] edgePoint = getCurrentCircleEdge(1.0f);
         canvas.drawCircle(edgePoint[0], edgePoint[1], this.circlePainter.getStrokeWidth(), this.pointPainter);
 
@@ -449,7 +499,7 @@ public final class CircleSeekBar extends View {
         );
     }
 
-    interface Callback {
+    public interface Callback {
 
         /**
          * 进度发生变化回调接口
@@ -459,6 +509,15 @@ public final class CircleSeekBar extends View {
          * @param changedByTouch 是否由用户触摸发生变化
          */
         void onValueChanged(final int max, final int progress, final boolean changedByTouch);
+
+        /**
+         * 触摸调节开始时回调接口
+         * 此回调仅会在触摸刚开始时触发
+         *
+         * @param max      最大值
+         * @param progress 进度值
+         */
+        void onTouchBegin(final int max, final int progress);
 
         /**
          * 触摸调节结束时回调接口

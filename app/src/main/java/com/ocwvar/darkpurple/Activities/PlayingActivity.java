@@ -58,6 +58,7 @@ import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 import com.ocwvar.darkpurple.Units.SpectrumAnimDisplay;
 import com.ocwvar.darkpurple.Units.ToastMaker;
+import com.ocwvar.darkpurple.widgets.CircleSeekBar;
 import com.ocwvar.darkpurple.widgets.CoverShowerViewPager;
 import com.ocwvar.darkpurple.widgets.CoverSpectrum;
 import com.ocwvar.darkpurple.widgets.LineSlider;
@@ -95,17 +96,17 @@ public class PlayingActivity
     //封面轮播控件
     CoverShowerViewPager coverShower;
     //歌曲信息文字显示
-    TextView title, album, artist;
+    TextView title, album;
     //当前播放时间
     TextView currentTime, restTime;
-    //歌曲进度条
-    LineSlider musicSeekBar;
     //频谱开关
     ImageButton spectrumSwitch;
     //均衡器设置
     ImageButton equalizerPage;
     //随机 和 循环 按钮
     ImageView randomButton, loopButton;
+    //圆圈进度条
+    CircleSeekBar circleSeekBar;
     //侧滑快捷切歌列表
     RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
@@ -172,6 +173,7 @@ public class PlayingActivity
         backGround = findViewById(R.id.contener);
         darkAnime = findViewById(R.id.darkBG);
         waitForService = findViewById(R.id.waitForService);
+        circleSeekBar = (CircleSeekBar) findViewById(R.id.circleSeekBar);
         spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
         equalizerPage = (ImageButton) findViewById(R.id.equalizer);
         randomButton = (ImageView) findViewById(R.id.random);
@@ -182,11 +184,12 @@ public class PlayingActivity
         coverShower = (CoverShowerViewPager) findViewById(R.id.coverShower);
         title = (TextView) findViewById(R.id.shower_title);
         album = (TextView) findViewById(R.id.shower_album);
-        artist = (TextView) findViewById(R.id.shower_artist);
         currentTime = (TextView) findViewById(R.id.shower_playing_position);
         restTime = (TextView) findViewById(R.id.shower_rest_position);
         mainButton = findViewById(R.id.shower_mainButton);
-        musicSeekBar = (LineSlider) findViewById(R.id.seekBar);
+
+        //圆圈进度条
+        circleSeekBar.setTextType(CircleSeekBar.TEXT_TYPE_HIDE);
 
         //随机、循环按钮
         randomButton.setOnClickListener(this);
@@ -232,7 +235,7 @@ public class PlayingActivity
         mainButton.setOnClickListener(this);
 
         //设置滚动条的相关操作
-        musicSeekBar.setOnSlidingCallback(seekBarController);
+        circleSeekBar.setCallback(seekBarController);
 
         //添加正在使用的媒体库数据到侧滑菜单中
         final ArrayList<SongItem> usingLibrary = MediaLibrary.INSTANCE.getUsingLibrary();
@@ -359,7 +362,6 @@ public class PlayingActivity
             updatingTimerThread.interrupt();
         }
 
-        musicSeekBar = null;
         drawerLayout = null;
         seekBarController = null;
         dateFormat = null;
@@ -373,7 +375,6 @@ public class PlayingActivity
         equalizerPage = null;
         title = null;
         album = null;
-        artist = null;
         currentTime = null;
         restTime = null;
         System.gc();
@@ -390,7 +391,6 @@ public class PlayingActivity
             //如果当前没有播放数据 , 则显示默认文字
             title.setText(R.string.main_default_title);
             album.setText(R.string.main_default_text);
-            artist.setText(R.string.main_default_text);
             setTitle("");
 
             //如果当前没有播放数据 , 则背景显示默认颜色
@@ -428,17 +428,16 @@ public class PlayingActivity
 
 
                 //滑动条是否可用
-                musicSeekBar.setEnabled(currentState != PlaybackStateCompat.STATE_NONE);
+                circleSeekBar.setEnableTouch(currentState != PlaybackStateCompat.STATE_NONE);
+                circleSeekBar.setOutlineColor(CoverManager.INSTANCE.getValidColor(playingSong.getCoverID()));
                 //设置歌曲名称显示
-                title.setText(String.format("%s %s", getString(R.string.main_header_title), playingSong.getTitle()));
-                //设置歌手名称显示
-                artist.setText(String.format("%s %s", getString(R.string.main_header_artist), playingSong.getArtist()));
+                title.setText(playingSong.getTitle());
                 //设置专辑名称显示
-                album.setText(String.format("%s %s", getString(R.string.main_header_album), playingSong.getAlbum()));
+                album.setText(playingSong.getAlbum());
                 //重置滚动控制条数据
-                musicSeekBar.setProgress(0);
+                circleSeekBar.setProgress(0);
                 //设置需要重置歌曲长度标记
-                musicSeekBar.setTag(true);
+                circleSeekBar.setTag(true);
                 //设置当前播放的时间
                 currentTime.setText(time2String(currentPosition));
                 //设置当前剩余时间
@@ -918,20 +917,20 @@ public class PlayingActivity
         /**
          * 媒体数据发生更改
          *
-         * @param metadata
+         * @param metadata  新的数据对象
          */
         @Override
-        public void onMediaChanged(MediaMetadataCompat metadata) {
+        public void onMediaChanged(@NonNull MediaMetadataCompat metadata) {
 
         }
 
         /**
          * 媒体播放状态发生改变
          *
-         * @param state
+         * @param state 新的状态
          */
         @Override
-        public void onMediaStateChanged(PlaybackStateCompat state) {
+        public void onMediaStateChanged(@NonNull PlaybackStateCompat state) {
 
         }
 
@@ -941,7 +940,7 @@ public class PlayingActivity
          * @param data 数据列表
          */
         @Override
-        public void onGotUsingLibraryData(List<MediaBrowserCompat.MediaItem> data) {
+        public void onGotUsingLibraryData(@NonNull List<MediaBrowserCompat.MediaItem> data) {
 
         }
 
@@ -1067,7 +1066,7 @@ public class PlayingActivity
         public void run() {
             Logger.warning(TAG, "开始更新");
 
-            while (!isInterrupted() && seekBarController != null && serviceConnector.isServiceConnected() && musicSeekBar != null && serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
+            while (!isInterrupted() && seekBarController != null && serviceConnector.isServiceConnected() && circleSeekBar != null && serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
                 if (serviceConnector.currentState() == PlaybackStateCompat.STATE_PLAYING) {
                     //如果当前不为正在缓冲，则可以读取正确的歌曲长度和当前位置
 
@@ -1093,14 +1092,14 @@ public class PlayingActivity
                                 restTime.setText(time2String(duration - currentPosition));
 
                                 //如果进度条需要重置歌曲长度标记，则更新歌曲长度
-                                if (musicSeekBar.getTag() != null && (boolean) musicSeekBar.getTag()) {
-                                    musicSeekBar.setMax((int) (duration / 1000L));
-                                    musicSeekBar.setTag(false);
+                                if (circleSeekBar.getTag() != null && (boolean) circleSeekBar.getTag()) {
+                                    circleSeekBar.setMax((int) (duration / 1000L));
+                                    circleSeekBar.setTag(false);
                                 }
 
                                 //如果当前没有用户在调整进度条 , 则更新当前播放位置
                                 if (!seekBarController.isUserTorching) {
-                                    musicSeekBar.setProgress((int) (currentPosition / 1000L));
+                                    circleSeekBar.setProgress((int) (currentPosition / 1000L));
                                 }
                             }
                         });
@@ -1125,13 +1124,51 @@ public class PlayingActivity
     /**
      * 滚动条的控制器
      */
-    private class SeekBarController implements LineSlider.OnSlidingCallback {
+    private class SeekBarController implements LineSlider.OnSlidingCallback, CircleSeekBar.Callback {
 
         /**
          * 用户当前是否正在滑动的标志，用于阻止歌曲进度在用户滑动进度条的时候更新，而导致
          * 滑动条进度异常
          */
         boolean isUserTorching = false;
+
+        /**
+         * 进度发生变化回调接口
+         *
+         * @param max            最大值
+         * @param progress       进度值
+         * @param changedByTouch 是否由用户触摸发生变化
+         */
+        @Override
+        public void onValueChanged(int max, int progress, boolean changedByTouch) {
+
+        }
+
+        /**
+         * 触摸调节开始时回调接口
+         * 此回调仅会在触摸刚开始时触发
+         *
+         * @param max      最大值
+         * @param progress 进度值
+         */
+        @Override
+        public void onTouchBegin(int max, int progress) {
+            isUserTorching = true;
+        }
+
+        /**
+         * 触摸调节结束时回调接口
+         *
+         * @param max      最大值
+         * @param progress 进度值
+         */
+        @Override
+        public void onTouchFinish(int max, int progress) {
+            isUserTorching = false;
+            if (serviceConnector.isServiceConnected()) {
+                MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().seekTo(progress * 1000);
+            }
+        }
 
         @Override
         public void onSliding(int progress, int max) {
