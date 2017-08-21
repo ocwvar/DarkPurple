@@ -195,12 +195,18 @@
     <string name="setting_info_isResumeWhenRestartMediaSession">此项仅在有播放设备连接的情况下才有效</string>
 
     <string name="setting_title_spectrum_style">频谱动画样式</string>
+    <string name="setting_info_line">频谱柱状线设置</string>
+    <string name="setting_info_outline">频谱外边轮廓设置</string>
+    <string name="setting_info_node">频谱Node设置</string>
     <string-array name="setting_spectrum_styles">
         <item>原始样式</item>
         <item>OSU样式</item>
     </string-array>
 
-    <string name="setting_info_color_warnning">请勿使用接近或是完全的白色，以免在部分节目无法得到满意的效果</string>
+    <string-array name="setting_spectrum_style_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 
     <string name="setting_title_lineColor">定义柱状线颜色</string>
     <string name="setting_title_outlineColor">定义外边轮廓颜色</string>
@@ -231,9 +237,6 @@
     <string name="setting_info_useCompatMode">解决状态栏透明带来的问题</string>
 
     <!--播放界面文字-->
-    <string name="main_header_title">歌曲标题:</string>
-    <string name="main_header_artist">作曲家:</string>
-    <string name="main_header_album">专辑:</string>
     <string name="main_default_title">当前没有播放数据</string>
     <string name="main_default_text">--</string>
     <string name="coreNotSupported">此功能暂时无法使用</string>
@@ -243,51 +246,6 @@
     <string name="title_equalizer">均衡器调节</string>
     <string name="text_equalizer_save">储存配置</string>
     <string name="dialog_input_hint">输入配置名称</string>
-
-    <!--主题设置部分-->
-    <string name="setting_info_line">频谱柱状线设置</string>
-    <string name="setting_info_outline">频谱外边轮廓设置</string>
-    <string name="setting_info_node">频谱Node设置</string>
-    <string name="setting_title_theme_reset">恢复默认主题配置</string>
-    <string name="setting_action_restart">应用设置</string>
-    <string name="setting_title_listStyle">主界面列表样式</string>
-    <string name="setting_title_listStyle_Grid">表格样式</string>
-    <string name="setting_title_listStyle_Linear">列表样式</string>
-    <string name="setting_title_color">主题设置</string>
-    <string name="setting_info_color">部分设置需要重启应用才能生效</string>
-    <string name="setting_title_color_StatusBar">状态栏 颜色</string>
-    <string name="setting_info_color_StatusBar">需要Android 5.0+系统支持</string>
-    <string name="setting_title_color_NevBar">导航栏 颜色</string>
-    <string name="setting_info_color_NevBar">需要Android 5.0+系统支持</string>
-    <string name="setting_title_color_TabLayout">主界面标签栏 颜色</string>
-    <string name="setting_title_color_TabLayoutText">主界面标签栏文字 未选中状态 颜色</string>
-    <string name="setting_title_color_TabLayoutText_selected">主界面标签栏文字 选中状态 颜色</string>
-    <string name="setting_title_color_TabLayout_Indicator">主界面标签栏游标 颜色</string>
-    <string name="setting_title_color_Toolbar">ToolBar 颜色</string>
-    <string name="setting_title_color_ToolbarText">ToolBar 标题文字颜色</string>
-    <string name="setting_title_color_ToolbarSubtitleText">ToolBar 副标题文字颜色</string>
-    <string name="setting_title_color_DefaultCoverColor">默认封面混合颜色</string>
-    <string name="setting_title_color_window_bg">主界面背景颜色</string>
-    <string name="setting_info_linear_only">主界面为列表形式时的样式</string>
-    <string name="setting_title_color_fb">主界面浮动按钮颜色</string>
-    <string name="setting_title_color_linear_title">歌曲名文字颜色</string>
-    <string name="setting_title_color_linear_artist">作曲家文字颜色</string>
-    <string name="setting_title_color_linear_time">歌曲长度文字颜色</string>
-    <string name="setting_title_color_picture_color">首页图像与标签栏颜色关联</string>
-    <string name="setting_info_color_picture_color">标签栏颜色由首页图像颜色计算产生</string>
-
-    <!--欢迎界面-->
-
-    <string-array name="main_list_style_name">
-        <item>@string/setting_title_listStyle_Grid</item>
-        <item>@string/setting_title_listStyle_Linear</item>
-    </string-array>
-
-    <string-array name="main_list_style_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
 
     <!--Notification相关-->
     <string name="notification_string_empty">无歌曲数据</string>

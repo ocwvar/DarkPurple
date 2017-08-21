@@ -5,7 +5,7 @@
     <ListPreference
         android:defaultValue="0"
         android:entries="@array/setting_spectrum_styles"
-        android:entryValues="@array/main_list_style_value"
+        android:entryValues="@array/setting_spectrum_style_values"
         android:key="spectrum_style"
         android:title="@string/setting_title_spectrum_style" />
 
@@ -17,7 +17,7 @@
         android:title="@string/setting_title_count" />
 
     <EditTextPreference
-        android:defaultValue="100.0"
+        android:defaultValue="100"
         android:inputType="numberDecimal"
         android:key="spectrumRadio"
         android:summary="@string/setting_info_radio"
@@ -40,7 +40,7 @@
         app:colorpicker_showAlpha="false" />
 
     <EditTextPreference
-        android:defaultValue="10.0"
+        android:defaultValue="10"
         android:inputType="numberDecimal"
         android:key="spectrumOutlineWidth"
         android:title="@string/setting_title_outlineWidth" />
@@ -62,7 +62,7 @@
         app:colorpicker_showAlpha="false" />
 
     <EditTextPreference
-        android:defaultValue="5.0"
+        android:defaultValue="5"
         android:inputType="numberDecimal"
         android:key="spectrumNodeWidth"
         android:title="@string/setting_title_nodeWidth" />
@@ -84,7 +84,7 @@
         app:colorpicker_showAlpha="false" />
 
     <EditTextPreference
-        android:defaultValue="15.0"
+        android:defaultValue="15"
         android:inputType="numberDecimal"
         android:key="spectrum_line_width"
         android:title="@string/setting_title_lineWidth" />

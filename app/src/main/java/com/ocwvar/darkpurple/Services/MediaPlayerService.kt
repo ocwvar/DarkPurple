@@ -509,7 +509,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
          */
         private fun updateNotification(jsonObject: JsonObject) {
             val notification: Notification = NotificationCompat.Builder(this@MediaPlayerService)
-                    .setSmallIcon(R.drawable.ic_action_info)
+                    .setSmallIcon(R.drawable.ic_message_warnning)
                     .setContentTitle(jsonObject.get("title").asString)
                     .setContentText(jsonObject.get("github_message").asString)
                     .setContentIntent(PendingIntent.getActivity(this@MediaPlayerService, 0, Intent(Intent.ACTION_VIEW).let {
