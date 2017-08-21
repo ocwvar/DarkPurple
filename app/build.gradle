@@ -30,11 +30,10 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             debuggable false
             jniDebuggable false
             renderscriptDebuggable false
-            pseudoLocalesEnabled false
             zipAlignEnabled true
             shrinkResources true
             signingConfig signingConfigs.release
