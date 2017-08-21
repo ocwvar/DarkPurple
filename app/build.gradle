@@ -33,9 +33,6 @@ android {
             minifyEnabled false
             debuggable false
             jniDebuggable false
-            renderscriptDebuggable false
-            zipAlignEnabled true
-            shrinkResources true
             signingConfig signingConfigs.release
         }
     }
