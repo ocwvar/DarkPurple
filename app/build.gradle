@@ -11,6 +11,7 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
         versionCode 7
         versionName "1.4.0"
+        resConfigs "zh"
     }
 
     signingConfigs {
@@ -29,9 +30,13 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             debuggable false
             jniDebuggable false
+            renderscriptDebuggable false
+            pseudoLocalesEnabled false
+            zipAlignEnabled true
+            shrinkResources true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

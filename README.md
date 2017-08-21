@@ -7,7 +7,7 @@ Github：https://github.com/ocwvar/DarkPurple/releases
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
 
 # 介绍
-#### 系统支持：Android 4.4 ~ Android 7.1.2
+#### 系统支持：Android 5.0 ~ Android 7.1.2
 #### 音频媒体支持：MP3、WAV、FLAC、OGG
 
 

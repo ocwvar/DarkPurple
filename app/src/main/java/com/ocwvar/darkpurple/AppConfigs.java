@@ -54,9 +54,6 @@ public class AppConfigs {
     //应用是否为第一次启动
     public static boolean IsFirstBoot = true;
 
-    //系统是否大于5.0
-    public static boolean OS_5_UP = false;
-
     //系统是否大于6.0
     public static boolean OS_6_UP = false;
 
@@ -143,7 +140,6 @@ public class AppConfigs {
      */
     public static void initDefaultValue(Context applicationContext) {
         if (applicationContext != null) {
-            OS_5_UP = Build.VERSION.SDK_INT >= 21;
             OS_6_UP = Build.VERSION.SDK_INT >= 23;
 
             ApplicationContext = applicationContext;

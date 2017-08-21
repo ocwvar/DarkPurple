@@ -34,6 +34,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -57,11 +58,8 @@ import com.ocwvar.darkpurple.Units.Cover.CoverProcesser;
 import com.ocwvar.darkpurple.Units.Logger;
 import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary;
 import com.ocwvar.darkpurple.Units.SpectrumAnimDisplay;
-import com.ocwvar.darkpurple.Units.ToastMaker;
 import com.ocwvar.darkpurple.widgets.CircleSeekBar;
 import com.ocwvar.darkpurple.widgets.CoverShowerViewPager;
-import com.ocwvar.darkpurple.widgets.CoverSpectrum;
-import com.ocwvar.darkpurple.widgets.LineSlider;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -101,16 +99,14 @@ public class PlayingActivity
     TextView currentTime;
     //频谱开关
     ImageButton spectrumSwitch;
-    //均衡器设置
-    ImageButton equalizerPage;
     //随机 和 循环 按钮
-    ImageView randomButton, loopButton;
+    ImageView randomButton, loopButton, equalizerPage;
     //圆圈进度条
     CircleSeekBar circleSeekBar;
     //侧滑快捷切歌列表
     RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
-    CoverSpectrum coverSpectrum;
+    SurfaceView coverSpectrum;
     SpectrumAnimDisplay spectrumAnimDisplay;
     //动画Drawable显示View
     View backGround, darkAnime, mainButton, waitForService;
@@ -140,10 +136,10 @@ public class PlayingActivity
 
         super.onCreate(savedInstanceState);
 
-        Window window = getWindow();
+        final Window window = getWindow();
 
-        if (!AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            //只有在不使用兼容模式 同时 系统版本大于 Android 5.0 才能使用透明样式
+        if (!AppConfigs.useCompatMode) {
+            //不使用兼容模式
 
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -151,12 +147,12 @@ public class PlayingActivity
             window.setStatusBarColor(Color.TRANSPARENT);
             window.setNavigationBarColor(Color.TRANSPARENT);
 
-        } else if (AppConfigs.useCompatMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        } else {
             window.setStatusBarColor(Color.DKGRAY);
             window.setNavigationBarColor(Color.DKGRAY);
         }
 
-        setContentView(R.layout.activity_playing);
+        setContentView(R.layout.activity_playing_page);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         //初始化对象
@@ -175,10 +171,10 @@ public class PlayingActivity
         waitForService = findViewById(R.id.waitForService);
         circleSeekBar = (CircleSeekBar) findViewById(R.id.circleSeekBar);
         spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
-        equalizerPage = (ImageButton) findViewById(R.id.equalizer);
+        equalizerPage = (ImageView) findViewById(R.id.equalizer);
         randomButton = (ImageView) findViewById(R.id.random);
         loopButton = (ImageView) findViewById(R.id.loop);
-        coverSpectrum = (CoverSpectrum) findViewById(R.id.surfaceView);
+        coverSpectrum = (SurfaceView) findViewById(R.id.surfaceView);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         coverShower = (CoverShowerViewPager) findViewById(R.id.coverShower);
@@ -429,9 +425,10 @@ public class PlayingActivity
 
                 //滑动条是否可用
                 circleSeekBar.setEnableTouch(currentState != PlaybackStateCompat.STATE_NONE);
+                //滑动条外圈颜色
                 circleSeekBar.setOutlineColor(CoverManager.INSTANCE.getValidColor(playingSong.getCoverID()));
                 //设置歌曲名称显示
-                title.setText(playingSong.getTitle());
+                title.setText(String.format("[%s] %s", time2String(playingSong.getDuration()), playingSong.getTitle()));
                 //设置专辑名称显示
                 album.setText(playingSong.getAlbum());
                 //重置滚动控制条数据，如果播放状态不是暂停或正在播放，则需要重置进度。
@@ -493,7 +490,7 @@ public class PlayingActivity
                 //获取当前背景图像
                 final Drawable prevDrawable = (backGround.getBackground() != null) ? backGround.getBackground() : new ColorDrawable(Color.TRANSPARENT);
                 //默认图像，作为切换
-                final Drawable nextDrawable = (Build.VERSION.SDK_INT >= 21) ? getResources().getDrawable(R.drawable.blur) : getResources().getDrawable(R.drawable.blur);
+                final Drawable nextDrawable = getDrawable(R.drawable.blur);
 
                 //设置空的TAG
                 backGround.setTag(-1L);
@@ -827,12 +824,6 @@ public class PlayingActivity
     @SuppressLint("NewApi")
     private void switchSpectrumEffect() {
 
-        if (!AppConfigs.OS_5_UP) {
-            ToastMaker.INSTANCE.show(R.string.coreNotSupported);
-            return;
-            // FIXME: 17-8-11 Android KK 在加载频谱解析器时会产生 error code: -1 (未知异常)，暂时停止 KK 下的使用
-        }
-
         //先让控件不可用
         spectrumSwitch.setEnabled(false);
         spectrumSwitch.setAlpha(0.5f);
@@ -876,6 +867,7 @@ public class PlayingActivity
 
             // 恢复按钮的可点击状态 , 设置按钮的样式
             spectrumSwitch.setEnabled(true);
+            spectrumSwitch.setAlpha(1.0f);
         }
 
     }
@@ -1002,7 +994,7 @@ public class PlayingActivity
             final Drawable prevDrawable = (backGround.getBackground() != null) ? backGround.getBackground() : new ColorDrawable(Color.TRANSPARENT);
 
             //生成下一个背景内容Drawable
-            final Drawable nextDrawable = (result == null) ? ((Build.VERSION.SDK_INT >= 21) ? getResources().getDrawable(R.drawable.blur) : getResources().getDrawable(R.drawable.blur)) : result;
+            final Drawable nextDrawable = (result == null) ? getDrawable(R.drawable.blur) : result;
 
             //生成动画Drawable
             TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
@@ -1121,7 +1113,7 @@ public class PlayingActivity
     /**
      * 滚动条的控制器
      */
-    private class SeekBarController implements LineSlider.OnSlidingCallback, CircleSeekBar.Callback {
+    private class SeekBarController implements CircleSeekBar.Callback {
 
         /**
          * 用户当前是否正在滑动的标志，用于阻止歌曲进度在用户滑动进度条的时候更新，而导致
@@ -1161,19 +1153,6 @@ public class PlayingActivity
          */
         @Override
         public void onTouchFinish(int max, int progress) {
-            isUserTorching = false;
-            if (serviceConnector.isServiceConnected()) {
-                MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().seekTo(progress * 1000);
-            }
-        }
-
-        @Override
-        public void onSliding(int progress, int max) {
-            isUserTorching = true;
-        }
-
-        @Override
-        public void onStopSliding(int progress, int max) {
             isUserTorching = false;
             if (serviceConnector.isServiceConnected()) {
                 MediaControllerCompat.getMediaController(PlayingActivity.this).getTransportControls().seekTo(progress * 1000);

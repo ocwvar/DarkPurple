@@ -67,8 +67,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     private val notificationHelper: MediaNotification = MediaNotification()
     //音频焦点变化回调
     private val audioFocusCallback: AudioFocusCallback = AudioFocusCallback()
-    //Android 4.4专用媒体按钮接收器
-    private val innerMediaButtonReceiver: InnerMediaButtonReceiver = InnerMediaButtonReceiver()
     //媒体播放设备 连接 广播接收器
     private val deviceConnectReceiver: MediaDeviceConnectedReceiver = MediaDeviceConnectedReceiver()
     //播放核心状态广播监听器
@@ -165,13 +163,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         this.mediaSession.setCallback(this.mediaSessionCallback)
 
         //设置重新启动 MediaSession 服务的 PendingIntent
-        try {
-            this.mediaSession.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
-        } catch (e: Exception) {
-            if (AppConfigs.OS_5_UP) {
-                this.mediaSession.setMediaButtonReceiver(null)
-            }
-        }
+        this.mediaSession.setMediaButtonReceiver(PendingIntent.getService(AppConfigs.ApplicationContext, 0, Intent(AppConfigs.ApplicationContext, MediaPlayerService::class.java), PendingIntent.FLAG_CANCEL_CURRENT))
 
         this@MediaPlayerService.sessionToken = this.mediaSession.sessionToken
 
@@ -197,12 +189,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         if (!this.deviceDisconnectReceiver.registered) {
             this.deviceDisconnectReceiver.registered = true
             registerReceiver(this.deviceDisconnectReceiver, this.deviceDisconnectReceiver.intentFilter)
-        }
-
-        //设置Android 4.4专用媒体按钮 广播接收器
-        if (!this.innerMediaButtonReceiver.registered) {
-            this.innerMediaButtonReceiver.registered = true
-            registerReceiver(this.innerMediaButtonReceiver, this.innerMediaButtonReceiver.intentFilter)
         }
 
         //尝试恢复最后一次的状态
@@ -243,12 +229,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             unregisterReceiver(this.deviceDisconnectReceiver)
         }
 
-        //注销Android 4.4专用媒体按钮 广播接收器
-        if (this.innerMediaButtonReceiver.registered) {
-            this.innerMediaButtonReceiver.registered = false
-            unregisterReceiver(this.innerMediaButtonReceiver)
-        }
-
         //销毁所有媒体活动
         this.iController.release()
         this.mediaSession.isActive = false
@@ -271,10 +251,10 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
     }
 
     override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
-        if (clientPackageName == this.packageName) {
-            return BrowserRoot(this.ROOT_ID_OK, null)
+        return if (clientPackageName == this.packageName) {
+            BrowserRoot(this.ROOT_ID_OK, null)
         } else {
-            return BrowserRoot(this.ROOT_ID_DENIED, null)
+            BrowserRoot(this.ROOT_ID_DENIED, null)
         }
     }
 
@@ -293,16 +273,16 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         lastState ?: return
 
         val index: Int
-        if (lastState[0] == "MAIN" && MediaLibrary.getMainLibrary().size > 0) {
+        index = if (lastState[0] == "MAIN" && MediaLibrary.getMainLibrary().size > 0) {
             //如果最后使用的是主媒体库
-            index = MediaLibrary.getMainLibrary().indexOfFirst { it.path == lastState[1] }
+            MediaLibrary.getMainLibrary().indexOfFirst { it.path == lastState[1] }
         } else {
             val playlistPosition: Int = MediaLibrary.getPlaylistLibrary().indexOf(PlaylistItem(lastState[0]))
             if (playlistPosition == -1) {
-                index = -1
+                -1
             } else {
                 //在播放列表中查找对应的数据
-                index = MediaLibrary.getPlaylistLibrary()[playlistPosition].playlist.indexOfFirst { it.path == lastState[1] }
+                MediaLibrary.getPlaylistLibrary()[playlistPosition].playlist.indexOfFirst { it.path == lastState[1] }
             }
         }
 
@@ -489,7 +469,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
                 override fun onResponse(response: Response?) {
                     if (response != null) {
-                        val jsonString: String? = response.body()?.string() ?: null
+                        val jsonString: String? = response.body()?.string()
                         if (jsonString != null) {
                             try {
                                 val jsonObject: JsonObject = JsonParser().parse(jsonString).asJsonObject
@@ -930,14 +910,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         var registered: Boolean = false
 
         @SuppressLint("InlinedApi")
-        val intentFilter: IntentFilter = IntentFilter().let {
-            if (AppConfigs.OS_5_UP) {
-                it.addAction(AudioManager.ACTION_HEADSET_PLUG)
-            } else {
-                it.addAction(Intent.ACTION_HEADSET_PLUG)
-            }
-            it
-        }
+        val intentFilter: IntentFilter = IntentFilter(AudioManager.ACTION_HEADSET_PLUG)
 
         override fun onReceive(p0: Context?, intent: Intent?) {
             intent ?: return
@@ -960,25 +933,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                         }
                     }
                 }
-            }
-
-        }
-
-    }
-
-    /**
-     * 内部的媒体按钮广播接收器，用于接收 Android 4.4.x 的广播中转
-     */
-    private inner class InnerMediaButtonReceiver : BroadcastReceiver() {
-
-        var registered: Boolean = false
-        val intentFilter: IntentFilter = IntentFilter("ROUTER")
-
-        override fun onReceive(p0: Context?, p1: Intent?) {
-            p1 ?: return
-
-            if (p1.hasExtra("EXTRA")) {
-                mediaSessionCallback.onMediaButtonEvent(p1.getParcelableExtra("EXTRA"))
             }
 
         }

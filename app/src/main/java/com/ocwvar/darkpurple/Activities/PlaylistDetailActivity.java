@@ -82,7 +82,7 @@ public class PlaylistDetailActivity extends BaseBlurActivity {
 
     @Override
     protected int setActivityView() {
-        return R.layout.activity_playlist_detail;
+        return R.layout.activity_playlist_detail_page;
     }
 
     @Override

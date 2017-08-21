@@ -1,10 +1,8 @@
 package com.ocwvar.darkpurple.widgets;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by 区成伟
@@ -12,7 +10,7 @@ import android.widget.ImageView;
  * Data: 2016/8/7 15:08
  * Project: DarkPurple
  */
-public class SquareHightImageView extends ImageView {
+public class SquareHightImageView extends AppCompatImageView {
 
     public SquareHightImageView(Context context) {
         super(context);
@@ -24,11 +22,6 @@ public class SquareHightImageView extends ImageView {
 
     public SquareHightImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public SquareHightImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

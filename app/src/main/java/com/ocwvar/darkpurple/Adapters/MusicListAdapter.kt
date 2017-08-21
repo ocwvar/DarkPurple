@@ -39,11 +39,13 @@ class MusicListAdapter(val callback: Callback) : BaseCoverAdapter() {
     /**
      * @return  当前显示数据源
      */
+    @Suppress("UNCHECKED_CAST")
     fun source(): ArrayList<SongItem> = array.clone() as ArrayList<SongItem>
 
     /**
      * @return  当前已选择的数据
      */
+    @Suppress("UNCHECKED_CAST")
     fun selected(): ArrayList<SongItem> = selected.clone() as ArrayList<SongItem>
 
     /**
