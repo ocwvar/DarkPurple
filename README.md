@@ -1,7 +1,7 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
 # 应用下载 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
-## 版本：1.3.4 1708182252
+## 版本：1.4.1 1708212312
 Github：https://github.com/ocwvar/DarkPurple/releases
 
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
@@ -41,8 +41,15 @@ CoverBox 的作者为 Henry Hu
 在虚拟机下的 Android 8.0 版本中，Google v4兼容包(v26.0.0-alpha1)中的 MediaSessionCompat 会产生异常。
 在新版本发布后再进行相应的适配工作。
 
-# 截图展示 (2017/8/17 18：21)
+# 截图展示 (2017/8/21 23：13)
 ##### *截图无法展示所有应用的细节*
+
+### 播放界面<p></p>
+
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_1.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_2.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_3.png)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_4.png)
 
 ### 主界面<p></p>
 
@@ -55,13 +62,6 @@ CoverBox 的作者为 Henry Hu
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_1.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_2.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_3.jpg)
-
-### 播放界面<p></p>
-
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_1.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_2.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_3.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playing_5.png)
 
 ## Notification 样式(Android 7.1.2)<p></p>
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/notification_1.png)
