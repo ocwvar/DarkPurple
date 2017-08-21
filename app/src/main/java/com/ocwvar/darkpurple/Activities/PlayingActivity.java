@@ -28,6 +28,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -41,7 +42,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -100,7 +100,7 @@ public class PlayingActivity
     //频谱开关
     ImageButton spectrumSwitch;
     //随机 和 循环 按钮
-    ImageView randomButton, loopButton, equalizerPage;
+    AppCompatImageView randomButton, loopButton, equalizerPage;
     //圆圈进度条
     CircleSeekBar circleSeekBar;
     //侧滑快捷切歌列表
@@ -108,8 +108,10 @@ public class PlayingActivity
     //用于显示频谱的SurfaceView
     SurfaceView coverSpectrum;
     SpectrumAnimDisplay spectrumAnimDisplay;
+    //背景图像
+    AppCompatImageView backGround;
     //动画Drawable显示View
-    View backGround, darkAnime, mainButton, waitForService;
+    View darkAnime, mainButton, waitForService;
     //侧滑菜单适配器
     SlidingListAdapter slidingListAdapter;
     //封面轮播适配器
@@ -166,14 +168,14 @@ public class PlayingActivity
         showerAdapter = new CoverShowerAdapter(playingList);
 
         //加载View对象
-        backGround = findViewById(R.id.contener);
+        backGround = (AppCompatImageView) findViewById(R.id.contener);
         darkAnime = findViewById(R.id.darkBG);
         waitForService = findViewById(R.id.waitForService);
         circleSeekBar = (CircleSeekBar) findViewById(R.id.circleSeekBar);
         spectrumSwitch = (ImageButton) findViewById(R.id.spectrum);
-        equalizerPage = (ImageView) findViewById(R.id.equalizer);
-        randomButton = (ImageView) findViewById(R.id.random);
-        loopButton = (ImageView) findViewById(R.id.loop);
+        equalizerPage = (AppCompatImageView) findViewById(R.id.equalizer);
+        randomButton = (AppCompatImageView) findViewById(R.id.random);
+        loopButton = (AppCompatImageView) findViewById(R.id.loop);
         coverSpectrum = (SurfaceView) findViewById(R.id.surfaceView);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
@@ -249,7 +251,7 @@ public class PlayingActivity
             drawerLayout.setScrimColor(Color.argb(220, 0, 0, 0));
         }
 
-        if (!AppConfigs.useCompatMode && AppConfigs.StatusBarHeight > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (!AppConfigs.useCompatMode && AppConfigs.StatusBarHeight > 0) {
             //设置顶部间距高度
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.pendingLayout_STATUSBAR);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1, AppConfigs.StatusBarHeight);
@@ -496,8 +498,8 @@ public class PlayingActivity
                 backGround.setTag(-1L);
 
                 //切换背景
-                TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
-                backGround.setBackground(transitionDrawable);
+                final TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
+                backGround.setBackgroundDrawable(transitionDrawable);
                 transitionDrawable.startTransition(1500);
                 return;
             }
@@ -997,10 +999,10 @@ public class PlayingActivity
             final Drawable nextDrawable = (result == null) ? getDrawable(R.drawable.blur) : result;
 
             //生成动画Drawable
-            TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
+            final TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
 
             //执行动画切换背景
-            backGround.setBackground(transitionDrawable);
+            backGround.setBackgroundDrawable(transitionDrawable);
             transitionDrawable.startTransition(1500);
         }
 
