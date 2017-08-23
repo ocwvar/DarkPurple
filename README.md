@@ -1,12 +1,12 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
-# 应用下载 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
-## 版本：1.4.1 1708212312
-Github：https://github.com/ocwvar/DarkPurple/releases
-
-Google Play: 信息筹备中……
+# 应用下载 1.4.1 1708212312 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
+[<img src="https://github.com/ocwvar/Project-common-image-resources/blob/master/Github%20Badge/Github_badge_350.png">](https://github.com/ocwvar/DarkPurple/releases/download/1.4.1/app-release.apk)
+[<img src="https://github.com/ocwvar/Project-common-image-resources/blob/master/Google%20Badge/Google_badge_350.png">]()
 
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
+
+隐私条例：https://github.com/ocwvar/DarkPurple/blob/dev/Privacy%20Policy.md
 
 # 介绍
 #### 系统支持：Android 5.0 ~ Android 7.1.2
