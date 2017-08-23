@@ -14,7 +14,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -75,52 +74,52 @@ import java.util.Locale;
  * Project: DarkPurple
  * 正在播放页面
  */
-public class PlayingActivity
+public final class PlayingActivity
         extends AppCompatActivity
         implements ViewPager.OnPageChangeListener,
         View.OnClickListener,
         SlidingListAdapter.OnSlidingMenuClickCallback {
 
     //轮播滚动等待线程
-    PendingStartThread pendingStartThread;
+    private PendingStartThread pendingStartThread;
     //刷新界面播放位置线程
-    UpdatingTimerThread updatingTimerThread;
+    private UpdatingTimerThread updatingTimerThread;
     //音频变化广播接收器
-    AudioChangeReceiver audioChangeReceiver;
+    private AudioChangeReceiver audioChangeReceiver;
     //滚动条控制器
-    SeekBarController seekBarController;
+    private SeekBarController seekBarController;
     //侧滑父容器
-    DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
     //封面轮播控件
-    CoverShowerViewPager coverShower;
+    private CoverShowerViewPager coverShower;
     //歌曲信息文字显示
-    TextView title, album;
+    private TextView title, album;
     //当前播放时间
-    TextView currentTime;
+    private TextView currentTime;
     //频谱开关
-    ImageButton spectrumSwitch;
+    private ImageButton spectrumSwitch;
     //随机 和 循环 按钮
-    AppCompatImageView randomButton, loopButton, equalizerPage;
+    private AppCompatImageView randomButton, loopButton, equalizerPage;
     //圆圈进度条
-    CircleSeekBar circleSeekBar;
+    private CircleSeekBar circleSeekBar;
     //侧滑快捷切歌列表
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
     //用于显示频谱的SurfaceView
-    SurfaceView coverSpectrum;
-    SpectrumAnimDisplay spectrumAnimDisplay;
+    private SurfaceView coverSpectrum;
+    private SpectrumAnimDisplay spectrumAnimDisplay;
     //背景图像
-    AppCompatImageView backGround;
+    private AppCompatImageView backGround;
     //动画Drawable显示View
-    View darkAnime, mainButton, waitForService;
+    private View darkAnime, mainButton, waitForService;
     //侧滑菜单适配器
-    SlidingListAdapter slidingListAdapter;
+    private SlidingListAdapter slidingListAdapter;
     //封面轮播适配器
-    CoverShowerAdapter showerAdapter;
+    private CoverShowerAdapter showerAdapter;
     //用于时间转换的类
-    SimpleDateFormat dateFormat;
-    Date date;
+    private SimpleDateFormat dateFormat;
+    private Date date;
     //当前播放的歌曲信息列表
-    ArrayList<SongItem> playingList;
+    private ArrayList<SongItem> playingList;
     //媒体服务连接器
     private MediaServiceConnector serviceConnector;
     //背景模糊图片弱引用
@@ -342,15 +341,17 @@ public class PlayingActivity
     protected void onDestroy() {
         super.onDestroy();
         Logger.warning("播放界面", "开始释放内存");
+
         blurBG.clear();
-        blurCoverThreadObject.clear();
         weakAnimDrawable.clear();
         mainButtonAnimDrawable.clear();
 
+        circleSeekBar.setCallback(null);
         coverShower.addOnPageChangeListener(null);
         slidingListAdapter.setCallback(null);
         recyclerView.setAdapter(null);
         coverShower.setAdapter(null);
+        backGround.setImageDrawable(null);
 
         if (pendingStartThread != null && pendingStartThread.getStatus() != AsyncTask.Status.FINISHED) {
             pendingStartThread.cancel(true);
@@ -359,6 +360,16 @@ public class PlayingActivity
             updatingTimerThread.interrupt();
         }
 
+        if (blurCoverThreadObject.get() != null && blurCoverThreadObject.get().getStatus() != AsyncTask.Status.FINISHED) {
+            blurCoverThreadObject.get().cancel(true);
+            blurCoverThreadObject.clear();
+        }
+
+        backGround = null;
+        waitForService = null;
+        mainButton = null;
+        darkAnime = null;
+        playingList = null;
         drawerLayout = null;
         seekBarController = null;
         dateFormat = null;
@@ -386,6 +397,7 @@ public class PlayingActivity
      *
      * @param onlyShowDefault 强制只显示默认数据
      */
+    @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     private void updateInformation(boolean onlyShowDefault) {
         if (playingList.size() == 0 || onlyShowDefault) {
@@ -395,10 +407,10 @@ public class PlayingActivity
             setTitle("");
 
             //如果当前没有播放数据 , 则背景显示默认颜色
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                backGround.setBackgroundColor(getColor(R.color.backgroundColor_Dark));
+            if (AppConfigs.OS_6_UP) {
+                backGround.setImageDrawable(new ColorDrawable(getColor(R.color.backgroundColor_Dark)));
             } else {
-                backGround.setBackgroundColor(getResources().getColor(R.color.backgroundColor_Dark));
+                backGround.setImageDrawable(new ColorDrawable(getResources().getColor(R.color.backgroundColor_Dark)));
             }
 
         } else {
@@ -490,7 +502,7 @@ public class PlayingActivity
             if (TextUtils.isEmpty(CoverManager.INSTANCE.getValidSource(playingSong.getCoverID()))) {
 
                 //获取当前背景图像
-                final Drawable prevDrawable = (backGround.getBackground() != null) ? backGround.getBackground() : new ColorDrawable(Color.TRANSPARENT);
+                final Drawable prevDrawable = (backGround.getDrawable() != null) ? backGround.getDrawable() : new ColorDrawable(Color.TRANSPARENT);
                 //默认图像，作为切换
                 final Drawable nextDrawable = getDrawable(R.drawable.blur);
 
@@ -499,7 +511,7 @@ public class PlayingActivity
 
                 //切换背景
                 final TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
-                backGround.setBackgroundDrawable(transitionDrawable);
+                backGround.setImageDrawable(transitionDrawable);
                 transitionDrawable.startTransition(1500);
                 return;
             }
@@ -837,6 +849,7 @@ public class PlayingActivity
             if (AppConfigs.OS_6_UP && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 //判断是否有音频录制权限
                 requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 110);
+                spectrumSwitch.setAlpha(1f);
                 spectrumSwitch.setEnabled(true);
                 return;
             }
@@ -970,6 +983,7 @@ public class PlayingActivity
                     Thread.sleep(100);
                     timeoutCount--;
                 } catch (InterruptedException ignore) {
+                    return null;
                 }
 
                 if (timeoutCount <= 0) {
@@ -987,13 +1001,17 @@ public class PlayingActivity
         @Override
         protected void onPostExecute(final Drawable result) {
             super.onPostExecute(result);
+            if (isCancelled()) {
+                //如果这个操作是被终止的，则不做任何处理
+                return;
+            }
             if (blurBG != null) {
                 blurBG.clear();
             }
             blurBG = new WeakReference<>(result);
 
             //获取当前背景图像
-            final Drawable prevDrawable = (backGround.getBackground() != null) ? backGround.getBackground() : new ColorDrawable(Color.TRANSPARENT);
+            final Drawable prevDrawable = (backGround.getDrawable() != null) ? backGround.getDrawable() : new ColorDrawable(Color.TRANSPARENT);
 
             //生成下一个背景内容Drawable
             final Drawable nextDrawable = (result == null) ? getDrawable(R.drawable.blur) : result;
@@ -1002,7 +1020,7 @@ public class PlayingActivity
             final TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{prevDrawable, nextDrawable});
 
             //执行动画切换背景
-            backGround.setBackgroundDrawable(transitionDrawable);
+            backGround.setImageDrawable(transitionDrawable);
             transitionDrawable.startTransition(1500);
         }
 

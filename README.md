@@ -4,6 +4,8 @@
 ## 版本：1.4.1 1708212312
 Github：https://github.com/ocwvar/DarkPurple/releases
 
+Google Play: 信息筹备中……
+
 更新日志：https://github.com/ocwvar/DarkPurple/blob/dev/changelog.md
 
 # 介绍

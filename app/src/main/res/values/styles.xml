@@ -20,6 +20,7 @@
     <style name="AppTheme.NoActionBar.PlayingActivity">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@null</item>
         <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
     </style>
 
