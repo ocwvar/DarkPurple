@@ -200,7 +200,7 @@ public final class EqualizerActivity extends BaseBlurActivity implements Equaliz
             this.editText.setGravity(Gravity.CENTER);
 
 
-            this.alertDialog = new AlertDialog.Builder(context, R.style.FullScreen_TransparentBG)
+            this.alertDialog = new AlertDialog.Builder(context, R.style.Dialog_FullScreen_NoBackground)
                     .setView(this.editText)
                     .setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
                         @Override

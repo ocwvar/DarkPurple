@@ -1,122 +1,150 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowFullscreen">false</item>
-        <item name="android:windowBackground">@color/backgroundColor_Dark</item>
-        <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar.PlayingActivity">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@null</item>
-        <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
-    </style>
-
-    <style name="Setting_AlertTheme" parent="Theme.AppCompat.Dialog">
-        <item name="android:textColor">#fff</item>
-        <item name="colorAccent">#fff</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:textColorSecondary">#fff</item>
-        <item name="android:actionModeBackground">@android:color/transparent</item>
-        <item name="android:actionModeStyle">@style/CustomActionMode</item>
-    </style>
-
-    <style name="CustomActionMode" parent="@style/Widget.AppCompat.ActionMode">
-
-        <item name="android:background">@color/colorPrimary</item>
-
-    </style>
-
-    <style name="Withe_ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal" />
-
-    <style name="inputStyle" parent="AppTheme">
-        <item name="colorControlNormal">#ffffff</item>
-        <item name="colorControlActivated">@color/colorSecond</item>
-    </style>
-
-    <style name="FullScreen.TransparentBG" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:windowBackground">@drawable/myclound_online</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="colorPrimary">#fff</item>
-        <item name="colorPrimaryDark">#fff</item>
-        <item name="android:textColor">#fff</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="SettingsTheme" parent="AppTheme">
-        <item name="android:textColorPrimary">@color/Text_LightGray</item>
-        <item name="android:textColorSecondary">#636363</item>
-        <item name="android:alertDialogTheme">@style/Setting_AlertTheme</item>
-        <item name="android:dialogTheme">@style/Setting_AlertTheme</item>
-        <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
-    </style>
-
-    <style name="TextAppearance.AppCompat.NoActionBar" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/Text_LightGray</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="TextAppearance.AppCompat.Playing" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">#fff</item>
-        <item name="android:textSize">15sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="buttonTint">#fff</item>
-    </style>
-
-    <style name="AlertDialog.AppCompat.ProgressDialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="android:textColor">#fff</item>
-        <item name="android:background">@color/backgroundColor_Dark</item>
-        <item name="android:windowBackground">@color/backgroundColor_Dark</item>
-    </style>
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
+    <!--Activity 切换动画  滑动切换样式-->
     <style name="ActivityAnimationSliding">
-        //进入新界面时
+        <!--进入新界面时-->
         <item name="android:activityOpenEnterAnimation">@anim/activity_open_in</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_open_out</item>
-        //退回旧界面时
+
+        <!--退回旧界面时-->
         <item name="android:activityCloseEnterAnimation">@anim/activity_close_in</item>
         <item name="android:activityCloseExitAnimation">@anim/activity_close_out</item>
     </style>
 
+    <!--Activity 切换动画  淡入淡出样式-->
     <style name="ActivityAnimationFading">
-        //进入新界面时
+        <!--进入新界面时-->
         <item name="android:activityOpenEnterAnimation">@anim/activity_open_in_fade</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_open_out_fade</item>
-        //退回旧界面时
+
+        <!--退回旧界面时-->
         <item name="android:activityCloseEnterAnimation">@anim/activity_close_in_fade</item>
         <item name="android:activityCloseExitAnimation">@anim/activity_close_out_fade</item>
     </style>
 
-    <style name="DialogTheme" parent="@style/Theme.AppCompat.Dialog">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsTranslucent">true</item>
+    <!--基础主题样式-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <!--主色调-->
+        <item name="colorPrimary">@color/colorPrimary</item>
+
+        <!--副色调-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+
+        <!--强调色-->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!--是否绘制状态栏背景-->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!--状态栏颜色-->
+        <item name="android:statusBarColor">@color/ToolBar_color</item>
+
+        <!--导航栏颜色-->
+        <item name="android:navigationBarColor">@color/NavBar_Color</item>
+
+        <!--Ripple 动画颜色-->
+        <item name="colorControlHighlight">@color/colorAccent</item>
+
+        <!--Window 默认背景-->
+        <item name="android:windowBackground">@color/backgroundColor_Dark</item>
+
+        <!--默认 Activity 切换动画-->
+        <item name="android:windowAnimationStyle">@style/ActivityAnimationSliding</item>
+
     </style>
+
+    <!--无标题栏主题样式-->
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+    </style>
+
+    <!--主界面框架主题样式-->
+    <style name="Theme_MainFrameworkActivity" parent="AppTheme.NoActionBar">
+
+        <!--全屏-->
+        <item name="android:windowFullscreen">true</item>
+
+    </style>
+
+    <!--播放界面主题样式-->
+    <style name="Theme_PlayingActivity" parent="AppTheme.NoActionBar">
+
+        <!--不需要绘制背景-->
+        <item name="android:windowBackground">@null</item>
+
+        <!--状态栏颜色-->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!--导航栏颜色-->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+    </style>
+
+    <!--设置界面主题样式-->
+    <style name="SettingsTheme" parent="AppTheme">
+
+        <!--标题文字颜色-->
+        <item name="android:textColorPrimary">@color/Text_LightGray</item>
+
+        <!--副标题文字颜色-->
+        <item name="android:textColorSecondary">#636363</item>
+
+        <!--对话框样式-->
+        <item name="android:alertDialogTheme">@style/Setting_AlertTheme</item>
+
+    </style>
+
+    <!--设置界面使用的对话框样式-->
+    <style name="Setting_AlertTheme" parent="Theme.AppCompat.Dialog">
+
+        <!--无背景-->
+        <item name="android:windowBackground">@null</item>
+
+    </style>
+
+    <!--对话框样式  全屏、透明背景-->
+    <style name="Dialog_FullScreen_NoBackground" parent="Theme.AppCompat.Dialog.Alert">
+
+        <!--窗口背景样式-->
+        <item name="android:windowBackground">@drawable/myclound_online</item>
+
+        <!--透明背景-->
+        <item name="android:background">@null</item>
+
+        <!--文字颜色-->
+        <item name="android:textColor">#fff</item>
+
+        <!--布局设置-->
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+
+    </style>
+
+    <!--Toolbar 标题文字样式-->
+    <style name="Toolbar_TitleStyle" parent="TextAppearance.AppCompat">
+
+        <!--颜色-->
+        <item name="android:textColor">@color/pureWhite</item>
+
+        <!--字号-->
+        <item name="android:textSize">15sp</item>
+
+        <!--样式-->
+        <item name="android:textStyle">normal</item>
+
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <item name="buttonTint">#fff</item>
+
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

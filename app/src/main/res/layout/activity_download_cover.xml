@@ -11,7 +11,7 @@
         android:layout_height="?actionBarSize"
         android:background="?colorPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextAppearance="@style/TextAppearance.AppCompat.NoActionBar" />
+        app:titleTextAppearance="@style/Toolbar_TitleStyle" />
 
     <LinearLayout
         android:id="@+id/view_panel"

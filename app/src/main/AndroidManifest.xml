@@ -40,7 +40,7 @@
             android:name=".Activities.MainFrameworkActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/Theme_MainFrameworkActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -52,7 +52,7 @@
         <activity
             android:name=".Activities.PlayingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar.PlayingActivity" />
+            android:theme="@style/Theme_PlayingActivity" />
 
         <!--设置界面-->
         <activity

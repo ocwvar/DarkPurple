@@ -108,7 +108,7 @@
             android:layout_below="@+id/pendingLayout_STATUSBAR"
             android:background="#3c000000"
             app:titleMarginStart="10dp"
-            app:titleTextAppearance="@style/TextAppearance.AppCompat.Playing">
+            app:titleTextAppearance="@style/Toolbar_TitleStyle">
 
             <ImageButton
                 android:id="@+id/spectrum"

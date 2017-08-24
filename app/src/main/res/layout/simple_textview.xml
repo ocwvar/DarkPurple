@@ -3,5 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
+    android:foreground="?android:selectableItemBackgroundBorderless"
     android:padding="8dp"
     android:textColor="#fff" />

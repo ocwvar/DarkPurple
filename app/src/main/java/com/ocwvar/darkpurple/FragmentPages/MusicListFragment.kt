@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -176,6 +177,12 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
         //如果当前是多选模式，则退出
         if (adapter.isSelectingMode()) {
             adapter.switchMode()
+            //显示确定按钮并设置监听事件
+            ((fragmentView.findViewById<FloatingActionButton>(R.id.fab))).let {
+                it.hide()
+                it.visibility = View.GONE
+                it.setOnClickListener(null)
+            }
         }
         //注销歌曲切换接收器
         if (playingDataUpdateReceive != null && playingDataUpdateReceive!!.isRegistered) {
@@ -297,9 +304,9 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 downloadCover.visibility = View.VISIBLE
             }
 
-            val dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
+            val dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.Dialog_FullScreen_NoBackground).setView(view).create()
             dialogKeeper = WeakReference(dialog)
-            dialog.show()
+            dialogKeeper.get()?.show()
         }
 
         /**
@@ -313,7 +320,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
             when (v.id) {
                 R.id.menu_music_delete -> {
                     //删除文件操作
-                    val file: File = File(songData.path)
+                    val file = File(songData.path)
                     if (file.exists() && file.canWrite() && file.delete()) {
                         //删除文件成功
                         adapter.removeData(songDataPosition)
@@ -412,7 +419,7 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
 
                 listView.adapter = adapter
                 listView.onItemClickListener = this@Add2PlaylistDialog
-                dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(view).create()
+                dialog = AlertDialog.Builder(fragmentView.context, R.style.Dialog_FullScreen_NoBackground).setView(view).create()
                 dialogKeeper = WeakReference(dialog)
             }
             dialog?.show()
@@ -452,10 +459,12 @@ class MusicListFragment : Fragment(), MediaScannerCallback, MusicListAdapter.Cal
                 inputText.maxLines = 1
                 inputText.textSize = 15.0f
                 inputText.setTextColor(Color.WHITE)
+                inputText.gravity = Gravity.CENTER
+                inputText.setBackgroundColor(Color.TRANSPARENT)
                 inputText.setSingleLine(true)
                 //创建对话框对象
                 dialog = AlertDialog
-                        .Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
+                        .Builder(fragmentView.context, R.style.Dialog_FullScreen_NoBackground)
                         .setView(inputText)
                         .setPositiveButton(R.string.simple_done) { dialogInterface, _ ->
                             //确认    按钮处理

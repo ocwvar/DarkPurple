@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
@@ -23,7 +22,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v7.app.AlertDialog
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -76,15 +74,7 @@ class MainFrameworkActivity : BaseActivity() {
     //服务连接器
     private lateinit var serviceConnector: MediaServiceConnector
 
-    override fun onPreSetup(): Boolean {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = AppConfigs.Color.WindowBackground_Color
-
-        return true
-    }
+    override fun onPreSetup(): Boolean = true
 
     override fun setActivityView(): Int {
         return R.layout.activity_framework
@@ -168,7 +158,7 @@ class MainFrameworkActivity : BaseActivity() {
         val currentVersionCode: Int = packageManager.getPackageInfo(packageName, 0)?.versionCode ?: 7
         if (getSharedPreferences("otherValues", 0).getInt("lastVersionCode", -1) < currentVersionCode) {
             //通过检查记录中的最新版本号，如果小于当前版本号，则认为当前是第一次进入新版本，显示changeLog对话框
-            WeakReference<AlertDialog?>(AlertDialog.Builder(this@MainFrameworkActivity, R.style.FullScreen_TransparentBG)
+            WeakReference<AlertDialog?>(AlertDialog.Builder(this@MainFrameworkActivity, R.style.Dialog_FullScreen_NoBackground)
                     .setTitle(R.string.changelog_title)
                     .setMessage(R.string.changelog_text)
                     .setOnDismissListener { getSharedPreferences("otherValues", 0).edit().clear().putInt("lastVersionCode", currentVersionCode).apply() }

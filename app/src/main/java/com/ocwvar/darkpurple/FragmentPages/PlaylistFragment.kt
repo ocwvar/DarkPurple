@@ -185,7 +185,7 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                 val dialogView: View = LayoutInflater.from(fragmentView.context).inflate(R.layout.dialog_playlist_menu, null)
                 dialogView.findViewById<View>(R.id.menu_playlist_edit).setOnClickListener(this@PlaylistMenuDialog)
                 dialogView.findViewById<View>(R.id.menu_playlist_delete).setOnClickListener(this@PlaylistMenuDialog)
-                dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
+                dialog = AlertDialog.Builder(fragmentView.context, R.style.Dialog_FullScreen_NoBackground)
                         .setView(dialogView)
                         .create()
                 dialogKeeper = WeakReference(dialog)

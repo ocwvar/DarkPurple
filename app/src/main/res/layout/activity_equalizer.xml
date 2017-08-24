@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextAppearance="@style/TextAppearance.AppCompat.NoActionBar" />
+        app:titleTextAppearance="@style/Toolbar_TitleStyle" />
 
     <com.ocwvar.darkpurple.widgets.EqualizerImage
         android:id="@+id/equalizerImage"

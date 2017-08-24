@@ -151,7 +151,7 @@ public final class DownloadCoverActivity extends BaseBlurActivity implements Cov
         if (AppConfigs.ApplicationContext.getSharedPreferences(AppConfigs.SP_ONCE, 0).getBoolean("show_cover_info_dialog", true)) {
             AlertDialog dialog = infoDialog.get();
             if (dialog == null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
+                AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.Dialog_FullScreen_NoBackground);
                 builder.setMessage(R.string.cover_info);
                 builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
                     @Override
@@ -179,7 +179,7 @@ public final class DownloadCoverActivity extends BaseBlurActivity implements Cov
     private void showCopyRightDialog() {
         AlertDialog dialog = copyRightDialog.get();
         if (dialog == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
+            AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.Dialog_FullScreen_NoBackground);
             builder.setMessage(R.string.coverbox_info);
             builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {
                 @Override
@@ -362,7 +362,7 @@ public final class DownloadCoverActivity extends BaseBlurActivity implements Cov
 
         LoadSizesTask(@NonNull CoverPreviewBean coverPreviewBean) {
             this.coverPreviewBean = coverPreviewBean;
-            progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
+            progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.Dialog_FullScreen_NoBackground);
             progressDialog.setMessage(getString(R.string.simple_loading));
             progressDialog.setCancelable(true);
             progressDialog.setCanceledOnTouchOutside(false);
@@ -482,7 +482,7 @@ public final class DownloadCoverActivity extends BaseBlurActivity implements Cov
          */
         @SuppressLint("InflateParams")
         private void preLoadSelectorDialog(ArrayList<String[]> result) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
+            AlertDialog.Builder builder = new AlertDialog.Builder(DownloadCoverActivity.this, R.style.Dialog_FullScreen_NoBackground);
             //加载对话框布局
             View dialogView = LayoutInflater.from(DownloadCoverActivity.this).inflate(R.layout.dialog_selector_cover, null);
             ListView listView = dialogView.findViewById(R.id.listView);
@@ -572,7 +572,7 @@ public final class DownloadCoverActivity extends BaseBlurActivity implements Cov
         DownloadThread(String url, String fileName) {
             this.url = url;
             this.fileName = fileName;
-            this.progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.FullScreen_TransparentBG);
+            this.progressDialog = new ProgressDialog(DownloadCoverActivity.this, R.style.Dialog_FullScreen_NoBackground);
             progressDialog.setMessage(getString(R.string.simple_downloading));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {

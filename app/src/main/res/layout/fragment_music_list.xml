@@ -27,6 +27,6 @@
         app:elevation="5dp"
         app:fabSize="normal"
         app:pressedTranslationZ="10dp"
-        app:rippleColor="@color/DefaultCoverColor" />
+        app:rippleColor="@color/Text_LightGray" />
 
 </FrameLayout>

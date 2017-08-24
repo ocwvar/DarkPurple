@@ -86,7 +86,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
         val sp = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext)
         val position: Int = sp.getString("scanner_sort_type", "0").toInt()
         @SuppressLint("CommitPrefEdits")
-        val dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG)
+        val dialog: AlertDialog = AlertDialog.Builder(fragmentView.context, R.style.Dialog_FullScreen_NoBackground)
                 .setSingleChoiceItems(R.array.sort_types_name, position) { dialog, which ->
                     //更新SP文件数据
                     val editor = PreferenceManager.getDefaultSharedPreferences(AppConfigs.ApplicationContext).edit()
@@ -109,7 +109,7 @@ class UserFragment : Fragment(), UserSettingsAdapter.Callback {
     private fun showAboutDialog() {
         var dialog: AlertDialog? = aboutDialogKeeper.get()
         if (dialog == null) {
-            dialog = AlertDialog.Builder(fragmentView.context, R.style.FullScreen_TransparentBG).setView(R.layout.dialog_about).create()
+            dialog = AlertDialog.Builder(fragmentView.context, R.style.Dialog_FullScreen_NoBackground).setView(R.layout.dialog_about).create()
             aboutDialogKeeper = WeakReference(dialog)
         }
         aboutDialogKeeper.get()?.show()

@@ -167,7 +167,7 @@ public final class PlaylistDetailActivity extends BaseBlurActivity {
                 getNewName.setTextSize(15f);
                 getNewName.setTextColor(Color.WHITE);
             }
-            AlertDialog.Builder builder = new AlertDialog.Builder(PlaylistDetailActivity.this, R.style.FullScreen_TransparentBG);
+            AlertDialog.Builder builder = new AlertDialog.Builder(PlaylistDetailActivity.this, R.style.Dialog_FullScreen_NoBackground);
             builder.setTitle(R.string.dialog_playlist_detail_rename_title);
             builder.setView(getNewName);
             builder.setPositiveButton(R.string.simple_done, new DialogInterface.OnClickListener() {

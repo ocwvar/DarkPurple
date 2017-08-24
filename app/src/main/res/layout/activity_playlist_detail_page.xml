@@ -15,10 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:transitionName="spName"
             app:layout_scrollFlags="snap|scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextAppearance="@style/TextAppearance.AppCompat.Playing" />
+            app:titleTextAppearance="@style/Toolbar_TitleStyle" />
 
     </android.support.design.widget.AppBarLayout>
 
