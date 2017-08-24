@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 侧滑菜单适配器
  */
-public class SlidingListAdapter extends RecyclerView.Adapter {
+public final class SlidingListAdapter extends RecyclerView.Adapter {
 
     private ArrayList<SongItem> songItems;
     private OnSlidingMenuClickCallback callback;

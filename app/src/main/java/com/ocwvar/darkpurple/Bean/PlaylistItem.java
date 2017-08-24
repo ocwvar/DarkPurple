@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 播放列表项目
  */
-public class PlaylistItem {
+public final class PlaylistItem {
 
     private String name;
     private String firstAudioCoverID;

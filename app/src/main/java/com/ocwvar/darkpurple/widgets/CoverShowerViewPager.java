@@ -12,7 +12,7 @@ import android.util.AttributeSet;
  * This file use to :   自定义大小的ViewPager，用于显示封面轮播
  */
 
-public class CoverShowerViewPager extends ViewPager {
+public final class CoverShowerViewPager extends ViewPager {
 
     public CoverShowerViewPager(Context context) {
         super(context);

@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * File Location com.ocwvar.darkpurple.Adapters
  * 歌曲封面预览列表适配器
  */
-public class CoverPreviewAdapter extends RecyclerView.Adapter {
+public final class CoverPreviewAdapter extends RecyclerView.Adapter {
 
     private final ArrayList<CoverPreviewBean> list;
     private final Drawable loadingRes;

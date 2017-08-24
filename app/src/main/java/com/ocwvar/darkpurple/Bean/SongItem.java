@@ -16,7 +16,7 @@ import com.ocwvar.darkpurple.AppConfigs;
  * Project: DarkPurple
  * 音乐信息Bean
  */
-public class SongItem implements Parcelable {
+public final class SongItem implements Parcelable {
 
     public static final Creator<SongItem> CREATOR = new Creator<SongItem>() {
         @Override

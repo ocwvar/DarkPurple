@@ -15,18 +15,21 @@ import com.umeng.analytics.MobclickAgent;
  * Date: 2016/5/25  9:20
  * Project: SurfaceTest
  */
-public class DPApplication extends Application {
+public final class DPApplication extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        //友盟SDK初始化
         MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(DPApplication.this, "59950e977666134d4f000236", "Github", MobclickAgent.EScenarioType.E_UM_NORMAL));
         MobclickAgent.setCatchUncaughtExceptions(false);
         MobclickAgent.setDebugMode(true);
 
+        //网易云捕初始化
         CrashHandler.init(getApplicationContext());
 
+        //注册所有Activity的生命周期监听
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());
 
         //加载所有保存的设置

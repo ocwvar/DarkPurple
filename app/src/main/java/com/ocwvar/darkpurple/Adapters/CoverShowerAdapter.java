@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * Project: DarkPurple
  * 封面轮播适配器
  */
-public class CoverShowerAdapter extends PagerAdapter {
+public final class CoverShowerAdapter extends PagerAdapter {
 
     private ArrayList<SongItem> playingList;
     private Drawable defaultCover;

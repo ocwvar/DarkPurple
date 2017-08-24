@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * File Location com.ocwvar.darkpurple.Units
  * 显示频谱的SurfaceView控制器
  */
-public class SpectrumAnimDisplay implements SurfaceHolder.Callback {
+public final class SpectrumAnimDisplay implements SurfaceHolder.Callback {
 
     private final SpectrumDataController spectrumDataController;
     private SPShowerThread updateThread;

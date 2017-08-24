@@ -10,17 +10,17 @@ import android.util.AttributeSet;
  * Data: 2016/8/7 15:08
  * Project: DarkPurple
  */
-public class SquareHightImageView extends AppCompatImageView {
+public final class SquareHeightImageView extends AppCompatImageView {
 
-    public SquareHightImageView(Context context) {
+    public SquareHeightImageView(Context context) {
         super(context);
     }
 
-    public SquareHightImageView(Context context, AttributeSet attrs) {
+    public SquareHeightImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareHightImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SquareHeightImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

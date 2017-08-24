@@ -35,7 +35,7 @@ import java.lang.ref.WeakReference;
  * Project: DarkPurple
  * 播放列表详情界面
  */
-public class PlaylistDetailActivity extends BaseBlurActivity {
+public final class PlaylistDetailActivity extends BaseBlurActivity {
 
     public static final int LIST_CHANGED = 1;
     public static final int LIST_UNCHANGED = 2;

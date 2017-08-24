@@ -42,7 +42,7 @@ import java.util.concurrent.FutureTask;
  * Project: DarkPurple
  * 音频文件扫描器
  */
-public class MediaScanner {
+public final class MediaScanner {
 
     private static MediaScanner mediaScanner;
 

@@ -30,7 +30,7 @@ import java.lang.ref.WeakReference;
  * 均衡器设置界面
  */
 
-public class EqualizerActivity extends BaseBlurActivity implements EqualizerListAdapter.Callback, EqualizerHandler.Callback, EqualizerImage.Callback {
+public final class EqualizerActivity extends BaseBlurActivity implements EqualizerListAdapter.Callback, EqualizerHandler.Callback, EqualizerImage.Callback {
 
     private String usingEqualizerName = "Default";
 

@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit;
  * Created by 区成伟
  * Date: 2016/3/9  21:42
  * Version 5   16.4.17
- * Project: 可操作线程池
+ * 可操作线程池
  */
 
-public class OCThreadExecutor extends ThreadPoolExecutor {
+public final class OCThreadExecutor extends ThreadPoolExecutor {
 
     private Map<String, FutureTask> runnableMap;
 

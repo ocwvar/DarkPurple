@@ -13,7 +13,7 @@ import android.support.v7.widget.AppCompatImageView;
  * 显示圆形图像的ImageView
  */
 
-public class CImageView extends AppCompatImageView {
+public final class CImageView extends AppCompatImageView {
 
     private float r, x, y;
     private int borderColor;

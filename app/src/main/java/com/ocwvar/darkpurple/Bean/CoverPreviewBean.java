@@ -7,7 +7,7 @@ package com.ocwvar.darkpurple.Bean;
  * File Location com.ocwvar.darkpurple.Bean
  * 封面预览Bean
  */
-public class CoverPreviewBean {
+public final class CoverPreviewBean {
 
     private String albumName;
     private String artworkUrl100;

@@ -9,7 +9,7 @@ import android.util.Log;
  * Project: DarkPurple
  * 调试器
  */
-public class Logger {
+public final class Logger {
 
     private final static boolean DEBUG = true;
 

@@ -22,7 +22,7 @@ import java.util.Set;
  * Project: DarkPurple
  * 播放列表操作类
  */
-public class PlaylistUnits {
+public final class PlaylistUnits {
     private static PlaylistUnits playlistUnits;
     private final String playlistSPName = "playlistSet";
     private final String TAG = "PlaylistUnits";

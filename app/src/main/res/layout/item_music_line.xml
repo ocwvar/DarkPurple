@@ -11,7 +11,7 @@
         android:layout_width="5dp"
         android:layout_height="match_parent" />
 
-    <com.ocwvar.darkpurple.widgets.SquareHightImageView
+    <com.ocwvar.darkpurple.widgets.SquareHeightImageView
         android:id="@+id/item_menu_list_cover"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

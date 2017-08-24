@@ -16,7 +16,7 @@ import java.io.FileOutputStream;
  * Project: DarkPurple
  * 封面图像缓存为本地文件工具
  */
-public class CoverImage2File {
+public final class CoverImage2File {
 
     private static final String TAG = "图像文件缓存";
     private static CoverImage2File imageCacher;

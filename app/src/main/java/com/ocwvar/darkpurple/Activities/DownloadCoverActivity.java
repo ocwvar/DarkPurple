@@ -66,7 +66,7 @@ import java.util.concurrent.TimeUnit;
  * File Location com.ocwvar.darkpurple.Activities
  * 下载歌曲封面页面 所有数据均解析自网站: coverbox.sinaapp.com
  */
-public class DownloadCoverActivity extends BaseBlurActivity implements CoverPreviewAdapter.OnPreviewClickCallback {
+public final class DownloadCoverActivity extends BaseBlurActivity implements CoverPreviewAdapter.OnPreviewClickCallback {
 
     public static int DATA_UNCHANGED = 0;
     public static int DATA_CHANGED = 1;

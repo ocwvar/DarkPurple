@@ -21,7 +21,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
  * File Location com.ocwvar.darkpurple.Units
  * Activity界面管理
  */
-public class ActivityManager implements Application.ActivityLifecycleCallbacks {
+public final class ActivityManager implements Application.ActivityLifecycleCallbacks {
 
     private static ActivityManager manager;
     private List<Activity> activityList;

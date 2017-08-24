@@ -10,7 +10,7 @@ import android.util.AttributeSet;
  * Data: 2016/8/7 15:08
  * Project: DarkPurple
  */
-public class SquareWidthImageView extends AppCompatImageView {
+public final class SquareWidthImageView extends AppCompatImageView {
 
     public SquareWidthImageView(Context context) {
         super(context);

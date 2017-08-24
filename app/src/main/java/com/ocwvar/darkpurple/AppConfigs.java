@@ -22,7 +22,7 @@ import java.util.Set;
  * Project: DarkPurple
  * 应用的全局设置
  */
-public class AppConfigs {
+public final class AppConfigs {
 
     //主数据目录
     public static final String CoreFolder = Environment.getExternalStorageDirectory().getPath() + "/DarkPurple/";

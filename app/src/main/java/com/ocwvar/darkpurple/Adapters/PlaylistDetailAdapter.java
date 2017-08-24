@@ -20,7 +20,7 @@ import java.util.Collections;
  * Project: DarkPurple
  * 播放列表详情里列表的适配器
  */
-public class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDragChangedCallback {
+public final class PlaylistDetailAdapter extends RecyclerView.Adapter implements OnDragChangedCallback {
 
     private ArrayList<SongItem> songItems;
 

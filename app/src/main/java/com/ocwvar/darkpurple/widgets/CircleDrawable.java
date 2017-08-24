@@ -19,7 +19,7 @@ import android.support.annotation.NonNull;
  * 圆形Drawable
  */
 
-class CircleDrawable extends Drawable {
+public final class CircleDrawable extends Drawable {
 
     private Paint picPaint, circlePaint, borderPaint;
     private Bitmap bitmap;

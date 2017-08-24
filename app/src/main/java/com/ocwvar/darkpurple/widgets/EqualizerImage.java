@@ -20,7 +20,7 @@ import android.view.View;
  * File Location com.ocwvar.testapplication
  * This file use to :   均衡器设置View
  */
-public class EqualizerImage extends View {
+public final class EqualizerImage extends View {
 
     //// Y轴刻度范围 ：：必须为大于 1 的奇数，因为必须包含 一个中间点 和 上下对称的刻度长度
     private final static short Y_RANGE = 31;
