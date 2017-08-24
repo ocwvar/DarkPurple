@@ -1,6 +1,6 @@
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/logo.png) 
  
-# 应用下载 1.4.1 1708212312 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
+# 应用下载 1.4.2 1708241650 ![](https://travis-ci.org/ocwvar/DarkPurple.svg?branch=dev)
 [<img src="https://github.com/ocwvar/Project-common-image-resources/blob/master/Github%20Badge/Github_badge_350.png">](https://github.com/ocwvar/DarkPurple/releases/download/1.4.1/app-release.apk)
 [<img src="https://github.com/ocwvar/Project-common-image-resources/blob/master/Google%20Badge/Google_badge_350.png">](https://play.google.com/store/apps/details?id=com.ocwvar.darkpurple)
 

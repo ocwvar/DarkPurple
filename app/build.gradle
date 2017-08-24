@@ -9,8 +9,8 @@ android {
         applicationId "com.ocwvar.darkpurple"
         minSdkVersion project.ext.minSdkVersion
         targetSdkVersion project.ext.targetSdkVersion
-        versionCode 8
-        versionName "1.4.1"
+        versionCode 9
+        versionName "1.4.2"
         resConfigs "zh"
     }
 

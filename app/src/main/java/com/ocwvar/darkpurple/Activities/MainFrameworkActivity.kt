@@ -155,7 +155,7 @@ class MainFrameworkActivity : BaseActivity() {
             requestPermission.dismiss()
         }
 
-        val currentVersionCode: Int = packageManager.getPackageInfo(packageName, 0)?.versionCode ?: 7
+        val currentVersionCode: Int = packageManager.getPackageInfo(packageName, 0)?.versionCode ?: 8
         if (getSharedPreferences("otherValues", 0).getInt("lastVersionCode", -1) < currentVersionCode) {
             //通过检查记录中的最新版本号，如果小于当前版本号，则认为当前是第一次进入新版本，显示changeLog对话框
             WeakReference<AlertDialog?>(AlertDialog.Builder(this@MainFrameworkActivity, R.style.Dialog_FullScreen_NoBackground)
