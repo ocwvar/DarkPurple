@@ -43,7 +43,7 @@ CoverBox 的作者为 Henry Hu
 在虚拟机下的 Android 8.0 版本中，Google v4兼容包(v26.0.0-alpha1)中的 MediaSessionCompat 会产生异常。
 在新版本发布后再进行相应的适配工作。
 
-# 截图展示 (2017/8/21 23：13)
+# 截图展示 (2017/8/24 16：42)
 ##### *截图无法展示所有应用的细节*
 
 ### 播放界面<p></p>
@@ -63,7 +63,7 @@ CoverBox 的作者为 Henry Hu
 
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_1.png)
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_2.png)
-![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_3.jpg)
+![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/playlist_3.png)
 
 ## Notification 样式(Android 7.1.2)<p></p>
 ![](https://github.com/ocwvar/DarkPurple/blob/dev/app/showcase/screenshots/notification_1.png)
