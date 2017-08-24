@@ -1,20 +1,13 @@
 package com.ocwvar.darkpurple.Units;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.View;
 
 import com.ocwvar.darkpurple.AppConfigs;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Project BlurBGActivityTest
@@ -27,17 +20,13 @@ import java.lang.ref.WeakReference;
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
     private Toolbar toolbar;
-    private Snackbar holdingSnackBar = null;
-
-    //消息对话框 - 对话框弱引用容器
-    private WeakReference<ProgressDialog> waitingProgress = new WeakReference<>(null);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().setStatusBarColor(AppConfigs.Color.StatusBar_color);
-            getWindow().setNavigationBarColor(AppConfigs.Color.NavBar_Color);
-        }
+
+        //默认颜色设置
+        getWindow().setStatusBarColor(AppConfigs.Color.StatusBar_color);
+        getWindow().setNavigationBarColor(AppConfigs.Color.NavBar_Color);
 
         super.onCreate(savedInstanceState);
 
@@ -98,64 +87,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             toolbar.setBackgroundColor(AppConfigs.Color.ToolBar_color);
             toolbar.setTitleTextColor(AppConfigs.Color.ToolBar_title_color);
             toolbar.setSubtitleTextColor(AppConfigs.Color.ToolBar_subtitle_color);
-        }
-    }
-
-    /**
-     * 显示一个消息对话框
-     *
-     * @param message     显示的消息
-     * @param canBeCancel 是否可以取消
-     */
-    public void showMessageDialog(Context context, String message, boolean canBeCancel) {
-        if (TextUtils.isEmpty(message) || context == null) {
-            return;
-        }
-        ProgressDialog waitingProgress = this.waitingProgress.get();
-        if (waitingProgress == null) {
-            waitingProgress = new ProgressDialog(context);
-            waitingProgress.setCanceledOnTouchOutside(false);
-            this.waitingProgress = new WeakReference<>(waitingProgress);
-        }
-        waitingProgress.setMessage(message);
-        waitingProgress.setCancelable(canBeCancel);
-        waitingProgress.show();
-    }
-
-    /**
-     * 取消正在显示的消息对话框
-     */
-    public void dismissMessageDialog() {
-        final ProgressDialog progressDialog = waitingProgress.get();
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-    }
-
-    /**
-     * 显示固定的SnackBar通知条
-     *
-     * @param message 要显示的文字 , 文字为空则不显示
-     */
-    public void showHoldingSnackBar(@NonNull String message) {
-        if (this.holdingSnackBar == null) {
-            holdingSnackBar = Snackbar.make(findViewById(android.R.id.content), "", Snackbar.LENGTH_INDEFINITE);
-        }
-
-        if (!TextUtils.isEmpty(message)) {
-            holdingSnackBar.setDuration(Snackbar.LENGTH_INDEFINITE);
-            holdingSnackBar.setText(message);
-            holdingSnackBar.show();
-        }
-    }
-
-    /**
-     * 取消显示固定的Snackbar
-     */
-    public void dismissHoldingSnackBar() {
-        if (this.holdingSnackBar != null && this.holdingSnackBar.isShown()) {
-            this.holdingSnackBar.setDuration(Snackbar.LENGTH_SHORT);
-            this.holdingSnackBar.dismiss();
         }
     }
 
