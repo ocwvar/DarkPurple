@@ -17,11 +17,13 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-        <!--SurfaceView 的灰色背景-->
+        <!--灰色背景-->
         <View
             android:id="@+id/darkBG"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="#5b000000"
+            android:visibility="gone" />
 
         <!--状态栏间距容器-->
         <LinearLayout
@@ -83,7 +85,9 @@
             android:id="@+id/coverShower"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true" />
 
         <!--圆圈进度条-->
         <com.ocwvar.darkpurple.widgets.CircleSeekBar
@@ -98,7 +102,11 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerInParent="true"
-            android:padding="5dp" />
+            android:background="@drawable/ic_main_big_play"
+            android:clickable="false"
+            android:focusable="false"
+            android:padding="5dp"
+            android:visibility="gone" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -111,7 +119,7 @@
             app:titleTextAppearance="@style/Toolbar_TitleStyle">
 
             <ImageButton
-                android:id="@+id/spectrum"
+                android:id="@+id/spectrumSwitcher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"

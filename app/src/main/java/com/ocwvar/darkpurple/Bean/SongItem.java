@@ -51,48 +51,6 @@ public final class SongItem implements Parcelable {
         this.mediaMetadataCompat = in.readParcelable(MediaMetadataCompat.class.getClassLoader());
     }
 
-    /**
-     * 毫秒转 小时,分钟,秒数
-     *
-     * @param length 毫秒长度
-     * @return 数据数组 [0]小时  [1]分钟  [2]秒数
-     */
-    private int[] getTimes(long length) {
-        if (length < 1000) {
-            return null;
-        }
-
-        //用于存放数据的数组
-        int[] time = new int[3];
-        //总毫秒转秒数
-        length = length / 1000;
-
-        if ((length / 60) > 60) {
-            // 有小时数
-            int hours = (int) (length / 60 / 60);
-            time[0] = hours;
-            //求减去已统计的小时数的毫秒数
-            length -= hours * 60 * 60;
-        } else {
-            //如果没有则设为 0
-            time[0] = 0;
-        }
-
-        if ((length / 60) > 0) {
-            //有分钟数
-            int mins = (int) (length / 60);
-            time[1] = mins;
-            //求减去已统计的小时数的毫秒数
-            length -= mins * 60;
-        } else {
-            time[1] = 0;
-        }
-
-        time[2] = (int) (length);
-
-        return time;
-    }
-
     public final
     @NonNull
     MediaMetadataCompat getMediaMetadata() {

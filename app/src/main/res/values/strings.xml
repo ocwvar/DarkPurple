@@ -29,6 +29,10 @@
     <string name="text_button_playlist">列表</string>
     <string name="text_button_user">用户</string>
 
+    <!--播放界面-->
+    <string name="text_toolbar_header">当前播放序列</string>
+    <string name="message_playing_error">播放时发生异常</string>
+
     <!--主音乐列表界面-->
     <string name="message_waitForSelecting">请先完成添加播放列表</string>
     <string name="message_plzSelect">请单击选择需要添加的曲目</string>

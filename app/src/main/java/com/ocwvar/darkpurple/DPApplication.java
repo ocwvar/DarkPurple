@@ -2,7 +2,6 @@ package com.ocwvar.darkpurple;
 
 import android.app.Application;
 
-import com.netease.nis.bugrpt.CrashHandler;
 import com.ocwvar.darkpurple.Units.ActivityManager;
 import com.ocwvar.darkpurple.Units.Cover.CoverManager;
 import com.ocwvar.darkpurple.Units.EqualizerHandler;
@@ -27,7 +26,7 @@ public final class DPApplication extends Application {
         MobclickAgent.setDebugMode(true);
 
         //网易云捕初始化
-        CrashHandler.init(getApplicationContext());
+        //CrashHandler.init(getApplicationContext());
 
         //注册所有Activity的生命周期监听
         registerActivityLifecycleCallbacks(ActivityManager.getInstance());

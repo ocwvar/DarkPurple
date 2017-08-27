@@ -29,13 +29,6 @@
             android:widgetLayout="@layout/preference_checkbox" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="autoSwitchPlaying"
-            android:summary="@string/setting_info_autoOpenPlayingActivity"
-            android:title="@string/setting_title_autoOpenPlayingActivity"
-            android:widgetLayout="@layout/preference_checkbox" />
-
-        <CheckBoxPreference
             android:defaultValue="false"
             android:key="useCompatMode"
             android:summary="@string/setting_info_useCompatMode"

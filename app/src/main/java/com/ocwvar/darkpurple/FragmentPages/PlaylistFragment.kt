@@ -13,10 +13,8 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ocwvar.darkpurple.Activities.PlayingActivity
 import com.ocwvar.darkpurple.Activities.PlaylistDetailActivity
 import com.ocwvar.darkpurple.Adapters.PlaylistAdapter
-import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.PlaylistItem
 import com.ocwvar.darkpurple.R
 import com.ocwvar.darkpurple.Services.MediaPlayerService
@@ -78,10 +76,6 @@ class PlaylistFragment : Fragment(), PlaylistAdapter.Callback {
                 it.putInt(MediaPlayerService.COMMAND_EXTRA.ARG_INT_LIBRARY_INDEX, 0)
                 it
             })
-            if (AppConfigs.isAutoSwitchPlaying) {
-                //播放成功，同时需要转跳至播放界面
-                startActivity(Intent(activity, PlayingActivity::class.java))
-            }
         }
     }
 

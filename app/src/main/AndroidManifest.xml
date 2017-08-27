@@ -50,7 +50,7 @@
 
         <!--播放界面-->
         <activity
-            android:name=".Activities.PlayingActivity"
+            android:name=".Activities.MusicPlaying.MusicPlayingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme_PlayingActivity" />
 

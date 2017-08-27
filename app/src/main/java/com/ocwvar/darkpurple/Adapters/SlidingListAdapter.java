@@ -1,5 +1,6 @@
 package com.ocwvar.darkpurple.Adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,13 @@ public final class SlidingListAdapter extends RecyclerView.Adapter {
 
     public interface OnSlidingMenuClickCallback {
 
-        void onSlidingMenuClick(SongItem songItem, int position);
+        /**
+         * 侧滑菜单点击事件
+         *
+         * @param songItem 歌曲对象
+         * @param position 歌曲索引
+         */
+        void onSlidingMenuClick(@NonNull SongItem songItem, @NonNull int position);
 
     }
 

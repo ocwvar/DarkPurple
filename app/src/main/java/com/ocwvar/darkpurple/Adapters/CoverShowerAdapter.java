@@ -2,7 +2,6 @@ package com.ocwvar.darkpurple.Adapters;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.v4.view.PagerAdapter;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,20 +28,18 @@ public final class CoverShowerAdapter extends PagerAdapter {
 
     private ArrayList<SongItem> playingList;
     private Drawable defaultCover;
+    private OnCoverClickCallback callback;
 
     @SuppressWarnings("deprecation")
-    public CoverShowerAdapter(ArrayList<SongItem> playingList) {
+    public CoverShowerAdapter(final ArrayList<SongItem> playingList, final OnCoverClickCallback callback) {
+        this.callback = callback;
         this.playingList = playingList;
-        if (Build.VERSION.SDK_INT >= 21) {
-            this.defaultCover = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_music_big);
-        } else {
-            this.defaultCover = AppConfigs.ApplicationContext.getResources().getDrawable(R.drawable.ic_music_big);
-        }
+        this.defaultCover = AppConfigs.ApplicationContext.getDrawable(R.drawable.ic_music_big);
     }
 
     @Override
     public int getCount() {
-        return playingList.size();
+        return (playingList != null) ? playingList.size() : 0;
     }
 
     @Override
@@ -57,7 +54,7 @@ public final class CoverShowerAdapter extends PagerAdapter {
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
-    public Object instantiateItem(final ViewGroup container, int position) {
+    public Object instantiateItem(final ViewGroup container, final int position) {
 
         final SongItem songItem = playingList.get(position);
         //封面绘制中心点  X轴
@@ -90,6 +87,14 @@ public final class CoverShowerAdapter extends PagerAdapter {
             imageView.setImageDrawable(defaultCover);
         }
 
+        //设置封面的点击事件，在控件被销毁时取消
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callback.onCoverClick();
+            }
+        });
+
         container.addView(imageView);
 
         return imageView;
@@ -100,7 +105,20 @@ public final class CoverShowerAdapter extends PagerAdapter {
      */
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView((View) object);
+
+        final View view = (View) object;
+        view.setOnClickListener(null);
+
+        container.removeView(view);
+    }
+
+    public interface OnCoverClickCallback {
+
+        /**
+         * 封面点击事件回调
+         */
+        void onCoverClick();
+
     }
 
 }

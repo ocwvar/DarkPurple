@@ -26,6 +26,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import com.ocwvar.darkpurple.Activities.MusicPlaying.MusicPlayingActivity
 import com.ocwvar.darkpurple.AppConfigs
 import com.ocwvar.darkpurple.Bean.SongItem
 import com.ocwvar.darkpurple.FragmentPages.MusicListFragment
@@ -121,7 +122,7 @@ class MainFrameworkActivity : BaseActivity() {
             val currentState: Int = serviceConnector.currentState()
             if (currentState != PlaybackStateCompat.STATE_NONE && currentState != PlaybackStateCompat.STATE_ERROR) {
                 //转跳到播放界面
-                startActivity(Intent(this@MainFrameworkActivity, PlayingActivity::class.java))
+                startActivity(Intent(this@MainFrameworkActivity, MusicPlayingActivity::class.java))
             }
         }
 

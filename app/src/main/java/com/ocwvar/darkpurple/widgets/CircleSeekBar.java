@@ -189,6 +189,13 @@ public final class CircleSeekBar extends View {
     }
 
     /**
+     * @return 最大值
+     */
+    public int getMax() {
+        return this.VALUE_MAX;
+    }
+
+    /**
      * 设置最大值，设定后将会导致进度恢复到 0
      *
      * @param max 最大值，不能小于 1
