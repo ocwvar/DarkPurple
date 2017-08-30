@@ -43,16 +43,16 @@ interface IPlayingViews {
     /**
      * 更新歌曲名称显示
      *
-     * @param   musicName   歌曲名称
+     * @param   text   歌曲名称
      */
-    fun onUpdateMusicName(musicName: String)
+    fun onUpdateMusicName(text: String)
 
     /**
      * 更新歌曲专辑名称显示
      *
-     * @param   musicAlbum   歌曲专辑
+     * @param   text   歌曲专辑
      */
-    fun onUpdateMusicAlbum(musicAlbum: String)
+    fun onUpdateMusicAlbum(text: String)
 
     /**
      * 更新进度文字显示

@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@null">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,22 +13,14 @@
         android:background="@null">
 
         <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/contener"
+            android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-        <!--灰色背景-->
-        <View
-            android:id="@+id/darkBG"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#5b000000"
-            android:visibility="gone" />
-
         <!--状态栏间距容器-->
         <LinearLayout
-            android:id="@+id/pendingLayout_STATUSBAR"
+            android:id="@+id/pendingLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#3c000000"
@@ -35,7 +28,7 @@
 
         <!--歌曲标题-->
         <TextView
-            android:id="@+id/shower_title"
+            android:id="@+id/musicTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
@@ -48,10 +41,10 @@
 
         <!--歌曲专辑-->
         <TextView
-            android:id="@+id/shower_album"
+            android:id="@+id/musicAlbum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/shower_title"
+            android:layout_below="@id/musicTitle"
             android:background="#3c000000"
             android:paddingBottom="5dp"
             android:paddingStart="15dp"
@@ -62,18 +55,18 @@
 
         <!--开始时间-->
         <TextView
-            android:id="@+id/shower_playing_position"
+            android:id="@+id/timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/shower_album"
+            android:layout_below="@id/musicAlbum"
             android:padding="10dp"
             android:textColor="@color/pureWhite"
             android:textSize="25sp" />
 
         <!--频谱动画 SurfaceView-->
         <SurfaceView
-            android:id="@+id/surfaceView"
+            android:id="@+id/spectrumDisplay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
@@ -98,7 +91,7 @@
 
         <!--中央的主控制按钮-->
         <View
-            android:id="@+id/shower_mainButton"
+            android:id="@+id/pauseImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerInParent="true"
@@ -113,7 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/pendingLayout_STATUSBAR"
+            android:layout_below="@+id/pendingLayout"
             android:background="#3c000000"
             app:titleMarginStart="10dp"
             app:titleTextAppearance="@style/Toolbar_TitleStyle">
@@ -133,7 +126,7 @@
 
         <!--禁用遮罩-->
         <FrameLayout
-            android:id="@+id/waitForService"
+            android:id="@+id/waitingService"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/backgroundColor_Dark"
@@ -177,7 +170,7 @@
 
             <!--循环按钮-->
             <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/random"
+                android:id="@+id/randomButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -185,7 +178,7 @@
 
             <!--随机按钮-->
             <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/loop"
+                android:id="@+id/loopButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

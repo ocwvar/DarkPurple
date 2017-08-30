@@ -5,18 +5,13 @@ import android.graphics.Color
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.support.v4.view.ViewPager
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
-import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.ocwvar.darkpurple.Activities.EqualizerActivity
 import com.ocwvar.darkpurple.Adapters.CoverShowerAdapter
 import com.ocwvar.darkpurple.Adapters.SlidingListAdapter
@@ -27,6 +22,7 @@ import com.ocwvar.darkpurple.Units.MediaLibrary.MediaLibrary
 import com.ocwvar.darkpurple.Units.SpectrumAnimDisplay
 import com.ocwvar.darkpurple.Units.ToastMaker
 import com.ocwvar.darkpurple.widgets.CircleSeekBar
+import kotlinx.android.synthetic.main.activity_playing_page.*
 import java.lang.ref.WeakReference
 
 /**
@@ -42,23 +38,9 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
     private val iPlayingPresenter: IPlayingPresenter = PlayingPresenter(this@MusicPlayingActivity)
 
     //频谱控制器
-    private val spectrumDisplay: SpectrumAnimDisplay = SpectrumAnimDisplay()
+    private val spectrumDisplayController: SpectrumAnimDisplay = SpectrumAnimDisplay()
 
-    private lateinit var backgroundContainer: AppCompatImageView
-    private lateinit var serviceDisconnectBackground: View
-    private lateinit var randomButton: AppCompatImageView
-    private lateinit var loopButton: AppCompatImageView
-    private lateinit var spectrumSwitcher: ImageButton
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var seeker: CircleSeekBar
-    private lateinit var coverShower: ViewPager
-    private lateinit var spectrum: SurfaceView
-    private lateinit var musicAlbum: TextView
-    private lateinit var musicName: TextView
-    private lateinit var pausedButton: View
-    private lateinit var timer: TextView
-
-
+    //动画缓存
     private var fadeInAnim: WeakReference<Animation?> = WeakReference(null)
     private var fadeOutAnim: WeakReference<Animation?> = WeakReference(null)
 
@@ -83,16 +65,16 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
 
         if (!AppConfigs.useCompatMode && AppConfigs.StatusBarHeight > 0) {
             //设置顶部间距高度
-            val linearLayout = findViewById(R.id.pendingLayout_STATUSBAR) as LinearLayout
+            val linearLayout = findViewById(R.id.pendingLayout) as LinearLayout
             val layoutParams = LinearLayout.LayoutParams(1, AppConfigs.StatusBarHeight)
             val emptyView = View(this@MusicPlayingActivity)
             emptyView.layoutParams = layoutParams
             linearLayout.addView(emptyView)
         }
 
-        //ToolBar配置
-        (findViewById(R.id.toolbar) as Toolbar).let {
 
+        //ToolBar配置
+        toolbar.let {
             setSupportActionBar(it)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_action_drawer)
@@ -100,7 +82,7 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
         }
 
         //侧滑菜单配置
-        (findViewById(R.id.recycleView) as RecyclerView).let {
+        recycleView.let {
             it.layoutManager = LinearLayoutManager(this@MusicPlayingActivity, LinearLayoutManager.VERTICAL, false)
             it.setHasFixedSize(true)
             it.adapter = SlidingListAdapter().let {
@@ -111,37 +93,37 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
         }
 
         //均衡器按钮配置
-        findViewById(R.id.equalizer).setOnClickListener(this@MusicPlayingActivity)
+        equalizer.setOnClickListener(this@MusicPlayingActivity)
 
         //频谱按钮配置
-        this.spectrumSwitcher = (findViewById(R.id.spectrumSwitcher) as ImageButton).let {
+        spectrumSwitcher.let {
             it.setOnClickListener(this@MusicPlayingActivity)
             it.tag = false
             it
         }
 
         //滑动条配置
-        this.seeker = (findViewById(R.id.circleSeekBar) as CircleSeekBar).let {
+        circleSeekBar.let {
             it.setTextType(CircleSeekBar.TEXT_TYPE_HIDE)
             it.setCallback(iPlayingPresenter)
             it
         }
 
         //侧滑抽屉配置
-        this.drawerLayout = (findViewById(R.id.drawerLayout) as DrawerLayout).let {
+        drawerLayout.let {
             it.setScrimColor(Color.argb(220, 0, 0, 0))
             it
         }
 
         //封面轮播配置
-        this.coverShower = (findViewById(R.id.coverShower) as ViewPager).let {
+        coverShower.let {
             it.addOnPageChangeListener(this@MusicPlayingActivity)
             it.adapter = CoverShowerAdapter(MediaLibrary.getUsingLibrary(), this@MusicPlayingActivity)
             it
         }
 
         //循环播放按钮配置
-        this.loopButton = (findViewById(R.id.loop) as AppCompatImageView).let {
+        loopButton.let {
             it.setOnClickListener(this@MusicPlayingActivity)
             it.tag = AppConfigs.playMode_Loop
             if (it.tag as Boolean) {
@@ -153,7 +135,7 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
         }
 
         //随机播放按钮配置
-        this.randomButton = (findViewById(R.id.random) as AppCompatImageView).let {
+        randomButton.let {
             it.setOnClickListener(this@MusicPlayingActivity)
             it.tag = AppConfigs.playMode_Random
             if (it.tag as Boolean) {
@@ -165,28 +147,24 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
         }
 
         //暂停按钮配置
-        this.pausedButton = findViewById(R.id.shower_mainButton).let {
+        pauseImage.let {
             it.tag = false
             it
         }
 
         //等待服务界面配置
-        this.serviceDisconnectBackground = findViewById(R.id.waitForService).let {
+        waitingService.let {
             it.tag = false
             it
         }
 
         //配置频谱显示控件
-        this.spectrum = (findViewById(R.id.surfaceView) as SurfaceView).let {
-            it.holder.addCallback(spectrumDisplay)
+        spectrumDisplay.let {
+            it.holder.addCallback(spectrumDisplayController)
             it.setZOrderOnTop(true)
             it
         }
 
-        this.backgroundContainer = findViewById(R.id.contener) as AppCompatImageView
-        this.musicName = findViewById(R.id.shower_title) as TextView
-        this.musicAlbum = findViewById(R.id.shower_album) as TextView
-        this.timer = findViewById(R.id.shower_playing_position) as TextView
     }
 
     /**
@@ -243,12 +221,12 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
             }
 
         //循环切换
-            R.id.loop -> {
+            R.id.loopButton -> {
                 iPlayingPresenter.switchLoopState(!(loopButton.tag as Boolean))
             }
 
         //随机切换
-            R.id.random -> {
+            R.id.randomButton -> {
                 iPlayingPresenter.switchRandomState(!(randomButton.tag as Boolean))
             }
 
@@ -283,17 +261,17 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
     /**
      * @return  负责背景显示的控件
      */
-    override fun getBackgroundContainer(): AppCompatImageView = this.backgroundContainer
+    override fun getBackgroundContainer(): AppCompatImageView = background
 
     /**
      * 显示音乐恢复暂停动画
      */
     override fun onMusicPause() {
-        if (!(this.pausedButton.tag as Boolean)) {
+        if (!(this.pauseImage.tag as Boolean)) {
             this.iPlayingPresenter.switchSpectrum(false)
-            this.pausedButton.visibility = View.VISIBLE
-            this.pausedButton.startAnimation(getFadeInAnim())
-            this.pausedButton.tag = true
+            this.pauseImage.visibility = View.VISIBLE
+            this.pauseImage.startAnimation(getFadeInAnim())
+            this.pauseImage.tag = true
         }
     }
 
@@ -301,10 +279,10 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
      * 显示音乐恢复播放动画
      */
     override fun onMusicResume() {
-        if (this.pausedButton.tag as Boolean) {
-            this.pausedButton.visibility = View.GONE
-            this.pausedButton.startAnimation(getFadeOutAnim())
-            this.pausedButton.tag = false
+        if (this.pauseImage.tag as Boolean) {
+            this.pauseImage.visibility = View.GONE
+            this.pauseImage.startAnimation(getFadeOutAnim())
+            this.pauseImage.tag = false
         }
     }
 
@@ -320,19 +298,19 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
     /**
      * 更新歌曲名称显示
      *
-     * @param   musicName   歌曲名称
+     * @param   text   歌曲名称
      */
-    override fun onUpdateMusicName(musicName: String) {
-        this.musicName.text = musicName
+    override fun onUpdateMusicName(text: String) {
+        this.musicTitle.text = text
     }
 
     /**
      * 更新歌曲专辑名称显示
      *
-     * @param   musicAlbum   歌曲专辑
+     * @param   text   歌曲专辑
      */
-    override fun onUpdateMusicAlbum(musicAlbum: String) {
-        this.musicAlbum.text = musicAlbum
+    override fun onUpdateMusicAlbum(text: String) {
+        this.musicAlbum.text = text
     }
 
     /**
@@ -351,10 +329,10 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
      * @param   max    最大值
      */
     override fun onUpdateSeekBar(progress: Int, max: Int) {
-        if (this.seeker.max != max) {
-            this.seeker.max = max
+        if (this.circleSeekBar.max != max) {
+            this.circleSeekBar.max = max
         }
-        this.seeker.setProgress(progress)
+        this.circleSeekBar.setProgress(progress)
     }
 
     /**
@@ -416,8 +394,8 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
         this.spectrumSwitcher.setImageResource(R.drawable.ic_action_sp_on)
 
         //显示频谱
-        this.spectrum.visibility = View.VISIBLE
-        this.spectrumDisplay.start()
+        this.spectrumDisplay.visibility = View.VISIBLE
+        this.spectrumDisplayController.start()
 
         this.spectrumSwitcher.isEnabled = true
         this.spectrumSwitcher.tag = true
@@ -437,8 +415,8 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
         this.spectrumSwitcher.setImageResource(R.drawable.ic_action_sp_off)
 
         //显示频谱
-        this.spectrumDisplay.stop()
-        this.spectrum.visibility = View.GONE
+        this.spectrumDisplayController.stop()
+        this.spectrumDisplay.visibility = View.GONE
 
         this.spectrumSwitcher.isEnabled = true
         this.spectrumSwitcher.tag = false
@@ -450,8 +428,8 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
      * @param   imageDrawable   背景图像
      */
     override fun onUpdateBackground(imageDrawable: TransitionDrawable) {
-        this.backgroundContainer.setImageDrawable(null)
-        this.backgroundContainer.setImageDrawable(imageDrawable)
+        this.background.setImageDrawable(null)
+        this.background.setImageDrawable(imageDrawable)
 
         imageDrawable.startTransition(300)
     }
@@ -468,16 +446,16 @@ class MusicPlayingActivity : AppCompatActivity(), IPlayingViews, SlidingListAdap
      * 服务连接失败、断开时 显示画面
      */
     override fun onServiceDisconnect() {
-        this.serviceDisconnectBackground.visibility = View.VISIBLE
-        this.serviceDisconnectBackground.startAnimation(getFadeInAnim())
+        this.waitingService.visibility = View.VISIBLE
+        this.waitingService.startAnimation(getFadeInAnim())
     }
 
     /**
      * 服务连接成功时 显示画面
      */
     override fun onServiceConnected() {
-        this.serviceDisconnectBackground.visibility = View.GONE
-        this.serviceDisconnectBackground.startAnimation(getFadeOutAnim())
+        this.waitingService.visibility = View.GONE
+        this.waitingService.startAnimation(getFadeOutAnim())
     }
 
     /**
