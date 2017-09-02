@@ -131,7 +131,7 @@ class FrameworkPresenter(private val iFrameViews: IFrameViews) : IFramePresenter
     override fun onServiceConnected() {
         updateFloatingButton()
         updateHeaderText(true)
-        updateHeaderImage(null, CoverProcesser.getBlur() ?: defaultBackground)
+        updateHeaderImage(null, CoverProcesser.getBlur() ?: defaultBackground, MediaLibrary.getUsingMedia()?.album)
     }
 
     /**
@@ -179,17 +179,23 @@ class FrameworkPresenter(private val iFrameViews: IFrameViews) : IFramePresenter
      * 界面暂停：
      * 断开媒体服务连接
      * 反注册所有广播接收器
+     * 恢复空状态
      */
     override fun onPause() {
         this.mediaServiceConnector.disConnect()
 
         if (this.blurCoverUpdateReceiver.isRegistered) {
             iFrameViews.activity().unregisterReceiver(this.blurCoverUpdateReceiver)
+            this.blurCoverUpdateReceiver.isRegistered = false
         }
 
         if (this.playingDataUpdateReceiver.isRegistered) {
             iFrameViews.activity().unregisterReceiver(this.playingDataUpdateReceiver)
+            this.playingDataUpdateReceiver.isRegistered = false
         }
+
+        updateHeaderText(false)
+        updateHeaderImage(null)
     }
 
     /**
@@ -254,10 +260,18 @@ class FrameworkPresenter(private val iFrameViews: IFrameViews) : IFramePresenter
      *
      * @param   coverDrawable   封面图像，NULL = 不显示，默认 = NULL
      * @param   backgroundDrawable   背景图像，默认 = 默认背景图像
+     * @param imageTAG  图像TAG，如果是相同的TAG，则不更新图像，默认为default
      */
-    private fun updateHeaderImage(coverDrawable: Drawable? = null, backgroundDrawable: Drawable = this.defaultBackground) {
-        iFrameViews.onUpdateCover(coverDrawable)
-        iFrameViews.onUpdateBackground(backgroundDrawable)
+    private fun updateHeaderImage(coverDrawable: Drawable? = null, backgroundDrawable: Drawable = this.defaultBackground, imageTAG: String? = null) {
+        var tag: String = imageTAG ?: "default"
+
+        if (backgroundDrawable == this.defaultBackground) {
+            //如果是默认图样，则设置默认TAG
+            tag = "default"
+        }
+
+        iFrameViews.onUpdateCover(coverDrawable, tag)
+        iFrameViews.onUpdateBackground(backgroundDrawable, tag)
     }
 
     /**
@@ -287,7 +301,7 @@ class FrameworkPresenter(private val iFrameViews: IFrameViews) : IFramePresenter
 
             //有新的封面模糊图像产生
                 CoverProcesser.ACTION_BLUR_UPDATED -> {
-                    updateHeaderImage(null, CoverProcesser.getBlur() ?: defaultBackground)
+                    updateHeaderImage(null, CoverProcesser.getBlur() ?: defaultBackground, MediaLibrary.getUsingMedia()?.album)
                 }
 
             //有新的封面模糊图像发生失败

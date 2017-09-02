@@ -74,6 +74,10 @@ class FrameworkActivity : AppCompatActivity(), IFrameViews, View.OnClickListener
 
         //默认切换到歌曲列表
         iFramePresenter.onSwitchPage(IFrameViews.PageName.主界面)
+
+        //设置默认的TAG
+        FrameworkHeaderBackground.tag = ""
+        FrameworkHeaderCover.tag = ""
     }
 
     override fun onClick(view: View?) {
@@ -132,21 +136,28 @@ class FrameworkActivity : AppCompatActivity(), IFrameViews, View.OnClickListener
      * 更新顶部背景图像
      *
      * @param drawable  图像Drawable
+     * @param tag  图像TAG，如果是相同的TAG，则不更新图像
      */
-    override fun onUpdateBackground(drawable: Drawable) {
-        FrameworkHeaderBackground.setImageDrawable(drawable)
-        FrameworkHeaderBackground.startAnimation(getFadeAnim())
-
+    override fun onUpdateBackground(drawable: Drawable, tag: String) {
+        if (FrameworkHeaderBackground.tag ?: "" != tag) {
+            FrameworkHeaderBackground.tag = tag
+            FrameworkHeaderBackground.setImageDrawable(drawable)
+            FrameworkHeaderBackground.startAnimation(getFadeAnim())
+        }
     }
 
     /**
      * 更新顶部封面
      *
      * @param drawable 封面Drawable，NULL = 不显示
+     * @param tag  图像TAG，如果是相同的TAG，则不更新图像
      */
-    override fun onUpdateCover(drawable: Drawable?) {
-        FrameworkHeaderCover.setImageDrawable(null)
-        FrameworkHeaderCover.setImageDrawable(drawable)
+    override fun onUpdateCover(drawable: Drawable?, tag: String) {
+        if (FrameworkHeaderCover.tag ?: "" != tag) {
+            FrameworkHeaderCover.tag = tag
+            FrameworkHeaderCover.setImageDrawable(null)
+            FrameworkHeaderCover.setImageDrawable(drawable)
+        }
     }
 
     /**
@@ -193,10 +204,8 @@ class FrameworkActivity : AppCompatActivity(), IFrameViews, View.OnClickListener
     override fun onSwitchPlayingButton(enable: Boolean) {
         if (enable) {
             fab.visibility = View.VISIBLE
-            fab.show()
         } else {
             fab.visibility = View.GONE
-            fab.hide()
         }
     }
 

@@ -40,15 +40,17 @@ interface IFrameViews {
      * 更新顶部背景图像
      *
      * @param drawable  图像Drawable
+     * @param tag  图像TAG
      */
-    fun onUpdateBackground(drawable: Drawable)
+    fun onUpdateBackground(drawable: Drawable, tag: String)
 
     /**
      * 更新顶部封面
      *
      * @param drawable 封面Drawable，NULL = 不显示
+     * @param tag  图像TAG
      */
-    fun onUpdateCover(drawable: Drawable?)
+    fun onUpdateCover(drawable: Drawable?, tag: String)
 
     /**
      * 更新底部按钮状态
