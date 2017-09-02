@@ -25,6 +25,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
+                    android:background="@null"
                     app:layout_collapseMode="parallax">
 
                     <ImageView
@@ -39,13 +40,14 @@
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:layout_gravity="start|bottom"
-                        android:scaleType="centerCrop" />
+                        android:background="@null"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="end|bottom"
-                        android:background="#91000000"
                         android:gravity="start|bottom"
                         android:orientation="vertical"
                         android:padding="5dp">
@@ -54,21 +56,17 @@
                             android:id="@+id/FrameworkHeaderTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
+                            android:layout_marginBottom="15dp"
                             android:maxLines="1"
-                            android:shadowColor="@color/backgroundColor_Dark"
-                            android:shadowRadius="7"
                             android:singleLine="true"
                             android:textColor="#fff"
-                            android:textSize="20sp" />
+                            android:textSize="30sp" />
 
                         <TextView
                             android:id="@+id/FrameworkHeaderArtist"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:maxLines="1"
-                            android:shadowColor="@color/backgroundColor_Dark"
-                            android:shadowRadius="7"
                             android:singleLine="true"
                             android:textColor="#fff"
                             android:textSize="13sp" />
@@ -78,8 +76,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:maxLines="1"
-                            android:shadowColor="@color/backgroundColor_Dark"
-                            android:shadowRadius="7"
                             android:singleLine="true"
                             android:textColor="#fff"
                             android:textSize="13sp" />
