@@ -103,11 +103,11 @@ class MainFrameworkActivity : BaseActivity() {
 
         this.serviceConnector = MediaServiceConnector(this@MainFrameworkActivity, serviceCallbacks)
 
-        this.headShower = findViewById(R.id.MainMusic_headShower) as ImageView
-        this.headCoverShower = findViewById(R.id.MainMusic_coverShower) as ImageView
-        this.headMusicTitle = findViewById(R.id.MainMusic_title) as TextView
-        this.headMusicArtist = findViewById(R.id.MainMusic_artist) as TextView
-        this.headMusicAlbum = findViewById(R.id.MainMusic_album) as TextView
+        this.headShower = findViewById(R.id.FrameworkHeaderBackground) as ImageView
+        this.headCoverShower = findViewById(R.id.FrameworkHeaderCover) as ImageView
+        this.headMusicTitle = findViewById(R.id.FrameworkHeaderTitle) as TextView
+        this.headMusicArtist = findViewById(R.id.FrameworkHeaderArtist) as TextView
+        this.headMusicAlbum = findViewById(R.id.FrameworkHeaderAlbum) as TextView
         this.floatingActionButton = findViewById(R.id.fab) as FloatingActionButton
         this.songButton = findViewById(R.id.button_song)
         this.playlistButton = findViewById(R.id.button_playlist)
@@ -141,6 +141,7 @@ class MainFrameworkActivity : BaseActivity() {
                 }
             }
         }
+
         //默认启动页面
         if (lastPage == null) {
             onViewClick(songButton)
@@ -200,7 +201,6 @@ class MainFrameworkActivity : BaseActivity() {
             playingDataUpdateReceiver.isRegistered = true
             registerReceiver(playingDataUpdateReceiver, playingDataUpdateReceiver.intentFilter)
         }
-
 
     }
 
@@ -275,8 +275,10 @@ class MainFrameworkActivity : BaseActivity() {
         if (pageTAG == null) {
             return
         }
+
         val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(R.anim.fragment_anim_in, R.anim.fragment_anim_out)
+
         when (pageTAG) {
             songButton.tag -> {
                 var page: MusicListFragment? = musicPageKeeper.get()
@@ -284,7 +286,7 @@ class MainFrameworkActivity : BaseActivity() {
                     page = MusicListFragment()
                     musicPageKeeper = WeakReference(page)
                 }
-                fragmentTransaction.replace(R.id.fragmentWindow, page)
+                fragmentTransaction.replace(R.id.FragmentContainer, page)
             }
             playlistButton.tag -> {
                 var page: PlaylistFragment? = playlistPageKeeper.get()
@@ -292,7 +294,7 @@ class MainFrameworkActivity : BaseActivity() {
                     page = PlaylistFragment()
                     playlistPageKeeper = WeakReference(page)
                 }
-                fragmentTransaction.replace(R.id.fragmentWindow, page)
+                fragmentTransaction.replace(R.id.FragmentContainer, page)
             }
             userButton.tag -> {
                 var page: UserFragment? = userPagekeeper.get()
@@ -300,7 +302,7 @@ class MainFrameworkActivity : BaseActivity() {
                     page = UserFragment()
                     userPagekeeper = WeakReference(page)
                 }
-                fragmentTransaction.replace(R.id.fragmentWindow, page)
+                fragmentTransaction.replace(R.id.FragmentContainer, page)
             }
         }
         fragmentTransaction.commit()

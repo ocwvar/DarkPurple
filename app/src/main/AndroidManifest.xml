@@ -37,7 +37,7 @@
 
         <!--主框架界面-->
         <activity
-            android:name=".Activities.MainFrameworkActivity"
+            android:name=".Activities.MainFramework.FrameworkActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme_MainFrameworkActivity">
