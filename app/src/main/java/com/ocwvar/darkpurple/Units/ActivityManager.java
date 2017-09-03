@@ -5,7 +5,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.ocwvar.darkpurple.Activities.MainFrameworkActivity;
+import com.ocwvar.darkpurple.Activities.MainFramework.FrameworkActivity;
 import com.ocwvar.darkpurple.AppConfigs;
 import com.umeng.analytics.MobclickAgent;
 
@@ -55,7 +55,7 @@ public final class ActivityManager implements Application.ActivityLifecycleCallb
 
     public void restartMainActivity() {
         release();
-        Intent intent = new Intent(AppConfigs.ApplicationContext, MainFrameworkActivity.class);
+        Intent intent = new Intent(AppConfigs.ApplicationContext, FrameworkActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         AppConfigs.ApplicationContext.startActivity(intent);
     }
