@@ -49,7 +49,11 @@ public final class CoverShowerAdapter extends PagerAdapter {
 
     @Override
     public float getPageWidth(int position) {
-        return 1f;
+        if (position == playingList.size() - 1) {
+            return 1.0f;
+        } else {
+            return 0.8f;
+        }
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
