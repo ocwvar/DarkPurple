@@ -11,17 +11,6 @@
         <item name="android:activityCloseExitAnimation">@anim/activity_close_out</item>
     </style>
 
-    <!--Activity 切换动画  淡入淡出样式-->
-    <style name="ActivityAnimationFading">
-        <!--进入新界面时-->
-        <item name="android:activityOpenEnterAnimation">@anim/activity_open_in_fade</item>
-        <item name="android:activityOpenExitAnimation">@anim/activity_open_out_fade</item>
-
-        <!--退回旧界面时-->
-        <item name="android:activityCloseEnterAnimation">@anim/activity_close_in_fade</item>
-        <item name="android:activityCloseExitAnimation">@anim/activity_close_out_fade</item>
-    </style>
-
     <!--基础主题样式-->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
 

@@ -115,12 +115,12 @@ object CoverProcesser {
     /**
      * 图像模糊处理工作子线程
      */
-    class BlurThread(private val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
+    private class BlurThread(private val coverID: String) : AsyncTask<Void, Int, Drawable?>() {
 
         private val TAG: String = "图像模糊处理"
 
         //模糊图像缩小倍数
-        val scaleSize: Float = 0.4f
+        private val scaleSize: Float = 0.2f
 
         override fun doInBackground(vararg params: Void?): Drawable? {
             Logger.normal(TAG, "开始处理图像：" + coverID)
@@ -129,7 +129,7 @@ object CoverProcesser {
             val originalBitmap: Bitmap = BitmapFactory.decodeFile(CoverManager.getValidSource(coverID)) ?: return null
 
             //缩放处理原始图像
-            val matrix: Matrix = Matrix()
+            val matrix = Matrix()
             matrix.postScale(scaleSize, scaleSize)
 
             //得到缩小指定倍数后的原始图像

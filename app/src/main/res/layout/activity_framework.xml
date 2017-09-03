@@ -10,7 +10,7 @@
         android:layout_above="@+id/bottomPanel">
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar"
+            android:id="@+id/FrameworkHeaderBackground"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:theme="@style/AppTheme.AppBarOverlay">
@@ -29,20 +29,12 @@
                     app:layout_collapseMode="parallax">
 
                     <ImageView
-                        android:id="@+id/FrameworkHeaderBackground"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:background="@null"
-                        android:scaleType="centerCrop" />
-
-                    <ImageView
                         android:id="@+id/FrameworkHeaderCover"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:layout_gravity="start|bottom"
                         android:background="@null"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone" />
+                        android:scaleType="centerCrop" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -96,7 +88,7 @@
             android:focusable="true"
             android:visibility="gone"
             app:fabSize="normal"
-            app:layout_anchor="@id/app_bar"
+            app:layout_anchor="@id/FrameworkHeaderBackground"
             app:layout_anchorGravity="bottom|end"
             app:pressedTranslationZ="10dp"
             app:rippleColor="@color/Text_LightGray"

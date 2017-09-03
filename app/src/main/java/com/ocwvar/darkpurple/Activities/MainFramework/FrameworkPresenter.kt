@@ -177,11 +177,14 @@ class FrameworkPresenter(private val iFrameViews: IFrameViews) : IFramePresenter
 
     /**
      * 界面暂停：
+     * 隐藏进入播放界面按钮
      * 断开媒体服务连接
      * 反注册所有广播接收器
      * 恢复空状态
      */
     override fun onPause() {
+        iFrameViews.onSwitchPlayingButton(false)
+
         this.mediaServiceConnector.disConnect()
 
         if (this.blurCoverUpdateReceiver.isRegistered) {
@@ -200,11 +203,14 @@ class FrameworkPresenter(private val iFrameViews: IFrameViews) : IFramePresenter
 
     /**
      * 界面恢复：
+     * 先隐藏进入播放界面按钮，等待服务连接
      * 检查权限
      * 连接媒体服务
      * 注册所有广播接收器
      */
     override fun onResume() {
+        iFrameViews.onSwitchPlayingButton(false)
+
         if (iFrameViews.activity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             iFrameViews.onLeakPermission()
         }

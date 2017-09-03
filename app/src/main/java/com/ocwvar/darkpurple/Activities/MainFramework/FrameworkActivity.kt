@@ -55,10 +55,11 @@ class FrameworkActivity : AppCompatActivity(), IFrameViews, View.OnClickListener
     }
 
     //动画对象若连接容器
-    private var fadeAnim: WeakReference<Animation?> = WeakReference(null)
+    private var headerBackgroundAnim: WeakReference<Animation?> = WeakReference(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         //单独设定页面的状态栏和导航栏样式
         window.statusBarColor = AppConfigs.Color.StatusBar_color
         window.navigationBarColor = AppConfigs.Color.NavBar_Color
@@ -141,8 +142,8 @@ class FrameworkActivity : AppCompatActivity(), IFrameViews, View.OnClickListener
     override fun onUpdateBackground(drawable: Drawable, tag: String) {
         if (FrameworkHeaderBackground.tag ?: "" != tag) {
             FrameworkHeaderBackground.tag = tag
-            FrameworkHeaderBackground.setImageDrawable(drawable)
-            FrameworkHeaderBackground.startAnimation(getFadeAnim())
+            FrameworkHeaderBackground.background = drawable
+            FrameworkHeaderBackground.startAnimation(getHeaderBackgroundAnim())
         }
     }
 
@@ -232,13 +233,13 @@ class FrameworkActivity : AppCompatActivity(), IFrameViews, View.OnClickListener
     /**
      * @return 控件动画
      */
-    private fun getFadeAnim(): Animation {
-        var anim: Animation? = fadeAnim.get()
+    private fun getHeaderBackgroundAnim(): Animation {
+        var anim: Animation? = headerBackgroundAnim.get()
         return if (anim != null) {
             anim
         } else {
-            anim = AnimationUtils.loadAnimation(this@FrameworkActivity, R.anim.fragment_anim_in)
-            fadeAnim = WeakReference(anim)
+            anim = AnimationUtils.loadAnimation(this@FrameworkActivity, R.anim.framework_anim_header)
+            headerBackgroundAnim = WeakReference(anim)
             anim
         }
     }

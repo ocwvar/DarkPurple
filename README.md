@@ -43,6 +43,13 @@ CoverBox 的作者为 Henry Hu
 在虚拟机下的 Android 8.0 版本中，Google v4兼容包(v26.0.0-alpha1)中的 MediaSessionCompat 会产生异常。
 在新版本发布后再进行相应的适配工作。
 
+## 开发计划
+- 优化播放界面和主框架页面头部布局严重 Overdraw 的问题
+- → 将逻辑复杂的页面改为MVP设计结构：剩余主音频列表Fragment
+- x  将Picasso更换为Glide，以节省内存和提升性能
+- x  修正Stop相关逻辑
+- x  文件系统歌曲扫描完善，扫描子目录并提供按目录选择歌曲，包括Cover.jpg的支持
+
 # 截图展示 (2017/8/24 16：42)
 ##### *截图无法展示所有应用的细节*
 
